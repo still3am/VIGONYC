@@ -90,6 +90,8 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
 
       {/* Info */}
       <div style={{ padding: "14px 14px 0", flex: 1 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", lineHeight: 1.3 }}>{product.name}</div>
+        <div style={{ fontSize: 8, letterSpacing: 2, color: "#555", textTransform: "uppercase", marginTop: 4 }}>{product.cat}</div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
           <span style={{ fontSize: 16, fontWeight: 900, color: S }}>${product.price}</span>
           {product.sizes && product.sizes.length > 0 && (
