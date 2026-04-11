@@ -7,7 +7,7 @@ const SD = "#777";
 
 const cols = {
   Shop: [["New Arrivals","/shop"],["Tops","/shop?cat=Tops"],["Bottoms","/shop?cat=Bottoms"],["Outerwear","/shop?cat=Outerwear"],["Accessories","/shop?cat=Accessories"],["Drop Calendar","/drops"]],
-  Info: [["About","/about"],["Lookbook","/lookbook"],["Sustainability","/sustainability"],["Press","/press"],["FAQ","/faq"]],
+  Info: [["About","/about"],["Lookbook","/lookbook"],["Press","/press"],["FAQ","/faq"]],
   Support: [["Contact","/contact"],["Track Order","/track-order"],["Shipping & Returns","/faq"],["Size Guide","/product/1"],["Wishlist","/wishlist"]],
 };
 
