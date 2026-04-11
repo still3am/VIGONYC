@@ -252,14 +252,30 @@ export default function VigoHome() {
 
       <style>{`
         @media(max-width:900px){
-          .vigo-hero-grid{grid-template-columns:1fr !important;}
-          .vigo-hero-grid>div:last-child{min-height:320px;}
-          .vigo-kpi-grid{grid-template-columns:repeat(2,1fr) !important;}
-          .vigo-4col{grid-template-columns:repeat(2,1fr) !important;}
-          .vigo-3col{grid-template-columns:1fr !important;}
+          .vigo-hero-grid{grid-template-columns:1fr !important; min-height: auto !important;}
+          .vigo-hero-grid>div:first-child{padding: 48px 24px !important;}
+          .vigo-hero-grid>div:last-child{min-height:280px; border-left: none !important; border-top: 0.5px solid #1a1a1a !important;}
+          .vigo-hero-grid h1{font-size: clamp(32px, 5vw, 56px) !important; line-height: 0.95 !important;}
+          .vigo-kpi-grid{grid-template-columns:repeat(2,1fr) !important; gap: 12px !important; margin-top: 40px !important; border-top: none !important; padding-top: 24px !important; border-top: 0.5px solid #1a1a1a !important;}
+          .vigo-kpi-grid>div{padding: 16px 0 !important; padding-right: 0 !important; border-right: none !important; border-bottom: 0.5px solid #1a1a1a; text-align: center;}
+          .vigo-kpi-grid>div:nth-child(odd){border-right: 0.5px solid #1a1a1a !important; padding-right: 8px !important;}
+          .vigo-kpi-grid>div:nth-child(even){padding-left: 8px !important;}
+          .vigo-4col{grid-template-columns:repeat(2,1fr) !important; gap: 12px !important;}
+          .vigo-3col{grid-template-columns:1fr !important; gap: 12px !important;}
           .vigo-2col{grid-template-columns:1fr !important;}
+          .vigo-2col>div{border-right: none !important; border-bottom: 0.5px solid #1a1a1a !important; padding: 40px 24px !important;}
+          .vigo-2col>div:last-child{padding: 24px !important;}
+          .vigo-2col-story>div:first-child{border-right: none !important; border-bottom: 0.5px solid #1a1a1a !important;}
+          .vigo-2col-story>div:last-child{display: grid !important; grid-template-columns: 1fr 1fr !important;}
+          .vigo-2col-story .vigo-2col>div>div:nth-child(2){grid-template-columns: 1fr !important;}
         }
-        @media(max-width:480px){.vigo-4col{grid-template-columns:1fr !important;}}
+        @media(max-width:480px){
+          .vigo-4col{grid-template-columns:1fr !important;}
+          .vigo-hero-grid>div:first-child{padding: 32px 16px !important;}
+          .vigo-hero-grid>div:first-child>div:nth-child(3){flex-direction: column !important; gap: 8px !important;}
+          .vigo-2col-story>div:last-child{grid-template-columns: 1fr !important;}
+          .vigo-2col-story>div:last-child>div>div{border-right: none !important; border-bottom: 0.5px solid #1a1a1a !important; padding: 20px !important;}
+        }
         @keyframes vigo-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
       `}</style>
     </div>);
