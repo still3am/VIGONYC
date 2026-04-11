@@ -12,7 +12,7 @@ import VigoHome from './components/vigo/VigoHome';
 import VigoShop from './components/vigo/VigoShop';
 import VigoProduct from './components/vigo/VigoProduct';
 import VigoLookbook from './components/vigo/VigoLookbook';
-import VigoAbout from './components/vigo/VigoAbout';
+
 import VigoFAQ from './components/vigo/VigoFAQ';
 import VigoContact from './components/vigo/VigoContact';
 import VigoWishlist from './components/vigo/VigoWishlist';
@@ -57,7 +57,7 @@ const AuthenticatedApp = () => {
         <Route path="shop" element={<VigoShop />} />
         <Route path="product/:id" element={<VigoProduct />} />
         <Route path="lookbook" element={<VigoLookbook />} />
-        <Route path="about" element={<VigoAbout />} />
+
         <Route path="faq" element={<VigoFAQ />} />
         <Route path="contact" element={<VigoContact />} />
         <Route path="wishlist" element={<VigoWishlist />} />
