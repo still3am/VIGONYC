@@ -369,34 +369,7 @@ export default function VigoDrops() {
         </div>
       </div>
 
-      {/* ── ARCHIVE ── */}
-      <div style={{ background: G1, borderTop: `.5px solid ${G3}`, padding: "clamp(32px,5vw,52px) 20px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
-            <div style={{ flex: 1, height: .5, background: G3 }} />
-            <div style={{ fontSize: 8, letterSpacing: 3, color: SD, textTransform: "uppercase", display: "flex", alignItems: "center", gap: 8, whiteSpace: "nowrap" }}>
-              <div style={{ width: 5, height: 5, background: "#e03", transform: "rotate(45deg)" }} />
-              Drop 01 — Sold Out
-              <div style={{ width: 5, height: 5, background: "#e03", transform: "rotate(45deg)" }} />
-            </div>
-            <div style={{ flex: 1, height: .5, background: G3 }} />
-          </div>
-          <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
-            {PAST_DROPS.map(p => (
-              <div key={p.id} style={{ position: "relative" }}>
-                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.55)", zIndex: 3, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
-                  <span style={{ fontSize: 8, letterSpacing: 3, color: "#555", textTransform: "uppercase", border: ".5px solid #2a2a2a", padding: "5px 12px" }}>Sold Out</span>
-                </div>
-                <ProductCard product={p} img={productImg}
-                  wishlisted={wishlist.includes(p.id)}
-                  onWishlist={() => {}}
-                  onAdd={() => {}}
-                  onClick={() => navigate(`/product/${p.id}`)} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+
 
       <style>{`
         @keyframes vigo-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
