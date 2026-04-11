@@ -219,18 +219,6 @@ export default function VigoWishlist() {
               })}
             </div>
 
-            {/* Footer CTA */}
-            <div style={{ marginTop: 40, borderTop: `.5px solid ${G3}`, paddingTop: 24, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-              <div style={{ fontSize: 11, color: SD }}>
-                {savedItems.length} saved · Total <span style={{ color: S, fontWeight: 700 }}>${totalValue}</span>
-              </div>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <button onClick={() => navigate("/shop")} style={btnGhost}>Continue Shopping</button>
-                <button onClick={handleAddAll} style={{ background: allAddedBag ? "#0c6" : S, color: "#000", border: "none", padding: "12px 20px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", transition: "background .3s" }}>
-                  {allAddedBag ? "✓ All Added!" : "Add All to Bag"}
-                </button>
-              </div>
-            </div>
           </>
         )}
       </div>
