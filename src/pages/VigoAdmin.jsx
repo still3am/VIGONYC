@@ -14,7 +14,7 @@ const G3 = "#1a1a1a";
 const SD = "#777";
 
 
-const SECTIONS = ["Hero", "Banner", "Products", "Orders", "Contacts", "Drops", "Brand Story", "Contact & Social", "Theme"];
+const SECTIONS = ["Products", "Orders", "Contacts", "Drops", "Contact & Social"];
 
 function Field({ label, value, onChange, type = "text", multiline }) {
   const style = { width: "100%", background: G2, border: `.5px solid ${G3}`, color: "#fff", padding: "10px 14px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit", resize: multiline ? "vertical" : "none" };
@@ -181,47 +181,7 @@ export default function VigoAdmin() {
         {/* Editor main */}
         <div style={{ flex: 1, padding: "24px 20px", overflowY: "auto", maxHeight: "calc(100vh - 56px)" }}>
 
-          {activeSection === "Hero" && (
-            <div>
-              <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ Hero Section</div>
-              <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: -1, marginBottom: 24 }}>Homepage Hero</h2>
-              <SectionCard title="Hero Content" accent>
-                <Field label="Badge Text" value={settings.heroBadge} onChange={v => updateSetting("heroBadge", v)} />
-                <Field label="Hero Headline" value={settings.heroHeadline} onChange={v => updateSetting("heroHeadline", v)} multiline />
-                <Field label="Hero Copy / Subtext" value={settings.heroCopy} onChange={v => updateSetting("heroCopy", v)} multiline />
-                <div className="admin-2col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                  <Field label="Primary Button Text" value={settings.heroCtaPrimary} onChange={v => updateSetting("heroCtaPrimary", v)} />
-                  <Field label="Secondary Button Text" value={settings.heroCtaSecondary} onChange={v => updateSetting("heroCtaSecondary", v)} />
-                </div>
-              </SectionCard>
-              <SectionCard title="Chrome Series Banner">
-                <Field label="Banner Title" value={settings.chromeBannerTitle} onChange={v => updateSetting("chromeBannerTitle", v)} />
-                <Field label="Banner Description" value={settings.chromeBannerDesc} onChange={v => updateSetting("chromeBannerDesc", v)} multiline />
-              </SectionCard>
-              <SectionCard title="Brand Story Block">
-                <Field label="Brand Story Text" value={settings.brandStory} onChange={v => updateSetting("brandStory", v)} multiline />
-              </SectionCard>
-            </div>
-          )}
 
-          {activeSection === "Banner" && (
-            <div>
-              <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ Announcement</div>
-              <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: -1, marginBottom: 24 }}>Ticker & Drop Banner</h2>
-              <SectionCard title="Drop Alert Banner" accent>
-                <Field label="Drop Announcement Text" value={settings.announcementText} onChange={v => updateSetting("announcementText", v)} />
-              </SectionCard>
-              <SectionCard title="Ticker Strip Items">
-                {(settings?.bannerItems || []).map((item, i) => (
-                  <Field key={i} label={`Item ${i + 1}`} value={item} onChange={v => {
-                    const updated = [...settings.bannerItems];
-                    updated[i] = v;
-                    updateSetting("bannerItems", updated);
-                  }} />
-                ))}
-              </SectionCard>
-            </div>
-          )}
 
           {activeSection === "Products" && <ProductsManager settings={settings} updateProduct={updateProduct} updateSetting={updateSetting} />}
 
@@ -229,16 +189,7 @@ export default function VigoAdmin() {
 
           {activeSection === "Contacts" && <AdminContacts />}
 
-          {activeSection === "Brand Story" && (
-            <div>
-              <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ About</div>
-              <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: -1, marginBottom: 24 }}>Brand Story</h2>
-              <SectionCard title="Brand Narrative" accent>
-                <Field label="Story / About Text" value={settings.brandStory} onChange={v => updateSetting("brandStory", v)} multiline />
-                <Field label="Footer Tagline" value={settings.footerTagline} onChange={v => updateSetting("footerTagline", v)} multiline />
-              </SectionCard>
-            </div>
-          )}
+
 
           {activeSection === "Contact & Social" && (
             <div>
@@ -259,27 +210,7 @@ export default function VigoAdmin() {
 
           {activeSection === "Drops" && <AdminDrops />}
 
-          {activeSection === "Theme" && (
-            <div>
-              <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ Design</div>
-              <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: -1, marginBottom: 24 }}>Theme & Colors</h2>
-              <SectionCard title="Brand Colors" accent>
-                <div style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 10 }}>Accent / Chrome Color</div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                    <input type="color" value={settings.accentColor} onChange={e => updateSetting("accentColor", e.target.value)} style={{ width: 52, height: 40, background: "none", border: `.5px solid ${G3}`, cursor: "pointer", padding: 2 }} />
-                    <input type="text" value={settings.accentColor} onChange={e => updateSetting("accentColor", e.target.value)} style={{ background: G2, border: `.5px solid ${G3}`, color: "#fff", padding: "10px 14px", fontSize: 13, outline: "none", fontFamily: "monospace", width: 120 }} />
-                    <div style={{ width: 36, height: 36, background: settings.accentColor, border: `.5px solid #333` }} />
-                  </div>
-                </div>
-                <div style={{ background: G2, border: `.5px solid ${G3}`, borderLeft: `2px solid ${S}`, padding: "14px 18px" }}>
-                  <div style={{ fontSize: 10, color: SD, lineHeight: 1.7 }}>
-                    The accent color is used for borders, highlights, price text, and chrome elements throughout the site. Default is <code style={{ color: S }}>#C0C0C0</code> (Silver Chrome).
-                  </div>
-                </div>
-              </SectionCard>
-            </div>
-          )}
+
 
           <div style={{ marginTop: 24, paddingTop: 24, borderTop: `.5px solid ${G3}`, display: "flex", gap: 12, flexWrap: "wrap" }}>
             <button onClick={handleSave} style={{ background: saved ? "#0c6" : S, color: "#000", border: "none", padding: "14px 32px", fontSize: 10, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", transition: "background .3s" }}>
