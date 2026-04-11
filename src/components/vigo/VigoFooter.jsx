@@ -16,60 +16,6 @@ export default function VigoFooter({ logo }) {
     <footer style={{ background: G1, borderTop: `.5px solid ${G3}`, marginTop: 0 }}>
       <div style={{ height: 2, background: `linear-gradient(90deg,transparent,#888,#E8E8E8,${S},#E8E8E8,#888,transparent)` }} />
       
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      
       <style>{`
         @media(max-width:900px){.vigo-footer-grid{grid-template-columns:1fr 1fr !important;}}
         @media(max-width:480px){.vigo-footer-grid{grid-template-columns:1fr !important;}}
