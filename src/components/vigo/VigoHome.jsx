@@ -243,7 +243,7 @@ export default function VigoHome() {
         {subscribed ?
         <div style={{ fontSize: 13, color: "#0c6", padding: "16px 0", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}><span>✓</span> You're in. Watch for the next drop alert.</div> :
 
-        <div style={{ display: "flex", gap: 0, maxWidth: 520, margin: "0 auto", position: "relative", flexWrap: "wrap", borderRadius: "2px" }}>
+        <div style={{ display: "flex", gap: 0, maxWidth: 520, margin: "0 auto", position: "relative", flexWrap: "wrap", borderRadius: "2px", justifyContent: "center" }}>
             <input value={email} onChange={(e) => setEmail(e.target.value)} onKeyPress={(e) => e.key === "Enter" && email.trim() && setSubscribed(true)} placeholder="your@email.com" style={{ flex: 1, minWidth: "160px", background: "#0a0a0a", border: `.5px solid #222`, borderRight: "none", color: "#fff", padding: "14px 20px", fontSize: 12, outline: "none", fontFamily: "inherit", transition: "border-color .2s", boxSizing: "border-box" }} onFocus={(e) => e.target.style.borderColor = S} onBlur={(e) => e.target.style.borderColor = "#222"} />
             <button onClick={() => email.trim() && setSubscribed(true)} disabled={!email.trim()} style={{ ...btnP, opacity: email.trim() ? 1 : 0.6, cursor: email.trim() ? "pointer" : "not-allowed" }}>Join the List</button>
           </div>
