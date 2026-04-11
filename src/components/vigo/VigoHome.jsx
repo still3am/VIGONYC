@@ -9,20 +9,27 @@ const SD = "#777";
 const G1 = "#0a0a0a";
 const G3 = "#1a1a1a";
 
-// TODO: Fetch next drop date from Base44 Drop entity
-const NEXT_DROP = new Date();
+const NEXT_DROP = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000);
 
-// TODO: Replace with Base44 entity queries
-// const PRODUCTS = await base44.entities.Product.filter({ featured: true });
-const PRODUCTS = [];
+const PRODUCTS = [
+{ id: 1, name: "Chrome V Tee", cat: "Tops / Essential", price: 68, tag: "new", opacity: 1 },
+{ id: 2, name: "NYC Cargo Pant", cat: "Bottoms / Heavy", price: 145, tag: "drop", opacity: 0.4 },
+{ id: 3, name: "Silver Label Hoodie", cat: "Tops / Outerwear", price: 128, tag: "new", tag2: "hot", opacity: 0.6 },
+{ id: 4, name: "5-Panel Cap", cat: "Headwear / Unisex", price: 52, tag: "ltd", opacity: 0.45 }];
 
-// TODO: Replace with Base44 entity queries
-// const CATEGORIES = await base44.entities.Category.list();
-const CATEGORIES = [];
 
-// TODO: Replace with Base44 entity queries
-// const REVIEWS = await base44.entities.Review.filter({ featured: true });
-const REVIEWS = [];
+const CATEGORIES = [
+{ name: "Tops", count: "14 styles" },
+{ name: "Bottoms", count: "9 styles" },
+{ name: "Outerwear", count: "6 styles" },
+{ name: "Accessories", count: "12 styles" }];
+
+
+const REVIEWS = [
+{ name: "Jordan M.", loc: "Brooklyn, NY", rating: 5, text: "The Chrome V Tee is everything. Quality is insane for the price. Already ordered 3 more." },
+{ name: "Aaliyah T.", loc: "Harlem, NY", rating: 5, text: "Finally a brand that gets it. VIGONYC hits different — the silver hardware on the cargo pants is a vibe." },
+{ name: "Marcus R.", loc: "Queens, NY", rating: 5, text: "Limited drops are real — got the SS25 hoodie on release day. Worth the W." }];
+
 
 function MiniCountdown({ target }) {
   const [t, setT] = useState({ d: 0, h: 0, m: 0, s: 0 });
@@ -53,14 +60,6 @@ export default function VigoHome() {
   const [subscribed, setSubscribed] = useState(false);
 
   useEffect(() => {const t = setTimeout(() => setHeroLoaded(true), 80);return () => clearTimeout(t);}, []);
-
-  // TODO: Replace with Base44 function to submit newsletter subscription
-  const handleSubscribe = async () => {
-    if (email.trim()) {
-      // await base44.functions.invoke('subscribeNewsletter', { email });
-      setSubscribed(true);
-    }
-  };
 
   return (
     <div>
@@ -246,7 +245,7 @@ export default function VigoHome() {
 
         <div style={{ display: "flex", gap: 0, maxWidth: 460, margin: "0 auto", position: "relative" }}>
             <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" style={{ flex: 1, background: "#111", border: `.5px solid #333`, borderRight: "none", color: "#fff", padding: "14px 20px", fontSize: 12, outline: "none", fontFamily: "inherit" }} />
-            <button onClick={handleSubscribe} style={btnP}>Join the List</button>
+            <button onClick={() => email.trim() && setSubscribed(true)} style={btnP}>Join the List</button>
           </div>
         }
       </div>
