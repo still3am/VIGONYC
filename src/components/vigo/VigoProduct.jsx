@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import ProductCard from "./ProductCard";
 import SectionDivider from "./SectionDivider";
+import { toast } from "sonner";
 
 const S = "#C0C0C0";
 const G1 = "#0a0a0a";
@@ -24,18 +26,7 @@ const accordionData = [
   { title: "Shipping & Returns", content: "Free standard shipping on orders over $150. Express (2-3 days) and Overnight available. Returns accepted within 30 days of delivery. Items must be unworn and in original packaging." },
 ];
 
-function Accordion({ title, content }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div style={{ borderBottom: `.5px solid ${G3}` }}>
-      <button onClick={() => setOpen(!open)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 0", background: "none", border: "none", cursor: "pointer", color: "#fff", fontFamily: "inherit" }}>
-        <span style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase" }}>{title}</span>
-        <span style={{ color: SD, fontSize: 18, fontWeight: 300, transition: "transform .2s", display: "inline-block", transform: open ? "rotate(45deg)" : "rotate(0deg)" }}>+</span>
-      </button>
-      {open && <p style={{ fontSize: 12, color: SD, lineHeight: 1.9, paddingBottom: 16 }}>{content}</p>}
-    </div>
-  );
-}
+
 
 export default function VigoProduct() {
   const { productImg, wishlist, toggleWishlist, addToCart, setSizeGuideOpen } = useOutletContext();
@@ -50,36 +41,40 @@ export default function VigoProduct() {
   const thumbOpacities = [1, 0.6, 0.4, 0.8];
 
   const handleAdd = () => {
-    if (!selectedSize) { alert("Please select a size"); return; }
+    if (!selectedSize) {
+      toast.error("Please select a size");
+      return;
+    }
     addToCart({ id: 1, name: "Chrome V Tee", meta: `Size: ${selectedSize} · Color: ${selectedColor}`, price: 68 });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
 
   return (
-    <div style={{ padding: "48px 32px", maxWidth: 1400, margin: "0 auto" }}>
+    <div style={{ paddingBottom: "120px", minHeight: "100vh" }}>
+    <div style={{ padding: "clamp(24px,5vw,48px) clamp(16px,4vw,32px)", maxWidth: 1400, margin: "0 auto" }}>
       {/* Breadcrumb */}
-      <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 40, fontSize: 9, letterSpacing: 2, textTransform: "uppercase", color: SD }}>
+      <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: "clamp(24px,4vw,40px)", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", color: SD, overflowX: "auto" }}>
         {[["Home","/"],["Shop","/shop"],["Chrome V Tee",null]].map(([l,to],i) => (
-          <span key={l} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span key={l} style={{ display: "flex", alignItems: "center", gap: 10, whiteSpace: "nowrap" }}>
             {i > 0 && <span>/</span>}
             {to ? <button onClick={() => navigate(to)} style={{ background: "none", border: "none", color: SD, cursor: "pointer", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontFamily: "inherit" }}>{l}</button> : <span style={{ color: "#fff" }}>{l}</span>}
           </span>
         ))}
       </div>
 
-      <div className="vigo-2col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64 }}>
+      <div className="vigo-2col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(32px,6vw,64px)" }}>
         {/* Images */}
-        <div style={{ display: "flex", gap: 10 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ display: "flex", gap: "clamp(8px,2vw,10px)", flexDirection: "row-reverse" }}>
+          <div style={{ flex: 1, background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, display: "flex", alignItems: "center", justifyContent: "center", aspectRatio: "3/4", overflow: "hidden" }}>
+            <img src={productImg} alt="Chrome V Tee" style={{ width: "85%", objectFit: "contain", opacity: thumbOpacities[activeThumb], filter: "drop-shadow(0 0 40px rgba(192,192,192,.12))", transition: "opacity .3s" }} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, overflowY: "auto", maxHeight: "600px" }}>
             {thumbOpacities.map((op, i) => (
-              <div key={i} onClick={() => setActiveThumb(i)} style={{ width: 68, height: 68, background: G1, border: `.5px solid ${activeThumb === i ? S : G3}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+              <div key={i} onClick={() => setActiveThumb(i)} style={{ width: 68, height: 68, background: G1, border: `.5px solid ${activeThumb === i ? S : G3}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, transition: "border-color .2s" }}>
                 <img src={productImg} alt="" style={{ width: 54, height: 54, objectFit: "contain", opacity: op }} />
               </div>
             ))}
-          </div>
-          <div style={{ flex: 1, background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, display: "flex", alignItems: "center", justifyContent: "center", aspectRatio: "3/4", overflow: "hidden" }}>
-            <img src={productImg} alt="Chrome V Tee" style={{ width: "85%", objectFit: "contain", opacity: thumbOpacities[activeThumb], filter: "drop-shadow(0 0 40px rgba(192,192,192,.12))", transition: "opacity .3s" }} />
           </div>
         </div>
 
@@ -148,15 +143,23 @@ export default function VigoProduct() {
 
           {/* Accordion */}
           <div style={{ borderTop: `.5px solid ${G3}` }}>
-            {accordionData.map(a => <Accordion key={a.title} {...a} />)}
+            <Accordion type="single" collapsible className="w-full">
+              {accordionData.map((item, idx) => (
+                <AccordionItem key={idx} value={`item-${idx}`}>
+                  <AccordionTrigger style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", color: "#fff" }}>{item.title}</AccordionTrigger>
+                  <AccordionContent style={{ fontSize: 12, color: SD, lineHeight: 1.9 }}>{item.content}</AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
         </div>
       </div>
+    </div>
 
       {/* You May Also Like */}
       <SectionDivider label="You May Also Like" />
-      <div style={{ paddingTop: 32 }}>
-        <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
+      <div style={{ padding: "32px clamp(16px,4vw,32px) 0" }}>
+        <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, maxWidth: 1400, margin: "0 auto" }}>
           {related.map(p => (
             <ProductCard key={p.id} product={p} img={productImg}
               wishlisted={wishlist.includes(p.id)}
@@ -166,9 +169,25 @@ export default function VigoProduct() {
           ))}
         </div>
       </div>
+
+      {/* Sticky Add to Bag (mobile) */}
+      <div className="vigo-sticky-cta" style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "rgba(10,10,10,.98)", borderTop: `.5px solid ${G3}`, padding: "12px clamp(16px,4vw,32px) env(safe-area-inset-bottom,12px)", display: "none", flexDirection: "column", gap: 8, zIndex: 150, backdropFilter: "blur(12px)" }}>
+        {!selectedSize && <div style={{ fontSize: 10, color: "#e03", textAlign: "center", letterSpacing: 1 }}>SELECT A SIZE</div>}
+        <button onClick={handleAdd} style={{ width: "100%", background: added ? "#0c6" : S, color: "#000", border: "none", fontSize: 10, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", padding: "14px", fontFamily: "inherit", borderRadius: "4px", transition: "background .3s" }}>
+          {added ? "✓ Added to Bag" : `Add to Bag · $68`}
+        </button>
+      </div>
+
       <style>{`
-        @media(max-width:900px){.vigo-2col{grid-template-columns:1fr !important;} .vigo-4col{grid-template-columns:repeat(2,1fr) !important;} .vigo-delivery-grid{grid-template-columns:repeat(3,1fr);}}
-        @media(max-width:480px){.vigo-4col{grid-template-columns:1fr !important;}}
+        @media(max-width:900px){
+          .vigo-2col{grid-template-columns:1fr !important;}
+          .vigo-4col{grid-template-columns:repeat(2,1fr) !important;}
+          .vigo-delivery-grid{grid-template-columns:repeat(3,1fr) !important;}
+          .vigo-sticky-cta { display: flex !important; }
+        }
+        @media(max-width:480px){
+          .vigo-4col{grid-template-columns:1fr !important;}
+        }
       `}</style>
     </div>
   );
