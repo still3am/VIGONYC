@@ -19,6 +19,9 @@ import VigoTrackOrder from './components/vigo/VigoTrackOrder';
 import VigoAccount from './components/vigo/VigoAccount';
 import VigoCheckout from './components/vigo/VigoCheckout';
 import VigoDrops from './components/vigo/VigoDrops';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminProducts from './pages/AdminProducts';
+import AdminDrops from './pages/AdminDrops';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -60,6 +63,9 @@ const AuthenticatedApp = () => {
         <Route path="account" element={<VigoAccount />} />
         <Route path="checkout" element={<VigoCheckout />} />
         <Route path="drops" element={<VigoDrops />} />
+        <Route path="admin" element={<AdminDashboard />} />
+        <Route path="admin/products" element={<AdminProducts />} />
+        <Route path="admin/drops" element={<AdminDrops />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
