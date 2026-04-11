@@ -82,7 +82,7 @@ export default function VigoHome() {
             <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 2s infinite" }} />
             <span style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase" }}>SS25 Collection — Now Live</span>
           </div>
-          <h1 style={{ fontSize: "clamp(56px,7vw,104px)", fontWeight: 900, letterSpacing: -4, lineHeight: .86, marginBottom: 28 }}>
+          <h1 style={{ fontSize: "clamp(56px,7vw,104px)", fontWeight: 900, letterSpacing: -4, lineHeight: .86, marginBottom: 28 }} className="text-center">
             STREETS<br />OF{" "}
             <span style={{ position: "relative", display: "inline-block" }}>
               <em style={{ color: "transparent", WebkitTextStroke: `1px ${S}`, fontStyle: "italic" }}>NYC</em>
