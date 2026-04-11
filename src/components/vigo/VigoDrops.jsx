@@ -10,39 +10,13 @@ const G3 = "#1a1a1a";
 const SD = "#777";
 const TODAY = new Date();
 
-const ALL_DROPS = [
-  {
-    id: "drop-02", name: "Drop 02 — Mirror Series", series: "Mirror Series", drop: "Drop 02",
-    date: new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate() + 3),
-    desc: "Reflective chrome finishes. Heavyweight silhouettes. Only 75 units worldwide. No restocks. No exceptions.",
-    tag: "Upcoming", tagColor: S, pieces: 75, status: "upcoming", time: "12:00 PM EST", price: "$68–$245",
-  },
-  {
-    id: "drop-03", name: "Drop 03 — Concrete Series", series: "Concrete Series", drop: "Drop 03",
-    date: new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate() + 10),
-    desc: "Raw textures. NYC concrete inspired. Dyed-in-the-wool construction. 50 units only.",
-    tag: "Coming Soon", tagColor: "#888", pieces: 50, status: "upcoming", time: "12:00 PM EST", price: "$88–$195",
-  },
-  {
-    id: "drop-04", name: "Drop 04 — Void Series", series: "Void Series", drop: "Drop 04",
-    date: new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate() + 21),
-    desc: "All-black. Zero branding. Maximum impact. 40 units only.",
-    tag: "Coming Soon", tagColor: "#888", pieces: 40, status: "upcoming", time: "12:00 PM EST", price: "$75–$220",
-  },
-  {
-    id: "drop-01", name: "Drop 01 — Chrome Series", series: "Chrome Series", drop: "Drop 01",
-    date: new Date(TODAY.getFullYear(), TODAY.getMonth() - 1, 15),
-    desc: "The drop that started it all. Hand-finished chrome hardware. Sold out in 8 minutes.",
-    tag: "Sold Out", tagColor: "#e03", pieces: 100, status: "soldout", time: "12:00 PM EST", price: "$68–$245",
-  },
-];
+// TODO: Replace with Base44 entity queries
+// const ALL_DROPS = await base44.entities.Drop.list();
+const ALL_DROPS = [];
 
-const PAST_DROPS = [
-  { id: 1, name: "Chrome V Tee", cat: "Tops / Essential", price: 68, tag: "new", opacity: 1 },
-  { id: 3, name: "Silver Label Hoodie", cat: "Tops / Outerwear", price: 128, tag: "new", tag2: "hot", opacity: 0.6 },
-  { id: 2, name: "NYC Cargo Pant", cat: "Bottoms / Heavy", price: 145, tag: "drop", opacity: 0.4 },
-  { id: 4, name: "5-Panel Cap", cat: "Headwear / Unisex", price: 52, tag: "ltd", opacity: 0.45 },
-];
+// TODO: Replace with Base44 entity queries
+// const PAST_DROPS = await base44.entities.Product.filter({ soldOut: true });
+const PAST_DROPS = [];
 
 const DAYS = ["S","M","T","W","T","F","S"];
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
