@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { base44 } from "@/api/base44Client";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
-import { useForm } from "@/hooks/useFormField";
 
 const S = "#C0C0C0";
 const G1 = "#0a0a0a";
@@ -49,32 +47,10 @@ function TopicPicker({ value, onChange }) {
 export default function VigoContact() {
   const [topic, setTopic] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const { values: formData, handleChange, validateAll } = useForm({ firstName: '', lastName: '', email: '', message: '' });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const isValid = validateAll({
-      firstName: { required: true, label: 'First Name' },
-      lastName: { required: true, label: 'Last Name' },
-      email: { required: true, type: 'email' },
-      message: { required: true, minLength: 10 }
-    });
-    if (!isValid || !topic) return;
-    
-    setLoading(true);
-    try {
-      await base44.functions.invoke('sendContactEmail', {
-        name: `${formData.firstName} ${formData.lastName}`,
-        email: formData.email,
-        topic,
-        message: formData.message
-      });
-      setSubmitted(true);
-    } catch (error) {
-      console.error('Error submitting form:', error);
-    }
-    setLoading(false);
+    setSubmitted(true);
   };
 
   return (
@@ -117,20 +93,20 @@ export default function VigoContact() {
         ) : (
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             <div className="vigo-2col-sm" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <Field label="First Name" required value={formData.firstName} onChange={(v) => handleChange('firstName', v)} />
-              <Field label="Last Name" required value={formData.lastName} onChange={(v) => handleChange('lastName', v)} />
+              <Field label="First Name" required />
+              <Field label="Last Name" required />
             </div>
-            <Field label="Email Address" type="email" required value={formData.email} onChange={(v) => handleChange('email', v)} />
+            <Field label="Email Address" type="email" required />
             <div>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Topic *</div>
               <TopicPicker value={topic} onChange={setTopic} />
             </div>
             <div>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Message *</div>
-              <textarea required rows={5} placeholder="Tell us what's going on..." value={formData.message} onChange={(e) => handleChange('message', e.target.value)} style={{ width: "100%", background: "#0a0a0a", border: `.5px solid #1a1a1a`, color: "#fff", padding: "12px 16px", fontSize: 12, outline: "none", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }} />
+              <textarea required rows={5} placeholder="Tell us what's going on..." style={{ width: "100%", background: "#0a0a0a", border: `.5px solid #1a1a1a`, color: "#fff", padding: "12px 16px", fontSize: 12, outline: "none", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }} />
             </div>
-            <button type="submit" disabled={loading} style={{ background: S, color: "#000", border: "none", padding: "16px", fontSize: 10, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", opacity: loading ? 0.6 : 1 }}>
-              {loading ? 'Sending...' : 'Send Message'}
+            <button type="submit" style={{ background: S, color: "#000", border: "none", padding: "16px", fontSize: 10, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
+              Send Message
             </button>
           </form>
         )}
@@ -140,11 +116,11 @@ export default function VigoContact() {
   );
 }
 
-function Field({ label, type = "text", required, value, onChange }) {
+function Field({ label, type = "text", required }) {
   return (
     <div>
       <div style={{ fontSize: 12, letterSpacing: 2, color: "#777", textTransform: "uppercase", marginBottom: 8 }}>{label}{required && " *"}</div>
-      <input type={type} required={required} value={value || ''} onChange={(e) => onChange?.(e.target.value)} style={{ width: "100%", background: "#0a0a0a", border: ".5px solid #1a1a1a", color: "#fff", padding: "12px 16px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
+      <input type={type} required={required} style={{ width: "100%", background: "#0a0a0a", border: ".5px solid #1a1a1a", color: "#fff", padding: "12px 16px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
     </div>
   );
 }

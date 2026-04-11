@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useSiteSettings } from "../hooks/useSiteSettings";
 import { motion, AnimatePresence } from "framer-motion";
 import VigoNav from "../components/vigo/VigoNav";
 import VigoCartDrawer from "../components/vigo/VigoCartDrawer";
@@ -11,14 +10,19 @@ import SizeGuideModal from "../components/vigo/SizeGuideModal";
 const LOGO = "https://media.base44.com/images/public/69d978a3dcb07c4d96ef01e2/3cb93aaf5_IMG_8246-removebg-preview.png";
 export const PRODUCT_IMG = "https://media.base44.com/mnt/user-data/uploads/IMG_8246-removebg-preview.png";
 
+const INITIAL_CART = [
+  { id: 1, name: "Chrome V Tee", meta: "Size: M · Color: Black", price: 68, qty: 1 },
+  { id: 2, name: "Silver Label Hoodie", meta: "Size: L · Color: Silver", price: 128, qty: 1 },
+  { id: 3, name: "5-Panel Cap", meta: "Size: One Size · Color: Black", price: 52, qty: 1 },
+];
+
 export default function VIGONYCFlagship() {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(INITIAL_CART);
   const [cartOpen, setCartOpen] = useState(false);
   const [wishlist, setWishlist] = useState([]);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { settings } = useSiteSettings();
 
   // Only scroll to top on non-tab navigations (tab switching preserves scroll)
   const TAB_ROOTS = ["/", "/shop", "/drops", "/wishlist", "/account"];
@@ -44,7 +48,7 @@ export default function VIGONYCFlagship() {
 
   const subtotal = cartItems.reduce((s, i) => s + i.price * i.qty, 0);
 
-  const ctx = { cartItems, addToCart, updateQty, removeFromCart, subtotal, wishlist, toggleWishlist, setSizeGuideOpen, logo: LOGO, productImg: PRODUCT_IMG, settings };
+  const ctx = { cartItems, addToCart, updateQty, removeFromCart, subtotal, wishlist, toggleWishlist, setSizeGuideOpen, logo: LOGO, productImg: PRODUCT_IMG };
 
   return (
     <div style={{ background: "#000", minHeight: "100vh", fontFamily: "'Helvetica Neue',Arial,sans-serif", color: "#fff", overflowX: "hidden" }}>

@@ -1,12 +1,21 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { useProducts } from "../../hooks/useSiteSettings";
-import { base44 } from "@/api/base44Client";
+import ProductCard from "./ProductCard";
 import SectionDivider from "./SectionDivider";
 import SectionHeader from "./SectionHeader";
-import { VIGO_CONFIG, formatDate, formatCurrency } from "@/lib/vigoConfig";
 
-import { S, SD, G1, G3 } from "@/lib/vigoColors";
+const S = "#C0C0C0";
+const SD = "#777";
+const G1 = "#0a0a0a";
+const G3 = "#1a1a1a";
+
+const NEXT_DROP = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000);
+
+const PRODUCTS = [
+{ id: 1, name: "Chrome V Tee", cat: "Tops / Essential", price: 68, tag: "new", opacity: 1 },
+{ id: 2, name: "NYC Cargo Pant", cat: "Bottoms / Heavy", price: 145, tag: "drop", opacity: 0.4 },
+{ id: 3, name: "Silver Label Hoodie", cat: "Tops / Outerwear", price: 128, tag: "new", tag2: "hot", opacity: 0.6 },
+{ id: 4, name: "5-Panel Cap", cat: "Headwear / Unisex", price: 52, tag: "ltd", opacity: 0.45 }];
 
 
 const CATEGORIES = [
@@ -44,63 +53,43 @@ function MiniCountdown({ target }) {
 }
 
 export default function VigoHome() {
-  const { productImg, wishlist, toggleWishlist, addToCart, settings } = useOutletContext();
-  const { products } = useProducts();
+  const { productImg, wishlist, toggleWishlist, addToCart } = useOutletContext();
   const navigate = useNavigate();
   const [heroLoaded, setHeroLoaded] = useState(false);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
-  const [nextDropDate, setNextDropDate] = useState(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000));
-  const displayProducts = products.slice(0, 4);
 
-  useEffect(() => {
-    const t = setTimeout(() => setHeroLoaded(true), 80);
-    return () => clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    const fetchNextDrop = async () => {
-      try {
-        const drops = await base44.entities.Drop.list('-releaseDate', 1);
-        if (drops && drops.length > 0) {
-          setNextDropDate(new Date(drops[0].releaseDate));
-        }
-      } catch (error) {
-        console.error('Error fetching drop date:', error);
-      }
-    };
-    fetchNextDrop();
-  }, []);
+  useEffect(() => {const t = setTimeout(() => setHeroLoaded(true), 80);return () => clearTimeout(t);}, []);
 
   return (
     <div>
       {/* ── DROP ALERT BANNER ── */}
       <div onClick={() => navigate("/drops")} style={{ background: `linear-gradient(90deg, #0a0a0a, #111, #0a0a0a)`, borderBottom: `.5px solid ${G3}`, padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "center", gap: 24, cursor: "pointer", flexWrap: "wrap", gap: 16 }}
-       onMouseEnter={(e) => e.currentTarget.style.borderColor = S}
-       onMouseLeave={(e) => e.currentTarget.style.borderColor = G3} className="my-3 py-3">
-         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-           <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 1.5s infinite" }} />
-           <span style={{ fontSize: 9, letterSpacing: 4, color: SD, textTransform: "uppercase" }}>{settings?.announcementText || "Drop 02 — Mirror Series"}</span>
-         </div>
-         <MiniCountdown target={nextDropDate} />
-         <span style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase" }}>Get Notified →</span>
-       </div>
+      onMouseEnter={(e) => e.currentTarget.style.borderColor = S}
+      onMouseLeave={(e) => e.currentTarget.style.borderColor = G3} className="my-3 py-3">
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 1.5s infinite" }} />
+          <span style={{ fontSize: 9, letterSpacing: 4, color: SD, textTransform: "uppercase" }}>Drop 02 — Mirror Series</span>
+        </div>
+        <MiniCountdown target={NEXT_DROP} />
+        <span style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase" }}>Get Notified →</span>
+      </div>
 
       {/* ── HERO ── */}
       <div className="vigo-hero-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "88vh", borderBottom: `.5px solid ${G3}`, opacity: heroLoaded ? 1 : 0, transform: heroLoaded ? "none" : "translateY(12px)", transition: "opacity .5s, transform .5s" }}>
         <div style={{ padding: "72px 48px 72px 32px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 28, background: "rgba(192,192,192,.06)", border: `.5px solid rgba(192,192,192,.15)`, padding: "8px 16px", alignSelf: "flex-start" }}>
             <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 2s infinite" }} />
-            <span style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase" }}>{settings?.heroBadge || "SS25 Collection — Now Live"}</span>
+            <span style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase" }}>SS25 Collection — Now Live</span>
           </div>
           <h1 style={{ fontSize: "clamp(56px,7vw,104px)", fontWeight: 900, letterSpacing: -4, lineHeight: .86, marginBottom: 28 }}>
-            {(settings?.heroHeadline || "STREETS\nOF NYC").split("\n").map((line, i) => (<div key={i}>{line}<br /></div>))}
+            STREETS<br />OF{" "}
             <span style={{ position: "relative", display: "inline-block" }}>
               <em style={{ color: "transparent", WebkitTextStroke: `1px ${S}`, fontStyle: "italic" }}>NYC</em>
             </span>
           </h1>
           <p style={{ fontSize: 13, color: SD, lineHeight: 1.9, maxWidth: 360, marginBottom: 36 }} className="text-center">
-            {settings?.heroCopy || "Born in New York City. Built from concrete and culture. Worn by the ones who make the city move."}
+            Born in New York City. Built from concrete and culture. Worn by the ones who make the city move.
           </p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
             <button onClick={() => navigate("/shop")} style={btnP}>Shop the Drop</button>
@@ -144,8 +133,16 @@ export default function VigoHome() {
 
       {/* ── FEATURED DROPS ── */}
       <div style={{ padding: "52px 32px" }}>
-        <SectionHeader title="Featured Drops" sub="SS25 Season" cta="View All →" onCta={() => navigate("/drops")} />
-        <div style={{ textAlign: "center", padding: "40px 20px", color: SD }}>Featured products section</div>
+        <SectionHeader title="Featured Drops" sub="SS25 Season" cta="View All →" onCta={() => navigate("/shop")} />
+        <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
+          {PRODUCTS.map((p) =>
+          <ProductCard key={p.id} product={p} img={productImg}
+          wishlisted={wishlist.includes(p.id)}
+          onWishlist={() => toggleWishlist(p.id)}
+          onAdd={() => addToCart({ id: p.id, name: p.name, meta: "Size: M · Color: Black", price: p.price })}
+          onClick={() => navigate(`/product/${p.id}`)} />
+          )}
+        </div>
       </div>
 
       <SectionDivider label="SS25 Spotlight" />
@@ -153,13 +150,13 @@ export default function VigoHome() {
       {/* ── CHROME SERIES BANNER ── */}
       <div className="vigo-2col" style={{ margin: "0 32px", background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, display: "grid", gridTemplateColumns: "1fr 1fr", overflow: "hidden" }}>
         <div style={{ padding: "52px 48px", borderRight: `.5px solid ${G3}` }}>
-           <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ Limited Edition ✦</div>
-           <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: -2, lineHeight: .92, marginBottom: 14 }}>
-             {settings?.chromeBannerTitle?.split(" ").map((w, i, arr) => i === arr.length - 1 ? <><span style={{ color: S }}>{w}</span></> : w + " " )}
-           </div>
-           <div style={{ fontSize: 12, color: SD, lineHeight: 1.9, marginBottom: 32 }}>
-             {settings?.chromeBannerDesc || "Hand-finished chrome hardware. NYC exclusive. Only 100 units. No restocks, no exceptions."}
-           </div>
+          <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ Limited Edition ✦</div>
+          <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: -2, lineHeight: .92, marginBottom: 14 }}>
+            SS25<br /><span style={{ color: S }}>Chrome</span><br />Series
+          </div>
+          <div style={{ fontSize: 12, color: SD, lineHeight: 1.9, marginBottom: 32 }}>
+            Hand-finished chrome hardware. NYC exclusive.<br />Only 100 units. No restocks, no exceptions.
+          </div>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <button onClick={() => navigate("/shop")} style={btnP}>Shop Chrome Series</button>
             <button onClick={() => navigate("/drops")} style={btnO}>Drop Calendar →</button>
@@ -217,12 +214,12 @@ export default function VigoHome() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }} className="vigo-2col">
           <div style={{ padding: "52px 48px", borderRight: `.5px solid ${G3}` }}>
             <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ The Brand</div>
-             <div style={{ fontSize: 36, fontWeight: 900, letterSpacing: -1, lineHeight: .95, marginBottom: 20 }}>
-               Born From<br />The Five<br />Boroughs
-             </div>
-             <p style={{ fontSize: 12, color: SD, lineHeight: 1.9, marginBottom: 28 }}>
-               {settings?.brandStory || "VIGONYC is more than clothing — it's a declaration. Every thread carries the energy of the streets that built us."}
-             </p>
+            <div style={{ fontSize: 36, fontWeight: 900, letterSpacing: -1, lineHeight: .95, marginBottom: 20 }}>
+              Born From<br />The Five<br />Boroughs
+            </div>
+            <p style={{ fontSize: 12, color: SD, lineHeight: 1.9, marginBottom: 28 }}>
+              VIGONYC is more than clothing — it's a declaration. Every thread carries the energy of the streets that built us.
+            </p>
             <button onClick={() => navigate("/about")} style={btnO}>Our Story →</button>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderRight: "none" }}>
