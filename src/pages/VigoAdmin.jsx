@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminDrops from "./AdminDrops";
+import ProductsManager from "./ProductsManager";
 import { useVigoSettings } from "../hooks/useVigoSettings";
 
 const S = "#C0C0C0";
@@ -184,37 +185,7 @@ export default function VigoAdmin() {
             </div>
           )}
 
-          {activeSection === "Products" && (
-            <div>
-              <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ Catalog</div>
-              <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: -1, marginBottom: 24 }}>Product Manager</h2>
-              {settings.products.map(p => (
-                <SectionCard key={p.id} title={p.name} accent={p.visible}>
-                  <div className="admin-product-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: 12, alignItems: "end" }}>
-                    <Field label="Name" value={p.name} onChange={v => updateProduct(p.id, "name", v)} />
-                    <Field label="Category" value={p.cat} onChange={v => updateProduct(p.id, "cat", v)} />
-                    <Field label="Price ($)" value={String(p.price)} onChange={v => updateProduct(p.id, "price", v)} type="number" />
-                    <div>
-                      <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 6 }}>Visible</div>
-                      <button onClick={() => updateProduct(p.id, "visible", !p.visible)} style={{ background: p.visible ? "#0c6" : G2, color: p.visible ? "#000" : SD, border: `.5px solid ${p.visible ? "#0c6" : G3}`, padding: "10px 16px", fontSize: 9, cursor: "pointer", fontFamily: "inherit", letterSpacing: 1, whiteSpace: "nowrap" }}>
-                        {p.visible ? "ON" : "OFF"}
-                      </button>
-                    </div>
-                  </div>
-                  <div style={{ marginTop: 4, maxWidth: 200 }}>
-                    <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 6 }}>Tag</div>
-                    <select value={p.tag || ""} onChange={e => updateProduct(p.id, "tag", e.target.value || null)} style={{ background: G2, border: `.5px solid ${G3}`, color: "#fff", padding: "10px 14px", fontSize: 11, outline: "none", fontFamily: "inherit", width: "100%" }}>
-                      <option value="">None</option>
-                      <option value="new">New</option>
-                      <option value="drop">Drop</option>
-                      <option value="ltd">Limited</option>
-                      <option value="hot">Hot</option>
-                    </select>
-                  </div>
-                </SectionCard>
-              ))}
-            </div>
-          )}
+          {activeSection === "Products" && <ProductsManager settings={settings} updateProduct={updateProduct} />}
 
           {activeSection === "Brand Story" && (
             <div>
