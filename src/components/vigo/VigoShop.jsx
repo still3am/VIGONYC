@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import PullToRefresh from "./PullToRefresh";
 import { useOutletContext } from "react-router-dom";
 import ProductCard from "./ProductCard";
-import { useVigoSettings } from "../../hooks/useVigoSettings";
+import { useProducts } from "../../hooks/useSiteSettings";
 
 const S = "#C0C0C0";
 const G1 = "#0a0a0a";
@@ -15,7 +15,7 @@ const SD = "#777";
 const CATEGORIES = ["All","Tops","Bottoms","Outerwear","Headwear","Accessories"];
 const SIZES = ["XS","S","M","L","XL","XXL","One Size"];
 const COLORS = ["Black","White","Silver","Graphite"];
-const COLLECTIONS = ["All Collections","Chrome Series","Archive","Essentials"];
+const COLLECTIONS = ["All Collections", "Chrome Series", "Archive", "Essentials"];
 
 function FilterSection({ title, children }) {
   const [open, setOpen] = useState(true);
@@ -73,7 +73,7 @@ function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes,
 
 export default function VigoShop() {
   const { productImg, wishlist, toggleWishlist, addToCart } = useOutletContext();
-  const { settings } = useVigoSettings();
+  const { products } = useProducts();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initCat = searchParams.get("cat") || "All";
@@ -89,8 +89,8 @@ export default function VigoShop() {
   const toggleArr = (arr, setArr, val) => setArr(prev => prev.includes(val) ? prev.filter(x => x !== val) : [...prev, val]);
 
   const filtered = useMemo(() => {
-    let p = [...settings.products];
-    if (activeCat !== "All") p = p.filter(x => x.cat === activeCat);
+    let p = [...products];
+    if (activeCat !== "All") p = p.filter(x => x.category === activeCat);
     if (selectedSizes.length) p = p.filter(x => x.sizes.some(s => selectedSizes.includes(s)));
     if (selectedColors.length) p = p.filter(x => x.colors.some(c => selectedColors.includes(c)));
     if (activeCollection !== "All Collections") p = p.filter(x => x.collection === activeCollection);
@@ -99,14 +99,14 @@ export default function VigoShop() {
     if (sort === "price-desc") p.sort((a,b) => b.price - a.price);
     if (sort === "new") p = p.filter(x => x.tag === "new").concat(p.filter(x => x.tag !== "new"));
     return p;
-  }, [activeCat, selectedSizes, selectedColors, priceRange, activeCollection, sort]);
+  }, [activeCat, selectedSizes, selectedColors, priceRange, activeCollection, sort, products]);
 
   const [refreshKey, setRefreshKey] = useState(0);
   const handleRefresh = useCallback(() => new Promise(res => setTimeout(() => { setRefreshKey(k => k + 1); res(); }, 800)), []);
 
   const filterProps = { activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr };
 
-  const CATEGORIES = [...new Set(["All", ...settings.products.map(p => p.cat)])];
+  const CATEGORIES = [...new Set(["All", ...products.map(p => p.category)])];
 
   const activeFiltersCount = [
     activeCat !== "All" ? 1 : 0,
@@ -184,7 +184,7 @@ export default function VigoShop() {
           ) : (
             <div className="vigo-shop-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
               {filtered.map(p => (
-                <ProductCard key={p.id} product={p} img={productImg}
+                <ProductCard key={p.id} product={{...p, cat: p.category}} img={p.image_url || productImg}
                   wishlisted={wishlist.includes(p.id)}
                   onWishlist={() => toggleWishlist(p.id)}
                   onAdd={() => addToCart({ id: p.id, name: p.name, meta: "Size: M · Color: Black", price: p.price })}

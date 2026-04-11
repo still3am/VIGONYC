@@ -34,7 +34,7 @@ export default function VigoCheckout() {
     if (!validateStep1()) return;
     setLoading(true);
     try {
-      const res = await base44.functions.invoke('createOrder', {
+      await base44.functions.invoke('createOrder', {
         items: cartItems,
         subtotal,
         shipping,

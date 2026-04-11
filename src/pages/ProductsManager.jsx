@@ -7,18 +7,17 @@ const G2 = "#111";
 const G3 = "#1a1a1a";
 const SD = "#777";
 
-export default function ProductsManager({ settings, updateProduct, updateSetting }) {
+export default function ProductsManager({ settings, updateProduct }) {
+  const { products } = require('../../hooks/useSiteSettings').useProducts();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [formData, setFormData] = useState({
-    id: "",
     name: "",
-    cat: "",
+    category: "",
     price: 0,
     tag: null,
     visible: true,
-    opacity: 1,
     sizes: [],
   });
 
@@ -31,25 +30,22 @@ export default function ProductsManager({ settings, updateProduct, updateSetting
   const handleSave = () => {
     if (editingId) {
       Object.keys(formData).forEach(key => {
-        if (key !== "id") {
-          updateProduct(formData.id, key, formData[key]);
-        }
+        updateProduct(editingId, key, formData[key]);
       });
-    } else {
-      updateSetting("products", [...settings.products, { ...formData, id: Date.now().toString() }]);
     }
     resetForm();
   };
 
   const handleDelete = (id) => {
     if (window.confirm("Delete this product?")) {
-      updateSetting("products", settings.products.filter(p => p.id !== id));
+      const base44 = require('@/api/base44Client').base44;
+      base44.entities.Product.delete(id);
       setSelectedProduct(null);
     }
   };
 
   const resetForm = () => {
-    setFormData({ id: "", name: "", cat: "", price: 0, tag: null, visible: true, opacity: 1, sizes: [] });
+    setFormData({ name: "", category: "", price: 0, tag: null, visible: true, sizes: [] });
     setEditingId(null);
     setShowForm(false);
   };
@@ -69,7 +65,7 @@ export default function ProductsManager({ settings, updateProduct, updateSetting
         {/* Products Grid */}
         <div style={{ background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: 16 }}>
           <div className="products-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12 }}>
-            {settings.products.map(p => (
+            {products?.map(p => (
               <div
                 key={p.id}
                 onClick={() => setSelectedProduct(p)}
@@ -87,7 +83,7 @@ export default function ProductsManager({ settings, updateProduct, updateSetting
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
                   <div>
                     <div style={{ fontSize: 11, fontWeight: 700, color: "#fff", marginBottom: 2 }}>{p.name}</div>
-                    <div style={{ fontSize: 8, color: SD, letterSpacing: 1 }}>{p.cat}</div>
+                    <div style={{ fontSize: 8, color: SD, letterSpacing: 1 }}>{p.category}</div>
                   </div>
                   <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, background: p.visible ? "#0c6" : G3, borderRadius: "50%", color: p.visible ? "#000" : SD, fontSize: 10, fontWeight: 900 }}>
                     {p.visible ? "✓" : "—"}
@@ -116,7 +112,7 @@ export default function ProductsManager({ settings, updateProduct, updateSetting
                   </button>
                 </div>
                 <h3 style={{ fontSize: 16, fontWeight: 900, letterSpacing: -1, marginBottom: 8, color: "#fff" }}>{selectedProduct.name}</h3>
-                <p style={{ fontSize: 10, color: SD, lineHeight: 1.6 }}>{selectedProduct.cat}</p>
+                <p style={{ fontSize: 10, color: SD, lineHeight: 1.6 }}>{selectedProduct.category}</p>
               </div>
               <div style={{ padding: "14px 20px", borderBottom: `.5px solid ${G3}`, display: "grid", gap: 8 }}>
                 <div>
@@ -165,7 +161,7 @@ export default function ProductsManager({ settings, updateProduct, updateSetting
             </div>
             <div>
               <label style={{ display: "block", fontSize: 10, color: SD, marginBottom: 6, letterSpacing: 1, textTransform: "uppercase" }}>Category</label>
-              <input value={formData.cat} onChange={e => setFormData({ ...formData, cat: e.target.value })} style={{ width: "100%", background: G1, border: `.5px solid ${G3}`, color: "#fff", padding: "10px 12px", fontSize: 12, outline: "none", fontFamily: "inherit" }} />
+              <input value={formData.category} onChange={e => setFormData({ ...formData, category: e.target.value })} style={{ width: "100%", background: G1, border: `.5px solid ${G3}`, color: "#fff", padding: "10px 12px", fontSize: 12, outline: "none", fontFamily: "inherit" }} />
             </div>
             <div>
               <label style={{ display: "block", fontSize: 10, color: SD, marginBottom: 6, letterSpacing: 1, textTransform: "uppercase" }}>Price ($)</label>
@@ -185,8 +181,8 @@ export default function ProductsManager({ settings, updateProduct, updateSetting
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
             <div>
-              <label style={{ display: "block", fontSize: 10, color: SD, marginBottom: 6, letterSpacing: 1, textTransform: "uppercase" }}>Opacity ({Math.round(formData.opacity * 100)}%)</label>
-              <input type="range" min="0" max="1" step="0.1" value={formData.opacity} onChange={e => setFormData({ ...formData, opacity: parseFloat(e.target.value) })} style={{ width: "100%" }} />
+              <label style={{ display: "block", fontSize: 10, color: SD, marginBottom: 6, letterSpacing: 1, textTransform: "uppercase" }}>Description</label>
+              <input value={formData.description || ''} onChange={e => setFormData({ ...formData, description: e.target.value })} style={{ width: "100%", background: G1, border: `.5px solid ${G3}`, color: "#fff", padding: "10px 12px", fontSize: 12, outline: "none", fontFamily: "inherit" }} />
             </div>
             <div>
               <label style={{ display: "block", fontSize: 10, color: SD, marginBottom: 6, letterSpacing: 1, textTransform: "uppercase" }}>Visibility</label>

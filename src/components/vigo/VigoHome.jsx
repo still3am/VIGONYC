@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { useProducts } from "../../hooks/useSiteSettings";
 import ProductCard from "./ProductCard";
 import SectionDivider from "./SectionDivider";
 import SectionHeader from "./SectionHeader";
@@ -11,12 +11,6 @@ const G1 = "#0a0a0a";
 const G3 = "#1a1a1a";
 
 const NEXT_DROP = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000);
-
-const PRODUCTS = [
-{ id: 1, name: "Chrome V Tee", cat: "Tops / Essential", price: 68, tag: "new", opacity: 1 },
-{ id: 2, name: "NYC Cargo Pant", cat: "Bottoms / Heavy", price: 145, tag: "drop", opacity: 0.4 },
-{ id: 3, name: "Silver Label Hoodie", cat: "Tops / Outerwear", price: 128, tag: "new", tag2: "hot", opacity: 0.6 },
-{ id: 4, name: "5-Panel Cap", cat: "Headwear / Unisex", price: 52, tag: "ltd", opacity: 0.45 }];
 
 
 const CATEGORIES = [
@@ -55,11 +49,12 @@ function MiniCountdown({ target }) {
 
 export default function VigoHome() {
   const { productImg, wishlist, toggleWishlist, addToCart, settings } = useOutletContext();
+  const { products } = useProducts();
   const navigate = useNavigate();
   const [heroLoaded, setHeroLoaded] = useState(false);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
-  const displayProducts = settings?.products?.slice(0, 4) || PRODUCTS;
+  const displayProducts = products.slice(0, 4);
 
   useEffect(() => {const t = setTimeout(() => setHeroLoaded(true), 80);return () => clearTimeout(t);}, []);
 
@@ -138,7 +133,7 @@ export default function VigoHome() {
         <SectionHeader title="Featured Drops" sub="SS25 Season" cta="View All →" onCta={() => navigate("/shop")} />
         <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
            {displayProducts.map((p) =>
-           <ProductCard key={p.id} product={p} img={productImg}
+           <ProductCard key={p.id} product={{...p, cat: p.category, price: p.price}} img={p.image_url || productImg}
            wishlisted={wishlist.includes(p.id)}
            onWishlist={() => toggleWishlist(p.id)}
            onAdd={() => addToCart({ id: p.id, name: p.name, meta: "Size: M · Color: Black", price: p.price })}

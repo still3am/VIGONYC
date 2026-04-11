@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminDrops from "./AdminDrops";
 import ProductsManager from "./ProductsManager";
-import { useVigoSettings } from "../hooks/useVigoSettings";
+import { useSiteSettings } from "../hooks/useSiteSettings";
+import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
 const G1 = "#0a0a0a";
 const G2 = "#111";
 const G3 = "#1a1a1a";
 const SD = "#777";
-const ADMIN_PASSWORD = "VIGONYC2024";
+
 
 const SECTIONS = ["Hero", "Banner", "Products", "Drops", "Brand Story", "Contact & Social", "Theme"];
 
@@ -36,17 +37,60 @@ function SectionCard({ title, children, accent }) {
 
 export default function VigoAdmin() {
   const navigate = useNavigate();
-  const [authenticated, setAuthenticated] = useState(false);
-  const [pw, setPw] = useState("");
-  const [pwError, setPwError] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [activeSection, setActiveSection] = useState("Hero");
   const [saved, setSaved] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { settings, updateSetting, updateProduct, resetAll } = useVigoSettings();
+  const { settings } = useSiteSettings();
 
-  const handleLogin = () => {
-    if (pw === ADMIN_PASSWORD) { setAuthenticated(true); setPwError(false); }
-    else { setPwError(true); setPw(""); }
+  const updateSetting = async (key, value) => {
+    try {
+      const existing = await base44.entities.Settings.filter({ key });
+      if (existing.length > 0) {
+        await base44.entities.Settings.update(existing[0].id, { value: String(value) });
+      }
+    } catch (error) {
+      console.error('Error updating setting:', error);
+    }
+  };
+
+  const updateProduct = async (id, field, value) => {
+    try {
+      await base44.entities.Product.update(id, { [field]: field === 'price' ? Number(value) : value });
+    } catch (error) {
+      console.error('Error updating product:', error);
+    }
+  };
+
+  const resetAll = async () => {
+    try {
+      alert('Reset functionality requires manual database cleanup');
+    } catch (error) {
+      console.error('Error resetting:', error);
+    }
+  };
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const user = await base44.auth.me();
+        if (user?.role === 'admin') {
+          setIsAdmin(true);
+        } else {
+          navigate('/');
+        }
+      } catch {
+        navigate('/');
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkAuth();
+  }, [navigate]);
+
+  const handleProductUpdate = (id, field, value) => {
+    updateProduct(id, field, value);
   };
 
   const handleSave = () => {
@@ -59,7 +103,11 @@ export default function VigoAdmin() {
     setMobileMenuOpen(false);
   };
 
-  if (!authenticated) {
+  if (loading) {
+    return <div style={{ background: '#000', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>Loading...</div>;
+  }
+
+  if (!isAdmin) {
     return (
       <div style={{ background: "#000", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Helvetica Neue',Arial,sans-serif", padding: 24 }}>
         <div style={{ width: "100%", maxWidth: 400 }}>
@@ -68,21 +116,9 @@ export default function VigoAdmin() {
             <div style={{ fontSize: 8, letterSpacing: 4, color: SD, textTransform: "uppercase", marginTop: 4 }}>Admin Dashboard</div>
           </div>
           <div style={{ background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "40px 28px" }}>
-            <div style={{ fontSize: 11, letterSpacing: 3, color: SD, textTransform: "uppercase", marginBottom: 28, textAlign: "center" }}>Enter Admin Password</div>
-            <input
-              type="password"
-              value={pw}
-              onChange={e => { setPw(e.target.value); setPwError(false); }}
-              onKeyDown={e => e.key === "Enter" && handleLogin()}
-              placeholder="••••••••••"
-              autoFocus
-              style={{ width: "100%", background: G2, border: `.5px solid ${pwError ? "#e03" : G3}`, color: "#fff", padding: "14px 18px", fontSize: 14, outline: "none", boxSizing: "border-box", fontFamily: "inherit", marginBottom: 8, letterSpacing: 4 }}
-            />
-            {pwError && <div style={{ fontSize: 10, color: "#e03", marginBottom: 16 }}>Incorrect password. Try again.</div>}
-            <button onClick={handleLogin} style={{ width: "100%", background: S, color: "#000", border: "none", padding: "14px", fontSize: 10, letterSpacing: 4, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", marginTop: 8 }}>
-              Enter Admin
-            </button>
-            <button onClick={() => navigate("/")} style={{ width: "100%", background: "none", border: "none", color: SD, padding: "12px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", marginTop: 8 }}>
+            <div style={{ fontSize: 11, letterSpacing: 3, color: SD, textTransform: "uppercase", marginBottom: 28, textAlign: "center" }}>Admin Access Only</div>
+            <div style={{ fontSize: 13, color: "#ccc", marginBottom: 24, textAlign: "center", lineHeight: 1.6 }}>You must be logged in as an admin user to access this dashboard.</div>
+            <button onClick={() => navigate("/")} style={{ width: "100%", background: "none", border: `.5px solid ${G3}`, color: SD, padding: "12px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>
               ← Back to Site
             </button>
           </div>
@@ -109,7 +145,7 @@ export default function VigoAdmin() {
           <button onClick={handleSave} style={{ background: saved ? "#0c6" : S, color: "#000", border: "none", padding: "7px 14px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", transition: "background .3s" }}>
             {saved ? "✓ Saved!" : "Save"}
           </button>
-          <button onClick={() => setAuthenticated(false)} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "7px 10px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>✕</button>
+          <button onClick={() => { base44.auth.logout(); }} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "7px 10px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>✕</button>
         </div>
       </div>
 
@@ -122,7 +158,7 @@ export default function VigoAdmin() {
               <button key={s} onClick={() => selectSection(s)} style={{ display: "block", width: "100%", background: activeSection === s ? "rgba(192,192,192,.07)" : "none", border: "none", borderLeft: activeSection === s ? `2px solid ${S}` : "2px solid transparent", color: activeSection === s ? "#fff" : SD, padding: "16px 20px", fontSize: 14, textAlign: "left", cursor: "pointer", fontFamily: "inherit", marginBottom: 4 }}>{s}</button>
             ))}
             <div style={{ borderTop: `.5px solid ${G3}`, marginTop: 20, paddingTop: 16 }}>
-              <button onClick={() => { if (confirm("Reset all settings to defaults?")) { resetAll(); setMobileMenuOpen(false); } }} style={{ background: "none", border: `.5px solid #333`, color: "#444", padding: "10px 16px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", width: "100%" }}>Reset to Defaults</button>
+              <button onClick={() => { if (confirm("Reset all settings to defaults?")) { resetAll(); setMobileMenuOpen(false); } }} style={{ background: "none", border: `.5px solid #333`, color: "#999", padding: "10px 16px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", width: "100%" }}>Reset to Defaults</button>
             </div>
           </div>
         </div>
@@ -136,7 +172,7 @@ export default function VigoAdmin() {
             <button key={s} onClick={() => setActiveSection(s)} style={{ display: "block", width: "100%", background: activeSection === s ? "rgba(192,192,192,.07)" : "none", border: "none", borderLeft: activeSection === s ? `2px solid ${S}` : "2px solid transparent", color: activeSection === s ? "#fff" : SD, padding: "12px 20px", fontSize: 11, textAlign: "left", cursor: "pointer", fontFamily: "inherit", letterSpacing: 1 }}>{s}</button>
           ))}
           <div style={{ borderTop: `.5px solid ${G3}`, margin: "20px 0", padding: "16px 20px 0" }}>
-            <button onClick={() => { if (confirm("Reset all settings to defaults?")) resetAll(); }} style={{ background: "none", border: `.5px solid #333`, color: "#444", padding: "8px 14px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", width: "100%" }}>Reset to Defaults</button>
+           <button onClick={() => { if (confirm("Reset all settings to defaults?")) resetAll(); }} style={{ background: "none", border: `.5px solid #333`, color: "#999", padding: "8px 14px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", width: "100%" }}>Reset to Defaults</button>
           </div>
         </div>
 
