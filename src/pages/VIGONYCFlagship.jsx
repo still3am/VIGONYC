@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useVigoSettings } from "../hooks/useVigoSettings";
 import { motion, AnimatePresence } from "framer-motion";
 import VigoNav from "../components/vigo/VigoNav";
 import VigoCartDrawer from "../components/vigo/VigoCartDrawer";
@@ -23,6 +24,7 @@ export default function VIGONYCFlagship() {
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { settings } = useVigoSettings();
 
   // Only scroll to top on non-tab navigations (tab switching preserves scroll)
   const TAB_ROOTS = ["/", "/shop", "/drops", "/wishlist", "/account"];
@@ -48,7 +50,7 @@ export default function VIGONYCFlagship() {
 
   const subtotal = cartItems.reduce((s, i) => s + i.price * i.qty, 0);
 
-  const ctx = { cartItems, addToCart, updateQty, removeFromCart, subtotal, wishlist, toggleWishlist, setSizeGuideOpen, logo: LOGO, productImg: PRODUCT_IMG };
+  const ctx = { cartItems, addToCart, updateQty, removeFromCart, subtotal, wishlist, toggleWishlist, setSizeGuideOpen, logo: LOGO, productImg: PRODUCT_IMG, settings };
 
   return (
     <div style={{ background: "#000", minHeight: "100vh", fontFamily: "'Helvetica Neue',Arial,sans-serif", color: "#fff", overflowX: "hidden" }}>
