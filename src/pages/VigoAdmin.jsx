@@ -21,11 +21,11 @@ function Field({ label, value, onChange, type = "text", multiline }) {
   return (
     <div style={{ marginBottom: 16 }}>
       <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 6 }}>{label}</div>
-      {multiline
-        ? <textarea value={value} onChange={e => onChange(e.target.value)} rows={3} style={style} />
-        : <input type={type} value={value} onChange={e => onChange(e.target.value)} style={style} />}
-    </div>
-  );
+      {multiline ?
+      <textarea value={value} onChange={(e) => onChange(e.target.value)} rows={3} style={style} /> :
+      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} style={style} />}
+    </div>);
+
 }
 
 function SectionCard({ title, children, accent }) {
@@ -33,8 +33,8 @@ function SectionCard({ title, children, accent }) {
     <div style={{ background: G1, border: `.5px solid ${G3}`, borderTop: accent ? `2px solid ${S}` : `.5px solid ${G3}`, marginBottom: 16 }}>
       <div style={{ padding: "14px 20px", borderBottom: `.5px solid ${G3}`, fontSize: 10, letterSpacing: 3, textTransform: "uppercase", color: "#fff", fontWeight: 700 }}>{title}</div>
       <div style={{ padding: "20px" }}>{children}</div>
-    </div>
-  );
+    </div>);
+
 }
 
 export default function VigoAdmin() {
@@ -125,8 +125,8 @@ export default function VigoAdmin() {
             </button>
           </div>
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   return (
@@ -139,7 +139,7 @@ export default function VigoAdmin() {
           <div style={{ fontSize: 14, fontWeight: 900, letterSpacing: 3, color: "#fff" }}>VIGO<span style={{ color: S }}>NYC</span></div>
           <div className="admin-editor-label" style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{ width: 1, height: 20, background: G3 }} />
-            <div style={{ fontSize: 9, letterSpacing: 3, color: SD, textTransform: "uppercase" }}>Website Editor</div>
+            
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
@@ -147,34 +147,34 @@ export default function VigoAdmin() {
           <button onClick={handleSave} style={{ background: saved ? "#0c6" : S, color: "#000", border: "none", padding: "7px 14px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", transition: "background .3s" }}>
             {saved ? "✓ Saved!" : "Save"}
           </button>
-          <button onClick={() => { base44.auth.logout(); }} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "7px 10px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>✕</button>
+          <button onClick={() => {base44.auth.logout();}} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "7px 10px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>✕</button>
         </div>
       </div>
 
       {/* Mobile section menu overlay */}
-      {mobileMenuOpen && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.95)", zIndex: 200, display: "flex", flexDirection: "column", paddingTop: 56 }}>
+      {mobileMenuOpen &&
+      <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.95)", zIndex: 200, display: "flex", flexDirection: "column", paddingTop: 56 }}>
           <div style={{ padding: "24px 20px" }}>
             <div style={{ fontSize: 8, letterSpacing: 3, color: SD, textTransform: "uppercase", marginBottom: 16 }}>Sections</div>
-            {SECTIONS.map(s => (
-              <button key={s} onClick={() => selectSection(s)} style={{ display: "block", width: "100%", background: activeSection === s ? "rgba(192,192,192,.07)" : "none", border: "none", borderLeft: activeSection === s ? `2px solid ${S}` : "2px solid transparent", color: activeSection === s ? "#fff" : SD, padding: "16px 20px", fontSize: 14, textAlign: "left", cursor: "pointer", fontFamily: "inherit", marginBottom: 4 }}>{s}</button>
-            ))}
+            {SECTIONS.map((s) =>
+          <button key={s} onClick={() => selectSection(s)} style={{ display: "block", width: "100%", background: activeSection === s ? "rgba(192,192,192,.07)" : "none", border: "none", borderLeft: activeSection === s ? `2px solid ${S}` : "2px solid transparent", color: activeSection === s ? "#fff" : SD, padding: "16px 20px", fontSize: 14, textAlign: "left", cursor: "pointer", fontFamily: "inherit", marginBottom: 4 }}>{s}</button>
+          )}
             <div style={{ borderTop: `.5px solid ${G3}`, marginTop: 20, paddingTop: 16 }}>
-              <button onClick={() => { if (confirm("Reset all settings to defaults?")) { resetAll(); setMobileMenuOpen(false); } }} style={{ background: "none", border: `.5px solid #333`, color: "#999", padding: "10px 16px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", width: "100%" }}>Reset to Defaults</button>
+              <button onClick={() => {if (confirm("Reset all settings to defaults?")) {resetAll();setMobileMenuOpen(false);}}} style={{ background: "none", border: `.5px solid #333`, color: "#999", padding: "10px 16px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", width: "100%" }}>Reset to Defaults</button>
             </div>
           </div>
         </div>
-      )}
+      }
 
       <div style={{ display: "flex", flex: 1 }}>
         {/* Desktop Sidebar */}
         <div className="admin-sidebar" style={{ width: 220, background: G1, borderRight: `.5px solid ${G3}`, padding: "24px 0", flexShrink: 0 }}>
           <div style={{ fontSize: 8, letterSpacing: 3, color: SD, textTransform: "uppercase", padding: "0 20px 16px" }}>Sections</div>
-          {SECTIONS.map(s => (
-            <button key={s} onClick={() => setActiveSection(s)} style={{ display: "block", width: "100%", background: activeSection === s ? "rgba(192,192,192,.07)" : "none", border: "none", borderLeft: activeSection === s ? `2px solid ${S}` : "2px solid transparent", color: activeSection === s ? "#fff" : SD, padding: "12px 20px", fontSize: 11, textAlign: "left", cursor: "pointer", fontFamily: "inherit", letterSpacing: 1 }}>{s}</button>
-          ))}
+          {SECTIONS.map((s) =>
+          <button key={s} onClick={() => setActiveSection(s)} style={{ display: "block", width: "100%", background: activeSection === s ? "rgba(192,192,192,.07)" : "none", border: "none", borderLeft: activeSection === s ? `2px solid ${S}` : "2px solid transparent", color: activeSection === s ? "#fff" : SD, padding: "12px 20px", fontSize: 11, textAlign: "left", cursor: "pointer", fontFamily: "inherit", letterSpacing: 1 }}>{s}</button>
+          )}
           <div style={{ borderTop: `.5px solid ${G3}`, margin: "20px 0", padding: "16px 20px 0" }}>
-           <button onClick={() => { if (confirm("Reset all settings to defaults?")) resetAll(); }} style={{ background: "none", border: `.5px solid #333`, color: "#999", padding: "8px 14px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", width: "100%" }}>Reset to Defaults</button>
+           <button onClick={() => {if (confirm("Reset all settings to defaults?")) resetAll();}} style={{ background: "none", border: `.5px solid #333`, color: "#999", padding: "8px 14px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", width: "100%" }}>Reset to Defaults</button>
           </div>
         </div>
 
@@ -191,22 +191,22 @@ export default function VigoAdmin() {
 
 
 
-          {activeSection === "Contact & Social" && (
-            <div>
+          {activeSection === "Contact & Social" &&
+          <div>
               <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ Contact</div>
               <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: -1, marginBottom: 24 }}>Contact & Social</h2>
               <SectionCard title="Contact Info" accent>
-                <Field label="General Email" value={settings.emailContact} onChange={v => updateSetting("emailContact", v)} type="email" />
-                <Field label="Press Email" value={settings.pressEmail} onChange={v => updateSetting("pressEmail", v)} type="email" />
-                <Field label="Phone" value={settings.phoneContact} onChange={v => updateSetting("phoneContact", v)} type="tel" />
+                <Field label="General Email" value={settings.emailContact} onChange={(v) => updateSetting("emailContact", v)} type="email" />
+                <Field label="Press Email" value={settings.pressEmail} onChange={(v) => updateSetting("pressEmail", v)} type="email" />
+                <Field label="Phone" value={settings.phoneContact} onChange={(v) => updateSetting("phoneContact", v)} type="tel" />
               </SectionCard>
               <SectionCard title="Social Media Handles">
-                <Field label="Instagram Handle" value={settings.instagramHandle} onChange={v => updateSetting("instagramHandle", v)} />
-                <Field label="Twitter/X Handle" value={settings.twitterHandle} onChange={v => updateSetting("twitterHandle", v)} />
-                <Field label="TikTok Handle" value={settings.tiktokHandle} onChange={v => updateSetting("tiktokHandle", v)} />
+                <Field label="Instagram Handle" value={settings.instagramHandle} onChange={(v) => updateSetting("instagramHandle", v)} />
+                <Field label="Twitter/X Handle" value={settings.twitterHandle} onChange={(v) => updateSetting("twitterHandle", v)} />
+                <Field label="TikTok Handle" value={settings.tiktokHandle} onChange={(v) => updateSetting("tiktokHandle", v)} />
               </SectionCard>
             </div>
-          )}
+          }
 
           {activeSection === "Drops" && <AdminDrops />}
 
@@ -235,6 +235,6 @@ export default function VigoAdmin() {
           .admin-product-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
-    </div>
-  );
+    </div>);
+
 }
