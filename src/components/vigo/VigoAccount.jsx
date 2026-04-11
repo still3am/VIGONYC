@@ -64,7 +64,7 @@ export default function VigoAccount() {
     queryFn: async () => {
       const u = await base44.auth.me();
       if (!u) throw new Error('Not authenticated');
-      setProfile({ firstName: u.full_name?.split(' ')[0] || '', lastName: u.full_name?.split(' ')[1] || '', email: u.email, phone: u.phone || '', birthday: u.birthday || '' });
+      setProfile({ firstName: u.full_name?.split(' ')[0] || '', lastName: u.full_name?.split(' ')[1] || '', email: u.email, phone: u.phone || '', birthday: u.birthday || '', photoUrl: u.photoUrl || null });
       return u;
     },
   });
@@ -91,8 +91,11 @@ export default function VigoAccount() {
     onSuccess: () => { navigate("/"); },
   });
 
-  const handleSave = () => {
-    if (profile) saveMutation.mutate(profile);
+  const handleSave = async () => {
+    if (profile) {
+      await base44.auth.updateMe({ photoUrl: profile.photoUrl || null });
+      saveMutation.mutate(profile);
+    }
   };
   const saved = saveMutation.isSuccess;
 
