@@ -18,23 +18,23 @@ export default function VigoFooter({ logo }) {
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "60px 32px 36px" }}>
         <div className="vigo-footer-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 48, marginBottom: 52 }}>
           {/* Brand */}
-          <div>
-            <Link to="/" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", marginBottom: 18 }}>
-              
-              <div style={{ lineHeight: 1 }}>
-                
-                
-              </div>
-            </Link>
-            
+          
 
-            
-            <div style={{ display: "flex", gap: 10 }}>
-              {["IG", "TW", "TK"].map((s) => null
 
-              )}
-            </div>
-          </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+          
           {/* Link columns */}
           {Object.entries(cols).map(([title, links]) =>
           <div key={title}>
