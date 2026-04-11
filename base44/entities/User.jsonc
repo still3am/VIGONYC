@@ -3,28 +3,31 @@
   "type": "object",
   "properties": {
     "phone": {
-      "type": "string",
-      "description": "User phone number"
+      "type": "string"
     },
     "birthday": {
-      "type": "string",
-      "description": "User birthday (YYYY-MM-DD)"
+      "type": "string"
     },
     "notificationsDrops": {
-      "type": "boolean",
-      "description": "Drop alerts notification preference"
+      "type": "boolean"
     },
     "notificationsOrders": {
-      "type": "boolean",
-      "description": "Order updates notification preference"
+      "type": "boolean"
     },
     "notificationsPromotions": {
-      "type": "boolean",
-      "description": "Promotions notification preference"
+      "type": "boolean"
     },
     "notificationsNewsletter": {
-      "type": "boolean",
-      "description": "Newsletter notification preference"
+      "type": "boolean"
+    },
+    "preferredTheme": {
+      "type": "string",
+      "enum": [
+        "light",
+        "dark",
+        "system"
+      ],
+      "description": "User's preferred theme"
     }
   }
 }

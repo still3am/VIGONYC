@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTheme } from "next-themes";
 import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
@@ -312,6 +313,13 @@ export default function VigoAccount() {
         {tab === "settings" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 24, maxWidth: 520 }}>
             <div>
+              <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 16 }}>Appearance</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <ThemeSelector user={user} />
+              </div>
+            </div>
+
+            <div>
               <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 16 }}>Change Password</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 <Field label="Current Password" type="password" placeholder="••••••••" id="currentPass" />
@@ -372,3 +380,50 @@ export default function VigoAccount() {
 
 const btnPrimary = { background: S, color: "#000", border: "none", padding: "13px 28px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" };
 const btnGhost = { background: "none", border: `.5px solid ${G3}`, color: SD, padding: "11px 20px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" };
+
+function ThemeSelector({ user }) {
+  const { theme, setTheme } = useTheme();
+  const [selectedTheme, setSelectedTheme] = useState(theme);
+
+  useEffect(() => {
+    if (user?.preferredTheme) {
+      setSelectedTheme(user.preferredTheme);
+      setTheme(user.preferredTheme);
+    }
+  }, [user, setTheme]);
+
+  const handleThemeChange = async (newTheme) => {
+    setSelectedTheme(newTheme);
+    setTheme(newTheme);
+    await base44.auth.updateMe({ preferredTheme: newTheme });
+  };
+
+  return (
+    <div>
+      <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Theme</div>
+      <div style={{ display: "flex", gap: 8 }}>
+        {["light", "dark", "system"].map(t => (
+          <button
+            key={t}
+            onClick={() => handleThemeChange(t)}
+            style={{
+              flex: 1,
+              padding: "12px 16px",
+              fontSize: 10,
+              fontWeight: selectedTheme === t ? 700 : 400,
+              textTransform: "capitalize",
+              border: `.5px solid ${selectedTheme === t ? S : G3}`,
+              background: selectedTheme === t ? S : "transparent",
+              color: selectedTheme === t ? "#000" : "#fff",
+              cursor: "pointer",
+              fontFamily: "inherit",
+              transition: "all .2s",
+            }}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
