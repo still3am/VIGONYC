@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -56,6 +56,7 @@ function Toggle({ label, sub, checked, onChange }) {
 }
 
 export default function VigoAccount() {
+  const fileInputRef = useRef(null);
   const [tab, setTab] = useState("profile");
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [notifications, setNotifications] = useState({ drops: true, orders: true, promotions: false, newsletter: true });
@@ -115,7 +116,19 @@ export default function VigoAccount() {
 
       {/* Tabs */}
       <div style={{ borderBottom: `.5px solid ${G3}`, background: G1, position: "sticky", top: 60, zIndex: 10, overflowX: "auto" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 clamp(16px,4vw,24px)", display: "flex", gap: 0 }}>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/png,image/jpeg,image/gif,image/webp"
+          style={{ display: "none" }}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              console.log('File selected:', file.name);
+            }
+          }}
+        />
+        <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 clamp(16px,4vw,24px)", display: "flex", gap: 0 }} onClick={() => fileInputRef.current?.click()}>
           {TABS.map(t => (
             <button
               key={t.id}
