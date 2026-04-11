@@ -91,7 +91,7 @@ export default function VigoHome() {
           <p style={{ fontSize: 13, color: SD, lineHeight: 1.9, maxWidth: 360, marginBottom: 36 }} className="text-center">
             Born in New York City. Built from concrete and culture. Worn by the ones who make the city move.
           </p>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
             <button onClick={() => navigate("/shop")} style={btnP}>Shop the Drop</button>
             <button onClick={() => navigate("/lookbook")} style={btnO}>View Lookbook</button>
           </div>
