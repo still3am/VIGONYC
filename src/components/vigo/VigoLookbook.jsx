@@ -4,6 +4,9 @@ import { base44 } from "@/api/base44Client";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
 const S = "#C0C0C0";
+const G1 = "#0a0a0a";
+const G3 = "#1a1a1a";
+const SD = "#777";
 
 export default function VigoLookbook() {
   const { productImg } = useOutletContext();
