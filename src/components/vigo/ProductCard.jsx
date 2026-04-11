@@ -9,7 +9,7 @@ const TAG_STYLES = {
   hot: { background: "#e03", color: "#fff" },
   ltd: { background: "transparent", border: ".5px solid #C0C0C0", color: "#C0C0C0" },
 };
-const TAG_LABELS = { new: "New", drop: "Drop 01", hot: "Hot", ltd: "Ltd" };
+const TAG_LABELS = { new: "New", drop: "", hot: "Hot", ltd: "Ltd" };
 
 export default function ProductCard({ product, img, onClick, onAdd, onWishlist, wishlisted }) {
   const [hovered, setHovered] = useState(false);
