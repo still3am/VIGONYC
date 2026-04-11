@@ -68,8 +68,6 @@ const AuthenticatedApp = () => {
         <Route path="press" element={<VigoPress />} />
       </Route>
       <Route path="/admin" element={<VigoAdmin />} />
-      <Route path="/admin/orders" element={<AdminOrders />} />
-      <Route path="/admin/contacts" element={<AdminContacts />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
