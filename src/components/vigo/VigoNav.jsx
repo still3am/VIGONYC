@@ -66,51 +66,45 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
       {/* Main nav */}
       <nav className="vigo-nav-top" style={{ position: "sticky", top: 0, zIndex: 100, background: scrolled ? "rgba(0,0,0,.97)" : "#000", borderBottom: `.5px solid ${G3}`, transition: "background .3s", backdropFilter: scrolled ? "blur(12px)" : "none" }}>
         <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
-
-          {/* Left: Cart */}
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <button style={{ ...iconBtn, position: "relative" }} onClick={onCartOpen} title="Cart">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
-              {cartCount > 0 && <span style={{ position: "absolute", top: -3, right: -3, background: S, color: "#000", fontSize: 8, fontWeight: 900, borderRadius: "50%", width: 15, height: 15, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
-            </button>
-          </div>
-
-          {/* Center: Logo */}
-          <Link to="/" className="vigo-nav-logo" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
+          {/* Logo */}
+          <Link to="/" className="vigo-nav-logo" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none" }}>
             <img src={logo} alt="VIGONYC" className="vigo-nav-logo-img" style={{ width: 40, height: 40, objectFit: "contain" }} />
             <div style={{ lineHeight: 1 }}>
               <div className="vigo-nav-wordmark" style={{ fontSize: 17, fontWeight: 900, letterSpacing: 4, color: "#fff", textTransform: "uppercase" }}>VIGO<span style={{ color: S }}>NYC</span></div>
               <style>{`.vigo-nav-wordmark { display: block; } @media(max-width:768px){ .vigo-nav-wordmark { display: none !important; } }`}</style>
+              
               <style>{`.vigo-nav-subtitle { display: block; } @media(max-width:768px){ .vigo-nav-subtitle { display: none !important; } }`}</style>
             </div>
           </Link>
 
-          {/* Right: Desktop links + icons */}
-          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-            {/* Desktop links */}
-            <div className="vigo-desktop-nav" style={{ display: "flex", gap: 28, alignItems: "center" }}>
-              {links.map((l) =>
-              <NavLink key={l.to} to={l.to} end={l.to === "/"} style={({ isActive }) => ({
-                textDecoration: "none", fontSize: 9, letterSpacing: 3, textTransform: "uppercase",
-                color: isActive ? "#fff" : SD,
-                borderBottom: isActive ? `1px solid ${S}` : "1px solid transparent",
-                paddingBottom: 3, transition: "color .2s"
-              })}>{l.label}</NavLink>
-              )}
-            </div>
+          {/* Desktop links */}
+          <div className="vigo-desktop-nav" style={{ display: "flex", gap: 28, alignItems: "center" }}>
+            {links.map((l) =>
+            <NavLink key={l.to} to={l.to} end={l.to === "/"} style={({ isActive }) => ({
+              textDecoration: "none", fontSize: 9, letterSpacing: 3, textTransform: "uppercase",
+              color: isActive ? "#fff" : SD,
+              borderBottom: isActive ? `1px solid ${S}` : "1px solid transparent",
+              paddingBottom: 3, transition: "color .2s"
+            })}>{l.label}</NavLink>
+            )}
+          </div>
 
-            {/* Icons */}
-            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-              <button onClick={() => setSearchOpen(true)} className="vigo-icon-desktop" style={iconBtn} title="Search">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>
-              </button>
-              <Link to="/wishlist" className="vigo-icon-desktop" style={{ ...iconBtn, textDecoration: "none" }}>
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
-              </Link>
-              <Link to="/account" className="vigo-icon-desktop" style={{ ...iconBtn, textDecoration: "none" }}>
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-              </Link>
-            </div>
+          {/* Icons */}
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <button onClick={() => setSearchOpen(true)} className="vigo-icon-desktop" style={iconBtn} title="Search">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>
+            </button>
+            <Link to="/wishlist" className="vigo-icon-desktop" style={{ ...iconBtn, textDecoration: "none" }}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
+            </Link>
+            <Link to="/account" className="vigo-icon-desktop" style={{ ...iconBtn, textDecoration: "none" }}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+            </Link>
+            <button style={{ ...iconBtn, position: "relative" }} onClick={onCartOpen} title="Cart">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
+              {cartCount > 0 && <span style={{ position: "absolute", top: -3, right: -3, background: S, color: "#000", fontSize: 8, fontWeight: 900, borderRadius: "50%", width: 15, height: 15, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
+            </button>
+
           </div>
         </div>
 
