@@ -1,0 +1,37 @@
+{
+  "name": "LookbookItem",
+  "type": "object",
+  "properties": {
+    "caption": {
+      "type": "string",
+      "description": "Title for the lookbook shot"
+    },
+    "sub": {
+      "type": "string",
+      "description": "Subtitle or additional details"
+    },
+    "price": {
+      "type": "number",
+      "description": "Price of the featured product"
+    },
+    "tall": {
+      "type": "boolean",
+      "description": "Taller layout variant"
+    },
+    "opacity": {
+      "type": "number",
+      "description": "Image opacity (0-1)",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "productId": {
+      "type": "string",
+      "description": "Associated product ID"
+    }
+  },
+  "required": [
+    "caption",
+    "price",
+    "productId"
+  ]
+}
