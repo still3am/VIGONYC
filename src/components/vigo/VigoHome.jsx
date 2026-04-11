@@ -82,7 +82,7 @@ export default function VigoHome() {
             <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 2s infinite" }} />
             <span style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase" }}>SS25 Collection — Now Live</span>
           </div>
-          <h1 style={{ fontSize: "clamp(56px,7vw,104px)", fontWeight: 900, letterSpacing: -4, lineHeight: .86, marginBottom: 28 }}>
+          <h1 style={{ fontSize: "clamp(56px,7vw,104px)", fontWeight: 900, letterSpacing: -4, lineHeight: .86, marginBottom: 28 }} className="text-center">
             STREETS<br />OF{" "}
             <span style={{ position: "relative", display: "inline-block" }}>
               <em style={{ color: "transparent", WebkitTextStroke: `1px ${S}`, fontStyle: "italic" }}>NYC</em>
@@ -91,7 +91,7 @@ export default function VigoHome() {
           <p style={{ fontSize: 13, color: SD, lineHeight: 1.9, maxWidth: 360, marginBottom: 36 }} className="text-center">
             Born in New York City. Built from concrete and culture. Worn by the ones who make the city move.
           </p>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <button onClick={() => navigate("/shop")} style={btnP}>Shop the Drop</button>
             <button onClick={() => navigate("/lookbook")} style={btnO}>View Lookbook</button>
           </div>
@@ -99,7 +99,7 @@ export default function VigoHome() {
           {/* KPIs */}
           <div className="vigo-kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 0, marginTop: 56, borderTop: `.5px solid ${G3}` }}>
             {[["500+", "Pieces Dropped"], ["12K+", "NYC Community"], ["100%", "Street Ready"], ["4.9★", "Avg. Rating"]].map(([n, l], i, arr) =>
-            <div key={l} style={{ padding: "20px 0 0", paddingRight: i < arr.length - 1 ? 16 : 0, borderRight: i < arr.length - 1 ? `.5px solid ${G3}` : "none", paddingLeft: i > 0 ? 16 : 0, textAlign: "center" }}>
+            <div key={l} style={{ padding: "20px 0 0", paddingRight: i < arr.length - 1 ? 16 : 0, borderRight: i < arr.length - 1 ? `.5px solid ${G3}` : "none", paddingLeft: i > 0 ? 16 : 0 }}>
                 <div style={{ fontSize: 22, fontWeight: 900, color: "#fff", letterSpacing: -1 }}>{n}</div>
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 4 }}>{l}</div>
               </div>
