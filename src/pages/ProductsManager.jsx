@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Edit2, Trash2, X } from "lucide-react";
+import { Plus, Edit2, Trash2, X, Upload } from "lucide-react";
 import { useProducts } from "../hooks/useSiteSettings";
 import { base44 } from "@/api/base44Client";
 
@@ -14,6 +14,7 @@ export default function ProductsManager({ settings, updateProduct }) {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     category: "",
@@ -43,6 +44,18 @@ export default function ProductsManager({ settings, updateProduct }) {
       base44.entities.Product.delete(id);
       setSelectedProduct(null);
     }
+  };
+
+  const handleImageUpload = async (file) => {
+    if (!file) return;
+    setUploadingImage(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setFormData(prev => ({ ...prev, image_url: file_url }));
+    } catch (error) {
+      console.error('Image upload failed:', error);
+    }
+    setUploadingImage(false);
   };
 
   const resetForm = () => {
@@ -191,6 +204,43 @@ export default function ProductsManager({ settings, updateProduct }) {
                 {formData.visible ? "Visible" : "Hidden"}
               </button>
             </div>
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: "block", fontSize: 10, color: SD, marginBottom: 6, letterSpacing: 1, textTransform: "uppercase" }}>Product Image</label>
+            <div style={{ display: "flex", gap: 12 }}>
+              <input
+                type="text"
+                placeholder="Image URL or upload below"
+                value={formData.image_url || ""}
+                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                style={{ flex: 1, background: G1, border: `.5px solid ${G3}`, color: "#fff", padding: "10px 12px", fontSize: 12, outline: "none", fontFamily: "inherit" }}
+              />
+              <label style={{ cursor: uploadingImage ? 'not-allowed' : 'pointer', opacity: uploadingImage ? 0.6 : 1 }}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0])}
+                  style={{ display: 'none' }}
+                  disabled={uploadingImage}
+                />
+                <button
+                  type="button"
+                  onClick={(e) => e.currentTarget.parentElement?.querySelector('input[type="file"]')?.click()}
+                  disabled={uploadingImage}
+                  style={{ padding: "10px 14px", background: uploadingImage ? '#666' : S, color: "#000", border: "none", cursor: uploadingImage ? 'not-allowed' : 'pointer', fontWeight: 900, fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6, fontSize: 10, whiteSpace: 'nowrap' }}
+                >
+                  <Upload size={14} /> {uploadingImage ? 'Uploading...' : 'Upload'}
+                </button>
+              </label>
+            </div>
+            {formData.image_url && (
+              <img
+                src={formData.image_url}
+                alt="Product preview"
+                style={{ width: "100%", maxHeight: 150, objectFit: "contain", background: G1, padding: 10, marginTop: 10, borderRadius: 4 }}
+              />
+            )}
           </div>
 
           <div style={{ display: "flex", gap: 12 }}>
