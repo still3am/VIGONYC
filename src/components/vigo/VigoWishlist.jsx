@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useOutletContext, useNavigate } from "react-router-dom";
+import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
 const G1 = "#0a0a0a";
@@ -7,9 +8,7 @@ const G2 = "#111";
 const G3 = "#1a1a1a";
 const SD = "#777";
 
-// TODO: Replace with Base44 entity queries
-// const ALL_PRODUCTS = await base44.entities.Product.list();
-const ALL_PRODUCTS = [];
+// Products will be fetched from Base44
 
 const TAG_STYLES = {
   new:  { background: "#E8E8E8", color: "#000" },
@@ -22,12 +21,17 @@ const TAG_LABELS = { new: "New", drop: "Drop", ltd: "Lmt", hot: "Hot" };
 export default function VigoWishlist() {
   const { wishlist, toggleWishlist, addToCart, productImg } = useOutletContext();
   const navigate = useNavigate();
+  const [products, setProducts] = useState([]);
   const [addedIds, setAddedIds] = useState([]);
   const [hoveredId, setHoveredId] = useState(null);
   const [allAddedBag, setAllAddedBag] = useState(false);
   const [selectedSizes, setSelectedSizes] = useState({});
 
-  const savedItems = ALL_PRODUCTS.filter(p => wishlist.includes(p.id));
+  useEffect(() => {
+    base44.entities.Product.list().then(setProducts).catch(() => setProducts([]));
+  }, []);
+
+  const savedItems = products.filter(p => wishlist.includes(p.id));
   const totalValue = savedItems.reduce((s, p) => s + p.price, 0);
 
   const handleAdd = (p) => {
