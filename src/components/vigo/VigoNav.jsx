@@ -113,7 +113,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
         {/* Mobile menu */}
         {mobileOpen && (
           <div style={{ background: "#0a0a0a", borderTop: `.5px solid ${G3}`, padding: "20px 24px", display: "flex", flexDirection: "column", gap: 18 }}>
-            {[...links, { label: "Sustainability", to: "/sustainability" }, { label: "FAQ", to: "/faq" }, { label: "Contact", to: "/contact" }, { label: "Track Order", to: "/track-order" }, { label: "Press", to: "/press" }].map(l => (
+            {links.map(l => (
               <NavLink key={l.to} to={l.to} onClick={() => setMobileOpen(false)} style={({ isActive }) => ({ textDecoration: "none", fontSize: 10, letterSpacing: 4, textTransform: "uppercase", color: isActive ? "#fff" : SD })}>{l.label}</NavLink>
             ))}
           </div>

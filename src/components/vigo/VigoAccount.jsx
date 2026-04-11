@@ -177,6 +177,25 @@ export default function VigoAccount() {
         </div>
       )}
 
+      {/* Support & Info Links */}
+      <div style={{ marginTop: 48, borderTop: `.5px solid ${G3}`, paddingTop: 32 }}>
+        <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 20 }}>Support & Info</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {[
+            { label: "FAQ", to: "/faq" },
+            { label: "Contact Us", to: "/contact" },
+            { label: "Track Order", to: "/track-order" },
+            { label: "Sustainability", to: "/sustainability" },
+            { label: "Press", to: "/press" },
+          ].map(({ label, to }) => (
+            <button key={to} onClick={() => navigate(to)} style={{ background: G1, border: `.5px solid ${G3}`, color: SD, padding: "14px 20px", fontSize: 11, textAlign: "left", cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              {label}
+              <span style={{ color: S, fontSize: 14 }}>→</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       <style>{`
         @media(max-width:600px){.vigo-2col-sm{grid-template-columns:1fr !important;}}
       `}</style>
