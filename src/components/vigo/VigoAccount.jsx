@@ -86,20 +86,21 @@ export default function VigoAccount() {
         <div style={{ height: 1, background: `linear-gradient(90deg,transparent,${S},transparent)`, opacity: .4 }} />
         <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(192,192,192,.03) 1px,transparent 1px)", backgroundSize: "24px 24px", pointerEvents: "none" }} />
 
-        <div style={{ maxWidth: 900, margin: "0 auto", padding: "clamp(28px,5vw,48px) clamp(16px,4vw,24px)", position: "relative" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "clamp(16px,3vw,28px)", flexWrap: "wrap" }}>
-            {/* Avatar */}
-            <div style={{ position: "relative", flexShrink: 0 }}>
-              <div style={{ width: "clamp(64px,10vw,88px)", height: "clamp(64px,10vw,88px)", borderRadius: "50%", background: G2, border: `2px solid ${S}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "clamp(22px,4vw,32px)", fontWeight: 900, color: S }}>J</div>
-              <div style={{ position: "absolute", bottom: 2, right: 2, width: 14, height: 14, borderRadius: "50%", background: "#0c6", border: "2px solid #0a0a0a" }} />
+        <div style={{ maxWidth: 900, margin: "0 auto", padding: "clamp(48px,7vw,64px) clamp(20px,4vw,32px)", position: "relative" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "clamp(24px,4vw,32px)" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+              <div style={{ width: 28, height: 0.5, background: S, opacity: 0.5 }} />
+              <span style={{ fontSize: 8, letterSpacing: 5, color: S, textTransform: "uppercase" }}>✦ My Account</span>
+              <div style={{ width: 28, height: 0.5, background: S, opacity: 0.5 }} />
             </div>
-
-            {/* Info */}
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ My Account</div>
-              <h1 style={{ fontSize: "clamp(22px,4vw,40px)", fontWeight: 900, letterSpacing: -1.5, lineHeight: 1, marginBottom: 6 }}>Jordan NYC</h1>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+              <div style={{ position: "relative", flexShrink: 0 }}>
+                <div style={{ width: "clamp(64px,10vw,88px)", height: "clamp(64px,10vw,88px)", borderRadius: "50%", background: G2, border: `2px solid ${S}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "clamp(22px,4vw,32px)", fontWeight: 900, color: S }}>J</div>
+                <div style={{ position: "absolute", bottom: 2, right: 2, width: 14, height: 14, borderRadius: "50%", background: "#0c6", border: "2px solid #0a0a0a" }} />
+              </div>
+              <h1 style={{ fontSize: "clamp(24px,4vw,40px)", fontWeight: 900, letterSpacing: -1.5, lineHeight: 1, marginBottom: 6 }}>Jordan NYC</h1>
               <div style={{ fontSize: 11, color: SD, marginBottom: 10 }}>jordan@vigonyc.com</div>
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
                 {[["Member Since", "2024"], ["Orders", "3"], ["Saved", "6"]].map(([k, v]) => (
                   <div key={k} style={{ background: G2, border: `.5px solid ${G3}`, padding: "6px 12px" }}>
                     <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>{k}</div>
