@@ -18,6 +18,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [query, setQuery] = useState("");
+  const [logoTaps, setLogoTaps] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
   const isRoot = location.pathname === "/" || location.pathname === "/shop" || location.pathname === "/drops" || location.pathname === "/wishlist" || location.pathname === "/account" || location.pathname === "/lookbook" || location.pathname === "/about";
@@ -31,6 +32,17 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
   const handleSearch = (e) => {
     e.preventDefault();
     if (query.trim()) {navigate(`/shop?q=${encodeURIComponent(query)}`);setSearchOpen(false);setQuery("");}
+  };
+
+  const handleLogoClick = () => {
+    const newTaps = logoTaps + 1;
+    setLogoTaps(newTaps);
+    if (newTaps === 5) {
+      navigate("/admin");
+      setLogoTaps(0);
+    } else {
+      setTimeout(() => setLogoTaps(0), 3000);
+    }
   };
 
   return (
@@ -75,14 +87,14 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
               Back
             </button>
           ) : (
-          <Link to="/" className="vigo-nav-logo" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none" }}>
+          <div className="vigo-nav-logo" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", cursor: "pointer" }} onClick={handleLogoClick}>
             <img src={logo} alt="VIGONYC" className="vigo-nav-logo-img" style={{ width: 40, height: 40, objectFit: "contain" }} />
             <div style={{ lineHeight: 1 }}>
               <div className="vigo-nav-wordmark" style={{ fontSize: 17, fontWeight: 900, letterSpacing: 4, color: "#fff", textTransform: "uppercase" }}>VIGO<span style={{ color: S }}>NYC</span></div>
               <style>{`.vigo-nav-wordmark { display: block; } @media(max-width:768px){ .vigo-nav-wordmark { display: none !important; } }`}</style>
               <style>{`.vigo-nav-subtitle { display: block; } @media(max-width:768px){ .vigo-nav-subtitle { display: none !important; } }`}</style>
             </div>
-          </Link>
+          </div>
           )}
 
           {/* Desktop links */}
