@@ -159,7 +159,7 @@ export default function VigoAccount() {
       </div>
 
       {/* Content */}
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "clamp(24px,4vw,40px) clamp(16px,4vw,24px)" }}>
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: "clamp(24px,4vw,40px) clamp(16px,4vw,24px)", width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
 
         {/* Profile */}
         {tab === "profile" && (
