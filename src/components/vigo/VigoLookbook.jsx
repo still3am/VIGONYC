@@ -1,34 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
 const G1 = "#0a0a0a";
 const G3 = "#1a1a1a";
 const SD = "#777";
 
-
+// TODO: Replace with Base44 entity queries
+// const shots = await base44.entities.LookbookItem.list();
+const shots = [];
 
 export default function VigoLookbook() {
   const { productImg } = useOutletContext();
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(null);
-  const [shots, setShots] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchShots = async () => {
-      try {
-        const items = await base44.entities.LookbookItem.list('-created_date', 100);
-        setShots(items);
-      } catch (err) {
-        console.error('Failed to fetch lookbook items:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchShots();
-  }, []);
 
   return (
     <div>
@@ -70,15 +55,6 @@ export default function VigoLookbook() {
         </div>
 
         {/* Masonry grid */}
-        {loading ? (
-          <div style={{ textAlign: "center", padding: "60px 20px", color: SD }}>
-            <div style={{ fontSize: 12 }}>Loading lookbook...</div>
-          </div>
-        ) : shots.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "60px 20px", color: SD }}>
-            <div style={{ fontSize: 12 }}>No lookbook items yet.</div>
-          </div>
-        ) : (
         <div className="vigo-lookbook-cols" style={{ columns: 3, gap: 2 }}>
           {shots.map((s, i) => (
             <div key={i} style={{ breakInside: "avoid", marginBottom: 2, background: G1, border: `.5px solid ${G3}`, position: "relative", overflow: "hidden", cursor: "pointer" }}
@@ -101,7 +77,6 @@ export default function VigoLookbook() {
             </div>
           ))}
         </div>
-        )}
       </div>
 
       <div style={{ textAlign: "center", padding: "52px 32px 64px" }}>
