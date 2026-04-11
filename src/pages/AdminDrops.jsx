@@ -16,6 +16,8 @@ export default function AdminDrops() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [viewDate, setViewDate] = useState(new Date());
+  const [selectedDrop, setSelectedDrop] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     series: "",
