@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
 const G1 = "#0a0a0a";
@@ -16,6 +17,8 @@ export default function VigoCheckout() {
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
   const [promoError, setPromoError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
 
   const shipping = subtotal >= 150 ? 0 : 12;
   const tax = Math.round(subtotal * 0.0887);
@@ -25,6 +28,36 @@ export default function VigoCheckout() {
   const applyPromo = () => {
     if (promoCode.toUpperCase() === "VIGONYC10") { setPromoApplied(true); setPromoError(false); }
     else { setPromoError(true); setPromoApplied(false); }
+  };
+
+  const handlePlaceOrder = async () => {
+    if (!validateStep1()) return;
+    setLoading(true);
+    try {
+      const res = await base44.functions.invoke('createOrder', {
+        items: cartItems,
+        subtotal,
+        shipping,
+        tax,
+        discount,
+        total,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        zip: formData.zip,
+        paymentMethod: payMethod,
+        promoCode: promoApplied ? 'VIGONYC10' : null
+      });
+      setOrderSuccess(true);
+      setTimeout(() => navigate('/account'), 2000);
+    } catch (err) {
+      setFormError('Order failed: ' + err.message);
+    }
+    setLoading(false);
   };
 
   const validateStep1 = () => {
@@ -127,10 +160,17 @@ export default function VigoCheckout() {
                   <div style={{ fontSize: 12, color: SD }}>Pay in 4 installments of <strong style={{ color: "#fff" }}>${Math.round(total / 4)}</strong>. No interest.</div>
                 </div>
               )}
-              <div style={{ display: "flex", gap: 12 }}>
-                <button onClick={() => setStep(2)} style={btnGhost}>← Back</button>
-                <button onClick={() => navigate("/")} style={{ ...btnP, flex: 1 }}>Place Order — ${total}</button>
-              </div>
+              {orderSuccess ? (
+                <div style={{ background: '#0c6', color: '#000', padding: '20px', borderRadius: '4px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 16, fontWeight: 900 }}>✓ Order Placed!</div>
+                  <div style={{ fontSize: 11, marginTop: 8 }}>Redirecting to account...</div>
+                </div>
+              ) : (
+                <div style={{ display: "flex", gap: 12 }}>
+                  <button onClick={() => setStep(2)} style={btnGhost}>← Back</button>
+                  <button onClick={handlePlaceOrder} disabled={loading} style={{ ...btnP, flex: 1, opacity: loading ? 0.6 : 1 }}>{loading ? 'Processing...' : `Place Order — $${total}`}</button>
+                </div>
+              )}
             </div>
           )}
         </div>

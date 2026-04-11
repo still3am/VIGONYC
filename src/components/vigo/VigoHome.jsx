@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import { base44 } from "@/api/base44Client";
 import ProductCard from "./ProductCard";
 import SectionDivider from "./SectionDivider";
 import SectionHeader from "./SectionHeader";

@@ -73,8 +73,8 @@ export default function VigoAccount() {
     queryKey: ['userOrders'],
     queryFn: async () => {
       if (!user?.email) return [];
-      const res = await base44.entities.Order.filter({ created_by: user.email });
-      return res.map(o => ({ id: o.id, date: new Date(o.created_date).toLocaleDateString(), items: o.items || 'Order items', total: o.total || 0, status: o.status || 'Processing', statusColor: o.status === 'Delivered' ? '#0c6' : '#ff9800', pieces: o.pieces || 1 }));
+      const res = await base44.entities.Order.filter({ email: user.email });
+      return res.map(o => ({ id: o.id, date: new Date(o.created_date).toLocaleDateString(), items: o.items?.map(i => i.name).join(', ') || 'Order', total: o.total, status: o.status, statusColor: o.status === 'Delivered' ? '#0c6' : o.status === 'Shipped' ? '#ff9800' : '#999', pieces: o.items?.length || 1 }));
     },
     enabled: !!user,
   });

@@ -1,0 +1,32 @@
+{
+  "name": "Newsletter",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "title": "Email Address"
+    },
+    "name": {
+      "type": "string",
+      "title": "Name (Optional)"
+    },
+    "subscribed": {
+      "type": "boolean",
+      "title": "Currently Subscribed",
+      "default": true
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "Homepage",
+        "Footer",
+        "Popup",
+        "Manual"
+      ],
+      "title": "Source"
+    }
+  },
+  "required": [
+    "email"
+  ]
+}

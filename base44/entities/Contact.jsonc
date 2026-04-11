@@ -1,0 +1,55 @@
+{
+  "name": "Contact",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Full Name"
+    },
+    "email": {
+      "type": "string",
+      "title": "Email Address"
+    },
+    "phone": {
+      "type": "string",
+      "title": "Phone Number"
+    },
+    "topic": {
+      "type": "string",
+      "enum": [
+        "General Inquiry",
+        "Product Question",
+        "Order Help",
+        "Returns",
+        "Partnership",
+        "Press"
+      ],
+      "title": "Inquiry Topic"
+    },
+    "message": {
+      "type": "string",
+      "title": "Message"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "New",
+        "Reviewed",
+        "Responded"
+      ],
+      "title": "Status",
+      "default": "New"
+    },
+    "responded": {
+      "type": "boolean",
+      "title": "Response Sent",
+      "default": false
+    }
+  },
+  "required": [
+    "name",
+    "email",
+    "topic",
+    "message"
+  ]
+}
