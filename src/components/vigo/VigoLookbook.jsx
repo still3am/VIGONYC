@@ -6,14 +6,9 @@ const G1 = "#0a0a0a";
 const G3 = "#1a1a1a";
 const SD = "#777";
 
-const shots = [
-  { caption: "Chrome V Tee", sub: "Lower East Side, NYC", price: "$68", id: 1, opacity: 1, tall: true },
-  { caption: "NYC Cargo Pant", sub: "Brooklyn Bridge, NYC", price: "$145", id: 2, opacity: 0.4, tall: false },
-  { caption: "Silver Label Hoodie", sub: "SoHo, NYC", price: "$128", id: 3, opacity: 0.6, tall: false },
-  { caption: "5-Panel Cap", sub: "Uptown, NYC", price: "$52", id: 4, opacity: 0.45, tall: true },
-  { caption: "V Jogger", sub: "Flatbush, Brooklyn", price: "$95", id: 5, opacity: 0.7, tall: false },
-  { caption: "Chrome Tech Jacket", sub: "Midtown, NYC", price: "$245", id: 6, opacity: 0.5, tall: false },
-];
+// TODO: Replace with Base44 entity queries
+// const shots = await base44.entities.LookbookItem.list();
+const shots = [];
 
 export default function VigoLookbook() {
   const { productImg } = useOutletContext();

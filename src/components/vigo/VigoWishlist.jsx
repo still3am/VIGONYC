@@ -7,14 +7,9 @@ const G2 = "#111";
 const G3 = "#1a1a1a";
 const SD = "#777";
 
-const ALL_PRODUCTS = [
-  { id: 1, name: "Chrome V Tee", cat: "Tops", price: 68, tag: "new", sizes: ["S","M","L","XL"], collection: "Chrome Series" },
-  { id: 2, name: "NYC Cargo Pant", cat: "Bottoms", price: 145, tag: "drop", sizes: ["S","M","L"], collection: "Archive" },
-  { id: 3, name: "Silver Label Hoodie", cat: "Tops", price: 128, tag: "new", sizes: ["M","L","XL"], collection: "Chrome Series" },
-  { id: 4, name: "5-Panel Cap", cat: "Headwear", price: 52, tag: "ltd", sizes: ["One Size"], collection: "Essentials" },
-  { id: 5, name: "V Jogger", cat: "Bottoms", price: 95, tag: "new", sizes: ["S","M","L","XL"], collection: "Essentials" },
-  { id: 6, name: "Chrome Tech Jacket", cat: "Outerwear", price: 245, tag: "ltd", sizes: ["S","M","L"], collection: "Chrome Series" },
-];
+// TODO: Replace with Base44 entity queries
+// const ALL_PRODUCTS = await base44.entities.Product.list();
+const ALL_PRODUCTS = [];
 
 const TAG_STYLES = {
   new:  { background: "#E8E8E8", color: "#000" },
@@ -36,6 +31,7 @@ export default function VigoWishlist() {
   const totalValue = savedItems.reduce((s, p) => s + p.price, 0);
 
   const handleAdd = (p) => {
+    // TODO: Integrate with Base44 cart entity or function
     addToCart({ id: p.id, name: p.name, meta: `Size: ${selectedSizes[p.id] || "M"} · Color: Black`, price: p.price });
     setAddedIds(prev => [...prev, p.id]);
     setTimeout(() => setAddedIds(prev => prev.filter(id => id !== p.id)), 2000);
@@ -174,7 +170,7 @@ export default function VigoWishlist() {
                       <div style={{ marginBottom: 14 }}>
                         <div style={{ fontSize: 7, letterSpacing: 2, color: "#444", textTransform: "uppercase", marginBottom: 6 }}>Size</div>
                         <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-                          {p.sizes.map(sz => (
+                          {p.sizes && p.sizes.map(sz => (
                             <button
                               key={sz}
                               onClick={() => setSelectedSizes(prev => ({ ...prev, [p.id]: sz }))}

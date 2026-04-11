@@ -12,21 +12,15 @@ const G2 = "#111";
 const G3 = "#1a1a1a";
 const SD = "#777";
 
+// TODO: Load from Base44 product entity
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
 const COLORS = [{ name: "Black", hex: "#111" }, { name: "Silver", hex: "#C0C0C0" }, { name: "Graphite", hex: "#555" }];
 
-const accordionData = [
-{ title: "Fabric & Care", content: "350gsm 100% Premium Cotton. Machine wash cold. Do not bleach. Tumble dry low. Iron inside out." },
-{ title: "Sizing & Fit", content: "Model is 6'1\" wearing size L. This style runs oversized — size down for a slimmer fit." },
-{ title: "Shipping & Returns", content: "Free standard shipping on orders over $150. Returns accepted within 30 days." }];
+// TODO: Fetch accordion content from Base44 product entity
+const accordionData = [];
 
-
-const related = [
-{ id: 2, name: "NYC Cargo Pant", cat: "Bottoms / Heavy", price: 145, tag: "drop", opacity: 0.4 },
-{ id: 3, name: "Silver Label Hoodie", cat: "Tops / Outerwear", price: 128, tag: "new", tag2: "hot", opacity: 0.6 },
-{ id: 4, name: "5-Panel Cap", cat: "Headwear / Unisex", price: 52, tag: "ltd", opacity: 0.45 },
-{ id: 6, name: "Chrome Tech Jacket", cat: "Outerwear", price: 245, tag: "ltd", opacity: 0.5 }];
-
+// TODO: Fetch related products from Base44
+const related = [];
 
 export default function VigoProduct() {
   const { productImg, wishlist, toggleWishlist, addToCart, setSizeGuideOpen } = useOutletContext();
@@ -45,6 +39,7 @@ export default function VigoProduct() {
       toast.error("Please select a size");
       return;
     }
+    // TODO: Integrate with Base44 cart entity or function
     addToCart({ id: 1, name: "Chrome V Tee", meta: `Size: ${selectedSize} · Color: ${selectedColor}`, price: 68 });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
@@ -208,6 +203,6 @@ export default function VigoProduct() {
           .related-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
-    </div>);
-
+    </div>
+  );
 }

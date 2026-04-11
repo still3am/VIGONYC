@@ -5,13 +5,8 @@ const G1 = "#0a0a0a";
 const G3 = "#1a1a1a";
 const SD = "#777";
 
-const STEPS = [
-  { label: "Order Placed", desc: "Your order has been confirmed.", done: true },
-  { label: "Processing", desc: "We're picking and packing your items.", done: true },
-  { label: "Shipped", desc: "Your order is on the way — USPS tracking active.", done: true },
-  { label: "Out for Delivery", desc: "Your package is with the carrier.", done: false },
-  { label: "Delivered", desc: "Order delivered to your address.", done: false },
-];
+// TODO: Fetch shipment tracking data from Base44 Order entity
+const STEPS = [];
 
 export default function VigoTrackOrder() {
   const [orderNum, setOrderNum] = useState("");
@@ -20,6 +15,8 @@ export default function VigoTrackOrder() {
 
   const handleTrack = (e) => {
     e.preventDefault();
+    // TODO: Replace with Base44 order lookup
+    // const order = await base44.entities.Order.filter({ id: orderNum, created_by: email });
     if (orderNum.trim()) setTracked(true);
   };
 

@@ -9,21 +9,15 @@ const G1 = "#0a0a0a";
 const G3 = "#1a1a1a";
 const SD = "#777";
 
-const ALL_PRODUCTS = [
-  { id: 1, name: "Chrome V Tee", cat: "Tops", price: 68, tag: "new", opacity: 1, colors: ["Black","White"], sizes: ["S","M","L","XL"], collection: "Chrome Series" },
-  { id: 2, name: "NYC Cargo Pant", cat: "Bottoms", price: 145, tag: "drop", opacity: 0.4, colors: ["Black","Graphite"], sizes: ["S","M","L"], collection: "Archive" },
-  { id: 3, name: "Silver Label Hoodie", cat: "Tops", price: 128, tag: "new", tag2: "hot", opacity: 0.6, colors: ["Silver","Black"], sizes: ["M","L","XL"], collection: "Chrome Series" },
-  { id: 4, name: "5-Panel Cap", cat: "Headwear", price: 52, tag: "ltd", opacity: 0.45, colors: ["Black"], sizes: ["One Size"], collection: "Essentials" },
-  { id: 5, name: "V Jogger", cat: "Bottoms", price: 95, tag: "new", opacity: 0.7, colors: ["Black","Graphite"], sizes: ["S","M","L","XL"], collection: "Essentials" },
-  { id: 6, name: "Chrome Tech Jacket", cat: "Outerwear", price: 245, tag: "ltd", opacity: 0.5, colors: ["Black"], sizes: ["S","M","L"], collection: "Chrome Series" },
-  { id: 7, name: "NYC Tote", cat: "Accessories", price: 38, tag: null, opacity: 0.8, colors: ["Black","White"], sizes: ["One Size"], collection: "Essentials" },
-  { id: 8, name: "VIGO Socks 3-Pack", cat: "Accessories", price: 28, tag: "new", opacity: 0.9, colors: ["Black","Silver"], sizes: ["One Size"], collection: "Essentials" },
-];
+// TODO: Replace with Base44 entity queries
+// const ALL_PRODUCTS = await base44.entities.Product.list();
+const ALL_PRODUCTS = [];
 
-const CATEGORIES = ["All","Tops","Bottoms","Outerwear","Headwear","Accessories"];
+// TODO: Configure these from Base44 or app settings
+const CATEGORIES = [];
 const SIZES = ["XS","S","M","L","XL","XXL","One Size"];
 const COLORS = ["Black","White","Silver","Graphite"];
-const COLLECTIONS = ["All Collections","Chrome Series","Archive","Essentials"];
+const COLLECTIONS = [];
 
 function FilterSection({ title, children }) {
   const [open, setOpen] = useState(true);
@@ -98,8 +92,8 @@ export default function VigoShop() {
   const filtered = useMemo(() => {
     let p = [...ALL_PRODUCTS];
     if (activeCat !== "All") p = p.filter(x => x.cat === activeCat);
-    if (selectedSizes.length) p = p.filter(x => x.sizes.some(s => selectedSizes.includes(s)));
-    if (selectedColors.length) p = p.filter(x => x.colors.some(c => selectedColors.includes(c)));
+    if (selectedSizes.length) p = p.filter(x => x.sizes && x.sizes.some(s => selectedSizes.includes(s)));
+    if (selectedColors.length) p = p.filter(x => x.colors && x.colors.some(c => selectedColors.includes(c)));
     if (activeCollection !== "All Collections") p = p.filter(x => x.collection === activeCollection);
     p = p.filter(x => x.price <= priceRange);
     if (sort === "price-asc") p.sort((a,b) => a.price - b.price);
