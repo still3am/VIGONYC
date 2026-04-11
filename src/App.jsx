@@ -7,6 +7,18 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 // Add page imports here
 import VIGONYCFlagship from './pages/VIGONYCFlagship';
+import VigoHome from './components/vigo/VigoHome';
+import VigoShop from './components/vigo/VigoShop';
+import VigoProduct from './components/vigo/VigoProduct';
+import VigoLookbook from './components/vigo/VigoLookbook';
+import VigoAbout from './components/vigo/VigoAbout';
+import VigoSustainability from './components/vigo/VigoSustainability';
+import VigoFAQ from './components/vigo/VigoFAQ';
+import VigoContact from './components/vigo/VigoContact';
+import VigoWishlist from './components/vigo/VigoWishlist';
+import VigoTrackOrder from './components/vigo/VigoTrackOrder';
+import VigoAccount from './components/vigo/VigoAccount';
+import VigoCheckout from './components/vigo/VigoCheckout';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -35,7 +47,20 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       {/* Add your page Route elements here */}
-      <Route path="/" element={<VIGONYCFlagship />} />
+      <Route path="/" element={<VIGONYCFlagship />}>
+        <Route index element={<VigoHome />} />
+        <Route path="shop" element={<VigoShop />} />
+        <Route path="product/:id" element={<VigoProduct />} />
+        <Route path="lookbook" element={<VigoLookbook />} />
+        <Route path="about" element={<VigoAbout />} />
+        <Route path="sustainability" element={<VigoSustainability />} />
+        <Route path="faq" element={<VigoFAQ />} />
+        <Route path="contact" element={<VigoContact />} />
+        <Route path="wishlist" element={<VigoWishlist />} />
+        <Route path="track-order" element={<VigoTrackOrder />} />
+        <Route path="account" element={<VigoAccount />} />
+        <Route path="checkout" element={<VigoCheckout />} />
+      </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
