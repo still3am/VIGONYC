@@ -100,7 +100,7 @@ export default function VigoAccount() {
               </div>
               <h1 style={{ fontSize: "clamp(24px,4vw,40px)", fontWeight: 900, letterSpacing: -1.5, lineHeight: 1, marginBottom: 6 }}>Jordan NYC</h1>
               <div style={{ fontSize: 11, color: SD, marginBottom: 10 }}>jordan@vigonyc.com</div>
-              <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
+              <div className="vigo-hero-stats" style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
                 {[["Member Since", "2024"], ["Orders", "3"], ["Saved", "6"]].map(([k, v]) => (
                   <div key={k} style={{ background: G2, border: `.5px solid ${G3}`, padding: "6px 12px" }}>
                     <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>{k}</div>
@@ -174,7 +174,7 @@ export default function VigoAccount() {
                   onMouseEnter={e => e.currentTarget.style.borderColor = S}
                   onMouseLeave={e => e.currentTarget.style.borderColor = G3}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
+                  <div className="vigo-order-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
                         <div style={{ fontSize: 13, fontWeight: 900 }}>{order.id}</div>
@@ -183,7 +183,7 @@ export default function VigoAccount() {
                       <div style={{ fontSize: 10, color: SD, marginBottom: 4 }}>{order.date} · {order.pieces} {order.pieces === 1 ? "item" : "items"}</div>
                       <div style={{ fontSize: 11, color: "#888" }}>{order.items}</div>
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
+                    <div className="vigo-order-amount" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
                       <div style={{ fontSize: 20, fontWeight: 900, color: S }}>${order.total}</div>
                       <button onClick={() => navigate("/track-order")} style={btnGhost}>Track →</button>
                     </div>
@@ -201,7 +201,7 @@ export default function VigoAccount() {
         {tab === "addresses" && (
           <div>
             <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 20 }}>Saved Addresses</div>
-            <div className="vigo-2col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
+            <div className="vigo-2col vigo-address-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
               {[
                 { label: "Default Shipping", addr: "123 Flatbush Ave\nBrooklyn, NY 11238\nUnited States" },
                 { label: "Billing Address", addr: "Same as shipping address" },
@@ -253,8 +253,8 @@ export default function VigoAccount() {
               {!deleteConfirm ? (
                 <button onClick={() => setDeleteConfirm(true)} style={{ background: "none", border: ".5px solid #e03", color: "#e03", padding: "12px 24px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>Delete Account</button>
               ) : (
-                <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-                  <span style={{ fontSize: 11, color: "#ccc" }}>This cannot be undone.</span>
+                <div className="vigo-danger-flex" style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+                  <span className="vigo-danger-span" style={{ fontSize: 11, color: "#ccc" }}>This cannot be undone.</span>
                   <button style={{ background: "#e03", color: "#fff", border: "none", padding: "12px 20px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontWeight: 900, fontFamily: "inherit" }}>Yes, Delete</button>
                   <button onClick={() => setDeleteConfirm(false)} style={btnGhost}>Cancel</button>
                 </div>
@@ -276,6 +276,14 @@ export default function VigoAccount() {
           .vigo-2col { grid-template-columns: 1fr !important; }
           .vigo-links-grid { grid-template-columns: 1fr 1fr !important; }
           .vigo-tab-icon { display: none; }
+          .vigo-hero-stats { gap: 8px !important; flex-wrap: wrap; }
+          .vigo-hero-stats > div { min-width: auto !important; padding: 4px 8px !important; font-size: 10px !important; }
+          .vigo-order-row { flex-direction: column !important; align-items: flex-start !important; }
+          .vigo-order-amount { align-items: flex-start !important; margin-top: 12px !important; }
+          .vigo-address-grid { grid-template-columns: 1fr !important; }
+          .vigo-danger-flex { flex-direction: column !important; }
+          .vigo-danger-flex button { width: 100% !important; }
+          .vigo-danger-span { display: block !important; margin-bottom: 12px !important; }
         }
       `}</style>
     </div>
