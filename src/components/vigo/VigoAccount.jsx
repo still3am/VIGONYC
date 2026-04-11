@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
 const G1 = "#0a0a0a";
@@ -14,12 +15,6 @@ const TABS = [
   { id: "addresses", label: "Addresses", icon: "📍" },
   { id: "notifications", label: "Alerts", icon: "🔔" },
   { id: "settings", label: "Settings", icon: "⚙️" },
-];
-
-const ORDERS = [
-  { id: "VIGO-4521", date: "Apr 3, 2025", items: "Chrome V Tee, 5-Panel Cap", total: 120, status: "Delivered", statusColor: "#0c6", pieces: 2 },
-  { id: "VIGO-3891", date: "Mar 15, 2025", items: "Silver Label Hoodie", total: 128, status: "Delivered", statusColor: "#0c6", pieces: 1 },
-  { id: "VIGO-3201", date: "Feb 28, 2025", items: "NYC Cargo Pant, V Jogger", total: 240, status: "Delivered", statusColor: "#0c6", pieces: 2 },
 ];
 
 function Field({ label, type = "text", defaultValue, placeholder }) {
@@ -59,10 +54,30 @@ export default function VigoAccount() {
   const [tab, setTab] = useState("profile");
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [notifications, setNotifications] = useState({ drops: true, orders: true, promotions: false, newsletter: true });
-  const [profile, setProfile] = useState({ firstName: "Jordan", lastName: "NYC", email: "jordan@vigonyc.com", phone: "+1 212 000 0000", birthday: "1998-01-01" });
+  const [profile, setProfile] = useState(null);
   const [deleted, setDeleted] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  const { data: user, isLoading: userLoading } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: async () => {
+      const u = await base44.auth.me();
+      if (!u) throw new Error('Not authenticated');
+      setProfile({ firstName: u.full_name?.split(' ')[0] || '', lastName: u.full_name?.split(' ')[1] || '', email: u.email, phone: u.phone || '', birthday: u.birthday || '' });
+      return u;
+    },
+  });
+
+  const { data: orders = [] } = useQuery({
+    queryKey: ['userOrders'],
+    queryFn: async () => {
+      if (!user?.email) return [];
+      const res = await base44.entities.Order.filter({ created_by: user.email });
+      return res.map(o => ({ id: o.id, date: new Date(o.created_date).toLocaleDateString(), items: o.items || 'Order items', total: o.total || 0, status: o.status || 'Processing', statusColor: o.status === 'Delivered' ? '#0c6' : '#ff9800', pieces: o.pieces || 1 }));
+    },
+    enabled: !!user,
+  });
 
   const saveMutation = useMutation({
     mutationFn: async (data) => { await new Promise(r => setTimeout(r, 600)); return data; },
@@ -76,8 +91,13 @@ export default function VigoAccount() {
     onSuccess: () => { navigate("/"); },
   });
 
-  const handleSave = () => saveMutation.mutate(profile);
+  const handleSave = () => {
+    if (profile) saveMutation.mutate(profile);
+  };
   const saved = saveMutation.isSuccess;
+
+  if (userLoading) return <div style={{ padding: 40, textAlign: 'center', minHeight: '80vh' }}>Loading...</div>;
+  if (!user) return <div style={{ padding: 40, textAlign: 'center', minHeight: '80vh', color: '#777' }}>Not authenticated</div>;
 
   return (
     <div style={{ minHeight: "80vh" }}>
@@ -95,13 +115,13 @@ export default function VigoAccount() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
               <div style={{ position: "relative", flexShrink: 0 }}>
-                <div style={{ width: "clamp(64px,10vw,88px)", height: "clamp(64px,10vw,88px)", borderRadius: "50%", background: G2, border: `2px solid ${S}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "clamp(22px,4vw,32px)", fontWeight: 900, color: S }}>J</div>
+                <div style={{ width: "clamp(64px,10vw,88px)", height: "clamp(64px,10vw,88px)", borderRadius: "50%", background: G2, border: `2px solid ${S}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "clamp(22px,4vw,32px)", fontWeight: 900, color: S }}>{user?.full_name?.charAt(0) || 'A'}</div>
                 <div style={{ position: "absolute", bottom: 2, right: 2, width: 14, height: 14, borderRadius: "50%", background: "#0c6", border: "2px solid #0a0a0a" }} />
               </div>
-              <h1 style={{ fontSize: "clamp(24px,4vw,40px)", fontWeight: 900, letterSpacing: -1.5, lineHeight: 1, marginBottom: 6 }}>Jordan NYC</h1>
-              <div style={{ fontSize: 11, color: SD, marginBottom: 10 }}>jordan@vigonyc.com</div>
+              <h1 style={{ fontSize: "clamp(24px,4vw,40px)", fontWeight: 900, letterSpacing: -1.5, lineHeight: 1, marginBottom: 6 }}>{user?.full_name || 'Account'}</h1>
+              <div style={{ fontSize: 11, color: SD, marginBottom: 10 }}>{user?.email}</div>
               <div className="vigo-hero-stats" style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
-                {[["Member Since", "2024"], ["Orders", "3"], ["Saved", "6"]].map(([k, v]) => (
+                {[["Member Since", new Date(user?.created_date).getFullYear()], ["Orders", orders.length], ["Saved", "6"]].map(([k, v]) => (
                   <div key={k} style={{ background: G2, border: `.5px solid ${G3}`, padding: "6px 12px" }}>
                     <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>{k}</div>
                     <div style={{ fontSize: 13, fontWeight: 900, color: S }}>{v}</div>
@@ -147,12 +167,12 @@ export default function VigoAccount() {
           <div style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 600 }}>
             <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 4 }}>Personal Info</div>
             <div className="vigo-2col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <Field label="First Name" defaultValue="Jordan" />
-              <Field label="Last Name" defaultValue="NYC" />
+              <Field label="First Name" defaultValue={profile?.firstName || ''} />
+              <Field label="Last Name" defaultValue={profile?.lastName || ''} />
             </div>
-            <Field label="Email Address" type="email" defaultValue="jordan@vigonyc.com" />
-            <Field label="Phone" type="tel" defaultValue="+1 212 000 0000" />
-            <Field label="Birthday" type="date" defaultValue="1998-01-01" />
+            <Field label="Email Address" type="email" defaultValue={user?.email || ''} />
+            <Field label="Phone" type="tel" defaultValue={profile?.phone || ''} />
+            <Field label="Birthday" type="date" defaultValue={profile?.birthday || ''} />
 
             <div style={{ paddingTop: 8 }}>
               <button onClick={handleSave} style={{ background: saved ? "#0c6" : S, color: "#000", border: "none", padding: "14px 32px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", transition: "background .3s" }}>
@@ -167,7 +187,13 @@ export default function VigoAccount() {
           <div>
             <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 20 }}>Order History</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              {ORDERS.map(order => (
+              {orders.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px 20px', color: SD }}>
+                  <div style={{ fontSize: 14, marginBottom: 8 }}>No orders yet</div>
+                  <button onClick={() => navigate('/shop')} style={{ background: S, color: '#000', border: 'none', padding: '10px 20px', fontSize: 9, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 900, cursor: 'pointer', fontFamily: 'inherit', marginTop: 12 }}>Shop Now</button>
+                </div>
+              ) : null}
+              {orders.map(order => (
                 <div
                   key={order.id}
                   style={{ background: G1, border: `.5px solid ${G3}`, padding: "clamp(16px,3vw,24px)", transition: "border-color .2s" }}
@@ -191,9 +217,11 @@ export default function VigoAccount() {
                 </div>
               ))}
             </div>
-            <div style={{ textAlign: "center", padding: "24px 0", fontSize: 10, color: SD }}>
-              3 orders total
-            </div>
+            {orders.length > 0 && (
+              <div style={{ textAlign: "center", padding: "24px 0", fontSize: 10, color: SD }}>
+                {orders.length} {orders.length === 1 ? 'order' : 'orders'} total
+              </div>
+            )}
           </div>
         )}
 
