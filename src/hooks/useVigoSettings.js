@@ -20,14 +20,14 @@ const DEFAULTS = {
   accentColor: "#C0C0C0",
   footerTagline: "Luxury streetwear born from the five boroughs. Built for the ones who move with purpose.",
   products: [
-    { id: 1, name: "Chrome V Tee", cat: "Tops / Essential", price: 68, tag: "new", visible: true },
-    { id: 2, name: "NYC Cargo Pant", cat: "Bottoms / Heavy", price: 145, tag: "drop", visible: true },
-    { id: 3, name: "Silver Label Hoodie", cat: "Tops / Outerwear", price: 128, tag: "new", visible: true },
-    { id: 4, name: "5-Panel Cap", cat: "Headwear / Unisex", price: 52, tag: "ltd", visible: true },
-    { id: 5, name: "V Jogger", cat: "Bottoms / Comfort", price: 95, tag: "new", visible: true },
-    { id: 6, name: "Chrome Tech Jacket", cat: "Outerwear", price: 245, tag: "ltd", visible: true },
-    { id: 7, name: "NYC Tote", cat: "Accessories", price: 38, tag: null, visible: true },
-    { id: 8, name: "VIGO Socks 3-Pack", cat: "Accessories", price: 28, tag: "new", visible: true },
+    { id: 1, name: "Chrome V Tee", cat: "Tops / Essential", price: 68, tag: "new", visible: true, opacity: 1, sizes: ["XS","S","M","L","XL"], colors: ["Black","White"], collection: "Essentials" },
+    { id: 2, name: "NYC Cargo Pant", cat: "Bottoms / Heavy", price: 145, tag: "drop", visible: true, opacity: 1, sizes: ["28","30","32","34","36"], colors: ["Black","Graphite"], collection: "Chrome Series" },
+    { id: 3, name: "Silver Label Hoodie", cat: "Tops / Outerwear", price: 128, tag: "new", visible: true, opacity: 1, sizes: ["XS","S","M","L","XL","XXL"], colors: ["Black","Silver","White"], collection: "Chrome Series" },
+    { id: 4, name: "5-Panel Cap", cat: "Headwear / Unisex", price: 52, tag: "ltd", visible: true, opacity: 1, sizes: ["One Size"], colors: ["Black","White","Silver"], collection: "Essentials" },
+    { id: 5, name: "V Jogger", cat: "Bottoms / Comfort", price: 95, tag: "new", visible: true, opacity: 1, sizes: ["XS","S","M","L","XL"], colors: ["Black","Graphite"], collection: "Essentials" },
+    { id: 6, name: "Chrome Tech Jacket", cat: "Outerwear", price: 245, tag: "ltd", visible: true, opacity: 1, sizes: ["S","M","L","XL","XXL"], colors: ["Black","Silver"], collection: "Chrome Series" },
+    { id: 7, name: "NYC Tote", cat: "Accessories", price: 38, tag: null, visible: true, opacity: 1, sizes: ["One Size"], colors: ["Black","White"], collection: "Essentials" },
+    { id: 8, name: "VIGO Socks 3-Pack", cat: "Accessories", price: 28, tag: "new", visible: true, opacity: 1, sizes: ["One Size"], colors: ["Black","White","Silver"], collection: "Essentials" },
   ],
 };
 

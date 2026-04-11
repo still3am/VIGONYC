@@ -1,6 +1,8 @@
 // src/api/stripe.js
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+import Stripe from 'npm:stripe';
+
+const stripe = new Stripe(import.meta.env.VITE_STRIPE_SECRET_KEY);
 
 /**
  * Create a payment intent.
@@ -31,7 +33,4 @@ const confirmPaymentIntent = async (paymentIntentId, params = {}) => {
     }
 };
 
-module.exports = {
-    createPaymentIntent,
-    confirmPaymentIntent,
-};
+export { createPaymentIntent, confirmPaymentIntent };

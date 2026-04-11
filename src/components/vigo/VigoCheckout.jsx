@@ -11,6 +11,8 @@ export default function VigoCheckout() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [payMethod, setPayMethod] = useState("card");
+  const [formData, setFormData] = useState({ firstName: "", lastName: "", email: "", phone: "", address: "", city: "", state: "", zip: "" });
+  const [formError, setFormError] = useState("");
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
   const [promoError, setPromoError] = useState(false);
@@ -23,6 +25,23 @@ export default function VigoCheckout() {
   const applyPromo = () => {
     if (promoCode.toUpperCase() === "VIGONYC10") { setPromoApplied(true); setPromoError(false); }
     else { setPromoError(true); setPromoApplied(false); }
+  };
+
+  const validateStep1 = () => {
+    if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim() || !formData.phone.trim() || !formData.address.trim() || !formData.city.trim() || !formData.state.trim() || !formData.zip.trim()) {
+      setFormError("All fields required");
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      setFormError("Invalid email");
+      return false;
+    }
+    setFormError("");
+    return true;
+  };
+
+  const handleStep1Next = () => {
+    if (validateStep1()) setStep(2);
   };
 
   return (
@@ -167,11 +186,11 @@ export default function VigoCheckout() {
   );
 }
 
-function Field({ label, type = "text", placeholder }) {
+function Field({ label, type = "text", placeholder, value, onChange }) {
   return (
     <div>
       <div style={{ fontSize: 9, letterSpacing: 2, color: "#777", textTransform: "uppercase", marginBottom: 8 }}>{label}</div>
-      <input type={type} placeholder={placeholder} style={{ width: "100%", background: "#0a0a0a", border: ".5px solid #1a1a1a", color: "#fff", padding: "12px 16px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
+      <input type={type} placeholder={placeholder} value={value || ""} onChange={onChange} style={{ width: "100%", background: "#0a0a0a", border: ".5px solid #1a1a1a", color: "#fff", padding: "12px 16px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
     </div>
   );
 }

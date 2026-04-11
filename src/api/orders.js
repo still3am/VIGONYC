@@ -31,8 +31,4 @@ function trackOrder(orderId) {
     // Implementation here
 }
 
-module.exports = {
-    createOrder,
-    fetchOrderHistory,
-    trackOrder,
-};
+export { createOrder, fetchOrderHistory, trackOrder };
