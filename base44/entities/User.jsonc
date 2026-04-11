@@ -1,0 +1,30 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "phone": {
+      "type": "string",
+      "description": "User phone number"
+    },
+    "birthday": {
+      "type": "string",
+      "description": "User birthday (YYYY-MM-DD)"
+    },
+    "notificationsDrops": {
+      "type": "boolean",
+      "description": "Drop alerts notification preference"
+    },
+    "notificationsOrders": {
+      "type": "boolean",
+      "description": "Order updates notification preference"
+    },
+    "notificationsPromotions": {
+      "type": "boolean",
+      "description": "Promotions notification preference"
+    },
+    "notificationsNewsletter": {
+      "type": "boolean",
+      "description": "Newsletter notification preference"
+    }
+  }
+}

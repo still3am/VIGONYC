@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
 const G1 = "#0a0a0a";
@@ -16,17 +17,12 @@ const TABS = [
   { id: "settings", label: "Settings" },
 ];
 
-const ORDERS = [
-  { id: "VIGO-4521", date: "Apr 3, 2025", items: "Chrome V Tee, 5-Panel Cap", total: 120, status: "Delivered", statusColor: "#0c6", pieces: 2 },
-  { id: "VIGO-3891", date: "Mar 15, 2025", items: "Silver Label Hoodie", total: 128, status: "Delivered", statusColor: "#0c6", pieces: 1 },
-  { id: "VIGO-3201", date: "Feb 28, 2025", items: "NYC Cargo Pant, V Jogger", total: 240, status: "Delivered", statusColor: "#0c6", pieces: 2 },
-];
-
-function Field({ label, type = "text", defaultValue, placeholder }) {
+function Field({ label, type = "text", defaultValue, placeholder, id }) {
   return (
     <div>
       <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>{label}</div>
       <input
+        id={id}
         type={type}
         defaultValue={defaultValue}
         placeholder={placeholder}
@@ -58,22 +54,95 @@ function Toggle({ label, sub, checked, onChange }) {
 export default function VigoAccount() {
   const [tab, setTab] = useState("profile");
   const [deleteConfirm, setDeleteConfirm] = useState(false);
-  const [notifications, setNotifications] = useState({ drops: true, orders: true, promotions: false, newsletter: true });
-  const [profile, setProfile] = useState({ firstName: "Jordan", lastName: "NYC", email: "jordan@vigonyc.com", phone: "+1 212 000 0000", birthday: "1998-01-01" });
-  const [deleted, setDeleted] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  // Fetch user data
+  const { data: user } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      const userData = await base44.auth.me();
+      return userData || {};
+    },
+  });
+
+  // Fetch orders
+  const { data: orders = [] } = useQuery({
+    queryKey: ['orders'],
+    queryFn: async () => {
+      try {
+        return await base44.entities.Order.filter({ created_by: user?.email }, '-created_date', 100);
+      } catch {
+        return [];
+      }
+    },
+    enabled: !!user?.email,
+  });
+
+  // Fetch addresses
+  const { data: addresses = [] } = useQuery({
+    queryKey: ['addresses'],
+    queryFn: async () => {
+      try {
+        return await base44.entities.Address.filter({ created_by: user?.email }, '-created_date', 100);
+      } catch {
+        return [];
+      }
+    },
+    enabled: !!user?.email,
+  });
+
+  const [profile, setProfile] = useState({});
+  const [notifications, setNotifications] = useState({ drops: true, orders: true, promotions: false, newsletter: true });
+
+  // Sync user data to profile state
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        firstName: user.full_name?.split(' ')[0] || '',
+        lastName: user.full_name?.split(' ')[1] || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        birthday: user.birthday || '',
+      });
+      setNotifications({
+        drops: user.notificationsDrops !== false,
+        orders: user.notificationsOrders !== false,
+        promotions: user.notificationsPromotions === true,
+        newsletter: user.notificationsNewsletter !== false,
+      });
+    }
+  }, [user]);
+
   const saveMutation = useMutation({
-    mutationFn: async (data) => { await new Promise(r => setTimeout(r, 600)); return data; },
-    onMutate: (data) => { setProfile(p => ({ ...p, ...data })); },
-    onSuccess: () => {},
+    mutationFn: async (data) => {
+      await base44.auth.updateMe({
+        phone: data.phone,
+        birthday: data.birthday,
+        notificationsDrops: notifications.drops,
+        notificationsOrders: notifications.orders,
+        notificationsPromotions: notifications.promotions,
+        notificationsNewsletter: notifications.newsletter,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+    },
+  });
+
+  const passwordMutation = useMutation({
+    mutationFn: async (data) => {
+      return await base44.functions.invoke('changePassword', data);
+    },
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async () => { await new Promise(r => setTimeout(r, 800)); },
-    onMutate: () => { setDeleted(true); },
-    onSuccess: () => { navigate("/"); },
+    mutationFn: async () => {
+      return await base44.functions.invoke('deleteAccount', {});
+    },
+    onSuccess: () => {
+      base44.auth.logout();
+    },
   });
 
   const handleSave = () => saveMutation.mutate(profile);
@@ -95,13 +164,13 @@ export default function VigoAccount() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
               <div style={{ position: "relative", flexShrink: 0 }}>
-                <div style={{ width: "clamp(64px,10vw,88px)", height: "clamp(64px,10vw,88px)", borderRadius: "50%", background: G2, border: `2px solid ${S}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "clamp(22px,4vw,32px)", fontWeight: 900, color: S }}>J</div>
+                <div style={{ width: "clamp(64px,10vw,88px)", height: "clamp(64px,10vw,88px)", borderRadius: "50%", background: G2, border: `2px solid ${S}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "clamp(22px,4vw,32px)", fontWeight: 900, color: S }}>{profile.firstName?.charAt(0) || 'U'}</div>
                 <div style={{ position: "absolute", bottom: 2, right: 2, width: 14, height: 14, borderRadius: "50%", background: "#0c6", border: "2px solid #0a0a0a" }} />
               </div>
-              <h1 style={{ fontSize: "clamp(24px,4vw,40px)", fontWeight: 900, letterSpacing: -1.5, lineHeight: 1, marginBottom: 6 }}>Jordan NYC</h1>
-              <div style={{ fontSize: 11, color: SD, marginBottom: 10 }}>jordan@vigonyc.com</div>
+              <h1 style={{ fontSize: "clamp(24px,4vw,40px)", fontWeight: 900, letterSpacing: -1.5, lineHeight: 1, marginBottom: 6 }}>{profile.firstName} {profile.lastName}</h1>
+              <div style={{ fontSize: 11, color: SD, marginBottom: 10 }}>{profile.email}</div>
               <div className="vigo-hero-stats" style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
-                {[["Member Since", "2024"], ["Orders", "3"], ["Saved", "6"]].map(([k, v]) => (
+                {[['Orders', orders.length.toString()], ['Email', profile.email ? '✓' : '—']].map(([k, v]) => (
                   <div key={k} style={{ background: G2, border: `.5px solid ${G3}`, padding: "6px 12px" }}>
                     <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>{k}</div>
                     <div style={{ fontSize: 13, fontWeight: 900, color: S }}>{v}</div>
@@ -145,12 +214,12 @@ export default function VigoAccount() {
           <div style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 600 }}>
             <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 4 }}>Personal Info</div>
             <div className="vigo-2col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <Field label="First Name" defaultValue="Jordan" />
-              <Field label="Last Name" defaultValue="NYC" />
+              <Field label="First Name" defaultValue={profile.firstName} />
+              <Field label="Last Name" defaultValue={profile.lastName} />
             </div>
-            <Field label="Email Address" type="email" defaultValue="jordan@vigonyc.com" />
-            <Field label="Phone" type="tel" defaultValue="+1 212 000 0000" />
-            <Field label="Birthday" type="date" defaultValue="1998-01-01" />
+            <Field label="Email Address" type="email" defaultValue={profile.email} disabled />
+            <Field label="Phone" type="tel" defaultValue={profile.phone} />
+            <Field label="Birthday" type="date" defaultValue={profile.birthday} />
 
             <div style={{ paddingTop: 8 }}>
               <button onClick={handleSave} style={{ background: saved ? "#0c6" : S, color: "#000", border: "none", padding: "14px 32px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", transition: "background .3s" }}>
@@ -162,55 +231,62 @@ export default function VigoAccount() {
 
         {/* Orders */}
         {tab === "orders" && (
-          <div>
+          <div style={{ width: "100%" }}>
             <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 20 }}>Order History</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              {ORDERS.map(order => (
-                <div
-                  key={order.id}
-                  style={{ background: G1, border: `.5px solid ${G3}`, padding: "clamp(16px,3vw,24px)", transition: "border-color .2s" }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = S}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = G3}
-                >
-                  <div className="vigo-order-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
-                        <div style={{ fontSize: 13, fontWeight: 900 }}>{order.id}</div>
-                        <div style={{ fontSize: 7, letterSpacing: 2, color: order.statusColor, textTransform: "uppercase", border: `.5px solid ${order.statusColor}`, padding: "3px 8px" }}>● {order.status}</div>
+            {orders.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "40px 20px", fontSize: 11, color: SD }}>No orders yet</div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                {orders.map(order => {
+                  const statusColor = order.status === 'Delivered' ? '#0c6' : order.status === 'Shipped' ? '#888' : '#e03';
+                  return (
+                    <div
+                      key={order.id}
+                      style={{ background: G1, border: `.5px solid ${G3}`, padding: "clamp(16px,3vw,24px)", transition: "border-color .2s" }}
+                      onMouseEnter={e => e.currentTarget.style.borderColor = S}
+                      onMouseLeave={e => e.currentTarget.style.borderColor = G3}
+                    >
+                      <div className="vigo-order-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
+                            <div style={{ fontSize: 13, fontWeight: 900 }}>{order.orderId}</div>
+                            <div style={{ fontSize: 7, letterSpacing: 2, color: statusColor, textTransform: "uppercase", border: `.5px solid ${statusColor}`, padding: "3px 8px" }}>● {order.status}</div>
+                          </div>
+                          <div style={{ fontSize: 10, color: SD, marginBottom: 4 }}>{new Date(order.created_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} · {order.pieces || 1} {order.pieces === 1 ? "item" : "items"}</div>
+                          <div style={{ fontSize: 11, color: "#888" }}>{order.items}</div>
+                        </div>
+                        <div className="vigo-order-amount" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
+                          <div style={{ fontSize: 20, fontWeight: 900, color: S }}>${order.total}</div>
+                          <button onClick={() => navigate("/track-order")} style={btnGhost}>Track →</button>
+                        </div>
                       </div>
-                      <div style={{ fontSize: 10, color: SD, marginBottom: 4 }}>{order.date} · {order.pieces} {order.pieces === 1 ? "item" : "items"}</div>
-                      <div style={{ fontSize: 11, color: "#888" }}>{order.items}</div>
                     </div>
-                    <div className="vigo-order-amount" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
-                      <div style={{ fontSize: 20, fontWeight: 900, color: S }}>${order.total}</div>
-                      <button onClick={() => navigate("/track-order")} style={btnGhost}>Track →</button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  );
+                })}
+              </div>
+            )}
             <div style={{ textAlign: "center", padding: "24px 0", fontSize: 10, color: SD }}>
-              3 orders total
+              {orders.length} {orders.length === 1 ? 'order' : 'orders'} total
             </div>
           </div>
         )}
 
         {/* Addresses */}
         {tab === "addresses" && (
-          <div>
+          <div style={{ width: "100%" }}>
             <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 20 }}>Saved Addresses</div>
             <div className="vigo-2col vigo-address-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
-              {[
-                { label: "Default Shipping", addr: "123 Flatbush Ave\nBrooklyn, NY 11238\nUnited States" },
-                { label: "Billing Address", addr: "Same as shipping address" },
-              ].map(a => (
-                <div key={a.label} style={{ background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "24px" }}>
+              {addresses.map(a => (
+                <div key={a.id} style={{ background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "24px" }}>
                   <div style={{ fontSize: 8, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 16 }}>{a.label}</div>
-                  <div style={{ fontSize: 12, color: "#aaa", lineHeight: 1.9, marginBottom: 20, whiteSpace: "pre-line" }}>{a.addr}</div>
+                  <div style={{ fontSize: 12, color: "#aaa", lineHeight: 1.9, marginBottom: 20 }}>
+                    {a.fullName}<br />{a.street}<br />{a.city}, {a.state} {a.zip}<br />{a.country}
+                  </div>
                   <button style={btnGhost}>Edit Address</button>
                 </div>
               ))}
             </div>
+            {addresses.length === 0 && <div style={{ textAlign: "center", padding: "40px 20px", fontSize: 11, color: SD }}>No saved addresses</div>}
             <button style={btnPrimary}>+ Add New Address</button>
           </div>
         )}
@@ -238,10 +314,17 @@ export default function VigoAccount() {
             <div>
               <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 16 }}>Change Password</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <Field label="Current Password" type="password" placeholder="••••••••" />
-                <Field label="New Password" type="password" placeholder="••••••••" />
-                <Field label="Confirm Password" type="password" placeholder="••••••••" />
-                <button style={{ ...btnPrimary, alignSelf: "flex-start" }}>Update Password</button>
+                <Field label="Current Password" type="password" placeholder="••••••••" id="currentPass" />
+                <Field label="New Password" type="password" placeholder="••••••••" id="newPass" />
+                <Field label="Confirm Password" type="password" placeholder="••••••••" id="confirmPass" />
+                <button onClick={() => {
+                  const curr = document.getElementById('currentPass')?.value;
+                  const newP = document.getElementById('newPass')?.value;
+                  const conf = document.getElementById('confirmPass')?.value;
+                  if (newP !== conf) { alert('Passwords do not match'); return; }
+                  passwordMutation.mutate({ currentPassword: curr, newPassword: newP });
+                }} style={{ ...btnPrimary, alignSelf: "flex-start" }}>{passwordMutation.isPending ? 'Updating...' : 'Update Password'}</button>
+                {passwordMutation.isSuccess && <div style={{ fontSize: 10, color: '#0c6' }}>✓ Password updated</div>}
               </div>
             </div>
 
@@ -253,7 +336,7 @@ export default function VigoAccount() {
               ) : (
                 <div className="vigo-danger-flex" style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
                   <span className="vigo-danger-span" style={{ fontSize: 11, color: "#ccc" }}>This cannot be undone.</span>
-                  <button style={{ background: "#e03", color: "#fff", border: "none", padding: "12px 20px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontWeight: 900, fontFamily: "inherit" }}>Yes, Delete</button>
+                  <button onClick={() => deleteMutation.mutate()} disabled={deleteMutation.isPending} style={{ background: "#e03", color: "#fff", border: "none", padding: "12px 20px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: deleteMutation.isPending ? 'not-allowed' : 'pointer', fontWeight: 900, fontFamily: "inherit", opacity: deleteMutation.isPending ? 0.6 : 1 }}>{deleteMutation.isPending ? 'Deleting...' : 'Yes, Delete'}</button>
                   <button onClick={() => setDeleteConfirm(false)} style={btnGhost}>Cancel</button>
                 </div>
               )}
@@ -263,7 +346,7 @@ export default function VigoAccount() {
 
         {/* Sign Out */}
         <div style={{ marginTop: 24, paddingTop: 24, borderTop: `.5px solid ${G3}` }}>
-          <button style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "12px 24px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>
+          <button onClick={() => base44.auth.logout()} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "12px 24px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>
             Sign Out
           </button>
         </div>

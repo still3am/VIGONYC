@@ -1,0 +1,47 @@
+{
+  "name": "Address",
+  "type": "object",
+  "properties": {
+    "label": {
+      "type": "string",
+      "description": "Address label (e.g. Default Shipping, Billing)"
+    },
+    "fullName": {
+      "type": "string",
+      "description": "Full name for this address"
+    },
+    "street": {
+      "type": "string",
+      "description": "Street address"
+    },
+    "city": {
+      "type": "string",
+      "description": "City"
+    },
+    "state": {
+      "type": "string",
+      "description": "State/Province"
+    },
+    "zip": {
+      "type": "string",
+      "description": "ZIP/Postal code"
+    },
+    "country": {
+      "type": "string",
+      "description": "Country"
+    },
+    "isDefault": {
+      "type": "boolean",
+      "description": "Is this the default address"
+    }
+  },
+  "required": [
+    "label",
+    "fullName",
+    "street",
+    "city",
+    "state",
+    "zip",
+    "country"
+  ]
+}

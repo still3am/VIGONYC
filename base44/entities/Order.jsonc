@@ -1,0 +1,47 @@
+{
+  "name": "Order",
+  "type": "object",
+  "properties": {
+    "orderId": {
+      "type": "string",
+      "description": "Unique order identifier"
+    },
+    "items": {
+      "type": "string",
+      "description": "Comma-separated list of items"
+    },
+    "total": {
+      "type": "number",
+      "description": "Total order amount"
+    },
+    "pieces": {
+      "type": "number",
+      "description": "Number of items in order"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Pending",
+        "Processing",
+        "Shipped",
+        "Delivered",
+        "Cancelled"
+      ],
+      "description": "Order status"
+    },
+    "shippingAddress": {
+      "type": "string",
+      "description": "Shipping address"
+    },
+    "trackingNumber": {
+      "type": "string",
+      "description": "Shipping tracking number"
+    }
+  },
+  "required": [
+    "orderId",
+    "items",
+    "total",
+    "status"
+  ]
+}
