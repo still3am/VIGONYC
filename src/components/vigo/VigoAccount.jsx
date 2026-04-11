@@ -246,32 +246,6 @@ export default function VigoAccount() {
           </div>
         )}
 
-        {/* Quick Links */}
-        <div style={{ marginTop: 48, borderTop: `.5px solid ${G3}`, paddingTop: 32 }}>
-          <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 16 }}>Quick Links</div>
-          <div className="vigo-links-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 2 }}>
-            {[
-              { label: "Browse Shop", to: "/shop", icon: "🛍" },
-              { label: "Drop Calendar", to: "/drops", icon: "📅" },
-              { label: "Track Order", to: "/track-order", icon: "📦" },
-              { label: "FAQ", to: "/faq", icon: "❓" },
-              { label: "Contact Us", to: "/contact", icon: "💬" },
-              { label: "Wishlist", to: "/wishlist", icon: "♡" },
-            ].map(({ label, to, icon }) => (
-              <button
-                key={to}
-                onClick={() => navigate(to)}
-                style={{ background: G1, border: `.5px solid ${G3}`, color: SD, padding: "16px", fontSize: 10, textAlign: "left", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 10, transition: "border-color .2s, color .2s" }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = S; e.currentTarget.style.color = "#fff"; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = G3; e.currentTarget.style.color = SD; }}
-              >
-                <span style={{ fontSize: 16 }}>{icon}</span>
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* Sign Out */}
         <div style={{ marginTop: 24, paddingTop: 24, borderTop: `.5px solid ${G3}` }}>
           <button style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "12px 24px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>
