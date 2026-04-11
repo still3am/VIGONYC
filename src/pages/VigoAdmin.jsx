@@ -210,7 +210,7 @@ export default function VigoAdmin() {
                 <Field label="Drop Announcement Text" value={settings.announcementText} onChange={v => updateSetting("announcementText", v)} />
               </SectionCard>
               <SectionCard title="Ticker Strip Items">
-                {settings.bannerItems.map((item, i) => (
+                {(settings?.bannerItems || []).map((item, i) => (
                   <Field key={i} label={`Item ${i + 1}`} value={item} onChange={v => {
                     const updated = [...settings.bannerItems];
                     updated[i] = v;

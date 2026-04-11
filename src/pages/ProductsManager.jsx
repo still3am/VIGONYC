@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Plus, Edit2, Trash2, X } from "lucide-react";
+import { useProducts } from "../hooks/useSiteSettings";
+import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
 const G1 = "#0a0a0a";
@@ -8,7 +10,7 @@ const G3 = "#1a1a1a";
 const SD = "#777";
 
 export default function ProductsManager({ settings, updateProduct }) {
-  const { products } = require('../../hooks/useSiteSettings').useProducts();
+  const { products } = useProducts();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -38,7 +40,6 @@ export default function ProductsManager({ settings, updateProduct }) {
 
   const handleDelete = (id) => {
     if (window.confirm("Delete this product?")) {
-      const base44 = require('@/api/base44Client').base44;
       base44.entities.Product.delete(id);
       setSelectedProduct(null);
     }
