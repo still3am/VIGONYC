@@ -64,7 +64,7 @@ export default function VigoCartDrawer({ open, onClose, items, subtotal, updateQ
         {/* Footer */}
         <div style={{ padding: "clamp(16px,3vw,24px) clamp(16px,4vw,24px)", borderTop: `.5px solid ${G3}`, display: "flex", flexDirection: "column", gap: 12, flexShrink: 0, background: `linear-gradient(180deg, ${G2}, ${G1})` }}>
           {subtotal >= 150 && (
-            <div style={{ fontSize: 8, letterSpacing: 1, color: "#0c6", textAlign: "center", background: "rgba(0,204,102,.08)", padding: "10px 12px", border: `.5px solid rgba(0,204,102,.25)", fontWeight: 700, textTransform: "uppercase" }}>
+            <div style={{ fontSize: 8, letterSpacing: 1, color: "#0c6", textAlign: "center", background: "rgba(0,204,102,.08)", padding: "10px 12px", border: ".5px solid rgba(0,204,102,.25)", fontWeight: 700, textTransform: "uppercase" }}>
               ✓ Free shipping unlocked
             </div>
           )}
@@ -79,7 +79,7 @@ export default function VigoCartDrawer({ open, onClose, items, subtotal, updateQ
           <button onClick={onCheckout} style={{ background: S, color: "#000", border: "none", padding: "clamp(12px,2vw,16px)", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", width: "100%", fontFamily: "inherit", transition: "opacity .2s" }} onMouseEnter={e => e.target.style.opacity = "0.9"} onMouseLeave={e => e.target.style.opacity = "1"}>
             Checkout
           </button>
-          <button onClick={onClose} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "clamp(12px, 2vw, 16px)", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", width: "100%", fontFamily: "inherit", transition: "all .2s" }} onMouseEnter={e => { e.target.style.borderColor = S; e.target.style.color = "#fff"; }} onMouseLeave={e => { e.target.style.borderColor = G3; e.target.style.color = SD; }}>
+          <button onClick={onClose} style={{ background: "none", border: "0.5px solid " + G3, color: SD, padding: "clamp(12px, 2vw, 16px)", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", width: "100%", fontFamily: "inherit", transition: "all .2s" }} onMouseEnter={e => { e.target.style.borderColor = S; e.target.style.color = "#fff"; }} onMouseLeave={e => { e.target.style.borderColor = G3; e.target.style.color = SD; }}>
             Continue Shopping
           </button>
         </div>
