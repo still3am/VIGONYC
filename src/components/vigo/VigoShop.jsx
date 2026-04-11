@@ -3,22 +3,14 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import PullToRefresh from "./PullToRefresh";
 import { useOutletContext } from "react-router-dom";
 import ProductCard from "./ProductCard";
+import { useVigoSettings } from "../../hooks/useVigoSettings";
 
 const S = "#C0C0C0";
 const G1 = "#0a0a0a";
 const G3 = "#1a1a1a";
 const SD = "#777";
 
-const ALL_PRODUCTS = [
-  { id: 1, name: "Chrome V Tee", cat: "Tops", price: 68, tag: "new", opacity: 1, colors: ["Black","White"], sizes: ["S","M","L","XL"], collection: "Chrome Series" },
-  { id: 2, name: "NYC Cargo Pant", cat: "Bottoms", price: 145, tag: "drop", opacity: 0.4, colors: ["Black","Graphite"], sizes: ["S","M","L"], collection: "Archive" },
-  { id: 3, name: "Silver Label Hoodie", cat: "Tops", price: 128, tag: "new", tag2: "hot", opacity: 0.6, colors: ["Silver","Black"], sizes: ["M","L","XL"], collection: "Chrome Series" },
-  { id: 4, name: "5-Panel Cap", cat: "Headwear", price: 52, tag: "ltd", opacity: 0.45, colors: ["Black"], sizes: ["One Size"], collection: "Essentials" },
-  { id: 5, name: "V Jogger", cat: "Bottoms", price: 95, tag: "new", opacity: 0.7, colors: ["Black","Graphite"], sizes: ["S","M","L","XL"], collection: "Essentials" },
-  { id: 6, name: "Chrome Tech Jacket", cat: "Outerwear", price: 245, tag: "ltd", opacity: 0.5, colors: ["Black"], sizes: ["S","M","L"], collection: "Chrome Series" },
-  { id: 7, name: "NYC Tote", cat: "Accessories", price: 38, tag: null, opacity: 0.8, colors: ["Black","White"], sizes: ["One Size"], collection: "Essentials" },
-  { id: 8, name: "VIGO Socks 3-Pack", cat: "Accessories", price: 28, tag: "new", opacity: 0.9, colors: ["Black","Silver"], sizes: ["One Size"], collection: "Essentials" },
-];
+// Products are now loaded from useVigoSettings hook below
 
 const CATEGORIES = ["All","Tops","Bottoms","Outerwear","Headwear","Accessories"];
 const SIZES = ["XS","S","M","L","XL","XXL","One Size"];
@@ -81,6 +73,7 @@ function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes,
 
 export default function VigoShop() {
   const { productImg, wishlist, toggleWishlist, addToCart } = useOutletContext();
+  const { settings } = useVigoSettings();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initCat = searchParams.get("cat") || "All";
@@ -96,7 +89,7 @@ export default function VigoShop() {
   const toggleArr = (arr, setArr, val) => setArr(prev => prev.includes(val) ? prev.filter(x => x !== val) : [...prev, val]);
 
   const filtered = useMemo(() => {
-    let p = [...ALL_PRODUCTS];
+    let p = [...settings.products];
     if (activeCat !== "All") p = p.filter(x => x.cat === activeCat);
     if (selectedSizes.length) p = p.filter(x => x.sizes.some(s => selectedSizes.includes(s)));
     if (selectedColors.length) p = p.filter(x => x.colors.some(c => selectedColors.includes(c)));
@@ -112,6 +105,8 @@ export default function VigoShop() {
   const handleRefresh = useCallback(() => new Promise(res => setTimeout(() => { setRefreshKey(k => k + 1); res(); }, 800)), []);
 
   const filterProps = { activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr };
+
+  const CATEGORIES = [...new Set(["All", ...settings.products.map(p => p.cat)])];
 
   const activeFiltersCount = [
     activeCat !== "All" ? 1 : 0,
