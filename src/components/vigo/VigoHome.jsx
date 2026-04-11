@@ -78,7 +78,7 @@ export default function VigoHome() {
       {/* ── HERO ── */}
       <div className="vigo-hero-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "88vh", borderBottom: `.5px solid ${G3}`, opacity: heroLoaded ? 1 : 0, transform: heroLoaded ? "none" : "translateY(12px)", transition: "opacity .5s, transform .5s" }}>
         <div style={{ padding: "72px 48px 72px 32px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 28, background: "rgba(192,192,192,.06)", border: `.5px solid rgba(192,192,192,.15)`, padding: "8px 16px", margin: "0 auto 28px" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 28, background: "rgba(192,192,192,.06)", border: `.5px solid rgba(192,192,192,.15)`, padding: "8px 16px", alignSelf: "flex-start" }}>
             <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 2s infinite" }} />
             <span style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase" }}>SS25 Collection — Now Live</span>
           </div>
@@ -88,7 +88,7 @@ export default function VigoHome() {
               <em style={{ color: "transparent", WebkitTextStroke: `1px ${S}`, fontStyle: "italic" }}>NYC</em>
             </span>
           </h1>
-          <p style={{ fontSize: 13, color: SD, lineHeight: 1.9, maxWidth: 360, marginBottom: 36 }}>
+          <p style={{ fontSize: 13, color: SD, lineHeight: 1.9, maxWidth: 360, marginBottom: 36 }} className="text-center">
             Born in New York City. Built from concrete and culture. Worn by the ones who make the city move.
           </p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -234,48 +234,32 @@ export default function VigoHome() {
       </div>
 
       {/* ── NEWSLETTER ── */}
-      <div style={{ margin: "clamp(20px,4vw,32px)", background: `linear-gradient(135deg, rgba(10,10,10,.6) 0%, rgba(15,15,15,.8) 100%)`, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "clamp(32px,5vw,52px) clamp(24px,5vw,48px)", textAlign: "center", position: "relative", overflow: "hidden", backdropFilter: "blur(12px)" }}>
-        <div style={{ position: "absolute", top: -80, right: -80, width: 260, height: 260, borderRadius: "50%", background: `radial-gradient(circle, rgba(192,192,192,.04) 0%, transparent 70%)`, pointerEvents: "none" }} />
-        <div style={{ position: "absolute", bottom: -60, left: -60, width: 180, height: 180, borderRadius: "50%", background: `radial-gradient(circle, rgba(192,192,192,.03) 0%, transparent 70%)`, pointerEvents: "none" }} />
-        <div style={{ fontSize: 8, letterSpacing: 5, color: S, textTransform: "uppercase", marginBottom: 18, position: "relative", fontWeight: 700 }}>✦ Join The Drop List ✦</div>
-        <h2 style={{ fontSize: "clamp(28px,5vw,48px)", fontWeight: 900, letterSpacing: -2, marginBottom: 16, position: "relative", lineHeight: 1 }}>Get <span style={{ color: S }}>First Access</span></h2>
-        <p style={{ fontSize: "clamp(11px,1.5vw,13px)", color: SD, marginBottom: 32, position: "relative", lineHeight: 1.8, maxWidth: 480, margin: "0 auto 32px" }}>Drop alerts, exclusive offers, and NYC-only releases delivered straight to your inbox. No spam, no bullshit. Just heat.</p>
+      <div style={{ margin: "32px 32px 64px", background: `linear-gradient(135deg, #0a0a0a, #0f0f0f)`, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "52px 48px", textAlign: "center", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: -60, right: -60, width: 200, height: 200, borderRadius: "50%", border: `.5px solid rgba(192,192,192,.06)` }} />
+        <div style={{ position: "absolute", bottom: -40, left: -40, width: 140, height: 140, borderRadius: "50%", border: `.5px solid rgba(192,192,192,.04)` }} />
+        <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14, position: "relative" }}>✦ Join The Drop List ✦</div>
+        <div style={{ fontSize: "clamp(28px,4vw,40px)", fontWeight: 900, letterSpacing: -1, marginBottom: 12, position: "relative" }}>Get First Access</div>
+        <div style={{ fontSize: 12, color: SD, marginBottom: 32, position: "relative" }}>Drop alerts, exclusive offers, NYC-only releases. No spam, ever.</div>
         {subscribed ?
-        <div style={{ fontSize: 13, color: "#0c6", padding: "16px 0", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}><span>✓</span> You're in. Watch for the next drop alert.</div> :
+        <div style={{ fontSize: 13, color: "#0c6", padding: "16px 0" }}>✓ You're in. Watch for the next drop alert.</div> :
 
-        <div style={{ display: "flex", gap: 0, maxWidth: 520, margin: "0 auto", position: "relative", flexWrap: "wrap", borderRadius: "2px", justifyContent: "center" }}>
-            <input value={email} onChange={(e) => setEmail(e.target.value)} onKeyPress={(e) => e.key === "Enter" && email.trim() && setSubscribed(true)} placeholder="your@email.com" style={{ flex: 1, minWidth: "160px", background: "#0a0a0a", border: `.5px solid #222`, borderRight: "none", color: "#fff", padding: "14px 20px", fontSize: 12, outline: "none", fontFamily: "inherit", transition: "border-color .2s", boxSizing: "border-box" }} onFocus={(e) => e.target.style.borderColor = S} onBlur={(e) => e.target.style.borderColor = "#222"} />
-            <button onClick={() => email.trim() && setSubscribed(true)} disabled={!email.trim()} style={{ ...btnP, opacity: email.trim() ? 1 : 0.6, cursor: email.trim() ? "pointer" : "not-allowed" }}>Join the List</button>
+        <div style={{ display: "flex", gap: 0, maxWidth: 460, margin: "0 auto", position: "relative" }}>
+            <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" style={{ flex: 1, background: "#111", border: `.5px solid #333`, borderRight: "none", color: "#fff", padding: "14px 20px", fontSize: 12, outline: "none", fontFamily: "inherit" }} />
+            <button onClick={() => email.trim() && setSubscribed(true)} style={btnP}>Join the List</button>
           </div>
         }
       </div>
 
       <style>{`
         @media(max-width:900px){
-          .vigo-hero-grid{grid-template-columns:1fr !important; min-height: auto !important;}
-          .vigo-hero-grid>div:first-child{padding: 48px 24px !important;}
-          .vigo-hero-grid>div:last-child{min-height:280px; border-left: none !important; border-top: 0.5px solid #1a1a1a !important;}
-          .vigo-hero-grid h1{font-size: clamp(32px, 5vw, 56px) !important; line-height: 0.95 !important;}
-          .vigo-kpi-grid{grid-template-columns:repeat(2,1fr) !important; gap: 12px !important; margin-top: 40px !important; border-top: none !important; padding-top: 24px !important; border-top: 0.5px solid #1a1a1a !important;}
-          .vigo-kpi-grid>div{padding: 16px 0 !important; padding-right: 0 !important; border-right: none !important; border-bottom: 0.5px solid #1a1a1a; text-align: center;}
-          .vigo-kpi-grid>div:nth-child(odd){border-right: 0.5px solid #1a1a1a !important; padding-right: 8px !important;}
-          .vigo-kpi-grid>div:nth-child(even){padding-left: 8px !important;}
-          .vigo-4col{grid-template-columns:repeat(2,1fr) !important; gap: 12px !important;}
-          .vigo-3col{grid-template-columns:1fr !important; gap: 12px !important;}
+          .vigo-hero-grid{grid-template-columns:1fr !important;}
+          .vigo-hero-grid>div:last-child{min-height:320px;}
+          .vigo-kpi-grid{grid-template-columns:repeat(2,1fr) !important;}
+          .vigo-4col{grid-template-columns:repeat(2,1fr) !important;}
+          .vigo-3col{grid-template-columns:1fr !important;}
           .vigo-2col{grid-template-columns:1fr !important;}
-          .vigo-2col>div{border-right: none !important; border-bottom: 0.5px solid #1a1a1a !important; padding: 40px 24px !important;}
-          .vigo-2col>div:last-child{padding: 24px !important;}
-          .vigo-2col-story>div:first-child{border-right: none !important; border-bottom: 0.5px solid #1a1a1a !important;}
-          .vigo-2col-story>div:last-child{display: grid !important; grid-template-columns: 1fr 1fr !important;}
-          .vigo-2col-story .vigo-2col>div>div:nth-child(2){grid-template-columns: 1fr !important;}
         }
-        @media(max-width:480px){
-          .vigo-4col{grid-template-columns:1fr !important;}
-          .vigo-hero-grid>div:first-child{padding: 32px 16px !important;}
-          .vigo-hero-grid>div:first-child>div:nth-child(3){flex-direction: column !important; gap: 8px !important;}
-          .vigo-2col-story>div:last-child{grid-template-columns: 1fr !important;}
-          .vigo-2col-story>div:last-child>div>div{border-right: none !important; border-bottom: 0.5px solid #1a1a1a !important; padding: 20px !important;}
-        }
+        @media(max-width:480px){.vigo-4col{grid-template-columns:1fr !important;}}
         @keyframes vigo-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
       `}</style>
     </div>);
