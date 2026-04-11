@@ -38,21 +38,6 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
       {/* Top silver accent bar */}
       <div style={{ height: 2, background: "linear-gradient(90deg,transparent,#888,#E8E8E8,#C0C0C0,#E8E8E8,#888,transparent)" }} />
 
-      {/* Ticker */}
-      <div style={{ background: "#0a0a0a", borderBottom: `.5px solid ${G3}`, overflow: "hidden", height: 30, display: "flex", alignItems: "center" }}>
-        <div className="vigo-ticker-track">
-          {[...Array(2)].map((_, ri) =>
-          <span key={ri} style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
-              {["Free shipping over $150", "New drop every friday", "VIGONYC SS25", "NYC made — limited units", "No restocks. Move fast.", "Free returns within 30 days"].map((t, i) =>
-            <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 24, padding: "0 12px" }}>
-                  <span style={{ fontSize: 9, letterSpacing: 3, color: SD, textTransform: "uppercase", whiteSpace: "nowrap" }}>{t}</span>
-                  <span style={{ color: S, fontSize: 8 }}>✦</span>
-                </span>
-            )}
-            </span>
-          )}
-        </div>
-      </div>
 
       {/* Search overlay */}
       {searchOpen &&
@@ -127,8 +112,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
       </nav>
 
       <style>{`
-        @keyframes vigo-ticker { from { transform: translateX(0) } to { transform: translateX(-50%) } }
-        .vigo-ticker-track { display: flex; white-space: nowrap; animation: vigo-ticker 30s linear infinite; }
+
         @media (min-width: 900px) { .vigo-mobile-menu-btn { display: none !important; } }
         @media (max-width: 899px) { .vigo-desktop-nav { display: none !important; } .vigo-icon-desktop { display: none !important; } }
         @media (max-width: 899px) { .vigo-nav-logo { position: absolute; left: 50%; transform: translateX(-50%); } .vigo-nav-logo-img { width: 60px !important; height: 60px !important; } }
