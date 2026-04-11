@@ -72,7 +72,8 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
             <div style={{ lineHeight: 1 }}>
               <div className="vigo-nav-wordmark" style={{ fontSize: 17, fontWeight: 900, letterSpacing: 4, color: "#fff", textTransform: "uppercase" }}>VIGO<span style={{ color: S }}>NYC</span></div>
               <style>{`.vigo-nav-wordmark { display: block; } @media(max-width:768px){ .vigo-nav-wordmark { display: none !important; } }`}</style>
-              <div style={{ fontSize: 7, letterSpacing: 4, color: SD, textTransform: "uppercase", marginTop: 1 }}>New York City</div>
+              <div className="vigo-nav-subtitle" style={{ fontSize: 7, letterSpacing: 4, color: SD, textTransform: "uppercase", marginTop: 1 }}>New York City</div>
+              <style>{`.vigo-nav-subtitle { display: block; } @media(max-width:768px){ .vigo-nav-subtitle { display: none !important; } }`}</style>
             </div>
           </Link>
 
