@@ -50,28 +50,43 @@ export default function VigoWishlist() {
   return (
     <div style={{ minHeight: "70vh" }}>
       {/* Header strip */}
-      <div style={{ borderBottom: `.5px solid ${G3}`, background: G1 }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(24px,5vw,40px) clamp(16px,4vw,24px) 24px" }}>
-          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+      <div style={{ borderBottom: `.5px solid ${G3}`, background: "linear-gradient(180deg,#0d0d0d 0%,#0a0a0a 100%)", position: "relative", overflow: "hidden" }}>
+        {/* Chrome accent line */}
+        <div style={{ height: 1, background: `linear-gradient(90deg,transparent,${S},transparent)`, opacity: .4 }} />
+        {/* Subtle grid pattern */}
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(192,192,192,.03) 1px,transparent 1px)", backgroundSize: "24px 24px", pointerEvents: "none" }} />
+
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(28px,5vw,48px) clamp(16px,4vw,24px) clamp(20px,4vw,32px)", position: "relative" }}>
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 20 }}>
+            {/* Left */}
             <div>
-              <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 10 }}>✦ Saved Items</div>
-              <h1 style={{ fontSize: "clamp(26px,5vw,52px)", fontWeight: 900, letterSpacing: -2, lineHeight: 1 }}>
-                Wishlist
-                <span style={{ fontSize: "clamp(13px,2vw,20px)", color: SD, fontWeight: 400, marginLeft: 10 }}>
-                  {savedItems.length} {savedItems.length === 1 ? "item" : "items"}
-                </span>
-              </h1>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                <div style={{ width: 4, height: 4, background: S, transform: "rotate(45deg)" }} />
+                <span style={{ fontSize: 8, letterSpacing: 5, color: S, textTransform: "uppercase" }}>Saved Items</span>
+                <div style={{ width: 4, height: 4, background: S, transform: "rotate(45deg)" }} />
+              </div>
+              <h1 style={{ fontSize: "clamp(26px,5vw,56px)", fontWeight: 900, letterSpacing: -2, lineHeight: 1, marginBottom: 12 }}>Wishlist</h1>
+              <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: savedItems.length > 0 ? "#0c6" : "#333" }} />
+                  <span style={{ fontSize: 10, color: SD }}>{savedItems.length} {savedItems.length === 1 ? "item" : "items"} saved</span>
+                </div>
+                {savedItems.length > 0 && (
+                  <div style={{ width: 1, height: 12, background: G3 }} />
+                )}
+                {savedItems.length > 0 && (
+                  <span style={{ fontSize: 10, color: SD }}>Total value: <span style={{ color: S, fontWeight: 900 }}>${totalValue}</span></span>
+                )}
+              </div>
             </div>
 
+            {/* Right */}
             {savedItems.length > 0 && (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
-                <div style={{ fontSize: 10, color: SD }}>
-                  Total value: <span style={{ color: S, fontWeight: 900, fontSize: 16 }}>${totalValue}</span>
-                </div>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
                 <button onClick={handleAddAll} style={{
                   background: allAddedBag ? "#0c6" : S,
                   color: "#000", border: "none",
-                  padding: "12px 24px", fontSize: 9, letterSpacing: 3,
+                  padding: "14px 28px", fontSize: 9, letterSpacing: 3,
                   textTransform: "uppercase", fontWeight: 900, cursor: "pointer",
                   fontFamily: "inherit", transition: "background .3s",
                   display: "flex", alignItems: "center", gap: 8,
@@ -82,6 +97,7 @@ export default function VigoWishlist() {
                     <><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> Add All to Bag</>
                   )}
                 </button>
+                <div style={{ fontSize: 8, color: "#333", letterSpacing: 1 }}>No restocks guaranteed</div>
               </div>
             )}
           </div>
