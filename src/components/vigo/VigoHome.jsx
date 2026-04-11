@@ -12,44 +12,44 @@ const G3 = "#1a1a1a";
 const NEXT_DROP = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000);
 
 const PRODUCTS = [
-  { id: 1, name: "Chrome V Tee", cat: "Tops / Essential", price: 68, tag: "new", opacity: 1 },
-  { id: 2, name: "NYC Cargo Pant", cat: "Bottoms / Heavy", price: 145, tag: "drop", opacity: 0.4 },
-  { id: 3, name: "Silver Label Hoodie", cat: "Tops / Outerwear", price: 128, tag: "new", tag2: "hot", opacity: 0.6 },
-  { id: 4, name: "5-Panel Cap", cat: "Headwear / Unisex", price: 52, tag: "ltd", opacity: 0.45 },
-];
+{ id: 1, name: "Chrome V Tee", cat: "Tops / Essential", price: 68, tag: "new", opacity: 1 },
+{ id: 2, name: "NYC Cargo Pant", cat: "Bottoms / Heavy", price: 145, tag: "drop", opacity: 0.4 },
+{ id: 3, name: "Silver Label Hoodie", cat: "Tops / Outerwear", price: 128, tag: "new", tag2: "hot", opacity: 0.6 },
+{ id: 4, name: "5-Panel Cap", cat: "Headwear / Unisex", price: 52, tag: "ltd", opacity: 0.45 }];
+
 
 const CATEGORIES = [
-  { name: "Tops", count: "14 styles" },
-  { name: "Bottoms", count: "9 styles" },
-  { name: "Outerwear", count: "6 styles" },
-  { name: "Accessories", count: "12 styles" },
-];
+{ name: "Tops", count: "14 styles" },
+{ name: "Bottoms", count: "9 styles" },
+{ name: "Outerwear", count: "6 styles" },
+{ name: "Accessories", count: "12 styles" }];
+
 
 const REVIEWS = [
-  { name: "Jordan M.", loc: "Brooklyn, NY", rating: 5, text: "The Chrome V Tee is everything. Quality is insane for the price. Already ordered 3 more." },
-  { name: "Aaliyah T.", loc: "Harlem, NY", rating: 5, text: "Finally a brand that gets it. VIGONYC hits different — the silver hardware on the cargo pants is a vibe." },
-  { name: "Marcus R.", loc: "Queens, NY", rating: 5, text: "Limited drops are real — got the SS25 hoodie on release day. Worth the W." },
-];
+{ name: "Jordan M.", loc: "Brooklyn, NY", rating: 5, text: "The Chrome V Tee is everything. Quality is insane for the price. Already ordered 3 more." },
+{ name: "Aaliyah T.", loc: "Harlem, NY", rating: 5, text: "Finally a brand that gets it. VIGONYC hits different — the silver hardware on the cargo pants is a vibe." },
+{ name: "Marcus R.", loc: "Queens, NY", rating: 5, text: "Limited drops are real — got the SS25 hoodie on release day. Worth the W." }];
+
 
 function MiniCountdown({ target }) {
   const [t, setT] = useState({ d: 0, h: 0, m: 0, s: 0 });
   useEffect(() => {
     const tick = () => {
       const diff = Math.max(0, target - Date.now());
-      setT({ d: Math.floor(diff / 86400000), h: Math.floor((diff % 86400000) / 3600000), m: Math.floor((diff % 3600000) / 60000), s: Math.floor((diff % 60000) / 1000) });
+      setT({ d: Math.floor(diff / 86400000), h: Math.floor(diff % 86400000 / 3600000), m: Math.floor(diff % 3600000 / 60000), s: Math.floor(diff % 60000 / 1000) });
     };
-    tick(); const id = setInterval(tick, 1000); return () => clearInterval(id);
+    tick();const id = setInterval(tick, 1000);return () => clearInterval(id);
   }, [target]);
   return (
     <span style={{ display: "inline-flex", gap: 12, alignItems: "baseline" }}>
-      {[["D", t.d], ["H", t.h], ["M", t.m], ["S", t.s]].map(([l, v]) => (
-        <span key={l} style={{ display: "inline-flex", alignItems: "baseline", gap: 3 }}>
+      {[["D", t.d], ["H", t.h], ["M", t.m], ["S", t.s]].map(([l, v]) =>
+      <span key={l} style={{ display: "inline-flex", alignItems: "baseline", gap: 3 }}>
           <span style={{ fontSize: 22, fontWeight: 900, color: "#fff", fontVariantNumeric: "tabular-nums" }}>{String(v).padStart(2, "0")}</span>
           <span style={{ fontSize: 8, letterSpacing: 1, color: SD }}>{l}</span>
         </span>
-      ))}
-    </span>
-  );
+      )}
+    </span>);
+
 }
 
 export default function VigoHome() {
@@ -59,14 +59,14 @@ export default function VigoHome() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
-  useEffect(() => { const t = setTimeout(() => setHeroLoaded(true), 80); return () => clearTimeout(t); }, []);
+  useEffect(() => {const t = setTimeout(() => setHeroLoaded(true), 80);return () => clearTimeout(t);}, []);
 
   return (
     <div>
       {/* ── DROP ALERT BANNER ── */}
       <div onClick={() => navigate("/drops")} style={{ background: `linear-gradient(90deg, #0a0a0a, #111, #0a0a0a)`, borderBottom: `.5px solid ${G3}`, padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "center", gap: 24, cursor: "pointer", flexWrap: "wrap", gap: 16 }}
-        onMouseEnter={e => e.currentTarget.style.borderColor = S}
-        onMouseLeave={e => e.currentTarget.style.borderColor = G3}>
+      onMouseEnter={(e) => e.currentTarget.style.borderColor = S}
+      onMouseLeave={(e) => e.currentTarget.style.borderColor = G3} className="my-2 py-4">
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 1.5s infinite" }} />
           <span style={{ fontSize: 9, letterSpacing: 4, color: SD, textTransform: "uppercase" }}>Drop 02 — Mirror Series</span>
@@ -98,12 +98,12 @@ export default function VigoHome() {
 
           {/* KPIs */}
           <div className="vigo-kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 0, marginTop: 56, borderTop: `.5px solid ${G3}` }}>
-            {[["500+","Pieces Dropped"],["12K+","NYC Community"],["100%","Street Ready"],["4.9★","Avg. Rating"]].map(([n,l], i, arr) => (
-              <div key={l} style={{ padding: "20px 0 0", paddingRight: i < arr.length - 1 ? 16 : 0, borderRight: i < arr.length - 1 ? `.5px solid ${G3}` : "none", paddingLeft: i > 0 ? 16 : 0 }}>
+            {[["500+", "Pieces Dropped"], ["12K+", "NYC Community"], ["100%", "Street Ready"], ["4.9★", "Avg. Rating"]].map(([n, l], i, arr) =>
+            <div key={l} style={{ padding: "20px 0 0", paddingRight: i < arr.length - 1 ? 16 : 0, borderRight: i < arr.length - 1 ? `.5px solid ${G3}` : "none", paddingLeft: i > 0 ? 16 : 0 }}>
                 <div style={{ fontSize: 22, fontWeight: 900, color: "#fff", letterSpacing: -1 }}>{n}</div>
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 4 }}>{l}</div>
               </div>
-            ))}
+            )}
           </div>
         </div>
 
@@ -135,13 +135,13 @@ export default function VigoHome() {
       <div style={{ padding: "52px 32px" }}>
         <SectionHeader title="Featured Drops" sub="SS25 Season" cta="View All →" onCta={() => navigate("/shop")} />
         <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
-          {PRODUCTS.map(p => (
-            <ProductCard key={p.id} product={p} img={productImg}
-              wishlisted={wishlist.includes(p.id)}
-              onWishlist={() => toggleWishlist(p.id)}
-              onAdd={() => addToCart({ id: p.id, name: p.name, meta: "Size: M · Color: Black", price: p.price })}
-              onClick={() => navigate(`/product/${p.id}`)} />
-          ))}
+          {PRODUCTS.map((p) =>
+          <ProductCard key={p.id} product={p} img={productImg}
+          wishlisted={wishlist.includes(p.id)}
+          onWishlist={() => toggleWishlist(p.id)}
+          onAdd={() => addToCart({ id: p.id, name: p.name, meta: "Size: M · Color: Black", price: p.price })}
+          onClick={() => navigate(`/product/${p.id}`)} />
+          )}
         </div>
       </div>
 
@@ -173,17 +173,17 @@ export default function VigoHome() {
       <div style={{ padding: "52px 32px" }}>
         <SectionHeader title="Shop by Category" sub="" />
         <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 2 }}>
-          {CATEGORIES.map((cat, i) => (
-            <div key={cat.name} onClick={() => navigate(`/shop?cat=${cat.name}`)}
-              style={{ background: G1, border: `.5px solid ${G3}`, padding: "40px 24px 32px", cursor: "pointer", transition: "border-color .2s, background .2s", textAlign: "center", position: "relative", overflow: "hidden" }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = S; e.currentTarget.style.background = "#0f0f0f"; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = G3; e.currentTarget.style.background = G1; }}>
+          {CATEGORIES.map((cat, i) =>
+          <div key={cat.name} onClick={() => navigate(`/shop?cat=${cat.name}`)}
+          style={{ background: G1, border: `.5px solid ${G3}`, padding: "40px 24px 32px", cursor: "pointer", transition: "border-color .2s, background .2s", textAlign: "center", position: "relative", overflow: "hidden" }}
+          onMouseEnter={(e) => {e.currentTarget.style.borderColor = S;e.currentTarget.style.background = "#0f0f0f";}}
+          onMouseLeave={(e) => {e.currentTarget.style.borderColor = G3;e.currentTarget.style.background = G1;}}>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 10 }}>{cat.count}</div>
               <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: -1 }}>{cat.name}</div>
               <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginTop: 16 }}>Browse →</div>
               <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: 40, height: 2, background: `linear-gradient(90deg, transparent, ${S}, transparent)` }} />
             </div>
-          ))}
+          )}
         </div>
       </div>
 
@@ -192,8 +192,8 @@ export default function VigoHome() {
       {/* ── REVIEWS ── */}
       <div style={{ padding: "32px 32px 52px" }}>
         <div className="vigo-3col" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
-          {REVIEWS.map((r, i) => (
-            <div key={i} style={{ background: G1, border: `.5px solid ${G3}`, padding: "28px", position: "relative" }}>
+          {REVIEWS.map((r, i) =>
+          <div key={i} style={{ background: G1, border: `.5px solid ${G3}`, padding: "28px", position: "relative" }}>
               <div style={{ position: "absolute", top: -1, left: 0, right: 0, height: 1, background: `linear-gradient(90deg, transparent, ${S}, transparent)` }} />
               <div style={{ color: S, fontSize: 14, marginBottom: 14 }}>{"★".repeat(r.rating)}</div>
               <p style={{ fontSize: 13, lineHeight: 1.8, color: "#ccc", marginBottom: 20 }}>"{r.text}"</p>
@@ -205,7 +205,7 @@ export default function VigoHome() {
                 <div style={{ fontSize: 8, color: S, letterSpacing: 2 }}>VERIFIED</div>
               </div>
             </div>
-          ))}
+          )}
         </div>
       </div>
 
@@ -223,12 +223,12 @@ export default function VigoHome() {
             <button onClick={() => navigate("/about")} style={btnO}>Our Story →</button>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderRight: "none" }}>
-            {[["500+","Pieces Dropped"],["12K+","Community"],["100%","NYC Made"],["4.9★","Avg Rating"]].map(([n,l],i) => (
-              <div key={l} style={{ padding: "36px 28px", borderRight: i % 2 === 0 ? `.5px solid ${G3}` : "none", borderBottom: i < 2 ? `.5px solid ${G3}` : "none", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            {[["500+", "Pieces Dropped"], ["12K+", "Community"], ["100%", "NYC Made"], ["4.9★", "Avg Rating"]].map(([n, l], i) =>
+            <div key={l} style={{ padding: "36px 28px", borderRight: i % 2 === 0 ? `.5px solid ${G3}` : "none", borderBottom: i < 2 ? `.5px solid ${G3}` : "none", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 <div style={{ fontSize: 32, fontWeight: 900, color: S, letterSpacing: -1 }}>{n}</div>
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 8 }}>{l}</div>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>
@@ -240,14 +240,14 @@ export default function VigoHome() {
         <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14, position: "relative" }}>✦ Join The Drop List ✦</div>
         <div style={{ fontSize: "clamp(28px,4vw,40px)", fontWeight: 900, letterSpacing: -1, marginBottom: 12, position: "relative" }}>Get First Access</div>
         <div style={{ fontSize: 12, color: SD, marginBottom: 32, position: "relative" }}>Drop alerts, exclusive offers, NYC-only releases. No spam, ever.</div>
-        {subscribed ? (
-          <div style={{ fontSize: 13, color: "#0c6", padding: "16px 0" }}>✓ You're in. Watch for the next drop alert.</div>
-        ) : (
-          <div style={{ display: "flex", gap: 0, maxWidth: 460, margin: "0 auto", position: "relative" }}>
-            <input value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" style={{ flex: 1, background: "#111", border: `.5px solid #333`, borderRight: "none", color: "#fff", padding: "14px 20px", fontSize: 12, outline: "none", fontFamily: "inherit" }} />
+        {subscribed ?
+        <div style={{ fontSize: 13, color: "#0c6", padding: "16px 0" }}>✓ You're in. Watch for the next drop alert.</div> :
+
+        <div style={{ display: "flex", gap: 0, maxWidth: 460, margin: "0 auto", position: "relative" }}>
+            <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" style={{ flex: 1, background: "#111", border: `.5px solid #333`, borderRight: "none", color: "#fff", padding: "14px 20px", fontSize: 12, outline: "none", fontFamily: "inherit" }} />
             <button onClick={() => email.trim() && setSubscribed(true)} style={btnP}>Join the List</button>
           </div>
-        )}
+        }
       </div>
 
       <style>{`
@@ -262,8 +262,8 @@ export default function VigoHome() {
         @media(max-width:480px){.vigo-4col{grid-template-columns:1fr !important;}}
         @keyframes vigo-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
       `}</style>
-    </div>
-  );
+    </div>);
+
 }
 
 const btnP = { background: S, color: "#000", border: "none", padding: "14px 32px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" };
