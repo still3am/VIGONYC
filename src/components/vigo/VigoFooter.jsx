@@ -20,7 +20,7 @@ export default function VigoFooter({ logo }) {
           {/* Brand */}
           <div>
             <Link to="/" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", marginBottom: 18 }}>
-              <img src={logo} alt="VIGONYC" style={{ width: 44, height: 44, objectFit: "contain" }} />
+              
               <div style={{ lineHeight: 1 }}>
                 
                 
