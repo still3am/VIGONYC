@@ -85,6 +85,7 @@ export default function VigoDrops() {
   for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
 
   const dropOnDay = day => day ? ALL_DROPS.find(dr => isSameDay(dr.date, day)) : null;
+  // TODO: Replace with Base44 backend function to manage drop notifications
   const handleNotify = id => { if (email.trim()) setNotified(p => ({ ...p, [id]: true })); };
   const [refreshKey, setRefreshKey] = useState(0);
   const handleRefresh = useCallback(() => new Promise(res => setTimeout(() => { setRefreshKey(k => k + 1); res(); }, 800)), []);
@@ -339,49 +340,50 @@ export default function VigoDrops() {
       </div>
 
       {/* ── ARCHIVE ── */}
-      <div style={{ background: G1, borderTop: `.5px solid ${G3}`, padding: "clamp(32px,5vw,52px) 20px" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
-            <div style={{ flex: 1, height: .5, background: G3 }} />
-            <div style={{ fontSize: 8, letterSpacing: 3, color: SD, textTransform: "uppercase", display: "flex", alignItems: "center", gap: 8, whiteSpace: "nowrap" }}>
-              <div style={{ width: 5, height: 5, background: "#e03", transform: "rotate(45deg)" }} />
-              Drop 01 — Sold Out
-              <div style={{ width: 5, height: 5, background: "#e03", transform: "rotate(45deg)" }} />
-            </div>
-            <div style={{ flex: 1, height: .5, background: G3 }} />
-          </div>
-          <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
-            {PAST_DROPS.map(p => (
-              <div key={p.id} style={{ position: "relative" }}>
-                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.55)", zIndex: 3, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
-                  <span style={{ fontSize: 8, letterSpacing: 3, color: "#555", textTransform: "uppercase", border: ".5px solid #2a2a2a", padding: "5px 12px" }}>Sold Out</span>
-                </div>
-                <ProductCard product={p} img={productImg}
-                  wishlisted={wishlist.includes(p.id)}
-                  onWishlist={() => {}}
-                  onAdd={() => {}}
-                  onClick={() => navigate(`/product/${p.id}`)} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+       <div style={{ background: G1, borderTop: `.5px solid ${G3}`, padding: "clamp(32px,5vw,52px) 20px" }}>
+         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+           {/* TODO: Fetch latest sold out drop label dynamically from Base44 */}
+           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
+             <div style={{ flex: 1, height: .5, background: G3 }} />
+             <div style={{ fontSize: 8, letterSpacing: 3, color: SD, textTransform: "uppercase", display: "flex", alignItems: "center", gap: 8, whiteSpace: "nowrap" }}>
+               <div style={{ width: 5, height: 5, background: "#e03", transform: "rotate(45deg)" }} />
+               Drop 01 — Sold Out
+               <div style={{ width: 5, height: 5, background: "#e03", transform: "rotate(45deg)" }} />
+             </div>
+             <div style={{ flex: 1, height: .5, background: G3 }} />
+           </div>
+           <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
+             {PAST_DROPS.map(p => (
+               <div key={p.id} style={{ position: "relative" }}>
+                 <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.55)", zIndex: 3, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
+                   <span style={{ fontSize: 8, letterSpacing: 3, color: "#555", textTransform: "uppercase", border: ".5px solid #2a2a2a", padding: "5px 12px" }}>Sold Out</span>
+                 </div>
+                 <ProductCard product={p} img={productImg}
+                   wishlisted={wishlist.includes(p.id)}
+                   onWishlist={() => {}}
+                   onAdd={() => {}}
+                   onClick={() => navigate(`/product/${p.id}`)} />
+               </div>
+             ))}
+           </div>
+         </div>
+       </div>
 
-      <style>{`
-        @keyframes vigo-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
-        @media(max-width:900px){
-          .vigo-drops-layout { grid-template-columns: 1fr !important; }
-          .vigo-hero-drop { grid-template-columns: 1fr !important; }
-          .vigo-4col { grid-template-columns: repeat(2,1fr) !important; }
-          .vigo-corner { display: none !important; }
-        }
-        @media(max-width:480px){
-          .vigo-4col { grid-template-columns: 1fr 1fr !important; }
-        }
-      `}</style>
-    </div>
-    </PullToRefresh>
-  );
+       <style>{`
+         @keyframes vigo-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
+         @media(max-width:900px){
+           .vigo-drops-layout { grid-template-columns: 1fr !important; }
+           .vigo-hero-drop { grid-template-columns: 1fr !important; }
+           .vigo-4col { grid-template-columns: repeat(2,1fr) !important; }
+           .vigo-corner { display: none !important; }
+         }
+         @media(max-width:480px){
+           .vigo-4col { grid-template-columns: 1fr 1fr !important; }
+         }
+       `}</style>
+      </div>
+      </PullToRefresh>
+      );
 }
 
 const navBtn = { background: "none", border: `.5px solid ${G3}`, color: S, width: 30, height: 30, cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit", flexShrink: 0 };
