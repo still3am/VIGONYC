@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { Package, RotateCcw, Zap } from "lucide-react";
 import ProductCard from "./ProductCard";
 import SectionDivider from "./SectionDivider";
 import { toast } from "sonner";
@@ -150,9 +151,9 @@ export default function VigoProduct() {
 
               {/* Trust badges */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, paddingTop: 16, borderTop: `.5px solid ${G3}` }}>
-                {[["🚚", "Free Shipping", "over $150"], ["↩", "Easy Returns", "30 days"], ["🏭", "NYC Made", "Limited run"]].map(([icon, title, sub]) => (
+                {[{ icon: Package, title: "Free Shipping", sub: "over $150" }, { icon: RotateCcw, title: "Easy Returns", sub: "30 days" }, { icon: Zap, title: "NYC Made", sub: "Limited run" }].map(({ icon: Icon, title, sub }) => (
                   <div key={title} style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: 18, marginBottom: 4 }}>{icon}</div>
+                    <Icon size={18} style={{ marginBottom: 8, color: S, margin: "0 auto" }} />
                     <div style={{ fontSize: 8, fontWeight: 700, color: "#fff", letterSpacing: 1 }}>{title}</div>
                     <div style={{ fontSize: 7, color: SD, marginTop: 2 }}>{sub}</div>
                   </div>
