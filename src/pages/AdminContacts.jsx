@@ -1,12 +1,8 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { Trash2 } from "lucide-react";
-
-const S = "#C0C0C0";
-const G1 = "#0a0a0a";
-const G2 = "#111";
-const G3 = "#1a1a1a";
-const SD = "#777";
+import AdminListView from "@/components/admin/AdminListView";
+import { S, G1, G2, G3, SD } from "@/lib/vigoColors";
 
 export default function AdminContacts() {
   const [contacts, setContacts] = useState([]);
@@ -48,116 +44,62 @@ export default function AdminContacts() {
     }
   };
 
-  if (loading) return <div style={{ padding: 40, textAlign: "center" }}>Loading...</div>;
-
   return (
-    <div style={{ padding: "clamp(20px, 4vw, 32px)" }}>
-      <h1 style={{ fontSize: "clamp(24px, 5vw, 32px)", fontWeight: 900, marginBottom: 20 }}>Inquiries</h1>
-
-      <div style={{ marginBottom: 20, display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
-        {["New", "Reviewed", "Responded"].map(s => (
-          <button
-            key={s}
-            onClick={() => { setStatusFilter(s); loadContacts(); }}
-            style={{
-              background: statusFilter === s ? S : G1,
-              color: statusFilter === s ? "#000" : SD,
-              border: `.5px solid ${statusFilter === s ? S : G3}`,
-              padding: "8px 16px",
-              fontSize: 9,
-              letterSpacing: 2,
-              textTransform: "uppercase",
-              cursor: "pointer",
-              fontFamily: "inherit",
-              fontWeight: statusFilter === s ? 900 : 400,
-              whiteSpace: "nowrap",
-              flexShrink: 0,
-              minHeight: 44
-            }}
-          >
-            {s}
-          </button>
-        ))}
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        {contacts.map(contact => (
-          <div
-            key={contact.id}
-            style={{
-              background: G1,
-              border: `.5px solid ${G3}`,
-              borderTop: `2px solid ${S}`,
-              padding: "clamp(16px, 3vw, 20px)",
-              borderRadius: 4,
-              cursor: "pointer"
-            }}
-            onClick={() => setSelectedContact(contact)}
-          >
-            <div style={{ marginBottom: 12 }}>
-              <div style={{ fontSize: "clamp(12px, 3vw, 13px)", color: "#fff", fontWeight: 700, marginBottom: 4 }}>{contact.name}</div>
-              <div style={{ fontSize: "clamp(10px, 2vw, 11px)", color: S, fontWeight: 700, marginBottom: 4 }}>{contact.topic}</div>
-              <div style={{ fontSize: "clamp(10px, 2vw, 11px)", color: "#999", lineHeight: 1.6 }}>
-                {contact.message.slice(0, 80)}{contact.message.length > 80 ? "..." : ""}
-              </div>
-            </div>
-
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "clamp(9px, 2vw, 10px)", color: SD }}>
-              <span>{new Date(contact.created_date).toLocaleDateString()}</span>
-              <button
-                onClick={(e) => { e.stopPropagation(); deleteContact(contact.id); }}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#e03",
-                  cursor: "pointer",
-                  padding: "8px 12px",
-                  minHeight: 40,
-                  minWidth: 40,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center"
-                }}
-              >
-                <Trash2 size={18} />
-              </button>
+    <AdminListView
+      items={contacts}
+      loading={loading}
+      statusFilter={statusFilter}
+      setStatusFilter={setStatusFilter}
+      statusOptions={["New", "Reviewed", "Responded"]}
+      selectedItem={selectedContact}
+      setSelectedItem={setSelectedContact}
+      onDelete={deleteContact}
+      onStatusChange={updateStatus}
+      title="Inquiries"
+      renderListItem={(contact, onDelete) => (
+        <>
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ fontSize: "clamp(12px, 3vw, 13px)", color: "#fff", fontWeight: 700, marginBottom: 4 }}>{contact.name}</div>
+            <div style={{ fontSize: "clamp(10px, 2vw, 11px)", color: S, fontWeight: 700, marginBottom: 4 }}>{contact.topic}</div>
+            <div style={{ fontSize: "clamp(10px, 2vw, 11px)", color: "#999", lineHeight: 1.6 }}>
+              {contact.message.slice(0, 80)}{contact.message.length > 80 ? "..." : ""}
             </div>
           </div>
-        ))}
-      </div>
-
-      {selectedContact && (
-        <div style={{ marginTop: 24, background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "clamp(16px, 4vw, 24px)", borderRadius: 4 }}>
-          <h2 style={{ fontSize: "clamp(16px, 4vw, 18px)", fontWeight: 900, marginBottom: 16 }}>From {selectedContact.name}</h2>
-
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "clamp(9px, 2vw, 10px)", color: SD }}>
+            <span>{new Date(contact.created_date).toLocaleDateString()}</span>
+            <button onClick={onDelete} style={{ background: "none", border: "none", color: "#e03", cursor: "pointer", padding: "8px 12px", minHeight: 40, minWidth: 40, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Trash2 size={18} />
+            </button>
+          </div>
+        </>
+      )}
+      renderDetailView={(contact, onStatusChange, onClose) => (
+        <>
+          <h2 style={{ fontSize: "clamp(16px, 4vw, 18px)", fontWeight: 900, marginBottom: 16 }}>From {contact.name}</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 20 }}>
             <div>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Email</div>
-              <div style={{ fontSize: "clamp(11px, 2vw, 12px)", color: "#fff" }}>{selectedContact.email}</div>
+              <div style={{ fontSize: "clamp(11px, 2vw, 12px)", color: "#fff" }}>{contact.email}</div>
             </div>
-
             <div>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Phone</div>
-              <div style={{ fontSize: "clamp(11px, 2vw, 12px)", color: "#fff" }}>{selectedContact.phone || "Not provided"}</div>
+              <div style={{ fontSize: "clamp(11px, 2vw, 12px)", color: "#fff" }}>{contact.phone || "Not provided"}</div>
             </div>
-
             <div>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Topic</div>
-              <div style={{ fontSize: "clamp(12px, 3vw, 13px)", color: "#fff", fontWeight: 700 }}>{selectedContact.topic}</div>
+              <div style={{ fontSize: "clamp(12px, 3vw, 13px)", color: "#fff", fontWeight: 700 }}>{contact.topic}</div>
             </div>
-
             <div>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Message</div>
               <div style={{ fontSize: "clamp(11px, 2vw, 12px)", color: "#ccc", lineHeight: 1.8, background: G2, padding: "clamp(12px, 3vw, 16px)", borderRadius: 4 }}>
-                {selectedContact.message}
+                {contact.message}
               </div>
             </div>
           </div>
-
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <select
-              value={selectedContact.status}
-              onChange={(e) => { updateStatus(selectedContact.id, e.target.value); setSelectedContact(null); }}
+              value={contact.status}
+              onChange={(e) => { onStatusChange(contact.id, e.target.value); onClose(); }}
               style={{
                 background: G2,
                 color: "#fff",
@@ -174,28 +116,12 @@ export default function AdminContacts() {
               <option value="Reviewed">Mark as Reviewed</option>
               <option value="Responded">Mark as Responded</option>
             </select>
-
-            <button
-              onClick={() => setSelectedContact(null)}
-              style={{
-                background: "none",
-                border: `.5px solid ${G3}`,
-                color: SD,
-                padding: "clamp(10px, 2vw, 12px) 20px",
-                fontSize: 9,
-                letterSpacing: 2,
-                textTransform: "uppercase",
-                cursor: "pointer",
-                fontFamily: "inherit",
-                minHeight: 44,
-                width: "100%"
-              }}
-            >
+            <button onClick={onClose} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "clamp(10px, 2vw, 12px) 20px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", minHeight: 44, width: "100%" }}>
               Close
             </button>
           </div>
-        </div>
+        </>
       )}
-    </div>
+    />
   );
 }
