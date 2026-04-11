@@ -303,7 +303,6 @@ export default function VigoAccount() {
         @media(max-width:600px){
           .vigo-2col { grid-template-columns: 1fr !important; }
           .vigo-links-grid { grid-template-columns: 1fr 1fr !important; }
-          .vigo-tab-icon { display: none; }
           .vigo-hero-stats { gap: 8px !important; flex-wrap: wrap; }
           .vigo-hero-stats > div { min-width: auto !important; padding: 4px 8px !important; font-size: 10px !important; }
           .vigo-order-row { flex-direction: column !important; align-items: flex-start !important; }
