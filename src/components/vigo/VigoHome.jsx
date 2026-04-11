@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useProducts } from "../../hooks/useSiteSettings";
 import { base44 } from "@/api/base44Client";
-import ProductCard from "./ProductCard";
 import SectionDivider from "./SectionDivider";
 import SectionHeader from "./SectionHeader";
 import { VIGO_CONFIG, formatDate, formatCurrency } from "@/lib/vigoConfig";
@@ -145,16 +144,8 @@ export default function VigoHome() {
 
       {/* ── FEATURED DROPS ── */}
       <div style={{ padding: "52px 32px" }}>
-        <SectionHeader title="Featured Drops" sub="SS25 Season" cta="View All →" onCta={() => navigate("/shop")} />
-        <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
-           {displayProducts.map((p) =>
-           <ProductCard key={p.id} product={{...p, cat: p.category, price: p.price}} img={p.image_url || productImg}
-           wishlisted={wishlist.includes(p.id)}
-           onWishlist={() => toggleWishlist(p.id)}
-           onAdd={() => addToCart({ id: p.id, name: p.name, meta: "Size: M · Color: Black", price: p.price })}
-           onClick={() => navigate(`/product/${p.id}`)} />
-           )}
-         </div>
+        <SectionHeader title="Featured Drops" sub="SS25 Season" cta="View All →" onCta={() => navigate("/drops")} />
+        <div style={{ textAlign: "center", padding: "40px 20px", color: SD }}>Featured products section</div>
       </div>
 
       <SectionDivider label="SS25 Spotlight" />
