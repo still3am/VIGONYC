@@ -152,7 +152,6 @@ export default function VigoAccount() {
                 display: "flex", alignItems: "center", gap: 6,
               }}
             >
-              <span className="vigo-tab-icon">{t.icon}</span>
               {t.label}
             </button>
           ))}
