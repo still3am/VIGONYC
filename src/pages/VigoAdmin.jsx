@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminDrops from "./AdminDrops";
 import ProductsManager from "./ProductsManager";
+import AdminOrders from "./AdminOrders";
+import AdminContacts from "./AdminContacts";
 import { useSiteSettings } from "../hooks/useSiteSettings";
 import { base44 } from "@/api/base44Client";
 
@@ -12,7 +14,7 @@ const G3 = "#1a1a1a";
 const SD = "#777";
 
 
-const SECTIONS = ["Hero", "Banner", "Products", "Drops", "Brand Story", "Contact & Social", "Theme"];
+const SECTIONS = ["Hero", "Banner", "Products", "Orders", "Contacts", "Drops", "Brand Story", "Contact & Social", "Theme"];
 
 function Field({ label, value, onChange, type = "text", multiline }) {
   const style = { width: "100%", background: G2, border: `.5px solid ${G3}`, color: "#fff", padding: "10px 14px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit", resize: multiline ? "vertical" : "none" };
@@ -222,6 +224,10 @@ export default function VigoAdmin() {
           )}
 
           {activeSection === "Products" && <ProductsManager settings={settings} updateProduct={updateProduct} updateSetting={updateSetting} />}
+
+          {activeSection === "Orders" && <AdminOrders />}
+
+          {activeSection === "Contacts" && <AdminContacts />}
 
           {activeSection === "Brand Story" && (
             <div>
