@@ -7,7 +7,7 @@ const G2 = "#111";
 const G3 = "#1a1a1a";
 const SD = "#777";
 
-export default function ProductsManager({ settings, updateProduct }) {
+export default function ProductsManager({ settings, updateProduct, updateSetting }) {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -29,12 +29,23 @@ export default function ProductsManager({ settings, updateProduct }) {
   };
 
   const handleSave = () => {
-    Object.keys(formData).forEach(key => {
-      if (key !== "id") {
-        updateProduct(formData.id, key, formData[key]);
-      }
-    });
+    if (editingId) {
+      Object.keys(formData).forEach(key => {
+        if (key !== "id") {
+          updateProduct(formData.id, key, formData[key]);
+        }
+      });
+    } else {
+      updateSetting("products", [...settings.products, { ...formData, id: Date.now().toString() }]);
+    }
     resetForm();
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Delete this product?")) {
+      updateSetting("products", settings.products.filter(p => p.id !== id));
+      setSelectedProduct(null);
+    }
   };
 
   const resetForm = () => {
@@ -48,9 +59,9 @@ export default function ProductsManager({ settings, updateProduct }) {
       <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ Catalog</div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
         <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: -1 }}>Product Manager</h2>
-        {/* <button onClick={() => setShowForm(true)} style={{ background: S, color: "#000", border: "none", padding: "10px 18px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", display: "flex", gap: 6, alignItems: "center" }}>
+        <button onClick={() => setShowForm(true)} style={{ background: S, color: "#000", border: "none", padding: "10px 18px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", display: "flex", gap: 6, alignItems: "center" }}>
           <Plus size={16} /> New Product
-        </button> */}
+        </button>
       </div>
 
       {/* Grid + Detail Layout */}
@@ -100,6 +111,9 @@ export default function ProductsManager({ settings, updateProduct }) {
                   <button onClick={() => handleEdit(selectedProduct)} style={{ background: S, color: "#000", border: "none", padding: "8px 12px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", display: "flex", gap: 6, alignItems: "center", flex: 1 }}>
                     <Edit2 size={14} /> Edit
                   </button>
+                  <button onClick={() => handleDelete(selectedProduct.id)} style={{ background: "#e03", color: "#fff", border: "none", padding: "8px 12px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", display: "flex", gap: 6, alignItems: "center", flex: 1 }}>
+                    <Trash2 size={14} /> Delete
+                  </button>
                 </div>
                 <h3 style={{ fontSize: 16, fontWeight: 900, letterSpacing: -1, marginBottom: 8, color: "#fff" }}>{selectedProduct.name}</h3>
                 <p style={{ fontSize: 10, color: SD, lineHeight: 1.6 }}>{selectedProduct.cat}</p>
@@ -142,7 +156,7 @@ export default function ProductsManager({ settings, updateProduct }) {
           <button onClick={resetForm} style={{ position: "absolute", top: 16, right: 16, background: "none", border: "none", color: SD, cursor: "pointer", fontSize: 20 }}>
             <X size={20} />
           </button>
-          <h3 style={{ fontSize: 18, fontWeight: 900, marginBottom: 20, color: "#fff" }}>Edit Product</h3>
+          <h3 style={{ fontSize: 18, fontWeight: 900, marginBottom: 20, color: "#fff" }}>{editingId ? "Edit Product" : "New Product"}</h3>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
             <div>

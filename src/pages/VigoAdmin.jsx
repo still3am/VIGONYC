@@ -185,7 +185,7 @@ export default function VigoAdmin() {
             </div>
           )}
 
-          {activeSection === "Products" && <ProductsManager settings={settings} updateProduct={updateProduct} />}
+          {activeSection === "Products" && <ProductsManager settings={settings} updateProduct={updateProduct} updateSetting={updateSetting} />}
 
           {activeSection === "Brand Story" && (
             <div>
