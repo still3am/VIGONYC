@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router-dom";
-import { useOutletContext } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import SectionDivider from "./SectionDivider";
 import SectionHeader from "./SectionHeader";
@@ -9,72 +9,133 @@ const SD = "#777";
 const G1 = "#0a0a0a";
 const G3 = "#1a1a1a";
 
-const products = [
+const NEXT_DROP = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000);
+
+const PRODUCTS = [
   { id: 1, name: "Chrome V Tee", cat: "Tops / Essential", price: 68, tag: "new", opacity: 1 },
   { id: 2, name: "NYC Cargo Pant", cat: "Bottoms / Heavy", price: 145, tag: "drop", opacity: 0.4 },
   { id: 3, name: "Silver Label Hoodie", cat: "Tops / Outerwear", price: 128, tag: "new", tag2: "hot", opacity: 0.6 },
   { id: 4, name: "5-Panel Cap", cat: "Headwear / Unisex", price: 52, tag: "ltd", opacity: 0.45 },
 ];
 
-const categories = ["Tops","Bottoms","Outerwear","Accessories"];
+const CATEGORIES = [
+  { name: "Tops", count: "14 styles" },
+  { name: "Bottoms", count: "9 styles" },
+  { name: "Outerwear", count: "6 styles" },
+  { name: "Accessories", count: "12 styles" },
+];
 
-const reviews = [
+const REVIEWS = [
   { name: "Jordan M.", loc: "Brooklyn, NY", rating: 5, text: "The Chrome V Tee is everything. Quality is insane for the price. Already ordered 3 more." },
   { name: "Aaliyah T.", loc: "Harlem, NY", rating: 5, text: "Finally a brand that gets it. VIGONYC hits different — the silver hardware on the cargo pants is a vibe." },
   { name: "Marcus R.", loc: "Queens, NY", rating: 5, text: "Limited drops are real — got the SS25 hoodie on release day. Worth the W." },
 ];
 
+function MiniCountdown({ target }) {
+  const [t, setT] = useState({ d: 0, h: 0, m: 0, s: 0 });
+  useEffect(() => {
+    const tick = () => {
+      const diff = Math.max(0, target - Date.now());
+      setT({ d: Math.floor(diff / 86400000), h: Math.floor((diff % 86400000) / 3600000), m: Math.floor((diff % 3600000) / 60000), s: Math.floor((diff % 60000) / 1000) });
+    };
+    tick(); const id = setInterval(tick, 1000); return () => clearInterval(id);
+  }, [target]);
+  return (
+    <span style={{ display: "inline-flex", gap: 12, alignItems: "baseline" }}>
+      {[["D", t.d], ["H", t.h], ["M", t.m], ["S", t.s]].map(([l, v]) => (
+        <span key={l} style={{ display: "inline-flex", alignItems: "baseline", gap: 3 }}>
+          <span style={{ fontSize: 22, fontWeight: 900, color: "#fff", fontVariantNumeric: "tabular-nums" }}>{String(v).padStart(2, "0")}</span>
+          <span style={{ fontSize: 8, letterSpacing: 1, color: SD }}>{l}</span>
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export default function VigoHome() {
   const { productImg, wishlist, toggleWishlist, addToCart } = useOutletContext();
   const navigate = useNavigate();
+  const [heroLoaded, setHeroLoaded] = useState(false);
+  const [email, setEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+
+  useEffect(() => { const t = setTimeout(() => setHeroLoaded(true), 80); return () => clearTimeout(t); }, []);
 
   return (
     <div>
+      {/* ── DROP ALERT BANNER ── */}
+      <div onClick={() => navigate("/drops")} style={{ background: `linear-gradient(90deg, #0a0a0a, #111, #0a0a0a)`, borderBottom: `.5px solid ${G3}`, padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "center", gap: 24, cursor: "pointer", flexWrap: "wrap", gap: 16 }}
+        onMouseEnter={e => e.currentTarget.style.borderColor = S}
+        onMouseLeave={e => e.currentTarget.style.borderColor = G3}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 1.5s infinite" }} />
+          <span style={{ fontSize: 9, letterSpacing: 4, color: SD, textTransform: "uppercase" }}>Drop 02 — Mirror Series</span>
+        </div>
+        <MiniCountdown target={NEXT_DROP} />
+        <span style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase" }}>Get Notified →</span>
+      </div>
+
       {/* ── HERO ── */}
-      <div className="vigo-hero-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "88vh", borderBottom: `.5px solid ${G3}` }}>
-        {/* Left */}
-        <div style={{ padding: "64px 48px 64px 32px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 22 }}>
+      <div className="vigo-hero-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "88vh", borderBottom: `.5px solid ${G3}`, opacity: heroLoaded ? 1 : 0, transform: heroLoaded ? "none" : "translateY(12px)", transition: "opacity .5s, transform .5s" }}>
+        <div style={{ padding: "72px 48px 72px 32px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 28, background: "rgba(192,192,192,.06)", border: `.5px solid rgba(192,192,192,.15)`, padding: "8px 16px", alignSelf: "flex-start" }}>
             <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 2s infinite" }} />
-            <span style={{ fontSize: 9, letterSpacing: 4, color: SD, textTransform: "uppercase" }}>SS25 Collection — Now Live</span>
+            <span style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase" }}>SS25 Collection — Now Live</span>
           </div>
-          <h1 style={{ fontSize: "clamp(52px,6.5vw,96px)", fontWeight: 900, letterSpacing: -3, lineHeight: .88, marginBottom: 24 }}>
-            STREETS<br />OF <em style={{ color: S, fontStyle: "italic" }}>NYC</em>
+          <h1 style={{ fontSize: "clamp(56px,7vw,104px)", fontWeight: 900, letterSpacing: -4, lineHeight: .86, marginBottom: 28 }}>
+            STREETS<br />OF{" "}
+            <span style={{ position: "relative", display: "inline-block" }}>
+              <em style={{ color: "transparent", WebkitTextStroke: `1px ${S}`, fontStyle: "italic" }}>NYC</em>
+            </span>
           </h1>
-          <p style={{ fontSize: 13, color: SD, lineHeight: 1.9, maxWidth: 380, marginBottom: 36 }}>
+          <p style={{ fontSize: 13, color: SD, lineHeight: 1.9, maxWidth: 360, marginBottom: 36 }}>
             Born in New York City. Built from concrete and culture. Worn by the ones who make the city move.
           </p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <button onClick={() => navigate("/shop")} style={btnP}>Shop the Drop</button>
             <button onClick={() => navigate("/lookbook")} style={btnO}>View Lookbook</button>
           </div>
+
           {/* KPIs */}
-          <div className="vigo-kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 20, marginTop: 52, paddingTop: 28, borderTop: `.5px solid ${G3}` }}>
-            {[["500+","Pieces Dropped"],["12K+","NYC Community"],["100%","Street Ready"],["4.9★","Avg. Rating"]].map(([n,l]) => (
-              <div key={l}>
-                <div style={{ fontSize: 20, fontWeight: 900, color: "#fff" }}>{n}</div>
+          <div className="vigo-kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 0, marginTop: 56, borderTop: `.5px solid ${G3}` }}>
+            {[["500+","Pieces Dropped"],["12K+","NYC Community"],["100%","Street Ready"],["4.9★","Avg. Rating"]].map(([n,l], i, arr) => (
+              <div key={l} style={{ padding: "20px 0 0", paddingRight: i < arr.length - 1 ? 16 : 0, borderRight: i < arr.length - 1 ? `.5px solid ${G3}` : "none", paddingLeft: i > 0 ? 16 : 0 }}>
+                <div style={{ fontSize: 22, fontWeight: 900, color: "#fff", letterSpacing: -1 }}>{n}</div>
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 4 }}>{l}</div>
               </div>
             ))}
           </div>
         </div>
-        {/* Right */}
-        <div style={{ position: "relative", background: G1, borderLeft: `.5px solid ${G3}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ position: "absolute", top: 0, left: 0, width: 40, height: 40, borderTop: `2px solid ${S}`, borderLeft: `2px solid ${S}` }} />
-          <div style={{ position: "absolute", bottom: 0, right: 0, width: 40, height: 40, borderBottom: `2px solid ${S}`, borderRight: `2px solid ${S}` }} />
-          <img src={productImg} alt="VIGONYC SS25" style={{ width: "70%", maxWidth: 360, objectFit: "contain", filter: "drop-shadow(0 0 60px rgba(192,192,192,.18))" }} />
-          <div style={{ position: "absolute", bottom: 20, left: 20, right: 20, background: "rgba(0,0,0,.85)", border: `.5px solid ${G3}`, padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: 11, color: "#fff" }}>Chrome V Tee — SS25</span>
-            <span style={{ fontSize: 14, fontWeight: 900, color: S }}>$68</span>
+
+        {/* Hero image panel */}
+        <div style={{ position: "relative", background: G1, borderLeft: `.5px solid ${G3}`, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+          {/* Corner brackets */}
+          <div style={{ position: "absolute", top: 24, left: 24, width: 32, height: 32, borderTop: `2px solid ${S}`, borderLeft: `2px solid ${S}`, zIndex: 2 }} />
+          <div style={{ position: "absolute", top: 24, right: 24, width: 32, height: 32, borderTop: `2px solid ${S}`, borderRight: `2px solid ${S}`, zIndex: 2 }} />
+          <div style={{ position: "absolute", bottom: 72, left: 24, width: 32, height: 32, borderBottom: `2px solid ${S}`, borderLeft: `2px solid ${S}`, zIndex: 2 }} />
+          <div style={{ position: "absolute", bottom: 72, right: 24, width: 32, height: 32, borderBottom: `2px solid ${S}`, borderRight: `2px solid ${S}`, zIndex: 2 }} />
+          {/* Glow */}
+          <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at center, rgba(192,192,192,.06) 0%, transparent 65%)`, pointerEvents: "none" }} />
+          <img src={productImg} alt="VIGONYC SS25" style={{ width: "68%", maxWidth: 380, objectFit: "contain", filter: "drop-shadow(0 0 80px rgba(192,192,192,.2))", zIndex: 1 }} />
+          {/* Product tag */}
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "rgba(0,0,0,.9)", borderTop: `.5px solid ${G3}`, padding: "14px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 2 }}>
+            <div>
+              <div style={{ fontSize: 11, color: "#fff" }}>Chrome V Tee — SS25</div>
+              <div style={{ fontSize: 8, letterSpacing: 2, color: SD, marginTop: 2 }}>Limited · 100 Units</div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <span style={{ fontSize: 18, fontWeight: 900, color: S }}>$68</span>
+              <button onClick={() => navigate("/product/1")} style={{ background: S, color: "#000", border: "none", padding: "8px 16px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Shop Now</button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ── DROPS ── */}
+      {/* ── FEATURED DROPS ── */}
       <div style={{ padding: "52px 32px" }}>
         <SectionHeader title="Featured Drops" sub="SS25 Season" cta="View All →" onCta={() => navigate("/shop")} />
         <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
-          {products.map(p => (
+          {PRODUCTS.map(p => (
             <ProductCard key={p.id} product={p} img={productImg}
               wishlisted={wishlist.includes(p.id)}
               onWishlist={() => toggleWishlist(p.id)}
@@ -86,31 +147,41 @@ export default function VigoHome() {
 
       <SectionDivider label="SS25 Spotlight" />
 
-      {/* ── SS25 CHROME BANNER ── */}
-      <div className="vigo-2col" style={{ margin: "0 32px", background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+      {/* ── CHROME SERIES BANNER ── */}
+      <div className="vigo-2col" style={{ margin: "0 32px", background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, display: "grid", gridTemplateColumns: "1fr 1fr", overflow: "hidden" }}>
         <div style={{ padding: "52px 48px", borderRight: `.5px solid ${G3}` }}>
           <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ Limited Edition ✦</div>
-          <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: -2, lineHeight: .92, marginBottom: 14 }}>SS25<br /><span style={{ color: S }}>Chrome</span><br />Series</div>
-          <div style={{ fontSize: 12, color: SD, lineHeight: 1.9, marginBottom: 32 }}>Hand-finished chrome hardware. NYC exclusive.<br />Only 100 units. No restocks, no exceptions.</div>
-          <button onClick={() => navigate("/shop")} style={btnP}>Shop Chrome Series</button>
+          <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: -2, lineHeight: .92, marginBottom: 14 }}>
+            SS25<br /><span style={{ color: S }}>Chrome</span><br />Series
+          </div>
+          <div style={{ fontSize: 12, color: SD, lineHeight: 1.9, marginBottom: 32 }}>
+            Hand-finished chrome hardware. NYC exclusive.<br />Only 100 units. No restocks, no exceptions.
+          </div>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <button onClick={() => navigate("/shop")} style={btnP}>Shop Chrome Series</button>
+            <button onClick={() => navigate("/drops")} style={btnO}>Drop Calendar →</button>
+          </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 48, position: "relative" }}>
           <div style={{ position: "absolute", top: 0, right: 0, width: 60, height: 60, borderTop: `2px solid ${S}`, borderRight: `2px solid ${S}` }} />
           <div style={{ position: "absolute", bottom: 0, left: 0, width: 40, height: 40, borderBottom: `1px solid ${S}`, borderLeft: `1px solid ${S}` }} />
-          <img src={productImg} style={{ width: 240, height: 240, objectFit: "contain" }} alt="" />
+          <img src={productImg} style={{ width: 260, height: 260, objectFit: "contain", filter: "drop-shadow(0 0 40px rgba(192,192,192,.15))" }} alt="" />
         </div>
       </div>
 
-      {/* ── 4 CATEGORIES ── */}
+      {/* ── SHOP BY CATEGORY ── */}
       <div style={{ padding: "52px 32px" }}>
-        <SectionHeader title="Shop by Category" sub="" cta="" />
+        <SectionHeader title="Shop by Category" sub="" />
         <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 2 }}>
-          {categories.map((cat) => (
-            <div key={cat} onClick={() => navigate(`/shop?cat=${cat}`)} style={{ background: G1, border: `.5px solid ${G3}`, padding: "48px 24px", cursor: "pointer", textAlign: "center", transition: "border-color .2s" }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = S}
-              onMouseLeave={e => e.currentTarget.style.borderColor = G3}>
-              <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: -1 }}>{cat}</div>
-              <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginTop: 12 }}>Browse →</div>
+          {CATEGORIES.map((cat, i) => (
+            <div key={cat.name} onClick={() => navigate(`/shop?cat=${cat.name}`)}
+              style={{ background: G1, border: `.5px solid ${G3}`, padding: "40px 24px 32px", cursor: "pointer", transition: "border-color .2s, background .2s", textAlign: "center", position: "relative", overflow: "hidden" }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = S; e.currentTarget.style.background = "#0f0f0f"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = G3; e.currentTarget.style.background = G1; }}>
+              <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 10 }}>{cat.count}</div>
+              <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: -1 }}>{cat.name}</div>
+              <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginTop: 16 }}>Browse →</div>
+              <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: 40, height: 2, background: `linear-gradient(90deg, transparent, ${S}, transparent)` }} />
             </div>
           ))}
         </div>
@@ -121,36 +192,79 @@ export default function VigoHome() {
       {/* ── REVIEWS ── */}
       <div style={{ padding: "32px 32px 52px" }}>
         <div className="vigo-3col" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
-          {reviews.map((r, i) => (
-            <div key={i} style={{ background: G1, border: `.5px solid ${G3}`, padding: "28px" }}>
-              <div style={{ color: S, fontSize: 13, marginBottom: 12 }}>{"★".repeat(r.rating)}</div>
+          {REVIEWS.map((r, i) => (
+            <div key={i} style={{ background: G1, border: `.5px solid ${G3}`, padding: "28px", position: "relative" }}>
+              <div style={{ position: "absolute", top: -1, left: 0, right: 0, height: 1, background: `linear-gradient(90deg, transparent, ${S}, transparent)` }} />
+              <div style={{ color: S, fontSize: 14, marginBottom: 14 }}>{"★".repeat(r.rating)}</div>
               <p style={{ fontSize: 13, lineHeight: 1.8, color: "#ccc", marginBottom: 20 }}>"{r.text}"</p>
-              <div style={{ fontSize: 10, fontWeight: 700, color: "#fff" }}>{r.name}</div>
-              <div style={{ fontSize: 9, color: SD, marginTop: 2 }}>{r.loc}</div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                <div>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "#fff" }}>{r.name}</div>
+                  <div style={{ fontSize: 8, color: SD, marginTop: 2 }}>{r.loc}</div>
+                </div>
+                <div style={{ fontSize: 8, color: S, letterSpacing: 2 }}>VERIFIED</div>
+              </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* ── NEWSLETTER ── */}
-      <div style={{ margin: "0 32px 64px", background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "52px 48px", textAlign: "center" }}>
-        <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ Join The Drop List ✦</div>
-        <div style={{ fontSize: 36, fontWeight: 900, letterSpacing: -1, marginBottom: 12 }}>Get First Access</div>
-        <div style={{ fontSize: 12, color: SD, marginBottom: 32 }}>Drop alerts, exclusive offers, NYC-only releases. No spam, ever.</div>
-        <div style={{ display: "flex", gap: 0, maxWidth: 460, margin: "0 auto" }}>
-          <input placeholder="your@email.com" style={{ flex: 1, background: "#111", border: `.5px solid #333`, borderRight: "none", color: "#fff", padding: "14px 20px", fontSize: 12, outline: "none", fontFamily: "inherit" }} />
-          <button style={btnP}>Join the List</button>
+      {/* ── BRAND STORY TEASER ── */}
+      <div style={{ margin: "0 32px", borderTop: `2px solid ${S}`, background: G1, border: `.5px solid ${G3}` }} className="vigo-2col-story">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }} className="vigo-2col">
+          <div style={{ padding: "52px 48px", borderRight: `.5px solid ${G3}` }}>
+            <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ The Brand</div>
+            <div style={{ fontSize: 36, fontWeight: 900, letterSpacing: -1, lineHeight: .95, marginBottom: 20 }}>
+              Born From<br />The Five<br />Boroughs
+            </div>
+            <p style={{ fontSize: 12, color: SD, lineHeight: 1.9, marginBottom: 28 }}>
+              VIGONYC is more than clothing — it's a declaration. Every thread carries the energy of the streets that built us.
+            </p>
+            <button onClick={() => navigate("/about")} style={btnO}>Our Story →</button>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderRight: "none" }}>
+            {[["500+","Pieces Dropped"],["12K+","Community"],["100%","NYC Made"],["4.9★","Avg Rating"]].map(([n,l],i) => (
+              <div key={l} style={{ padding: "36px 28px", borderRight: i % 2 === 0 ? `.5px solid ${G3}` : "none", borderBottom: i < 2 ? `.5px solid ${G3}` : "none", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <div style={{ fontSize: 32, fontWeight: 900, color: S, letterSpacing: -1 }}>{n}</div>
+                <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 8 }}>{l}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
+      {/* ── NEWSLETTER ── */}
+      <div style={{ margin: "32px 32px 64px", background: `linear-gradient(135deg, #0a0a0a, #0f0f0f)`, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "52px 48px", textAlign: "center", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: -60, right: -60, width: 200, height: 200, borderRadius: "50%", border: `.5px solid rgba(192,192,192,.06)` }} />
+        <div style={{ position: "absolute", bottom: -40, left: -40, width: 140, height: 140, borderRadius: "50%", border: `.5px solid rgba(192,192,192,.04)` }} />
+        <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14, position: "relative" }}>✦ Join The Drop List ✦</div>
+        <div style={{ fontSize: "clamp(28px,4vw,40px)", fontWeight: 900, letterSpacing: -1, marginBottom: 12, position: "relative" }}>Get First Access</div>
+        <div style={{ fontSize: 12, color: SD, marginBottom: 32, position: "relative" }}>Drop alerts, exclusive offers, NYC-only releases. No spam, ever.</div>
+        {subscribed ? (
+          <div style={{ fontSize: 13, color: "#0c6", padding: "16px 0" }}>✓ You're in. Watch for the next drop alert.</div>
+        ) : (
+          <div style={{ display: "flex", gap: 0, maxWidth: 460, margin: "0 auto", position: "relative" }}>
+            <input value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" style={{ flex: 1, background: "#111", border: `.5px solid #333`, borderRight: "none", color: "#fff", padding: "14px 20px", fontSize: 12, outline: "none", fontFamily: "inherit" }} />
+            <button onClick={() => email.trim() && setSubscribed(true)} style={btnP}>Join the List</button>
+          </div>
+        )}
+      </div>
+
       <style>{`
-        @media(max-width:900px){.vigo-hero-grid{grid-template-columns:1fr !important;} .vigo-hero-grid>div:last-child{min-height:300px;} .vigo-kpi-grid{grid-template-columns:repeat(2,1fr) !important;} .vigo-4col{grid-template-columns:repeat(2,1fr) !important;} .vigo-3col{grid-template-columns:1fr !important;} .vigo-2col{grid-template-columns:1fr !important;}}
+        @media(max-width:900px){
+          .vigo-hero-grid{grid-template-columns:1fr !important;}
+          .vigo-hero-grid>div:last-child{min-height:320px;}
+          .vigo-kpi-grid{grid-template-columns:repeat(2,1fr) !important;}
+          .vigo-4col{grid-template-columns:repeat(2,1fr) !important;}
+          .vigo-3col{grid-template-columns:1fr !important;}
+          .vigo-2col{grid-template-columns:1fr !important;}
+        }
         @media(max-width:480px){.vigo-4col{grid-template-columns:1fr !important;}}
-        @keyframes vigo-pulse{0%,100%{opacity:1}50%{opacity:.3}}
+        @keyframes vigo-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
       `}</style>
     </div>
   );
 }
 
-const btnP = { background: "#C0C0C0", color: "#000", border: "none", padding: "14px 32px", fontSize: 10, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" };
-const btnO = { background: "none", border: ".5px solid #C0C0C0", color: "#C0C0C0", padding: "14px 32px", fontSize: 10, letterSpacing: 3, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" };
+const btnP = { background: S, color: "#000", border: "none", padding: "14px 32px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" };
+const btnO = { background: "none", border: `.5px solid ${S}`, color: S, padding: "14px 32px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" };
