@@ -185,9 +185,6 @@ export default function VigoProduct() {
           .vigo-delivery-grid{grid-template-columns:repeat(3,1fr) !important;}
           .vigo-sticky-cta { display: flex !important; }
         }
-        @media(min-width:901px){
-          .vigo-sticky-cta { display: none !important; }
-        }
         @media(max-width:480px){
           .vigo-4col{grid-template-columns:1fr !important;}
         }
