@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Edit2, Trash2, X } from "lucide-react";
+import { Plus, Edit2, Trash2, X, ChevronLeft, ChevronRight } from "lucide-react";
 
 const S = "#C0C0C0";
 const G1 = "#0a0a0a";
@@ -94,17 +94,168 @@ export default function AdminDrops() {
     setShowForm(false);
   };
 
+  const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const DAYS = ["S","M","T","W","T","F","S"];
+  const TODAY = new Date();
+
+  function isSameDay(a, b) {
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  }
+
   if (loading) {
     return <div style={{ padding: 40, textAlign: "center" }}>Loading...</div>;
   }
 
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < firstDay; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
+
+  const dropOnDay = day => day ? drops.find(dr => isSameDay(new Date(dr.releaseDate), day)) : null;
+
   return (
-    <div style={{ padding: 32, maxWidth: 1200, margin: "0 auto" }}>
+    <div style={{ padding: "clamp(20px, 4vw, 32px)" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
         <h1 style={{ fontSize: 32, fontWeight: 900, color: "#fff" }}>Manage Drops</h1>
         <Button onClick={() => setShowForm(true)} style={{ background: S, color: "#000", display: "flex", gap: 8 }}>
           <Plus size={16} /> New Drop
         </Button>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 24, marginBottom: 32 }}>
+        {/* Calendar */}
+        <div style={{ background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}` }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: `.5px solid ${G3}` }}>
+            <button onClick={() => setViewDate(new Date(year, month - 1, 1))} style={{ background: "none", border: `.5px solid ${G3}`, color: S, width: 30, height: 30, cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }}>
+              <ChevronLeft size={16} />
+            </button>
+            <div style={{ fontSize: 11, fontWeight: 900, letterSpacing: 3, textTransform: "uppercase" }}>
+              {MONTHS[month]} <span style={{ color: S }}>{year}</span>
+            </div>
+            <button onClick={() => setViewDate(new Date(year, month + 1, 1))} style={{ background: "none", border: `.5px solid ${G3}`, color: S, width: 30, height: 30, cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }}>
+              <ChevronRight size={16} />
+            </button>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", background: "#060606", borderBottom: `.5px solid ${G3}` }}>
+            {DAYS.map((d, i) => (
+              <div key={i} style={{ padding: "8px 4px", textAlign: "center", fontSize: 8, letterSpacing: 1, color: "#333" }}>{d}</div>
+            ))}
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)" }}>
+            {cells.map((day, i) => {
+              const drop = dropOnDay(day);
+              const isToday = day && isSameDay(day, TODAY);
+              const isSelected = selectedDrop && drop && selectedDrop.id === drop.id;
+              const isPast = day && day < TODAY && !isToday;
+              return (
+                <div
+                  key={i}
+                  onClick={() => { if (drop) { setSelectedDrop(drop); setViewDate(new Date(drop.releaseDate)); } }}
+                  style={{
+                    minHeight: "clamp(52px,8vw,72px)",
+                    padding: "8px 6px 6px",
+                    borderRight: (i + 1) % 7 !== 0 ? `.5px solid ${G3}` : "none",
+                    borderBottom: `.5px solid ${G3}`,
+                    cursor: drop ? "pointer" : "default",
+                    background: isSelected ? "rgba(192,192,192,.08)" : "transparent",
+                    transition: "background .15s",
+                  }}
+                  onMouseEnter={e => { if (drop && !isSelected) e.currentTarget.style.background = "rgba(192,192,192,.04)"; }}
+                  onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
+                >
+                  {day && (
+                    <>
+                      <div style={{
+                        fontSize: 10, fontWeight: isToday ? 900 : 400,
+                        color: isToday ? "#000" : isPast ? "#2a2a2a" : drop ? "#fff" : "#3a3a3a",
+                        width: 20, height: 20,
+                        background: isToday ? S : "transparent",
+                        borderRadius: "50%",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        marginBottom: 4,
+                      }}>{day.getDate()}</div>
+                      {drop && (
+                        <div style={{
+                          background: "rgba(192,192,192,.12)",
+                          borderLeft: `.5px solid ${S}`,
+                          padding: "2px 4px",
+                          fontSize: 6,
+                          letterSpacing: .5,
+                          color: S,
+                          lineHeight: 1.4,
+                          overflow: "hidden",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                        }}>
+                          {drop.series}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Detail Panel */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {selectedDrop ? (
+            <div style={{ background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}` }}>
+              <div style={{ padding: "20px", borderBottom: `.5px solid ${G3}` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 8, marginBottom: 12 }}>
+                  <button onClick={() => handleEdit(selectedDrop)} style={{ background: S, color: "#000", border: "none", padding: "8px 12px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", display: "flex", gap: 6, alignItems: "center" }}>
+                    <Edit2 size={14} /> Edit
+                  </button>
+                  <button onClick={() => handleDelete(selectedDrop.id)} style={{ background: "#e03", color: "#fff", border: "none", padding: "8px 12px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", display: "flex", gap: 6, alignItems: "center" }}>
+                    <Trash2 size={14} /> Delete
+                  </button>
+                </div>
+                <h3 style={{ fontSize: 16, fontWeight: 900, letterSpacing: -1, marginBottom: 8, color: "#fff" }}>{selectedDrop.series}</h3>
+                <p style={{ fontSize: 11, color: SD, lineHeight: 1.8 }}>{selectedDrop.description}</p>
+              </div>
+              <div style={{ padding: "14px 20px", borderBottom: `.5px solid ${G3}`, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+                {[["Date", new Date(selectedDrop.releaseDate).toLocaleDateString()], ["Time", selectedDrop.time], ["Units", selectedDrop.pieces]].map(([k, v]) => (
+                  <div key={k}>
+                    <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>{k}</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: "#fff" }}>{v}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div style={{ background: G1, border: `.5px solid ${G3}`, padding: "40px 20px", textAlign: "center" }}>
+              <div style={{ fontSize: 22, opacity: .15, marginBottom: 10 }}>✦</div>
+              <div style={{ fontSize: 11, color: SD }}>Select a drop to view details.</div>
+            </div>
+          )}
+
+          {/* All Drops List */}
+          <div style={{ background: G1, border: `.5px solid ${G3}` }}>
+            <div style={{ padding: "10px 16px", borderBottom: `.5px solid ${G3}`, fontSize: 7, letterSpacing: 3, color: SD, textTransform: "uppercase" }}>All Drops</div>
+            {drops.map(dr => (
+              <div
+                key={dr.id}
+                onClick={() => { setSelectedDrop(dr); setViewDate(new Date(dr.releaseDate)); }}
+                style={{ padding: "12px 16px", borderBottom: `.5px solid ${G3}`, cursor: "pointer", background: selectedDrop?.id === dr.id ? "rgba(192,192,192,.05)" : "transparent", transition: "background .15s", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}
+                onMouseEnter={e => { if (selectedDrop?.id !== dr.id) e.currentTarget.style.background = "rgba(192,192,192,.03)"; }}
+                onMouseLeave={e => { if (selectedDrop?.id !== dr.id) e.currentTarget.style.background = "transparent"; }}
+              >
+                <div>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "#fff", marginBottom: 2 }}>{dr.series}</div>
+                  <div style={{ fontSize: 8, color: SD }}>{new Date(dr.releaseDate).toLocaleDateString()}</div>
+                </div>
+                <div style={{ fontSize: 7, color: dr.tagColor, letterSpacing: 1, textTransform: "uppercase" }}>{dr.tag}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {showForm && (
@@ -237,55 +388,6 @@ export default function AdminDrops() {
           </div>
         </div>
       )}
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
-        {drops.map((drop) => (
-          <div key={drop.id} style={{ background: G2, border: `.5px solid ${G3}`, padding: 20, position: "relative" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: 12 }}>
-              <div>
-                <div style={{ fontSize: 10, color: drop.tagColor, letterSpacing: 2, textTransform: "uppercase", marginBottom: 4, fontWeight: 700 }}>
-                  {drop.tag}
-                </div>
-                <h3 style={{ fontSize: 16, fontWeight: 900, color: "#fff", marginBottom: 4 }}>{drop.series}</h3>
-                <p style={{ fontSize: 11, color: SD }}>{drop.dropNumber}</p>
-              </div>
-              <div style={{ display: "flex", gap: 8 }}>
-                <button
-                  onClick={() => handleEdit(drop)}
-                  style={{ background: "none", border: "none", color: S, cursor: "pointer", padding: 4 }}
-                  title="Edit"
-                >
-                  <Edit2 size={16} />
-                </button>
-                <button
-                  onClick={() => handleDelete(drop.id)}
-                  style={{ background: "none", border: "none", color: "#e03", cursor: "pointer", padding: 4 }}
-                  title="Delete"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            </div>
-
-            <div style={{ fontSize: 10, color: SD, marginBottom: 10, lineHeight: 1.6 }}>
-              <p style={{ margin: "4px 0" }}>
-                <strong>Date:</strong> {new Date(drop.releaseDate).toLocaleDateString()}
-              </p>
-              <p style={{ margin: "4px 0" }}>
-                <strong>Time:</strong> {drop.time}
-              </p>
-              <p style={{ margin: "4px 0" }}>
-                <strong>Units:</strong> {drop.pieces}
-              </p>
-              <p style={{ margin: "4px 0" }}>
-                <strong>Price:</strong> {drop.priceRange}
-              </p>
-            </div>
-
-            <p style={{ fontSize: 11, color: "#aaa", lineHeight: 1.5 }}>{drop.description}</p>
-          </div>
-        ))}
-      </div>
 
       {drops.length === 0 && !showForm && (
         <div style={{ textAlign: "center", padding: 60, color: SD }}>
