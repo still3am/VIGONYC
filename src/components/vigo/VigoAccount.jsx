@@ -9,11 +9,11 @@ const G3 = "#1a1a1a";
 const SD = "#777";
 
 const TABS = [
-  { id: "profile", label: "Profile", icon: "👤" },
-  { id: "orders", label: "Orders", icon: "📦" },
-  { id: "addresses", label: "Addresses", icon: "📍" },
-  { id: "notifications", label: "Alerts", icon: "🔔" },
-  { id: "settings", label: "Settings", icon: "⚙️" },
+  { id: "profile", label: "Profile" },
+  { id: "orders", label: "Orders" },
+  { id: "addresses", label: "Addresses" },
+  { id: "notifications", label: "Alerts" },
+  { id: "settings", label: "Settings" },
 ];
 
 const ORDERS = [
@@ -129,10 +129,8 @@ export default function VigoAccount() {
                 cursor: "pointer", fontWeight: tab === t.id ? 700 : 400,
                 fontFamily: "inherit", whiteSpace: "nowrap",
                 transition: "color .2s",
-                display: "flex", alignItems: "center", gap: 6,
               }}
             >
-              <span className="vigo-tab-icon">{t.icon}</span>
               {t.label}
             </button>
           ))}
