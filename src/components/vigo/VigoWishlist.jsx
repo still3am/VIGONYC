@@ -56,40 +56,41 @@ export default function VigoWishlist() {
         {/* Subtle grid pattern */}
         <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(192,192,192,.03) 1px,transparent 1px)", backgroundSize: "24px 24px", pointerEvents: "none" }} />
 
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(28px,5vw,48px) clamp(16px,4vw,24px) clamp(20px,4vw,32px)", position: "relative" }}>
-          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 20 }}>
-            {/* Left */}
-            <div>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-                <div style={{ width: 4, height: 4, background: S, transform: "rotate(45deg)" }} />
-                <span style={{ fontSize: 8, letterSpacing: 5, color: S, textTransform: "uppercase" }}>Saved Items</span>
-                <div style={{ width: 4, height: 4, background: S, transform: "rotate(45deg)" }} />
-              </div>
-              <h1 style={{ fontSize: "clamp(26px,5vw,56px)", fontWeight: 900, letterSpacing: -2, lineHeight: 1, marginBottom: 12 }}>Wishlist</h1>
-              <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: savedItems.length > 0 ? "#0c6" : "#333" }} />
-                  <span style={{ fontSize: 10, color: SD }}>{savedItems.length} {savedItems.length === 1 ? "item" : "items"} saved</span>
-                </div>
-                {savedItems.length > 0 && (
-                  <div style={{ width: 1, height: 12, background: G3 }} />
-                )}
-                {savedItems.length > 0 && (
-                  <span style={{ fontSize: 10, color: SD }}>Total value: <span style={{ color: S, fontWeight: 900 }}>${totalValue}</span></span>
-                )}
-              </div>
+        <div style={{ maxWidth: 700, margin: "0 auto", padding: "clamp(40px,7vw,64px) clamp(16px,4vw,24px) clamp(28px,5vw,48px)", position: "relative", textAlign: "center" }}>
+            {/* Label */}
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+              <div style={{ width: 28, height: .5, background: S, opacity: .5 }} />
+              <span style={{ fontSize: 8, letterSpacing: 5, color: S, textTransform: "uppercase" }}>Saved Items</span>
+              <div style={{ width: 28, height: .5, background: S, opacity: .5 }} />
             </div>
 
-            {/* Right */}
+            {/* Title */}
+            <h1 style={{ fontSize: "clamp(36px,7vw,72px)", fontWeight: 900, letterSpacing: -3, lineHeight: 1, marginBottom: 16 }}>Wishlist</h1>
+
+            {/* Stats row */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, flexWrap: "wrap", marginBottom: savedItems.length > 0 ? 28 : 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: savedItems.length > 0 ? "#0c6" : "#333", animation: savedItems.length > 0 ? "vigo-pulse 2s infinite" : "none" }} />
+                <span style={{ fontSize: 10, color: SD }}>{savedItems.length} {savedItems.length === 1 ? "item" : "items"} saved</span>
+              </div>
+              {savedItems.length > 0 && (
+                <>
+                  <div style={{ width: 1, height: 12, background: G3 }} />
+                  <span style={{ fontSize: 10, color: SD }}>Est. total: <span style={{ color: S, fontWeight: 900 }}>${totalValue}</span></span>
+                </>
+              )}
+            </div>
+
+            {/* CTA */}
             {savedItems.length > 0 && (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
                 <button onClick={handleAddAll} style={{
                   background: allAddedBag ? "#0c6" : S,
                   color: "#000", border: "none",
-                  padding: "14px 28px", fontSize: 9, letterSpacing: 3,
+                  padding: "14px 36px", fontSize: 9, letterSpacing: 3,
                   textTransform: "uppercase", fontWeight: 900, cursor: "pointer",
                   fontFamily: "inherit", transition: "background .3s",
-                  display: "flex", alignItems: "center", gap: 8,
+                  display: "inline-flex", alignItems: "center", gap: 8,
                 }}>
                   {allAddedBag ? (
                     <><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg> All Added!</>
@@ -97,10 +98,9 @@ export default function VigoWishlist() {
                     <><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> Add All to Bag</>
                   )}
                 </button>
-                <div style={{ fontSize: 8, color: "#333", letterSpacing: 1 }}>No restocks guaranteed</div>
+                <div style={{ fontSize: 8, color: "#333", letterSpacing: 1, textTransform: "uppercase" }}>No restocks · Move fast</div>
               </div>
             )}
-          </div>
         </div>
       </div>
 
