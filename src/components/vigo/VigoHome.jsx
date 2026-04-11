@@ -95,7 +95,7 @@ export default function VigoHome() {
             <span style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase" }}>{settings?.heroBadge || "SS25 Collection — Now Live"}</span>
           </div>
           <h1 style={{ fontSize: "clamp(56px,7vw,104px)", fontWeight: 900, letterSpacing: -4, lineHeight: .86, marginBottom: 28 }}>
-            {(settings?.heroHeadline || "STREETS\nOF NYC").split("\n").map((line, i) => <React.Fragment key={i}>{line}<br /></React.Fragment>)}
+            {(settings?.heroHeadline || "STREETS\nOF NYC").split("\n").map((line, i) => (<div key={i}>{line}<br /></div>))}
             <span style={{ position: "relative", display: "inline-block" }}>
               <em style={{ color: "transparent", WebkitTextStroke: `1px ${S}`, fontStyle: "italic" }}>NYC</em>
             </span>
