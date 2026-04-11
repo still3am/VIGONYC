@@ -65,10 +65,10 @@ export default function ProductsManager({ settings, updateProduct, updateSetting
       </div>
 
       {/* Grid + Detail Layout */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 24 }}>
+      <div className="products-layout" style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 24 }}>
         {/* Products Grid */}
         <div style={{ background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: 16 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12 }}>
+          <div className="products-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12 }}>
             {settings.products.map(p => (
               <div
                 key={p.id}
@@ -206,6 +206,16 @@ export default function ProductsManager({ settings, updateProduct, updateSetting
           </div>
         </div>
       )}
+
+      <style>{`
+        @media(max-width:768px) {
+          .products-layout { grid-template-columns: 1fr !important; }
+          .products-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media(max-width:480px) {
+          .products-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   );
 }
