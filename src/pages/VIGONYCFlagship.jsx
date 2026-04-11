@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import VigoNav from "../components/vigo/VigoNav";
@@ -24,7 +24,14 @@ export default function VIGONYCFlagship() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => { window.scrollTo(0, 0); }, [location.pathname]);
+  // Only scroll to top on non-tab navigations (tab switching preserves scroll)
+  const TAB_ROOTS = ["/", "/shop", "/drops", "/wishlist", "/account"];
+  const prevPath = useRef(location.pathname);
+  useEffect(() => {
+    const isTabSwitch = TAB_ROOTS.includes(location.pathname) && TAB_ROOTS.includes(prevPath.current) && prevPath.current !== location.pathname;
+    if (!isTabSwitch) window.scrollTo(0, 0);
+    prevPath.current = location.pathname;
+  }, [location.pathname]);
 
   const addToCart = (item) => {
     setCartItems(prev => {
@@ -57,7 +64,8 @@ export default function VIGONYCFlagship() {
       <VigoBottomNav />
       <style>{`
         * { -webkit-tap-highlight-color: transparent; }
-        button, a { -webkit-touch-callout: none; user-select: none; }
+        button, a, nav, [role="button"] { -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+        p, .vigo-selectable { user-select: text; -webkit-user-select: text; }
         @supports (padding: env(safe-area-inset-bottom)) {
           .vigo-bottom-nav { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
           .vigo-nav-top { padding-top: env(safe-area-inset-top); }

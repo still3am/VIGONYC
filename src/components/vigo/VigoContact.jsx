@@ -1,12 +1,48 @@
 import { useState } from "react";
-import * as Select from '@radix-ui/react-select';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 
 const S = "#C0C0C0";
 const G1 = "#0a0a0a";
 const G3 = "#1a1a1a";
 const SD = "#777";
 
-const TOPICS = ["General Inquiry","Order Issue","Return / Exchange","Collaboration","Press","Other"];
+const TOPICS = ["General Inquiry", "Order Issue", "Return / Exchange", "Collaboration", "Press", "Other"];
+
+function TopicPicker({ value, onChange }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        style={{ width: "100%", background: "#0a0a0a", border: `.5px solid ${value ? "#C0C0C0" : "#1a1a1a"}`, color: value ? "#fff" : "#777", padding: "13px 16px", fontSize: 12, outline: "none", fontFamily: "inherit", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", boxSizing: "border-box", textAlign: "left" }}
+      >
+        <span>{value || "Select a topic"}</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerContent style={{ background: "#111", border: "none", borderTop: "2px solid #C0C0C0" }}>
+          <DrawerHeader>
+            <DrawerTitle style={{ color: "#fff", fontSize: 11, letterSpacing: 3, textTransform: "uppercase", textAlign: "left" }}>Select Topic</DrawerTitle>
+          </DrawerHeader>
+          <div style={{ padding: "0 0 env(safe-area-inset-bottom,16px)" }}>
+            {TOPICS.map(t => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => { onChange(t); setOpen(false); }}
+                style={{ width: "100%", background: value === t ? "rgba(192,192,192,.08)" : "none", border: "none", borderBottom: ".5px solid #1a1a1a", color: value === t ? "#C0C0C0" : "#ccc", padding: "18px 24px", fontSize: 13, textAlign: "left", cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}
+              >
+                {t}
+                {value === t && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C0C0C0" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
+              </button>
+            ))}
+          </div>
+        </DrawerContent>
+      </Drawer>
+    </>
+  );
+}
 
 export default function VigoContact() {
   const [topic, setTopic] = useState("");
@@ -63,27 +99,7 @@ export default function VigoContact() {
             <Field label="Email Address" type="email" required />
             <div>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Topic *</div>
-              <Select.Root value={topic} onValueChange={setTopic} required>
-                <Select.Trigger style={{ width: "100%", background: "#0a0a0a", border: `.5px solid ${topic ? S : "#1a1a1a"}`, color: topic ? "#fff" : SD, padding: "13px 16px", fontSize: 12, outline: "none", fontFamily: "inherit", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", boxSizing: "border-box" }}>
-                  <Select.Value placeholder="Select a topic" />
-                  <Select.Icon><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg></Select.Icon>
-                </Select.Trigger>
-                <Select.Portal>
-                  <Select.Content position="popper" style={{ background: "#111", border: ".5px solid #1a1a1a", width: "var(--radix-select-trigger-width)", zIndex: 9999, boxShadow: "0 8px 32px rgba(0,0,0,.8)" }}>
-                    <Select.Viewport>
-                      {TOPICS.map(t => (
-                        <Select.Item key={t} value={t} style={{ padding: "13px 16px", fontSize: 12, color: "#ccc", cursor: "pointer", outline: "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}
-                          onMouseEnter={e => { e.currentTarget.style.background = "#1a1a1a"; e.currentTarget.style.color = "#fff"; }}
-                          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#ccc"; }}
-                        >
-                          <Select.ItemText>{t}</Select.ItemText>
-                          <Select.ItemIndicator><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#C0C0C0" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg></Select.ItemIndicator>
-                        </Select.Item>
-                      ))}
-                    </Select.Viewport>
-                  </Select.Content>
-                </Select.Portal>
-              </Select.Root>
+              <TopicPicker value={topic} onChange={setTopic} />
             </div>
             <div>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Message *</div>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const S = "#C0C0C0";
 const G1 = "#0a0a0a";
@@ -58,10 +59,25 @@ export default function VigoAccount() {
   const [tab, setTab] = useState("profile");
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [notifications, setNotifications] = useState({ drops: true, orders: true, promotions: false, newsletter: true });
-  const [saved, setSaved] = useState(false);
+  const [profile, setProfile] = useState({ firstName: "Jordan", lastName: "NYC", email: "jordan@vigonyc.com", phone: "+1 212 000 0000", birthday: "1998-01-01" });
+  const [deleted, setDeleted] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const handleSave = () => { setSaved(true); setTimeout(() => setSaved(false), 2000); };
+  const saveMutation = useMutation({
+    mutationFn: async (data) => { await new Promise(r => setTimeout(r, 600)); return data; },
+    onMutate: (data) => { setProfile(p => ({ ...p, ...data })); },
+    onSuccess: () => {},
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => { await new Promise(r => setTimeout(r, 800)); },
+    onMutate: () => { setDeleted(true); },
+    onSuccess: () => { navigate("/"); },
+  });
+
+  const handleSave = () => saveMutation.mutate(profile);
+  const saved = saveMutation.isSuccess;
 
   return (
     <div style={{ minHeight: "80vh" }}>
