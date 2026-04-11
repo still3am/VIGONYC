@@ -6,9 +6,9 @@ const G3 = "#1a1a1a";
 const SD = "#777";
 
 const cols = {
-  Shop: [["New Arrivals","/shop"],["Tops","/shop?cat=Tops"],["Bottoms","/shop?cat=Bottoms"],["Outerwear","/shop?cat=Outerwear"],["Accessories","/shop?cat=Accessories"],["Drop Calendar","/drops"]],
-  Info: [["About","/about"],["Lookbook","/lookbook"],["FAQ","/faq"]],
-  Support: [["Contact","/contact"],["Track Order","/track-order"],["Shipping & Returns","/faq"],["Size Guide","/product/1"],["Wishlist","/wishlist"]],
+  Shop: [["New Arrivals", "/shop"], ["Tops", "/shop?cat=Tops"], ["Bottoms", "/shop?cat=Bottoms"], ["Outerwear", "/shop?cat=Outerwear"], ["Accessories", "/shop?cat=Accessories"], ["Drop Calendar", "/drops"]],
+  Info: [["About", "/about"], ["Lookbook", "/lookbook"], ["Sustainability", "/sustainability"], ["Press", "/press"], ["FAQ", "/faq"]],
+  Support: [["Contact", "/contact"], ["Track Order", "/track-order"], ["Shipping & Returns", "/faq"], ["Size Guide", "/product/1"], ["Wishlist", "/wishlist"]]
 };
 
 export default function VigoFooter({ logo }) {
@@ -22,30 +22,30 @@ export default function VigoFooter({ logo }) {
             <Link to="/" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", marginBottom: 18 }}>
               <img src={logo} alt="VIGONYC" style={{ width: 44, height: 44, objectFit: "contain" }} />
               <div style={{ lineHeight: 1 }}>
-                <div style={{ fontSize: 18, fontWeight: 900, letterSpacing: 4, color: "#fff", textTransform: "uppercase" }}>VIGO<span style={{ color: S }}>NYC</span></div>
-                <div style={{ fontSize: 7, letterSpacing: 4, color: SD, textTransform: "uppercase", marginTop: 2 }}>New York City</div>
+                
+                
               </div>
             </Link>
-            <p style={{ fontSize: 11, color: "#444", lineHeight: 1.8, maxWidth: 260, marginBottom: 20 }}>
-              Luxury streetwear born from the five boroughs. Built for the ones who move with purpose.
-            </p>
+            
+
+            
             <div style={{ display: "flex", gap: 10 }}>
-              {["IG","TW","TK"].map(s => (
-                <div key={s} style={{ width: 34, height: 34, background: "none", border: `.5px solid ${G3}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 8, letterSpacing: 1, color: SD, cursor: "pointer" }}>{s}</div>
-              ))}
+              {["IG", "TW", "TK"].map((s) => null
+
+              )}
             </div>
           </div>
           {/* Link columns */}
-          {Object.entries(cols).map(([title, links]) => (
-            <div key={title}>
+          {Object.entries(cols).map(([title, links]) =>
+          <div key={title}>
               <div style={{ fontSize: 8, letterSpacing: 4, textTransform: "uppercase", color: "#fff", fontWeight: 700, marginBottom: 18 }}>{title}</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {links.map(([l, to]) => (
-                  <Link key={l} to={to} style={{ fontSize: 11, color: SD, textDecoration: "none" }}>{l}</Link>
-                ))}
+                {links.map(([l, to]) =>
+              <Link key={l} to={to} style={{ fontSize: 11, color: SD, textDecoration: "none" }}>{l}</Link>
+              )}
               </div>
             </div>
-          ))}
+          )}
         </div>
 
         {/* Newsletter */}
@@ -64,9 +64,9 @@ export default function VigoFooter({ logo }) {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
           <span style={{ fontSize: 8, color: "#2a2a2a", letterSpacing: 2 }}>© 2024 VIGONYC LLC. ALL RIGHTS RESERVED.</span>
           <div style={{ display: "flex", gap: 20 }}>
-            {["Privacy","Terms","Cookies","Accessibility"].map(t => (
-              <span key={t} style={{ fontSize: 8, color: "#2a2a2a", letterSpacing: 1, textTransform: "uppercase", cursor: "pointer" }}>{t}</span>
-            ))}
+            {["Privacy", "Terms", "Cookies", "Accessibility"].map((t) =>
+            <span key={t} style={{ fontSize: 8, color: "#2a2a2a", letterSpacing: 1, textTransform: "uppercase", cursor: "pointer" }}>{t}</span>
+            )}
           </div>
         </div>
       </div>
@@ -75,6 +75,6 @@ export default function VigoFooter({ logo }) {
         @media(max-width:480px){.vigo-footer-grid{grid-template-columns:1fr !important;}}
         @media(max-width:900px){footer { display: none !important; }}
       `}</style>
-    </footer>
-  );
+    </footer>);
+
 }
