@@ -91,13 +91,13 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
 
           {/* Icons */}
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <button onClick={() => setSearchOpen(true)} style={iconBtn} title="Search">
+            <button onClick={() => setSearchOpen(true)} className="vigo-icon-desktop" style={iconBtn} title="Search">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             </button>
-            <Link to="/wishlist" style={{ ...iconBtn, textDecoration: "none" }}>
+            <Link to="/wishlist" className="vigo-icon-desktop" style={{ ...iconBtn, textDecoration: "none" }}>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </Link>
-            <Link to="/account" style={{ ...iconBtn, textDecoration: "none" }}>
+            <Link to="/account" className="vigo-icon-desktop" style={{ ...iconBtn, textDecoration: "none" }}>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             </Link>
             <button style={{ ...iconBtn, position: "relative" }} onClick={onCartOpen} title="Cart">
@@ -124,7 +124,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
         @keyframes vigo-ticker { from { transform: translateX(0) } to { transform: translateX(-50%) } }
         .vigo-ticker-track { display: flex; white-space: nowrap; animation: vigo-ticker 30s linear infinite; }
         @media (min-width: 900px) { .vigo-mobile-menu-btn { display: none !important; } }
-        @media (max-width: 899px) { .vigo-desktop-nav { display: none !important; } }
+        @media (max-width: 899px) { .vigo-desktop-nav { display: none !important; } .vigo-icon-desktop { display: none !important; } }
       `}</style>
     </>
   );
