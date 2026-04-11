@@ -115,7 +115,7 @@ export default function VigoAccount() {
 
       {/* Tabs */}
       <div style={{ borderBottom: `.5px solid ${G3}`, background: G1, position: "sticky", top: 60, zIndex: 10, overflowX: "auto" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 clamp(16px,4vw,24px)", display: "flex", gap: 0 }}>
+        <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 clamp(16px,4vw,24px)", display: "flex", gap: 0, justifyContent: "center" }}>
           {TABS.map(t => (
             <button
               key={t.id}
