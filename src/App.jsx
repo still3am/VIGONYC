@@ -23,7 +23,6 @@ import VigoAccount from './components/vigo/VigoAccount';
 import VigoCheckout from './components/vigo/VigoCheckout';
 import VigoDrops from './components/vigo/VigoDrops';
 import VigoPress from './components/vigo/VigoPress';
-import AdminContacts from './pages/AdminContacts';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
