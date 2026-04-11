@@ -73,6 +73,7 @@ export default function VigoFooter({ logo }) {
       <style>{`
         @media(max-width:900px){.vigo-footer-grid{grid-template-columns:1fr 1fr !important;}}
         @media(max-width:480px){.vigo-footer-grid{grid-template-columns:1fr !important;}}
+        @media(max-width:900px){footer { display: none !important; }}
       `}</style>
     </footer>
   );
