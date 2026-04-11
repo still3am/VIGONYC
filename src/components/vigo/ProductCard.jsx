@@ -39,6 +39,9 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
         flexDirection: "column",
       }}
     >
+      {/* Shine */}
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,rgba(255,255,255,.03) 0%,transparent 50%)", opacity: hovered ? 1 : 0, transition: "opacity .3s", pointerEvents: "none", zIndex: 1 }} />
+
       {/* Image */}
       <div style={{ position: "relative", paddingBottom: "115%", background: "#111", overflow: "hidden" }}>
         <img
@@ -66,7 +69,7 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
           )}
         </div>
 
-        {/* Wishlist button */}
+        {/* Wishlist button — always visible on mobile */}
         <button
           onClick={e => { e.stopPropagation(); onWishlist?.(); }}
           style={{
@@ -89,10 +92,17 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
       <div style={{ padding: "14px 14px 0", flex: 1 }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", lineHeight: 1.3 }}>{product.name}</div>
         <div style={{ fontSize: 8, letterSpacing: 2, color: "#555", textTransform: "uppercase", marginTop: 4 }}>{product.cat}</div>
-        <div style={{ fontSize: 16, fontWeight: 900, color: S, marginTop: 10 }}>${product.price}</div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
+          <span style={{ fontSize: 16, fontWeight: 900, color: S }}>${product.price}</span>
+          {product.sizes && product.sizes.length > 0 && (
+            <span style={{ fontSize: 8, color: "#444", letterSpacing: 1 }}>
+              {product.sizes.slice(0, 3).join(" · ")}{product.sizes.length > 3 ? " +" : ""}
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* Add to Bag */}
+      {/* Add to Bag — always visible at bottom */}
       <div style={{ padding: "12px 14px 14px" }}>
         <button
           onClick={handleAdd}
@@ -109,9 +119,23 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
             cursor: "pointer",
             fontFamily: "inherit",
             transition: "background .3s",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
           }}
         >
-          {added ? "✓ Added!" : "Add to Bag"}
+          {added ? (
+            <>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+              Added!
+            </>
+          ) : (
+            <>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              Add to Bag
+            </>
+          )}
         </button>
       </div>
     </div>
