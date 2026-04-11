@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import PullToRefresh from "./PullToRefresh";
 import ProductCard from "./ProductCard";
 
 const S = "#C0C0C0";
@@ -111,8 +112,11 @@ export default function VigoDrops() {
 
   const dropOnDay = day => day ? ALL_DROPS.find(dr => isSameDay(dr.date, day)) : null;
   const handleNotify = id => { if (email.trim()) setNotified(p => ({ ...p, [id]: true })); };
+  const [refreshKey, setRefreshKey] = useState(0);
+  const handleRefresh = useCallback(() => new Promise(res => setTimeout(() => { setRefreshKey(k => k + 1); res(); }, 800)), []);
 
   return (
+    <PullToRefresh onRefresh={handleRefresh}>
     <div>
       {/* ── HERO ── */}
       {nextDrop && (
@@ -402,6 +406,7 @@ export default function VigoDrops() {
         }
       `}</style>
     </div>
+    </PullToRefresh>
   );
 }
 

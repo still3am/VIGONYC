@@ -38,7 +38,7 @@ export default function VigoBottomNav() {
           <NavLink key={item.to} to={item.to} end={item.to === "/"} style={({ isActive }) => ({
             flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
             color: isActive ? S : "#444", textDecoration: "none", padding: "5px 0",
-            fontSize: 8, letterSpacing: 1, textTransform: "uppercase", fontFamily: "inherit",
+            fontSize: 11, letterSpacing: 1, textTransform: "uppercase", fontFamily: "inherit",
             transition: "color .2s",
           })}>
             {item.icon}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 
 const S = "#C0C0C0";
 const SD = "#777";
@@ -19,6 +19,8 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
   const [scrolled, setScrolled] = useState(false);
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const isRoot = location.pathname === "/" || location.pathname === "/shop" || location.pathname === "/drops" || location.pathname === "/wishlist" || location.pathname === "/account" || location.pathname === "/lookbook" || location.pathname === "/about";
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 10);
@@ -66,16 +68,22 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
       {/* Main nav */}
       <nav className="vigo-nav-top" style={{ position: "sticky", top: 0, zIndex: 100, background: scrolled ? "rgba(0,0,0,.97)" : "#000", borderBottom: `.5px solid ${G3}`, transition: "background .3s", backdropFilter: scrolled ? "blur(12px)" : "none" }}>
         <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
-          {/* Logo */}
+          {/* Back button (mobile child screens) or Logo */}
+          {!isRoot ? (
+            <button onClick={() => navigate(-1)} className="vigo-back-btn" style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontFamily: "inherit", padding: "4px 0" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+              Back
+            </button>
+          ) : (
           <Link to="/" className="vigo-nav-logo" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none" }}>
             <img src={logo} alt="VIGONYC" className="vigo-nav-logo-img" style={{ width: 40, height: 40, objectFit: "contain" }} />
             <div style={{ lineHeight: 1 }}>
               <div className="vigo-nav-wordmark" style={{ fontSize: 17, fontWeight: 900, letterSpacing: 4, color: "#fff", textTransform: "uppercase" }}>VIGO<span style={{ color: S }}>NYC</span></div>
               <style>{`.vigo-nav-wordmark { display: block; } @media(max-width:768px){ .vigo-nav-wordmark { display: none !important; } }`}</style>
-              
               <style>{`.vigo-nav-subtitle { display: block; } @media(max-width:768px){ .vigo-nav-subtitle { display: none !important; } }`}</style>
             </div>
           </Link>
+          )}
 
           {/* Desktop links */}
           <div className="vigo-desktop-nav" style={{ display: "flex", gap: 28, alignItems: "center" }}>

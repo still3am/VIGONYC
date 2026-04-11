@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import PullToRefresh from "./PullToRefresh";
 import { useOutletContext } from "react-router-dom";
 import ProductCard from "./ProductCard";
 
@@ -107,6 +108,9 @@ export default function VigoShop() {
     return p;
   }, [activeCat, selectedSizes, selectedColors, priceRange, activeCollection, sort]);
 
+  const [refreshKey, setRefreshKey] = useState(0);
+  const handleRefresh = useCallback(() => new Promise(res => setTimeout(() => { setRefreshKey(k => k + 1); res(); }, 800)), []);
+
   const filterProps = { activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr };
 
   const activeFiltersCount = [
@@ -118,6 +122,7 @@ export default function VigoShop() {
   ].reduce((a,b) => a + b, 0);
 
   return (
+    <PullToRefresh onRefresh={handleRefresh}>
     <div style={{ padding: "32px 20px", maxWidth: 1400, margin: "0 auto" }}>
 
       {/* Mobile filter drawer overlay */}
@@ -207,5 +212,6 @@ export default function VigoShop() {
         }
       `}</style>
     </div>
+    </PullToRefresh>
   );
 }
