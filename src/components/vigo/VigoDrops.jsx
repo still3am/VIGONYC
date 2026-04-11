@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 import PullToRefresh from "./PullToRefresh";
 import ProductCard from "./ProductCard";
 
@@ -10,32 +12,7 @@ const G3 = "#1a1a1a";
 const SD = "#777";
 const TODAY = new Date();
 
-const ALL_DROPS = [
-  {
-    id: "drop-02", name: "Drop 02 — Mirror Series", series: "Mirror Series", drop: "Drop 02",
-    date: new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate() + 3),
-    desc: "Reflective chrome finishes. Heavyweight silhouettes. Only 75 units worldwide. No restocks. No exceptions.",
-    tag: "Upcoming", tagColor: S, pieces: 75, status: "upcoming", time: "12:00 PM EST", price: "$68–$245",
-  },
-  {
-    id: "drop-03", name: "Drop 03 — Concrete Series", series: "Concrete Series", drop: "Drop 03",
-    date: new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate() + 10),
-    desc: "Raw textures. NYC concrete inspired. Dyed-in-the-wool construction. 50 units only.",
-    tag: "Coming Soon", tagColor: "#888", pieces: 50, status: "upcoming", time: "12:00 PM EST", price: "$88–$195",
-  },
-  {
-    id: "drop-04", name: "Drop 04 — Void Series", series: "Void Series", drop: "Drop 04",
-    date: new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate() + 21),
-    desc: "All-black. Zero branding. Maximum impact. 40 units only.",
-    tag: "Coming Soon", tagColor: "#888", pieces: 40, status: "upcoming", time: "12:00 PM EST", price: "$75–$220",
-  },
-  {
-    id: "drop-01", name: "Drop 01 — Chrome Series", series: "Chrome Series", drop: "Drop 01",
-    date: new Date(TODAY.getFullYear(), TODAY.getMonth() - 1, 15),
-    desc: "The drop that started it all. Hand-finished chrome hardware. Sold out in 8 minutes.",
-    tag: "Sold Out", tagColor: "#e03", pieces: 100, status: "soldout", time: "12:00 PM EST", price: "$68–$245",
-  },
-];
+
 
 const PAST_DROPS = [
   { id: 1, name: "Chrome V Tee", cat: "Tops / Essential", price: 68, tag: "new", opacity: 1 },
@@ -99,9 +76,37 @@ export default function VigoDrops() {
   const [notified, setNotified] = useState({});
   const [email, setEmail] = useState("");
   const [viewDate, setViewDate] = useState(new Date(TODAY.getFullYear(), TODAY.getMonth(), 1));
-  const [selectedDrop, setSelectedDrop] = useState(ALL_DROPS[0]);
+  const [selectedDrop, setSelectedDrop] = useState(null);
 
-  const nextDrop = ALL_DROPS.find(d => d.status === "upcoming");
+  const { data: drops = [] } = useQuery({
+    queryKey: ["drops"],
+    queryFn: async () => {
+      const data = await base44.entities.Drop.list();
+      return data.map(d => ({
+        ...d,
+        id: d.id,
+        name: d.name,
+        series: d.series,
+        drop: d.dropNumber,
+        date: new Date(d.releaseDate),
+        desc: d.description,
+        tag: d.tag,
+        tagColor: d.tagColor,
+        pieces: d.pieces,
+        status: d.status,
+        time: d.time,
+        price: d.priceRange,
+      }));
+    },
+  });
+
+  useEffect(() => {
+    if (drops.length > 0 && !selectedDrop) {
+      setSelectedDrop(drops[0]);
+    }
+  }, [drops, selectedDrop]);
+
+  const nextDrop = drops.find(d => d.status === "upcoming");
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
   const firstDay = new Date(year, month, 1).getDay();
@@ -110,7 +115,7 @@ export default function VigoDrops() {
   for (let i = 0; i < firstDay; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
 
-  const dropOnDay = day => day ? ALL_DROPS.find(dr => isSameDay(dr.date, day)) : null;
+  const dropOnDay = day => day ? drops.find(dr => isSameDay(dr.date, day)) : null;
   const handleNotify = id => { if (email.trim()) setNotified(p => ({ ...p, [id]: true })); };
   const [refreshKey, setRefreshKey] = useState(0);
   const handleRefresh = useCallback(() => new Promise(res => setTimeout(() => { setRefreshKey(k => k + 1); res(); }, 800)), []);
@@ -341,7 +346,7 @@ export default function VigoDrops() {
             {/* All Drops List */}
             <div style={{ background: G1, border: `.5px solid ${G3}` }}>
               <div style={{ padding: "10px 16px", borderBottom: `.5px solid ${G3}`, fontSize: 7, letterSpacing: 3, color: SD, textTransform: "uppercase" }}>All Drops</div>
-              {ALL_DROPS.map(dr => (
+              {drops.map(dr => (
                 <div
                   key={dr.id}
                   onClick={() => { setSelectedDrop(dr); setViewDate(new Date(dr.date.getFullYear(), dr.date.getMonth(), 1)); }}

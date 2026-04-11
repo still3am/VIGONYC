@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import AdminDrops from "./AdminDrops";
 import { useVigoSettings } from "../hooks/useVigoSettings";
 
 const S = "#C0C0C0";
@@ -9,7 +10,7 @@ const G3 = "#1a1a1a";
 const SD = "#777";
 const ADMIN_PASSWORD = "VIGONYC2024";
 
-const SECTIONS = ["Hero", "Banner", "Products", "Brand Story", "Contact & Social", "Theme"];
+const SECTIONS = ["Hero", "Banner", "Products", "Drops", "Brand Story", "Contact & Social", "Theme"];
 
 function Field({ label, value, onChange, type = "text", multiline }) {
   const style = { width: "100%", background: G2, border: `.5px solid ${G3}`, color: "#fff", padding: "10px 14px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit", resize: multiline ? "vertical" : "none" };
@@ -242,6 +243,8 @@ export default function VigoAdmin() {
               </SectionCard>
             </div>
           )}
+
+          {activeSection === "Drops" && <AdminDrops />}
 
           {activeSection === "Theme" && (
             <div>
