@@ -68,7 +68,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
         <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
           {/* Logo */}
           <Link to="/" className="vigo-nav-logo" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none" }}>
-            <img src={logo} alt="VIGONYC" style={{ width: 60, height: 60, objectFit: "contain" }} />
+            <img src={logo} alt="VIGONYC" className="vigo-nav-logo-img" style={{ width: 40, height: 40, objectFit: "contain" }} />
             <div style={{ lineHeight: 1 }}>
               <div className="vigo-nav-wordmark" style={{ fontSize: 17, fontWeight: 900, letterSpacing: 4, color: "#fff", textTransform: "uppercase" }}>VIGO<span style={{ color: S }}>NYC</span></div>
               <style>{`.vigo-nav-wordmark { display: block; } @media(max-width:768px){ .vigo-nav-wordmark { display: none !important; } }`}</style>
@@ -125,7 +125,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
         .vigo-ticker-track { display: flex; white-space: nowrap; animation: vigo-ticker 30s linear infinite; }
         @media (min-width: 900px) { .vigo-mobile-menu-btn { display: none !important; } }
         @media (max-width: 899px) { .vigo-desktop-nav { display: none !important; } .vigo-icon-desktop { display: none !important; } }
-        @media (max-width: 899px) { .vigo-nav-logo { position: absolute; left: 50%; transform: translateX(-50%); } }
+        @media (max-width: 899px) { .vigo-nav-logo { position: absolute; left: 50%; transform: translateX(-50%); } .vigo-nav-logo-img { width: 60px !important; height: 60px !important; } }
       `}</style>
     </>
   );
