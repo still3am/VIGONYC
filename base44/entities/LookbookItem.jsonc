@@ -1,0 +1,39 @@
+{
+  "name": "LookbookItem",
+  "type": "object",
+  "properties": {
+    "caption": {
+      "type": "string",
+      "description": "Image caption"
+    },
+    "sub": {
+      "type": "string",
+      "description": "Subcaption or details"
+    },
+    "price": {
+      "type": "string",
+      "description": "Product price"
+    },
+    "productId": {
+      "type": "string",
+      "description": "Associated product ID"
+    },
+    "image": {
+      "type": "string",
+      "description": "Image URL"
+    },
+    "tall": {
+      "type": "boolean",
+      "description": "Tall aspect ratio for masonry"
+    },
+    "opacity": {
+      "type": "number",
+      "description": "Image opacity (0-1)"
+    }
+  },
+  "required": [
+    "caption",
+    "price",
+    "productId"
+  ]
+}
