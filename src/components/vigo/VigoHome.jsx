@@ -4,11 +4,9 @@ import { useProducts } from "../../hooks/useSiteSettings";
 import ProductCard from "./ProductCard";
 import SectionDivider from "./SectionDivider";
 import SectionHeader from "./SectionHeader";
+import { VIGO_CONFIG, formatDate, formatCurrency } from "@/lib/vigoConfig";
 
-const S = "#C0C0C0";
-const SD = "#777";
-const G1 = "#0a0a0a";
-const G3 = "#1a1a1a";
+import { S, SD, G1, G3 } from "@/lib/vigoColors";
 
 const NEXT_DROP = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000);
 

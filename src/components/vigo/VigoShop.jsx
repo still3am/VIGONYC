@@ -4,11 +4,9 @@ import PullToRefresh from "./PullToRefresh";
 import { useOutletContext } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import { useProducts } from "../../hooks/useSiteSettings";
+import { VIGO_CONFIG } from "@/lib/vigoConfig";
 
-const S = "#C0C0C0";
-const G1 = "#0a0a0a";
-const G3 = "#1a1a1a";
-const SD = "#777";
+import { S, G1, G3, SD } from "@/lib/vigoColors";
 
 // Products are now loaded from useVigoSettings hook below
 

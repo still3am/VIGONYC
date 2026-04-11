@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { useForm } from "@/hooks/useFormField";
 
 const S = "#C0C0C0";
 const G1 = "#0a0a0a";
@@ -49,22 +50,27 @@ export default function VigoContact() {
   const [topic, setTopic] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', message: '' });
+  const { values: formData, handleChange, validateAll } = useForm({ firstName: '', lastName: '', email: '', message: '' });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const isValid = validateAll({
+      firstName: { required: true, label: 'First Name' },
+      lastName: { required: true, label: 'Last Name' },
+      email: { required: true, type: 'email' },
+      message: { required: true, minLength: 10 }
+    });
+    if (!isValid || !topic) return;
+    
     setLoading(true);
     try {
       await base44.functions.invoke('sendContactEmail', {
         name: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
-        phone: '',
         topic,
         message: formData.message
       });
       setSubmitted(true);
-      setFormData({ firstName: '', lastName: '', email: '', message: '' });
-      setTopic('');
     } catch (error) {
       console.error('Error submitting form:', error);
     }
@@ -111,17 +117,17 @@ export default function VigoContact() {
         ) : (
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             <div className="vigo-2col-sm" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <Field label="First Name" required value={formData.firstName} onChange={(v) => setFormData(p => ({...p, firstName: v}))} />
-              <Field label="Last Name" required value={formData.lastName} onChange={(v) => setFormData(p => ({...p, lastName: v}))} />
+              <Field label="First Name" required value={formData.firstName} onChange={(v) => handleChange('firstName', v)} />
+              <Field label="Last Name" required value={formData.lastName} onChange={(v) => handleChange('lastName', v)} />
             </div>
-            <Field label="Email Address" type="email" required value={formData.email} onChange={(v) => setFormData(p => ({...p, email: v}))} />
+            <Field label="Email Address" type="email" required value={formData.email} onChange={(v) => handleChange('email', v)} />
             <div>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Topic *</div>
               <TopicPicker value={topic} onChange={setTopic} />
             </div>
             <div>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Message *</div>
-              <textarea required rows={5} placeholder="Tell us what's going on..." value={formData.message} onChange={(e) => setFormData(p => ({...p, message: e.target.value}))} style={{ width: "100%", background: "#0a0a0a", border: `.5px solid #1a1a1a`, color: "#fff", padding: "12px 16px", fontSize: 12, outline: "none", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }} />
+              <textarea required rows={5} placeholder="Tell us what's going on..." value={formData.message} onChange={(e) => handleChange('message', e.target.value)} style={{ width: "100%", background: "#0a0a0a", border: `.5px solid #1a1a1a`, color: "#fff", padding: "12px 16px", fontSize: 12, outline: "none", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }} />
             </div>
             <button type="submit" disabled={loading} style={{ background: S, color: "#000", border: "none", padding: "16px", fontSize: 10, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", opacity: loading ? 0.6 : 1 }}>
               {loading ? 'Sending...' : 'Send Message'}

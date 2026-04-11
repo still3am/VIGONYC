@@ -2,12 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-
-const S = "#C0C0C0";
-const G1 = "#0a0a0a";
-const G2 = "#111";
-const G3 = "#1a1a1a";
-const SD = "#777";
+import { formatDate } from "@/lib/vigoConfig";
+import { S, G1, G2, G3, SD } from "@/lib/vigoColors";
 
 const TABS = [
   { id: "profile", label: "Profile", icon: "👤" },
@@ -205,7 +201,7 @@ export default function VigoAccount() {
                         <div style={{ fontSize: 13, fontWeight: 900 }}>{order.id}</div>
                         <div style={{ fontSize: 7, letterSpacing: 2, color: order.statusColor, textTransform: "uppercase", border: `.5px solid ${order.statusColor}`, padding: "3px 8px" }}>● {order.status}</div>
                       </div>
-                      <div style={{ fontSize: 10, color: SD, marginBottom: 4 }}>{order.date} · {order.pieces} {order.pieces === 1 ? "item" : "items"}</div>
+                      <div style={{ fontSize: 10, color: SD, marginBottom: 4 }}>{formatDate(order.created_date)} · {order.pieces} {order.pieces === 1 ? "item" : "items"}</div>
                       <div style={{ fontSize: 11, color: "#888" }}>{order.items}</div>
                     </div>
                     <div className="vigo-order-amount" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { calculateShipping, calculateTax, calculateDiscount, validatePromoCode, validateEmail } from "@/lib/vigoConfig";
 
 const S = "#C0C0C0";
 const G1 = "#0a0a0a";
@@ -20,13 +21,13 @@ export default function VigoCheckout() {
   const [loading, setLoading] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
 
-  const shipping = subtotal >= 150 ? 0 : 12;
-  const tax = Math.round(subtotal * 0.0887);
-  const discount = promoApplied ? Math.round(subtotal * 0.1) : 0;
+  const shipping = calculateShipping(subtotal);
+  const tax = calculateTax(subtotal);
+  const discount = calculateDiscount(subtotal, promoApplied);
   const total = subtotal + shipping + tax - discount;
 
   const applyPromo = () => {
-    if (promoCode.toUpperCase() === "VIGONYC10") { setPromoApplied(true); setPromoError(false); }
+    if (validatePromoCode(promoCode)) { setPromoApplied(true); setPromoError(false); }
     else { setPromoError(true); setPromoApplied(false); }
   };
 
@@ -65,7 +66,7 @@ export default function VigoCheckout() {
       setFormError("All fields required");
       return false;
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (!validateEmail(formData.email)) {
       setFormError("Invalid email");
       return false;
     }
@@ -201,7 +202,7 @@ export default function VigoCheckout() {
                 {promoApplied ? "✓ Applied" : "Apply"}
               </button>
             </div>
-            {promoError && <div style={{ fontSize: 10, color: "#e03", marginBottom: 12 }}>Invalid promo code. Try VIGONYC10.</div>}
+            {promoError && <div style={{ fontSize: 10, color: "#e03", marginBottom: 12 }}>Invalid promo code.</div>}
 
             {/* Totals */}
             <div style={{ borderTop: `.5px solid ${G3}`, paddingTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>

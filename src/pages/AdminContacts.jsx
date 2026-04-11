@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Trash2 } from "lucide-react";
 import AdminListView from "@/components/admin/AdminListView";
 import { S, G1, G2, G3, SD } from "@/lib/vigoColors";
+import { formatDate } from "@/lib/vigoConfig";
 
 export default function AdminContacts() {
   const [contacts, setContacts] = useState([]);
@@ -66,7 +67,7 @@ export default function AdminContacts() {
             </div>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "clamp(9px, 2vw, 10px)", color: SD }}>
-            <span>{new Date(contact.created_date).toLocaleDateString()}</span>
+            <span>{formatDate(contact.created_date)}</span>
             <button onClick={onDelete} style={{ background: "none", border: "none", color: "#e03", cursor: "pointer", padding: "8px 12px", minHeight: 40, minWidth: 40, display: "flex", alignItems: "center", justifyContent: "center" }}>
               <Trash2 size={18} />
             </button>

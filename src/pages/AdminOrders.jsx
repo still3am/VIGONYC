@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Trash2 } from "lucide-react";
 import AdminListView from "@/components/admin/AdminListView";
 import { S, G1, G2, G3, SD } from "@/lib/vigoColors";
+import { formatDate, formatCurrency } from "@/lib/vigoConfig";
 
 
 
@@ -90,7 +91,7 @@ export default function AdminOrders() {
             </select>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "clamp(10px, 2vw, 11px)", color: SD }}>
-            <span>{new Date(order.created_date).toLocaleDateString()}</span>
+            <span>{formatDate(order.created_date)}</span>
             <button onClick={onDelete} style={{ background: "none", border: "none", color: "#e03", cursor: "pointer", padding: "8px 12px", minHeight: 40, minWidth: 40, display: "flex", alignItems: "center", justifyContent: "center" }}>
               <Trash2 size={18} />
             </button>
