@@ -51,13 +51,13 @@ export default function VigoWishlist() {
     <div style={{ minHeight: "70vh" }}>
       {/* Header strip */}
       <div style={{ borderBottom: `.5px solid ${G3}`, background: G1 }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 24px 28px" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(24px,5vw,40px) clamp(16px,4vw,24px) 24px" }}>
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
             <div>
               <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 10 }}>✦ Saved Items</div>
-              <h1 style={{ fontSize: "clamp(28px,5vw,52px)", fontWeight: 900, letterSpacing: -2, lineHeight: 1 }}>
+              <h1 style={{ fontSize: "clamp(26px,5vw,52px)", fontWeight: 900, letterSpacing: -2, lineHeight: 1 }}>
                 Wishlist
-                <span style={{ fontSize: "clamp(14px,2vw,20px)", color: SD, fontWeight: 400, marginLeft: 12 }}>
+                <span style={{ fontSize: "clamp(13px,2vw,20px)", color: SD, fontWeight: 400, marginLeft: 10 }}>
                   {savedItems.length} {savedItems.length === 1 ? "item" : "items"}
                 </span>
               </h1>
@@ -71,7 +71,7 @@ export default function VigoWishlist() {
                 <button onClick={handleAddAll} style={{
                   background: allAddedBag ? "#0c6" : S,
                   color: "#000", border: "none",
-                  padding: "12px 28px", fontSize: 9, letterSpacing: 3,
+                  padding: "12px 24px", fontSize: 9, letterSpacing: 3,
                   textTransform: "uppercase", fontWeight: 900, cursor: "pointer",
                   fontFamily: "inherit", transition: "background .3s",
                   display: "flex", alignItems: "center", gap: 8,
@@ -88,7 +88,7 @@ export default function VigoWishlist() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 24px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(20px,4vw,32px) clamp(16px,4vw,24px)" }}>
 
         {/* Empty state */}
         {savedItems.length === 0 ? (
@@ -105,7 +105,7 @@ export default function VigoWishlist() {
         ) : (
           <>
             {/* Grid */}
-            <div className="vigo-wish-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20 }}>
+            <div className="vigo-wish-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "clamp(10px,3vw,20px)" }}>
               {savedItems.map(p => {
                 const isAdded = addedIds.includes(p.id);
                 const isHovered = hoveredId === p.id;
@@ -118,13 +118,13 @@ export default function VigoWishlist() {
                   >
                     {/* Image */}
                     <div
-                      style={{ position: "relative", paddingBottom: "105%", background: "#0d0d0d", cursor: "pointer", overflow: "hidden", flexShrink: 0 }}
+                      style={{ position: "relative", paddingBottom: "90%", background: "#0d0d0d", cursor: "pointer", overflow: "hidden", flexShrink: 0 }}
                       onClick={() => navigate(`/product/${p.id}`)}
                     >
                       <img
                         src={productImg}
                         alt={p.name}
-                        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", padding: 24, transition: "transform .5s", transform: isHovered ? "scale(1.06)" : "scale(1)" }}
+                        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", padding: 16, transition: "transform .5s", transform: isHovered ? "scale(1.06)" : "scale(1)" }}
                       />
 
                       {/* Tag */}
@@ -150,7 +150,7 @@ export default function VigoWishlist() {
                     </div>
 
                     {/* Info */}
-                    <div style={{ padding: "16px", display: "flex", flexDirection: "column", flex: 1 }}>
+                    <div style={{ padding: "clamp(10px,2vw,16px)", display: "flex", flexDirection: "column", flex: 1 }}>
                       <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>{p.name}</div>
                       <div style={{ fontSize: 8, color: SD, textTransform: "uppercase", letterSpacing: 2, marginBottom: 14 }}>{p.cat}</div>
 
@@ -204,13 +204,13 @@ export default function VigoWishlist() {
             </div>
 
             {/* Footer CTA */}
-            <div style={{ marginTop: 48, borderTop: `.5px solid ${G3}`, paddingTop: 32, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+            <div style={{ marginTop: 40, borderTop: `.5px solid ${G3}`, paddingTop: 24, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
               <div style={{ fontSize: 11, color: SD }}>
-                {savedItems.length} saved · Total value <span style={{ color: S, fontWeight: 700 }}>${totalValue}</span>
+                {savedItems.length} saved · Total <span style={{ color: S, fontWeight: 700 }}>${totalValue}</span>
               </div>
-              <div style={{ display: "flex", gap: 10 }}>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 <button onClick={() => navigate("/shop")} style={btnGhost}>Continue Shopping</button>
-                <button onClick={handleAddAll} style={{ background: allAddedBag ? "#0c6" : S, color: "#000", border: "none", padding: "12px 24px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", transition: "background .3s" }}>
+                <button onClick={handleAddAll} style={{ background: allAddedBag ? "#0c6" : S, color: "#000", border: "none", padding: "12px 20px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", transition: "background .3s" }}>
                   {allAddedBag ? "✓ All Added!" : "Add All to Bag"}
                 </button>
               </div>
@@ -220,8 +220,8 @@ export default function VigoWishlist() {
       </div>
 
       <style>{`
-        @media(max-width:900px){.vigo-wish-grid{grid-template-columns:repeat(2,1fr) !important;}}
-        @media(max-width:480px){.vigo-wish-grid{grid-template-columns:1fr !important; gap: 12px !important;}}
+        @media(max-width:900px){ .vigo-wish-grid { grid-template-columns: repeat(2,1fr) !important; } }
+        @media(max-width:480px){ .vigo-wish-grid { grid-template-columns: repeat(2,1fr) !important; } }
       `}</style>
     </div>
   );
