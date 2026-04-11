@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import AdminDrops from "./AdminDrops";
+import ProductsManager from "./ProductsManager";
 import AdminOrders from "./AdminOrders";
 import AdminContacts from "./AdminContacts";
 import { useSiteSettings } from "../hooks/useSiteSettings";
@@ -12,7 +14,7 @@ const G3 = "#1a1a1a";
 const SD = "#777";
 
 
-const SECTIONS = ["Orders", "Contacts", "Contact & Social"];
+const SECTIONS = ["Products", "Orders", "Contacts", "Drops", "Contact & Social"];
 
 function Field({ label, value, onChange, type = "text", multiline }) {
   const style = { width: "100%", background: G2, border: `.5px solid ${G3}`, color: "#fff", padding: "10px 14px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit", resize: multiline ? "vertical" : "none" };
@@ -181,9 +183,13 @@ export default function VigoAdmin() {
 
 
 
+          {activeSection === "Products" && <ProductsManager settings={settings} updateProduct={updateProduct} updateSetting={updateSetting} />}
+
           {activeSection === "Orders" && <AdminOrders />}
 
           {activeSection === "Contacts" && <AdminContacts />}
+
+
 
           {activeSection === "Contact & Social" && (
             <div>
@@ -201,6 +207,8 @@ export default function VigoAdmin() {
               </SectionCard>
             </div>
           )}
+
+          {activeSection === "Drops" && <AdminDrops />}
 
 
 
