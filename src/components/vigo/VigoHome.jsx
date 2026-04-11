@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useProducts } from "../../hooks/useSiteSettings";
+import { base44 } from "@/api/base44Client";
 import ProductCard from "./ProductCard";
 import SectionDivider from "./SectionDivider";
 import SectionHeader from "./SectionHeader";
 import { VIGO_CONFIG, formatDate, formatCurrency } from "@/lib/vigoConfig";
 
 import { S, SD, G1, G3 } from "@/lib/vigoColors";
-
-const NEXT_DROP = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000);
 
 
 const CATEGORIES = [
@@ -52,9 +51,27 @@ export default function VigoHome() {
   const [heroLoaded, setHeroLoaded] = useState(false);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [nextDropDate, setNextDropDate] = useState(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000));
   const displayProducts = products.slice(0, 4);
 
-  useEffect(() => {const t = setTimeout(() => setHeroLoaded(true), 80);return () => clearTimeout(t);}, []);
+  useEffect(() => {
+    const t = setTimeout(() => setHeroLoaded(true), 80);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    const fetchNextDrop = async () => {
+      try {
+        const drops = await base44.entities.Drop.list('-releaseDate', 1);
+        if (drops && drops.length > 0) {
+          setNextDropDate(new Date(drops[0].releaseDate));
+        }
+      } catch (error) {
+        console.error('Error fetching drop date:', error);
+      }
+    };
+    fetchNextDrop();
+  }, []);
 
   return (
     <div>
@@ -66,7 +83,7 @@ export default function VigoHome() {
            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 1.5s infinite" }} />
            <span style={{ fontSize: 9, letterSpacing: 4, color: SD, textTransform: "uppercase" }}>{settings?.announcementText || "Drop 02 — Mirror Series"}</span>
          </div>
-         <MiniCountdown target={NEXT_DROP} />
+         <MiniCountdown target={nextDropDate} />
          <span style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase" }}>Get Notified →</span>
        </div>
 
