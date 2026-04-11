@@ -115,12 +115,32 @@ export default function VigoAccount() {
 
       {/* Tabs */}
       <div style={{ borderBottom: `.5px solid ${G3}`, background: G1, position: "sticky", top: 60, zIndex: 10, overflowX: "auto" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 clamp(20px,4vw,32px)", display: "flex", gap: 0 }}>
+        <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 clamp(16px,4vw,24px)", display: "flex", gap: 0 }}>
+          {TABS.map(t => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              style={{
+                padding: "14px clamp(12px,2.5vw,20px)",
+                background: "none", border: "none",
+                borderBottom: tab === t.id ? `2px solid ${S}` : "2px solid transparent",
+                color: tab === t.id ? "#fff" : SD,
+                fontSize: 9, letterSpacing: 2, textTransform: "uppercase",
+                cursor: "pointer", fontWeight: tab === t.id ? 700 : 400,
+                fontFamily: "inherit", whiteSpace: "nowrap",
+                transition: "color .2s",
+                display: "flex", alignItems: "center", gap: 6,
+              }}
+            >
+              <span className="vigo-tab-icon">{t.icon}</span>
+              {t.label}
+            </button>
+          ))}
         </div>
       </div>
 
       {/* Content */}
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "clamp(40px,6vw,56px) clamp(20px,4vw,32px)" }}>
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: "clamp(24px,4vw,40px) clamp(16px,4vw,24px)" }}>
 
         {/* Profile */}
         {tab === "profile" && (
