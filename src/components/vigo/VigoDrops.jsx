@@ -369,8 +369,6 @@ export default function VigoDrops() {
         </div>
       </div>
 
-
-
       <style>{`
         @keyframes vigo-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
         @media(max-width:900px){
