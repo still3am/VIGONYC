@@ -66,7 +66,7 @@ export default function VigoHome() {
       {/* ── DROP ALERT BANNER ── */}
       <div onClick={() => navigate("/drops")} style={{ background: `linear-gradient(90deg, #0a0a0a, #111, #0a0a0a)`, borderBottom: `.5px solid ${G3}`, padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "center", gap: 24, cursor: "pointer", flexWrap: "wrap", gap: 16 }}
       onMouseEnter={(e) => e.currentTarget.style.borderColor = S}
-      onMouseLeave={(e) => e.currentTarget.style.borderColor = G3} className="my-3">
+      onMouseLeave={(e) => e.currentTarget.style.borderColor = G3} className="my-3 py-3">
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 1.5s infinite" }} />
           <span style={{ fontSize: 9, letterSpacing: 4, color: SD, textTransform: "uppercase" }}>Drop 02 — Mirror Series</span>
