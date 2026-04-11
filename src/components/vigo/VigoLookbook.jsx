@@ -1,6 +1,4 @@
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { base44 } from "@/api/base44Client";
+import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
 const S = "#C0C0C0";
@@ -8,21 +6,14 @@ const G1 = "#0a0a0a";
 const G3 = "#1a1a1a";
 const SD = "#777";
 
+// TODO: Replace with Base44 entity queries
+// const shots = await base44.entities.LookbookItem.list();
+const shots = [];
+
 export default function VigoLookbook() {
   const { productImg } = useOutletContext();
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(null);
-
-  const { data: shots = [] } = useQuery({
-    queryKey: ['lookbookItems'],
-    queryFn: async () => {
-      try {
-        return await base44.entities.LookbookItem.list('-created_date', 100);
-      } catch {
-        return [];
-      }
-    },
-  });
 
   return (
     <div>
