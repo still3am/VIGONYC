@@ -73,7 +73,7 @@ export default function VigoHome() {
           <h1 style={{ fontSize: "clamp(56px,7vw,104px)", fontWeight: 900, letterSpacing: -4, lineHeight: .86, marginBottom: 28 }} className="text-center">
             STREETS<br />OF{" "}
             <span style={{ position: "relative", display: "inline-block" }}>
-              <em style={{ color: "transparent", WebkitTextStroke: `1px ${S}`, fontStyle: "italic" }}>NYC</em>
+              <em style={{ color: "transparent", WebkitTextStroke: `1px ${S}`, fontStyle: "italic" }} className="text-black">NYC</em>
             </span>
           </h1>
           <p style={{ fontSize: 13, color: SD, lineHeight: 1.9, maxWidth: 360, marginBottom: 36, margin: "0 auto 36px" }} className="text-center">
