@@ -136,7 +136,7 @@ export default function VigoHome() {
       <div className="vigo-2col" style={{ margin: "0 32px", background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, display: "grid", gridTemplateColumns: "1fr 1fr", overflow: "hidden" }}>
         <div style={{ padding: "52px 48px", borderRight: `.5px solid ${G3}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
           <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ Limited Edition ✦</div>
-          <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: -2, lineHeight: .92, marginBottom: 14 }}>
+          <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: -2, lineHeight: .92, marginBottom: 14, textAlign: "center" }}>
             SS25<br /><span style={{ color: S }}>Chrome</span><br />Series
           </div>
           <div style={{ fontSize: 12, color: SD, lineHeight: 1.9, marginBottom: 32 }}>
