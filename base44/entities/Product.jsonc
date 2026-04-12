@@ -63,6 +63,18 @@
     "description": {
       "type": "string",
       "description": "Product description"
+    },
+    "stock": {
+      "type": "number",
+      "description": "Available inventory count. 0 = sold out."
+    },
+    "lowStockThreshold": {
+      "type": "number",
+      "description": "Show low stock warning below this count. Default 5."
+    },
+    "sku": {
+      "type": "string",
+      "description": "Stock keeping unit"
     }
   },
   "required": [

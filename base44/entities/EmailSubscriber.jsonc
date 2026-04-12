@@ -1,0 +1,25 @@
+{
+  "name": "EmailSubscriber",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "Subscriber email address"
+    },
+    "source": {
+      "type": "string",
+      "description": "Where they subscribed (newsletter, drops, etc.)"
+    },
+    "active": {
+      "type": "boolean",
+      "description": "Is subscription active?"
+    },
+    "subscribedAt": {
+      "type": "string",
+      "description": "ISO date of subscription"
+    }
+  },
+  "required": [
+    "email"
+  ]
+}

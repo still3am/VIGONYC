@@ -8,11 +8,27 @@
     },
     "items": {
       "type": "string",
-      "description": "Comma-separated list of items"
+      "description": "Human-readable summary of items"
     },
     "total": {
       "type": "number",
       "description": "Total order amount"
+    },
+    "subtotal": {
+      "type": "number",
+      "description": "Subtotal before tax/shipping"
+    },
+    "tax": {
+      "type": "number",
+      "description": "Tax amount"
+    },
+    "shippingCost": {
+      "type": "number",
+      "description": "Shipping cost"
+    },
+    "shippingMethod": {
+      "type": "string",
+      "description": "Selected shipping method"
     },
     "pieces": {
       "type": "number",
@@ -29,6 +45,14 @@
       ],
       "description": "Order status"
     },
+    "customerEmail": {
+      "type": "string",
+      "description": "Customer email address"
+    },
+    "customerName": {
+      "type": "string",
+      "description": "Customer full name"
+    },
     "shippingAddress": {
       "type": "string",
       "description": "Shipping address"
@@ -36,6 +60,18 @@
     "trackingNumber": {
       "type": "string",
       "description": "Shipping tracking number"
+    },
+    "paymentMethod": {
+      "type": "string",
+      "description": "Payment method used"
+    },
+    "stripePaymentIntentId": {
+      "type": "string",
+      "description": "Stripe PaymentIntent ID for reference"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal order notes"
     }
   },
   "required": [
