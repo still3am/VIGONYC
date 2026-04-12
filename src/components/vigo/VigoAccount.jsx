@@ -104,14 +104,16 @@ function AddressModal({ address, onSave, onClose }) {
 
 function ThemeSelector({ user }) {
   const { theme, setTheme } = useTheme();
-  const [selectedTheme, setSelectedTheme] = useState(theme);
+  const [selectedTheme, setSelectedTheme] = useState(() => user?.preferredTheme || theme);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (user?.preferredTheme) {
+    if (!initialized && user?.preferredTheme) {
       setSelectedTheme(user.preferredTheme);
       setTheme(user.preferredTheme);
+      setInitialized(true);
     }
-  }, [user, setTheme]);
+  }, [user]);
 
   const handleThemeChange = async (newTheme) => {
     setSelectedTheme(newTheme);
