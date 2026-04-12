@@ -18,17 +18,19 @@ const TABS = [
   { id: "settings", label: "Settings" },
 ];
 
-function Field({ label, type = "text", defaultValue, placeholder, id }) {
+function Field({ label, type = "text", value, onChange, placeholder, disabled }) {
   return (
     <div>
       <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>{label}</div>
       <input
-        id={id}
         type={type}
-        defaultValue={defaultValue}
+        value={value ?? ""}
+        onChange={onChange ? e => onChange(e.target.value) : undefined}
+        readOnly={!onChange}
         placeholder={placeholder}
-        style={{ width: "100%", background: G2, border: `.5px solid ${G3}`, color: "#fff", padding: "13px 16px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit", transition: "border-color .2s" }}
-        onFocus={e => e.target.style.borderColor = S}
+        disabled={disabled}
+        style={{ width: "100%", background: disabled ? G1 : G2, border: `.5px solid ${G3}`, color: disabled ? SD : "#fff", padding: "13px 16px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit", transition: "border-color .2s", opacity: disabled ? 0.6 : 1 }}
+        onFocus={e => { if (!disabled) e.target.style.borderColor = S; }}
         onBlur={e => e.target.style.borderColor = G3}
       />
     </div>
@@ -55,6 +57,7 @@ function Toggle({ label, sub, checked, onChange }) {
 export default function VigoAccount() {
   const [tab, setTab] = useState("profile");
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [passwords, setPasswords] = useState({ current: "", newPass: "", confirm: "" });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -215,12 +218,12 @@ export default function VigoAccount() {
           <div style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 600 }}>
             <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 4 }}>Personal Info</div>
             <div className="vigo-2col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <Field label="First Name" defaultValue={profile.firstName} />
-              <Field label="Last Name" defaultValue={profile.lastName} />
+              <Field label="First Name" value={profile.firstName} onChange={v => setProfile(p => ({ ...p, firstName: v }))} />
+              <Field label="Last Name" value={profile.lastName} onChange={v => setProfile(p => ({ ...p, lastName: v }))} />
             </div>
-            <Field label="Email Address" type="email" defaultValue={profile.email} disabled />
-            <Field label="Phone" type="tel" defaultValue={profile.phone} />
-            <Field label="Birthday" type="date" defaultValue={profile.birthday} />
+            <Field label="Email Address" type="email" value={profile.email} disabled />
+            <Field label="Phone" type="tel" value={profile.phone} onChange={v => setProfile(p => ({ ...p, phone: v }))} />
+            <Field label="Birthday" type="date" value={profile.birthday} onChange={v => setProfile(p => ({ ...p, birthday: v }))} />
 
             <div style={{ paddingTop: 8 }}>
               <button onClick={handleSave} style={{ background: saved ? "#0c6" : S, color: "#000", border: "none", padding: "14px 32px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", transition: "background .3s" }}>
@@ -322,15 +325,13 @@ export default function VigoAccount() {
             <div>
               <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 16 }}>Change Password</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <Field label="Current Password" type="password" placeholder="••••••••" id="currentPass" />
-                <Field label="New Password" type="password" placeholder="••••••••" id="newPass" />
-                <Field label="Confirm Password" type="password" placeholder="••••••••" id="confirmPass" />
+                <Field label="Current Password" type="password" placeholder="••••••••" value={passwords.current} onChange={v => setPasswords(p => ({ ...p, current: v }))} />
+                <Field label="New Password" type="password" placeholder="••••••••" value={passwords.newPass} onChange={v => setPasswords(p => ({ ...p, newPass: v }))} />
+                <Field label="Confirm Password" type="password" placeholder="••••••••" value={passwords.confirm} onChange={v => setPasswords(p => ({ ...p, confirm: v }))} />
                 <button onClick={() => {
-                  const curr = document.getElementById('currentPass')?.value;
-                  const newP = document.getElementById('newPass')?.value;
-                  const conf = document.getElementById('confirmPass')?.value;
-                  if (newP !== conf) { alert('Passwords do not match'); return; }
-                  passwordMutation.mutate({ currentPassword: curr, newPassword: newP });
+                  if (passwords.newPass !== passwords.confirm) { alert('Passwords do not match'); return; }
+                  passwordMutation.mutate({ currentPassword: passwords.current, newPassword: passwords.newPass });
+                  setPasswords({ current: "", newPass: "", confirm: "" });
                 }} style={{ ...btnPrimary, alignSelf: "flex-start" }}>{passwordMutation.isPending ? 'Updating...' : 'Update Password'}</button>
                 {passwordMutation.isSuccess && <div style={{ fontSize: 10, color: '#0c6' }}>✓ Password updated</div>}
               </div>
