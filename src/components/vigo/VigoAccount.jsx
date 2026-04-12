@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useTheme } from "next-themes";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
@@ -99,49 +98,6 @@ function AddressModal({ address, onSave, onClose }) {
         </div>
       </div>
     </>
-  );
-}
-
-function ThemeSelector({ user }) {
-  const { theme, setTheme } = useTheme();
-  const [selectedTheme, setSelectedTheme] = useState(() => user?.preferredTheme || theme);
-  const [initialized, setInitialized] = useState(false);
-
-  useEffect(() => {
-    if (!initialized && user?.preferredTheme) {
-      setSelectedTheme(user.preferredTheme);
-      setTheme(user.preferredTheme);
-      setInitialized(true);
-    }
-  }, [user]);
-
-  const handleThemeChange = async (newTheme) => {
-    setSelectedTheme(newTheme);
-    setTheme(newTheme);
-    await base44.auth.updateMe({ preferredTheme: newTheme });
-  };
-
-  return (
-    <div>
-      <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Theme</div>
-      <div style={{ display: "flex", gap: 8 }}>
-        {["light", "dark", "system"].map(t => (
-          <button
-            key={t}
-            onClick={() => handleThemeChange(t)}
-            style={{
-              flex: 1, padding: "12px 16px", fontSize: 10,
-              fontWeight: selectedTheme === t ? 700 : 400,
-              textTransform: "capitalize",
-              border: `.5px solid ${selectedTheme === t ? S : G3}`,
-              background: selectedTheme === t ? S : "transparent",
-              color: selectedTheme === t ? "#000" : "#fff",
-              cursor: "pointer", fontFamily: "inherit", transition: "all .2s",
-            }}
-          >{t}</button>
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -434,13 +390,6 @@ export default function VigoAccount() {
         {/* ── SETTINGS ── */}
         {tab === "settings" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 28, maxWidth: 520, width: "100%" }}>
-
-            {/* Theme */}
-            <div>
-              <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 16 }}>Appearance</div>
-              <ThemeSelector user={user} />
-            </div>
-
             {/* Password */}
             <div>
               <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 16 }}>Change Password</div>
