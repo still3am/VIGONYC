@@ -96,18 +96,16 @@ export default function AdminDrops() {
     <div>
       {modal && <DropModal drop={modal === "new" ? null : modal} onSave={handleSave} onClose={() => setModal(null)} />}
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
         <div>
           <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 6 }}>✦ Schedule</div>
           <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: -1, color: "#fff" }}>Drops</h2>
         </div>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <div style={{ display: "flex", border: `0.5px solid ${G3}` }}>
-            {[["list","List"],["calendar","Calendar"]].map(([v,l]) => (
-              <button key={v} onClick={() => setView(v)} style={{ background: view === v ? S : G2, color: view === v ? "#000" : SD, border: "none", padding: "8px 16px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: view === v ? 900 : 400, cursor: "pointer", fontFamily: "inherit" }}>{l}</button>
-            ))}
-          </div>
-          <button onClick={() => setModal("new")} style={{ background: S, color: "#000", border: "none", padding: "12px 24px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>+ Schedule Drop</button>
+        <div style={{ display: "flex", alignItems: "center", gap: 0, border: `0.5px solid ${G3}` }}>
+          {[["list","List"],["calendar","Calendar"]].map(([v,l]) => (
+            <button key={v} onClick={() => setView(v)} style={{ background: view === v ? S : G2, color: view === v ? "#000" : SD, border: "none", borderRight: `0.5px solid ${G3}`, padding: "10px 18px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: view === v ? 900 : 400, cursor: "pointer", fontFamily: "inherit" }}>{l}</button>
+          ))}
+          <button onClick={() => setModal("new")} style={{ background: S, color: "#000", border: "none", padding: "10px 20px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>+ New Drop</button>
         </div>
       </div>
 
