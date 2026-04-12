@@ -142,7 +142,7 @@ export default function VigoHome() {
           <div style={{ fontSize: 12, color: SD, lineHeight: 1.9, marginBottom: 32 }}>
             Hand-finished chrome hardware. NYC exclusive.<br />Only 100 units. No restocks, no exceptions.
           </div>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
             <button onClick={() => navigate("/shop")} style={btnP}>Shop Chrome Series</button>
             <button onClick={() => navigate("/drops")} style={btnO}>Drop Calendar →</button>
           </div>
