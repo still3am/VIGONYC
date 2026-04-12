@@ -18,9 +18,8 @@ function isSameDay(a, b) {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
 
-function useCountdown(targetDate) {
+function useCountdown(ts) {
   const [time, setTime] = useState({ d: 0, h: 0, m: 0, s: 0 });
-  const ts = targetDate instanceof Date && !isNaN(targetDate) ? targetDate.getTime() : null;
   useEffect(() => {
     if (!ts) return;
     const tick = () => {
@@ -35,7 +34,7 @@ function useCountdown(targetDate) {
 }
 
 function HeroCountdown({ drop }) {
-  const t = useCountdown(drop.date);
+  const t = useCountdown(drop.date instanceof Date && !isNaN(drop.date) ? drop.date.getTime() : null);
   return (
     <div style={{ display: "flex", flexWrap: "wrap" }}>
       {[["Days", t.d], ["Hours", t.h], ["Mins", t.m], ["Secs", t.s]].map(([l, v], i, arr) => (
@@ -49,7 +48,7 @@ function HeroCountdown({ drop }) {
 }
 
 function MiniCountdown({ drop }) {
-  const t = useCountdown(drop.date);
+  const t = useCountdown(drop.date instanceof Date && !isNaN(drop.date) ? drop.date.getTime() : null);
   return (
     <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
       {[["D", t.d], ["H", t.h], ["M", t.m], ["S", t.s]].map(([l, v]) => (
