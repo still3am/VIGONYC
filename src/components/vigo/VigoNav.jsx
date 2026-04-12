@@ -17,7 +17,6 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [query, setQuery] = useState("");
-  const [logoTaps, setLogoTaps] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
   const isRoot = location.pathname === "/" || location.pathname === "/shop" || location.pathname === "/drops" || location.pathname === "/wishlist" || location.pathname === "/account" || location.pathname === "/lookbook" || location.pathname === "/about";
@@ -33,16 +32,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
     if (query.trim()) {navigate(`/shop?q=${encodeURIComponent(query)}`);setSearchOpen(false);setQuery("");}
   };
 
-  const handleLogoClick = () => {
-    const newTaps = logoTaps + 1;
-    setLogoTaps(newTaps);
-    if (newTaps === 7) {
-      navigate("/admin");
-      setLogoTaps(0);
-    } else {
-      setTimeout(() => setLogoTaps(0), 1500);
-    }
-  };
+  useEffect(() => { setMobileOpen(false); }, [location.pathname]);
 
   return (
     <>
@@ -85,13 +75,13 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
               Back
             </button> :
 
-          <div className="vigo-nav-logo" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", cursor: "pointer" }} onClick={handleLogoClick}>
+          <Link to="/" className="vigo-nav-logo" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none" }}>
             <img src={logo} alt="VIGONYC" className="vigo-nav-logo-img" style={{ width: 40, height: 40, objectFit: "contain" }} />
             <div style={{ lineHeight: 1 }}>
               <style>{`.vigo-nav-wordmark { display: block; } @media(max-width:768px){ .vigo-nav-wordmark { display: none !important; } }`}</style>
               <style>{`.vigo-nav-subtitle { display: block; } @media(max-width:768px){ .vigo-nav-subtitle { display: none !important; } }`}</style>
             </div>
-          </div>
+          </Link>
           }
 
           {/* Desktop links */}
@@ -137,11 +127,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
         }
       </nav>
 
-      <style>{`
-        @media (min-width: 900px) { .vigo-mobile-menu-btn { display: none !important; } }
-        @media (max-width: 899px) { .vigo-desktop-nav { display: none !important; } .vigo-icon-desktop { display: none !important; } }
-        @media (max-width: 899px) { .vigo-nav-logo { position: absolute; left: 50%; transform: translateX(-50%); } .vigo-nav-logo-img { width: 60px !important; height: 60px !important; } }
-      `}</style>
+
     </>);
 }
 

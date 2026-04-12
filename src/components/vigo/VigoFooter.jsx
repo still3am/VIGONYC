@@ -67,10 +67,6 @@ export default function VigoFooter({ logo }) {
           <div style={{ fontSize: 9, color: SD, letterSpacing: 2 }}>POWERED BY BYSMITH LLC</div>
         </div>
       </div>
-      <style>{`
-        @media(max-width:900px){.vigo-footer-grid{grid-template-columns:1fr 1fr !important;}}
-        @media(max-width:480px){.vigo-footer-grid{grid-template-columns:1fr !important;}}
 
-      `}</style>
     </footer>);
 }

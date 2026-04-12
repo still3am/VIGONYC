@@ -76,12 +76,24 @@ export default function VigoHome() {
     base44.entities.Product.filter({ featured: true }, "-created_date", 8).then(data => setProducts(data || [])).catch(() => {});
   }, []);
 
+  const [honeypot, setHoneypot] = useState("");
+  const [submitCooldown, setSubmitCooldown] = useState(false);
+
+  const validateEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+
   const handleSubscribe = async () => {
+    if (honeypot) return; // bot trap
+    if (!validateEmail(email.trim())) return;
+    if (submitCooldown) return;
+    setSubmitCooldown(true);
+    setTimeout(() => setSubmitCooldown(false), 3000);
     if (email.trim()) {
       const user = await base44.auth.me().catch(() => null);
       if (user) {
         await base44.auth.updateMe({ newsletterEmail: email.trim(), notificationsNewsletter: true }).catch(() => {});
       }
+      // Save to EmailSubscriber entity
+      await base44.entities.EmailSubscriber.create({ email: email.trim(), source: "newsletter", active: true, subscribedAt: new Date().toISOString() }).catch(() => {});
       setSubscribed(true);
       setEmail("");
     }
@@ -267,24 +279,15 @@ export default function VigoHome() {
         {subscribed ?
         <div style={{ fontSize: 13, color: "#0c6", padding: "16px 0" }}>✓ You're in. Watch for the next drop alert.</div> :
         <div style={{ display: "flex", gap: 0, maxWidth: 460, margin: "0 auto", position: "relative" }}>
+            {/* Honeypot */}
+            <input tabIndex={-1} aria-hidden="true" value={honeypot} onChange={e => setHoneypot(e.target.value)} style={{ position: "absolute", opacity: 0, pointerEvents: "none", width: 0, height: 0 }} />
             <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" style={{ flex: 1, background: "var(--vt-card)", border: `.5px solid ${G3}`, borderRight: "none", color: "var(--vt-text)", padding: "14px 20px", fontSize: 12, outline: "none", fontFamily: "inherit" }} />
-            <button onClick={handleSubscribe} style={btnP}>Join the List</button>
+            <button onClick={handleSubscribe} disabled={submitCooldown} style={{ ...btnP, opacity: submitCooldown ? 0.6 : 1 }}>Join the List</button>
           </div>
         }
       </div>
 
-      <style>{`
-        @media(max-width:900px){
-          .vigo-hero-grid{grid-template-columns:1fr !important;}
-          .vigo-hero-grid>div:last-child{min-height:320px;}
-          .vigo-kpi-grid{grid-template-columns:repeat(2,1fr) !important;}
-          .vigo-4col{grid-template-columns:repeat(2,1fr) !important;}
-          .vigo-3col{grid-template-columns:1fr !important;}
-          .vigo-2col{grid-template-columns:1fr !important;}
-        }
-        @media(max-width:480px){.vigo-4col{grid-template-columns:1fr !important;}}
-        @keyframes vigo-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
-      `}</style>
+
     </div>);
 }
 

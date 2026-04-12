@@ -45,6 +45,8 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
         <img
           src={img}
           alt={product.name}
+          loading="lazy"
+          decoding="async"
           style={{
             position: "absolute", inset: 0, width: "100%", height: "100%",
             objectFit: "contain", opacity: product.opacity,
@@ -68,6 +70,8 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
 
         <button
           onClick={e => { e.stopPropagation(); onWishlist?.(); }}
+          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          aria-pressed={wishlisted}
           style={{
             position: "absolute", top: 10, right: 10,
             background: wishlisted ? "rgba(192,192,192,.15)" : "rgba(0,0,0,.45)",

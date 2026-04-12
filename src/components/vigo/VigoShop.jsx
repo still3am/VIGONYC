@@ -112,7 +112,7 @@ export default function VigoShop() {
     if (sort === "price-desc") p.sort((a,b) => b.price - a.price);
     if (sort === "new") p = p.filter(x => x.tag === "new").concat(p.filter(x => x.tag !== "new"));
     return p;
-  }, [activeCat, searchQuery, selectedSizes, selectedColors, priceRange, activeCollection, sort, allProducts]);
+  }, [activeCat, searchQuery, selectedSizes, selectedColors, priceRange, activeCollection, sort, allProducts]); // allProducts in deps to rerun when data loads
 
   const handleRefresh = useCallback(() => new Promise(res => {
     base44.entities.Product.list("-created_date", 200).then(data => { setAllProducts(data || []); res(); }).catch(() => res());
@@ -201,17 +201,7 @@ export default function VigoShop() {
         </div>
       </div>
 
-      <style>{`
-        @media(max-width:900px){
-          .vigo-shop-sidebar { display: none !important; }
-          .vigo-filter-btn { display: flex !important; }
-          .vigo-cat-tabs { display: flex !important; }
-          .vigo-shop-grid { grid-template-columns: repeat(2,1fr) !important; }
-        }
-        @media(max-width:480px){
-          .vigo-shop-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
-        }
-      `}</style>
+
     </div>
     </PullToRefresh>
   );

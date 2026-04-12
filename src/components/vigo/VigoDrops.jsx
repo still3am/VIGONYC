@@ -330,18 +330,7 @@ export default function VigoDrops() {
         </div>
       </div>
 
-      <style>{`
-        @keyframes vigo-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
-        @media(max-width:900px){
-          .vigo-drops-layout { grid-template-columns: 1fr !important; }
-          .vigo-hero-drop { grid-template-columns: 1fr !important; }
-          .vigo-4col { grid-template-columns: repeat(2,1fr) !important; }
-          .vigo-corner { display: none !important; }
-        }
-        @media(max-width:480px){
-          .vigo-4col { grid-template-columns: 1fr 1fr !important; }
-        }
-      `}</style>
+
     </div>
     </PullToRefresh>
   );

@@ -3,24 +3,31 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { ThemeProvider } from 'next-themes'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import ErrorBoundary from './lib/ErrorBoundary';
 // Add page imports here
 import VigoAdmin from './pages/VigoAdmin';
-import VIGONYCFlagship from './pages/VIGONYCFlagship';
-import VigoHome from './components/vigo/VigoHome';
-import VigoShop from './components/vigo/VigoShop';
-import VigoProduct from './components/vigo/VigoProduct';
-import VigoLookbook from './components/vigo/VigoLookbook';
-import VigoAbout from './components/vigo/VigoAbout';
-import VigoFAQ from './components/vigo/VigoFAQ';
-import VigoContact from './components/vigo/VigoContact';
-import VigoWishlist from './components/vigo/VigoWishlist';
-import VigoTrackOrder from './components/vigo/VigoTrackOrder';
-import VigoAccount from './components/vigo/VigoAccount';
-import VigoCheckout from './components/vigo/VigoCheckout';
-import VigoDrops from './components/vigo/VigoDrops';
+const VIGONYCFlagship = lazy(() => import('./pages/VIGONYCFlagship'));
+const VigoHome = lazy(() => import('./components/vigo/VigoHome'));
+const VigoShop = lazy(() => import('./components/vigo/VigoShop'));
+const VigoProduct = lazy(() => import('./components/vigo/VigoProduct'));
+const VigoLookbook = lazy(() => import('./components/vigo/VigoLookbook'));
+const VigoAbout = lazy(() => import('./components/vigo/VigoAbout'));
+const VigoFAQ = lazy(() => import('./components/vigo/VigoFAQ'));
+const VigoContact = lazy(() => import('./components/vigo/VigoContact'));
+const VigoWishlist = lazy(() => import('./components/vigo/VigoWishlist'));
+const VigoTrackOrder = lazy(() => import('./components/vigo/VigoTrackOrder'));
+const VigoAccount = lazy(() => import('./components/vigo/VigoAccount'));
+const VigoCheckout = lazy(() => import('./components/vigo/VigoCheckout'));
+const VigoDrops = lazy(() => import('./components/vigo/VigoDrops'));
+const VigoOrderConfirmation = lazy(() => import('./pages/VigoOrderConfirmation'));
+
+function PageLoader() {
+  return <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ width: 32, height: 32, border: "2px solid #1a1a1a", borderTop: "2px solid #C0C0C0", borderRadius: "50%", animation: "spin .8s linear infinite" }} /><style>{"@keyframes spin{to{transform:rotate(360deg)}}"}</style></div>;
+}
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -47,25 +54,27 @@ const AuthenticatedApp = () => {
 
   // Render the main app
   return (
-    <Routes>
-      {/* Add your page Route elements here */}
-      <Route path="/" element={<VIGONYCFlagship />}>
-        <Route index element={<VigoHome />} />
-        <Route path="shop" element={<VigoShop />} />
-        <Route path="product/:id" element={<VigoProduct />} />
-        <Route path="lookbook" element={<VigoLookbook />} />
-        <Route path="about" element={<VigoAbout />} />
-        <Route path="faq" element={<VigoFAQ />} />
-        <Route path="contact" element={<VigoContact />} />
-        <Route path="wishlist" element={<VigoWishlist />} />
-        <Route path="track-order" element={<VigoTrackOrder />} />
-        <Route path="account" element={<VigoAccount />} />
-        <Route path="checkout" element={<VigoCheckout />} />
-        <Route path="drops" element={<VigoDrops />} />
-      </Route>
-      <Route path="/admin" element={<VigoAdmin />} />
-      <Route path="*" element={<PageNotFound />} />
-    </Routes>
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
+        <Route path="/" element={<VIGONYCFlagship />}>
+          <Route index element={<VigoHome />} />
+          <Route path="shop" element={<VigoShop />} />
+          <Route path="product/:id" element={<VigoProduct />} />
+          <Route path="lookbook" element={<VigoLookbook />} />
+          <Route path="about" element={<VigoAbout />} />
+          <Route path="faq" element={<VigoFAQ />} />
+          <Route path="contact" element={<VigoContact />} />
+          <Route path="wishlist" element={<VigoWishlist />} />
+          <Route path="track-order" element={<VigoTrackOrder />} />
+          <Route path="account" element={<VigoAccount />} />
+          <Route path="checkout" element={<VigoCheckout />} />
+          <Route path="drops" element={<VigoDrops />} />
+          <Route path="order-confirmation/:orderId" element={<VigoOrderConfirmation />} />
+        </Route>
+        <Route path="/admin" element={<VigoAdmin />} />
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+    </Suspense>
   );
 };
 
@@ -73,6 +82,7 @@ const AuthenticatedApp = () => {
 function App() {
 
   return (
+    <ErrorBoundary>
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <AuthProvider>
         <QueryClientProvider client={queryClientInstance}>
@@ -83,6 +93,7 @@ function App() {
         </QueryClientProvider>
       </AuthProvider>
     </ThemeProvider>
+    </ErrorBoundary>
   )
 }
 
