@@ -1,0 +1,28 @@
+{
+  "name": "SiteSettings",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Setting key identifier"
+    },
+    "value": {
+      "type": "string",
+      "description": "Setting value"
+    },
+    "section": {
+      "type": "string",
+      "enum": [
+        "about",
+        "hero",
+        "global"
+      ],
+      "description": "Section this setting belongs to"
+    }
+  },
+  "required": [
+    "key",
+    "value",
+    "section"
+  ]
+}

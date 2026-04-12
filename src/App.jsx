@@ -7,6 +7,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 // Add page imports here
+import VigoAdmin from './pages/VigoAdmin';
 import VIGONYCFlagship from './pages/VIGONYCFlagship';
 import VigoHome from './components/vigo/VigoHome';
 import VigoShop from './components/vigo/VigoShop';
@@ -62,6 +63,7 @@ const AuthenticatedApp = () => {
         <Route path="checkout" element={<VigoCheckout />} />
         <Route path="drops" element={<VigoDrops />} />
       </Route>
+      <Route path="/admin" element={<VigoAdmin />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

@@ -1,0 +1,56 @@
+{
+  "name": "Drop",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Drop name (e.g. Drop 02)"
+    },
+    "series": {
+      "type": "string",
+      "description": "Series name (e.g. Mirror Series)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Drop description"
+    },
+    "date": {
+      "type": "string",
+      "description": "Drop date ISO string"
+    },
+    "time": {
+      "type": "string",
+      "description": "Drop time (e.g. 12:00 PM EST)"
+    },
+    "pieces": {
+      "type": "number",
+      "description": "Number of units"
+    },
+    "price": {
+      "type": "string",
+      "description": "Price display (e.g. From $68)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "live",
+        "soldout"
+      ],
+      "description": "Drop status"
+    },
+    "tagColor": {
+      "type": "string",
+      "description": "Tag color hex"
+    },
+    "tag": {
+      "type": "string",
+      "description": "Display tag label"
+    }
+  },
+  "required": [
+    "name",
+    "series",
+    "status"
+  ]
+}

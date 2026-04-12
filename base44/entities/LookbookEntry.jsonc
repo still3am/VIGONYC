@@ -1,0 +1,34 @@
+{
+  "name": "LookbookEntry",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Entry title"
+    },
+    "subtitle": {
+      "type": "string",
+      "description": "Entry subtitle or caption"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Image URL"
+    },
+    "collection": {
+      "type": "string",
+      "description": "Collection name"
+    },
+    "featured": {
+      "type": "boolean",
+      "description": "Show as hero entry"
+    },
+    "sort_order": {
+      "type": "number",
+      "description": "Display order"
+    }
+  },
+  "required": [
+    "title",
+    "image_url"
+  ]
+}
