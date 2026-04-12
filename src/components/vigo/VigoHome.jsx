@@ -76,7 +76,7 @@ export default function VigoHome() {
               <em style={{ color: "transparent", WebkitTextStroke: `1px ${S}`, fontStyle: "italic" }}>NYC</em>
             </span>
           </h1>
-          <p style={{ fontSize: 13, color: SD, lineHeight: 1.9, maxWidth: 360, marginBottom: 36 }} className="text-center">
+          <p style={{ fontSize: 13, color: SD, lineHeight: 1.9, maxWidth: 360, marginBottom: 36, margin: "0 auto 36px" }} className="text-center">
             Born in New York City. Built from concrete and culture. Worn by the ones who make the city move.
           </p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
