@@ -20,15 +20,17 @@ function isSameDay(a, b) {
 
 function useCountdown(targetDate) {
   const [time, setTime] = useState({ d: 0, h: 0, m: 0, s: 0 });
+  const ts = targetDate instanceof Date && !isNaN(targetDate) ? targetDate.getTime() : null;
   useEffect(() => {
+    if (!ts) return;
     const tick = () => {
-      const diff = Math.max(0, targetDate - Date.now());
+      const diff = Math.max(0, ts - Date.now());
       setTime({ d: Math.floor(diff / 86400000), h: Math.floor((diff % 86400000) / 3600000), m: Math.floor((diff % 3600000) / 60000), s: Math.floor((diff % 60000) / 1000) });
     };
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [targetDate]);
+  }, [ts]);
   return time;
 }
 
@@ -74,10 +76,9 @@ export default function VigoDrops() {
     const mapped = data.map(d => {
     let dateObj = null;
     if (d.date) {
-      // Combine date + time if available for accurate countdown
-      const combined = d.time ? `${d.date}T${d.time.replace(/\s*(AM|PM).*$/i, '')}` : d.date;
-      dateObj = new Date(combined);
-      if (isNaN(dateObj.getTime())) dateObj = new Date(d.date);
+      // Try parsing just the date string (YYYY-MM-DD) which is reliable
+      dateObj = new Date(d.date);
+      if (isNaN(dateObj.getTime())) dateObj = null;
     }
     return { ...d, date: dateObj };
   });
