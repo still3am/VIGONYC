@@ -67,6 +67,7 @@ export default function AdminDrops() {
   const [drops, setDrops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState(null);
+  const [view, setView] = useState("list");
 
   const load = async () => {
     setLoading(true);
@@ -100,19 +101,54 @@ export default function AdminDrops() {
           <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 6 }}>✦ Schedule</div>
           <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: -1, color: "#fff" }}>Drops</h2>
         </div>
-        <button onClick={() => setModal("new")} style={{ background: S, color: "#000", border: "none", padding: "12px 24px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>+ Schedule Drop</button>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <div style={{ display: "flex", border: `0.5px solid ${G3}` }}>
+            {[["list","List"],["calendar","Calendar"]].map(([v,l]) => (
+              <button key={v} onClick={() => setView(v)} style={{ background: view === v ? S : G2, color: view === v ? "#000" : SD, border: "none", padding: "8px 16px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: view === v ? 900 : 400, cursor: "pointer", fontFamily: "inherit" }}>{l}</button>
+            ))}
+          </div>
+          <button onClick={() => setModal("new")} style={{ background: S, color: "#000", border: "none", padding: "12px 24px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>+ Schedule Drop</button>
+        </div>
       </div>
 
-      {loading && <div style={{ padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>Loading...</div>}
-      {!loading && drops.length === 0 && (
-        <div style={{ background: G1, border: `0.5px solid ${G3}`, padding: 48, textAlign: "center" }}>
-          <div style={{ fontSize: 24, opacity: .15, marginBottom: 12 }}>✦</div>
-          <div style={{ fontSize: 13, color: SD, marginBottom: 20 }}>No drops scheduled yet</div>
-          <button onClick={() => setModal("new")} style={{ background: S, color: "#000", border: "none", padding: "12px 24px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Schedule First Drop</button>
-        </div>
-      )}
-      {!loading && drops.length > 0 && (
+      {view === "calendar" && (
         <AdminDropsCalendar drops={drops} onEdit={d => setModal(d)} onDelete={handleDelete} />
+      )}
+
+      {view === "list" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {loading && <div style={{ padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>Loading...</div>}
+          {!loading && drops.length === 0 && (
+            <div style={{ background: G1, border: `0.5px solid ${G3}`, padding: 48, textAlign: "center" }}>
+              <div style={{ fontSize: 24, opacity: .15, marginBottom: 12 }}>✦</div>
+              <div style={{ fontSize: 13, color: SD, marginBottom: 20 }}>No drops scheduled yet</div>
+              <button onClick={() => setModal("new")} style={{ background: S, color: "#000", border: "none", padding: "12px 24px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Schedule First Drop</button>
+            </div>
+          )}
+          {!loading && drops.map(d => (
+            <div key={d.id} style={{ background: G1, border: `0.5px solid ${G3}`, borderLeft: `3px solid ${statusColor(d.status)}`, padding: "20px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, transition: "background .15s" }}
+              onMouseEnter={e => e.currentTarget.style.background = G2}
+              onMouseLeave={e => e.currentTarget.style.background = G1}>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                  <div style={{ fontSize: 14, fontWeight: 900, color: "#fff" }}>{d.name} — {d.series}</div>
+                  <span style={{ fontSize: 7, color: statusColor(d.status), border: `0.5px solid ${statusColor(d.status)}`, padding: "2px 8px", letterSpacing: 1, textTransform: "uppercase" }}>{d.status}</span>
+                </div>
+                <div style={{ fontSize: 10, color: SD }}>
+                  {d.date && new Date(d.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                  {d.time && ` · ${d.time}`}
+                  {d.pieces && ` · ${d.pieces} units`}
+                  {d.price && ` · ${d.price}`}
+                </div>
+                {d.description && <div style={{ fontSize: 11, color: SD, marginTop: 4 }}>{d.description.slice(0, 80)}{d.description.length > 80 ? "..." : ""}</div>}
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button onClick={() => setModal(d)} style={{ background: "none", border: `0.5px solid ${G3}`, color: SD, padding: "8px 16px", fontSize: 9, cursor: "pointer", fontFamily: "inherit", letterSpacing: 1, textTransform: "uppercase" }}>Edit</button>
+                <button onClick={() => handleDelete(d.id)} style={{ background: "none", border: `0.5px solid #e03`, color: "#e03", padding: "8px 16px", fontSize: 9, cursor: "pointer", fontFamily: "inherit", letterSpacing: 1, textTransform: "uppercase" }}>Delete</button>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
