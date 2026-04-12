@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import PullToRefresh from "./PullToRefresh";
 import ProductCard from "./ProductCard";
+import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -9,9 +10,6 @@ const G2 = "var(--vt-card)";
 const G3 = "var(--vt-border)";
 const SD = "var(--vt-sub)";
 const TODAY = new Date();
-
-const ALL_DROPS = [];
-const PAST_DROPS = [];
 
 const DAYS = ["S","M","T","W","T","F","S"];
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -68,9 +66,21 @@ export default function VigoDrops() {
   const [notified, setNotified] = useState({});
   const [email, setEmail] = useState("");
   const [viewDate, setViewDate] = useState(new Date(TODAY.getFullYear(), TODAY.getMonth(), 1));
-  const [selectedDrop, setSelectedDrop] = useState(ALL_DROPS[0]);
+  const [allDrops, setAllDrops] = useState([]);
+  const [selectedDrop, setSelectedDrop] = useState(null);
 
-  const nextDrop = ALL_DROPS.find(d => d.status === "upcoming");
+  const loadDrops = async () => {
+    const data = await base44.entities.Drop.list("-date", 100).catch(() => []);
+    const mapped = data.map(d => ({ ...d, date: d.date ? new Date(d.date) : null }));
+    setAllDrops(mapped);
+    if (!selectedDrop && mapped.length > 0) setSelectedDrop(mapped[0]);
+  };
+
+  useEffect(() => { loadDrops(); }, []);
+
+  const ALL_DROPS = allDrops;
+  const PAST_DROPS = allDrops.filter(d => d.status === "soldout");
+  const nextDrop = allDrops.find(d => d.status === "upcoming");
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
   const firstDay = new Date(year, month, 1).getDay();
@@ -82,7 +92,7 @@ export default function VigoDrops() {
   const dropOnDay = day => day ? ALL_DROPS.find(dr => isSameDay(dr.date, day)) : null;
   const handleNotify = id => { if (email.trim()) setNotified(p => ({ ...p, [id]: true })); };
   const [refreshKey, setRefreshKey] = useState(0);
-  const handleRefresh = useCallback(() => new Promise(res => setTimeout(() => { setRefreshKey(k => k + 1); res(); }, 800)), []);
+  const handleRefresh = useCallback(() => new Promise(res => { loadDrops().then(() => setTimeout(res, 400)); }), []);
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
@@ -101,15 +111,15 @@ export default function VigoDrops() {
                 <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(192,192,192,.06)", border: ".5px solid rgba(192,192,192,.15)", padding: "6px 14px", marginBottom: 20 }}>
                   <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 1.5s infinite" }} />
                   <span style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase" }}>
-                    Next Drop · {nextDrop.date.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                    Next Drop · {nextDrop.date ? nextDrop.date.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "TBD"}
                   </span>
                 </div>
                 <h1 style={{ fontSize: "clamp(28px,5vw,64px)", fontWeight: 900, letterSpacing: -3, lineHeight: .88, marginBottom: 16 }}>
-                  {nextDrop.drop}<br /><span style={{ color: S }}>{nextDrop.series}</span>
+                  {nextDrop.name}<br /><span style={{ color: S }}>{nextDrop.series}</span>
                 </h1>
-                <p style={{ fontSize: "clamp(11px,1.5vw,13px)", color: SD, lineHeight: 1.9, maxWidth: 380, marginBottom: 24 }}>{nextDrop.desc}</p>
+                <p style={{ fontSize: "clamp(11px,1.5vw,13px)", color: SD, lineHeight: 1.9, maxWidth: 380, marginBottom: 24 }}>{nextDrop.description}</p>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24 }}>
-                  {[`${nextDrop.pieces} Units`, nextDrop.date.toLocaleDateString("en-US", { month: "long", day: "numeric" }), nextDrop.time, nextDrop.price].map(m => (
+                  {[nextDrop.pieces ? `${nextDrop.pieces} Units` : null, nextDrop.date ? nextDrop.date.toLocaleDateString("en-US", { month: "long", day: "numeric" }) : null, nextDrop.time, nextDrop.price].filter(Boolean).map(m => (
                     <div key={m} style={{ display: "inline-flex", alignItems: "center", gap: 5, background: G2, border: `.5px solid ${G3}`, padding: "5px 10px" }}>
                       <div style={{ width: 4, height: 4, background: S, transform: "rotate(45deg)", flexShrink: 0 }} />
                       <span style={{ fontSize: 8, color: SD, letterSpacing: 1, whiteSpace: "nowrap" }}>{m}</span>
@@ -134,7 +144,7 @@ export default function VigoDrops() {
                 <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                   <div style={{ width: 1, height: 32, background: `linear-gradient(to bottom,${S},transparent)`, flexShrink: 0, marginTop: 2 }} />
                   <div style={{ fontSize: 9, color: SD, letterSpacing: 1, lineHeight: 1.7 }}>
-                    <div style={{ color: "var(--vt-text)" }}>{nextDrop.date.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}</div>
+                    <div style={{ color: "var(--vt-text)" }}>{nextDrop.date ? nextDrop.date.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }) : "Date TBD"}</div>
                     <div>{nextDrop.time} · No restocks. No exceptions.</div>
                   </div>
                 </div>
@@ -213,13 +223,13 @@ export default function VigoDrops() {
                     <div style={{ fontSize: 7, letterSpacing: 3, color: selectedDrop.tagColor, textTransform: "uppercase", border: `.5px solid ${selectedDrop.tagColor}`, padding: "3px 8px" }}>{selectedDrop.tag}</div>
                     <div style={{ fontSize: 9, color: SD }}>{selectedDrop.price}</div>
                   </div>
-                  <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>{selectedDrop.drop}</div>
+                  <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>{selectedDrop.name}</div>
                   <h3 style={{ fontSize: 18, fontWeight: 900, letterSpacing: -1, marginBottom: 10 }}>{selectedDrop.series}</h3>
-                  <p style={{ fontSize: 11, color: SD, lineHeight: 1.8 }}>{selectedDrop.desc}</p>
+                  <p style={{ fontSize: 11, color: SD, lineHeight: 1.8 }}>{selectedDrop.description}</p>
                 </div>
 
                 <div style={{ padding: "14px 20px", borderBottom: `.5px solid ${G3}`, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-                  {[["Date", selectedDrop.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })], ["Time", selectedDrop.time], ["Units", `${selectedDrop.pieces}`]].map(([k, v]) => (
+                  {[["Date", selectedDrop.date ? selectedDrop.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "TBD"], ["Time", selectedDrop.time || "TBD"], ["Units", selectedDrop.pieces ? `${selectedDrop.pieces}` : "TBD"]].map(([k, v]) => (
                     <div key={k}>
                       <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>{k}</div>
                       <div style={{ fontSize: 10, fontWeight: 700 }}>{v}</div>
@@ -264,12 +274,12 @@ export default function VigoDrops() {
             <div style={{ background: G1, border: `.5px solid ${G3}` }}>
               <div style={{ padding: "10px 16px", borderBottom: `.5px solid ${G3}`, fontSize: 7, letterSpacing: 3, color: SD, textTransform: "uppercase" }}>All Drops</div>
               {ALL_DROPS.map(dr => (
-                <div key={dr.id} onClick={() => { setSelectedDrop(dr); setViewDate(new Date(dr.date.getFullYear(), dr.date.getMonth(), 1)); }} style={{ padding: "12px 16px", borderBottom: `.5px solid ${G3}`, cursor: "pointer", background: selectedDrop?.id === dr.id ? "rgba(192,192,192,.05)" : "transparent", transition: "background .15s", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}
+                <div key={dr.id} onClick={() => { setSelectedDrop(dr); if (dr.date) setViewDate(new Date(dr.date.getFullYear(), dr.date.getMonth(), 1)); }} style={{ padding: "12px 16px", borderBottom: `.5px solid ${G3}`, cursor: "pointer", background: selectedDrop?.id === dr.id ? "rgba(192,192,192,.05)" : "transparent", transition: "background .15s", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}
                   onMouseEnter={e => { if (selectedDrop?.id !== dr.id) e.currentTarget.style.background = "rgba(192,192,192,.03)"; }}
                   onMouseLeave={e => { if (selectedDrop?.id !== dr.id) e.currentTarget.style.background = "transparent"; }}>
                   <div>
                     <div style={{ fontSize: 11, fontWeight: 700, marginBottom: 2 }}>{dr.series}</div>
-                    <div style={{ fontSize: 8, color: SD }}>{dr.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</div>
+                    <div style={{ fontSize: 8, color: SD }}>{dr.date ? dr.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Date TBD"}</div>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
                     <div style={{ width: 5, height: 5, borderRadius: "50%", background: dr.tagColor }} />

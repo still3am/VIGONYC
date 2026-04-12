@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { base44 } from "@/api/base44Client";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import SectionDivider from "./SectionDivider";
@@ -10,7 +11,6 @@ const G1 = "var(--vt-bg)";
 const G3 = "var(--vt-border)";
 
 const NEXT_DROP = new Date();
-const PRODUCTS = [];
 const CATEGORIES = [];
 const REVIEWS = [];
 
@@ -40,8 +40,13 @@ export default function VigoHome() {
   const [heroLoaded, setHeroLoaded] = useState(false);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {const t = setTimeout(() => setHeroLoaded(true), 80);return () => clearTimeout(t);}, []);
+
+  useEffect(() => {
+    base44.entities.Product.filter({ featured: true }, "-created_date", 8).then(data => setProducts(data || [])).catch(() => {});
+  }, []);
 
   const handleSubscribe = async () => {
     if (email.trim()) {
@@ -120,8 +125,9 @@ export default function VigoHome() {
       <div style={{ padding: "52px 32px" }}>
         <SectionHeader title="Featured Drops" sub="SS25 Season" cta="View All →" onCta={() => navigate("/shop")} />
         <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
-          {PRODUCTS.map((p) =>
-          <ProductCard key={p.id} product={p} img={productImg}
+          {products.length === 0 && <div style={{ gridColumn: "1/-1", padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>No featured products yet — add some in the admin panel.</div>}
+          {products.map((p) =>
+          <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
           wishlisted={wishlist.includes(p.id)}
           onWishlist={() => toggleWishlist(p.id)}
           onAdd={() => addToCart({ id: p.id, name: p.name, meta: "Size: M · Color: Black", price: p.price })}
