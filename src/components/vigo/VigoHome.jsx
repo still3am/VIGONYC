@@ -78,6 +78,10 @@ export default function VigoHome() {
 
   const handleSubscribe = async () => {
     if (email.trim()) {
+      const user = await base44.auth.me().catch(() => null);
+      if (user) {
+        await base44.auth.updateMe({ newsletterEmail: email.trim(), notificationsNewsletter: true }).catch(() => {});
+      }
       setSubscribed(true);
     }
   };

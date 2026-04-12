@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Package, RotateCcw, Zap } from "lucide-react";
 import ProductCard from "./ProductCard";
 import SectionDivider from "./SectionDivider";
 import { toast } from "sonner";
+import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -12,29 +13,88 @@ const G2 = "var(--vt-card)";
 const G3 = "var(--vt-border)";
 const SD = "var(--vt-sub)";
 
-const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
-const COLORS = [{ name: "Black", hex: "#111" }, { name: "Silver", hex: "#C0C0C0" }, { name: "Graphite", hex: "#555" }];
-const accordionData = [];
-const related = [];
+const DEFAULT_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
 
 export default function VigoProduct() {
   const { productImg, wishlist, toggleWishlist, addToCart, setSizeGuideOpen } = useOutletContext();
+  const { id } = useParams();
   const navigate = useNavigate();
+  const [product, setProduct] = useState(null);
+  const [related, setRelated] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedColor, setSelectedColor] = useState("Black");
   const [qty, setQty] = useState(1);
   const [activeThumb, setActiveThumb] = useState(0);
   const [added, setAdded] = useState(false);
-  const wishlisted = wishlist.includes(1);
 
-  const thumbOpacities = [1, 0.6, 0.4, 0.8];
+  useEffect(() => {
+    setLoading(true);
+    setNotFound(false);
+    setProduct(null);
+    setSelectedSize(null);
+    setActiveThumb(0);
+    base44.entities.Product.get(id).then(p => {
+      setProduct(p);
+      setSelectedColor((p.colors && p.colors[0]) || "Black");
+      setLoading(false);
+      base44.entities.Product.list("-created_date", 8).then(all => {
+        setRelated(all.filter(x => x.id !== id).slice(0, 4));
+      }).catch(() => {});
+    }).catch(() => {
+      setNotFound(true);
+      setLoading(false);
+    });
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: 32, height: 32, border: `2px solid ${G3}`, borderTop: `2px solid ${S}`, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      </div>
+    );
+  }
+
+  if (notFound || !product) {
+    return (
+      <div style={{ minHeight: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
+        <div style={{ fontSize: 40, opacity: .2 }}>∅</div>
+        <div style={{ fontSize: 18, fontWeight: 900 }}>Product Not Found</div>
+        <button onClick={() => navigate("/shop")} style={{ background: S, color: "#000", border: "none", padding: "12px 28px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Back to Shop</button>
+      </div>
+    );
+  }
+
+  const images = product.images && product.images.length > 0 ? product.images : [productImg];
+  const sizes = product.sizes && product.sizes.length > 0 ? product.sizes : DEFAULT_SIZES;
+  const colors = product.colors && product.colors.length > 0 ? product.colors : ["Black"];
+  const wishlisted = wishlist.includes(id);
+
+  const accordionData = [
+    { title: "Description", content: product.description || "Premium quality streetwear from New York City. Built for the borough." },
+    { title: "Sizing & Fit", content: "This piece runs true to size. We recommend sizing up for an oversized fit. See the size guide for measurements." },
+    { title: "Shipping & Returns", content: "Free shipping on orders over $150. Standard shipping 5–7 business days. Returns accepted within 14 days for unworn items." },
+    { title: "Care Instructions", content: "Machine wash cold with like colors. Tumble dry low. Do not bleach. Do not iron on print." },
+  ];
 
   const handleAdd = () => {
     if (!selectedSize) {
       toast.error("Please select a size");
       return;
     }
-    addToCart({ id: 1, name: "Chrome V Tee", meta: `Size: ${selectedSize} · Color: ${selectedColor}`, price: 68 });
+    addToCart({
+      id: product.id,
+      productId: product.id,
+      name: product.name,
+      productName: product.name,
+      size: selectedSize,
+      color: selectedColor,
+      meta: `Size: ${selectedSize} · Color: ${selectedColor}`,
+      price: product.price,
+      productImage: images[0],
+    });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -44,24 +104,28 @@ export default function VigoProduct() {
       <div style={{ padding: "clamp(20px,4vw,32px)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div className="product-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(24px,5vw,48px)", marginBottom: "clamp(40px,6vw,60px)" }}>
+            {/* Images */}
             <div style={{ display: "flex", flexDirection: "column", gap: "clamp(12px,2vw,16px)" }}>
               <div style={{ background: G2, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, aspectRatio: "3/4", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
-                <img src={productImg} alt="Chrome V Tee" style={{ width: "75%", objectFit: "contain", opacity: thumbOpacities[activeThumb], filter: "drop-shadow(0 0 40px rgba(192,192,192,.1))" }} />
+                <img src={images[activeThumb] || productImg} alt={product.name} style={{ width: "75%", objectFit: "contain", filter: "drop-shadow(0 0 40px rgba(192,192,192,.1))" }} />
               </div>
-              <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
-                {thumbOpacities.map((op, i) =>
-                <button key={i} onClick={() => setActiveThumb(i)} style={{ flexShrink: 0, width: 60, height: 60, background: G2, border: `.5px solid ${activeThumb === i ? S : G3}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .2s" }}>
-                    <img src={productImg} alt="" style={{ width: 48, height: 48, objectFit: "contain", opacity: op }} />
-                  </button>
-                )}
-              </div>
+              {images.length > 1 && (
+                <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
+                  {images.map((img, i) => (
+                    <button key={i} onClick={() => setActiveThumb(i)} style={{ flexShrink: 0, width: 60, height: 60, background: G2, border: `.5px solid ${activeThumb === i ? S : G3}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .2s" }}>
+                      <img src={img} alt="" style={{ width: 48, height: 48, objectFit: "contain" }} />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
+            {/* Details */}
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 16 }}>SS25 — Chrome Series</div>
+              <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 16 }}>{product.collection || "SS25"} — {product.cat}</div>
               <div style={{ marginBottom: 24 }}>
-                <h1 style={{ fontSize: "clamp(32px,5vw,48px)", fontWeight: 900, letterSpacing: -1, lineHeight: 1.1, marginBottom: 8 }}>Chrome V Tee</h1>
-                <div style={{ fontSize: 10, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Tops / Essential</div>
+                <h1 style={{ fontSize: "clamp(32px,5vw,48px)", fontWeight: 900, letterSpacing: -1, lineHeight: 1.1, marginBottom: 8 }}>{product.name}</h1>
+                <div style={{ fontSize: 10, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>{product.cat}</div>
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24, paddingBottom: 24, borderBottom: `.5px solid ${G3}` }}>
@@ -72,35 +136,35 @@ export default function VigoProduct() {
               <div style={{ display: "flex", alignItems: "flex-start", gap: 24, marginBottom: 24 }}>
                 <div>
                   <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>Price</div>
-                  <div style={{ fontSize: 36, fontWeight: 900, color: S }}>$68</div>
+                  <div style={{ fontSize: 36, fontWeight: 900, color: S }}>${product.price}</div>
                 </div>
-                <button onClick={() => toggleWishlist(1)} style={{ background: wishlisted ? `rgba(192,192,192,.1)` : "transparent", border: `.5px solid ${wishlisted ? S : G3}`, color: wishlisted ? S : SD, width: 44, height: 44, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontFamily: "inherit", transition: "all .2s", marginTop: 12 }}>
+                <button onClick={() => toggleWishlist(id)} style={{ background: wishlisted ? `rgba(192,192,192,.1)` : "transparent", border: `.5px solid ${wishlisted ? S : G3}`, color: wishlisted ? S : SD, width: 44, height: 44, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontFamily: "inherit", transition: "all .2s", marginTop: 12 }}>
                   {wishlisted ? "♥" : "♡"}
                 </button>
               </div>
 
-              <p style={{ fontSize: 12, color: SD, lineHeight: 1.8, marginBottom: 28 }}>Heavyweight 350gsm cotton. Oversized silhouette. Embossed chrome V logo. Built for the borough.</p>
+              <p style={{ fontSize: 12, color: SD, lineHeight: 1.8, marginBottom: 28 }}>{product.description || "Premium streetwear from New York City."}</p>
 
+              {/* Color */}
               <div style={{ marginBottom: 28 }}>
                 <label style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", display: "block", marginBottom: 10 }}>Color: <span style={{ color: "var(--vt-text)" }}>{selectedColor}</span></label>
-                <div style={{ display: "flex", gap: 10 }}>
-                  {COLORS.map((c) =>
-                  <button key={c.name} onClick={() => setSelectedColor(c.name)} title={c.name} style={{ width: 32, height: 32, background: c.hex, border: selectedColor === c.name ? `2px solid ${S}` : `.5px solid ${G3}`, cursor: "pointer", borderRadius: "50%", transition: "all .2s" }} />
-                  )}
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  {colors.map((c) => (
+                    <button key={c} onClick={() => setSelectedColor(c)} title={c} style={{ padding: "6px 14px", border: selectedColor === c ? `2px solid ${S}` : `.5px solid ${G3}`, background: selectedColor === c ? S : "transparent", color: selectedColor === c ? "#000" : SD, fontSize: 9, cursor: "pointer", fontFamily: "inherit", transition: "all .15s" }}>{c}</button>
+                  ))}
                 </div>
               </div>
 
+              {/* Size */}
               <div style={{ marginBottom: 28 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
                   <label style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Size {!selectedSize && <span style={{ color: "#e03" }}>*</span>}</label>
                   <button onClick={() => setSizeGuideOpen(true)} style={{ background: "none", border: "none", fontSize: 8, letterSpacing: 2, color: S, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>Size Guide →</button>
                 </div>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                  {SIZES.map((s) =>
-                  <button key={s} onClick={() => setSelectedSize(s)} style={{ width: 48, height: 40, border: `.5px solid ${selectedSize === s ? S : G3}`, background: selectedSize === s ? S : "transparent", color: selectedSize === s ? "#000" : SD, fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", transition: "all .15s" }}>
-                      {s}
-                    </button>
-                  )}
+                  {sizes.map((s) => (
+                    <button key={s} onClick={() => setSelectedSize(s)} style={{ width: 48, height: 40, border: `.5px solid ${selectedSize === s ? S : G3}`, background: selectedSize === s ? S : "transparent", color: selectedSize === s ? "#000" : SD, fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", transition: "all .15s" }}>{s}</button>
+                  ))}
                 </div>
               </div>
 
@@ -116,51 +180,56 @@ export default function VigoProduct() {
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, paddingTop: 16, borderTop: `.5px solid ${G3}` }}>
-                {[{ icon: Package, title: "Free Shipping", sub: "over $150" }, { icon: RotateCcw, title: "Easy Returns", sub: "30 days" }, { icon: Zap, title: "NYC Made", sub: "Limited run" }].map(({ icon: Icon, title, sub }) =>
-                <div key={title} style={{ textAlign: "center" }}>
+                {[{ icon: Package, title: "Free Shipping", sub: "over $150" }, { icon: RotateCcw, title: "Easy Returns", sub: "30 days" }, { icon: Zap, title: "NYC Made", sub: "Limited run" }].map(({ icon: Icon, title, sub }) => (
+                  <div key={title} style={{ textAlign: "center" }}>
                     <Icon size={18} style={{ marginBottom: 8, color: S, margin: "0 auto" }} />
                     <div style={{ fontSize: 8, fontWeight: 700, color: "var(--vt-text)", letterSpacing: 1 }}>{title}</div>
                     <div style={{ fontSize: 7, color: SD, marginTop: 2 }}>{sub}</div>
                   </div>
-                )}
+                ))}
               </div>
             </div>
           </div>
 
           <div style={{ background: G2, border: `.5px solid ${G3}`, padding: "clamp(16px,3vw,24px)" }}>
             <Accordion type="single" collapsible className="w-full">
-              {accordionData.map((item, idx) =>
-              <AccordionItem key={idx} value={`item-${idx}`}>
+              {accordionData.map((item, idx) => (
+                <AccordionItem key={idx} value={`item-${idx}`}>
                   <AccordionTrigger style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "var(--vt-text)", fontWeight: 700 }}>{item.title}</AccordionTrigger>
                   <AccordionContent style={{ fontSize: 11, color: SD, lineHeight: 1.8 }}>{item.content}</AccordionContent>
                 </AccordionItem>
-              )}
+              ))}
             </Accordion>
           </div>
         </div>
       </div>
 
-      <SectionDivider label="You May Also Like" />
-      <div style={{ padding: "clamp(24px,4vw,32px)", maxWidth: 1200, margin: "0 auto" }}>
-        <div className="related-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
-          {related.map((p) =>
-          <ProductCard key={p.id} product={p} img={productImg}
-          wishlisted={wishlist.includes(p.id)}
-          onWishlist={() => toggleWishlist(p.id)}
-          onAdd={() => addToCart({ id: p.id, name: p.name, meta: "Size: M · Color: Black", price: p.price })}
-          onClick={() => navigate(`/product/${p.id}`)} />
-          )}
-        </div>
-      </div>
+      {related.length > 0 && (
+        <>
+          <SectionDivider label="You May Also Like" />
+          <div style={{ padding: "clamp(24px,4vw,32px)", maxWidth: 1200, margin: "0 auto" }}>
+            <div className="related-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+              {related.map((p) => (
+                <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
+                  wishlisted={wishlist.includes(p.id)}
+                  onWishlist={() => toggleWishlist(p.id)}
+                  onAdd={() => addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, meta: "Size: M · Color: Black", price: p.price, productImage: p.images?.[0] || productImg })}
+                  onClick={() => navigate(`/product/${p.id}`)} />
+              ))}
+            </div>
+          </div>
+        </>
+      )}
 
       <div className="mobile-cta" style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "var(--vt-nav-scrolled)", borderTop: `.5px solid ${G3}`, padding: "12px clamp(12px,4vw,24px) env(safe-area-inset-bottom, 12px)", display: "none", gap: 8, zIndex: 150, backdropFilter: "blur(12px)" }}>
         {!selectedSize && <div style={{ fontSize: 9, color: "#e03", textAlign: "center", letterSpacing: 1 }}>SELECT A SIZE</div>}
         <button onClick={handleAdd} style={{ width: "100%", background: added ? "#0c6" : S, color: "#000", border: "none", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", padding: "12px", fontFamily: "inherit", transition: "background .3s" }}>
-          {added ? "✓ Added" : `Add to Bag · $68`}
+          {added ? "✓ Added" : `Add to Bag · $${product.price}`}
         </button>
       </div>
 
       <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 900px) {
           .product-grid { grid-template-columns: 1fr !important; }
           .related-grid { grid-template-columns: repeat(2, 1fr) !important; }

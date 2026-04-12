@@ -14,7 +14,6 @@ export const PRODUCT_IMG = "https://media.base44.com/mnt/user-data/uploads/IMG_8
 
 
 export default function VIGONYCFlagship() {
-  const [cartItems, setCartItems] = useState([]);
   const [cartCount, setCartCount] = useState(0);
   const [cartOpen, setCartOpen] = useState(false);
   const [wishlist, setWishlist] = useState([]);
@@ -22,7 +21,6 @@ export default function VIGONYCFlagship() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Only scroll to top on non-tab navigations (tab switching preserves scroll)
   const TAB_ROOTS = ["/", "/shop", "/drops", "/wishlist", "/account"];
   const prevPath = useRef(location.pathname);
   useEffect(() => {
@@ -31,42 +29,57 @@ export default function VIGONYCFlagship() {
     prevPath.current = location.pathname;
   }, [location.pathname]);
 
-  const addToCart = (item) => {
-    setCartItems(prev => {
-      const ex = prev.find(i => i.id === item.id);
-      if (ex) return prev.map(i => i.id === item.id ? { ...i, qty: i.qty + 1 } : i);
-      return [...prev, { ...item, qty: 1 }];
-    });
+  const refreshCartCount = async () => {
+    try {
+      const user = await base44.auth.me();
+      if (user) {
+        const items = await base44.entities.CartItem.filter({ created_by: user.email }, '-created_date', 100);
+        setCartCount(items.length);
+      }
+    } catch (err) {}
+  };
+
+  useEffect(() => { refreshCartCount(); }, []);
+
+  const addToCart = async (item) => {
+    try {
+      const user = await base44.auth.me();
+      if (user) {
+        const productId = item.productId || item.id;
+        const existing = await base44.entities.CartItem.filter({ created_by: user.email, productId }, '-created_date', 10);
+        const match = existing.find(i => i.size === item.size && i.color === item.color);
+        if (match) {
+          await base44.entities.CartItem.update(match.id, { qty: match.qty + 1 });
+        } else {
+          await base44.entities.CartItem.create({
+            productId,
+            productName: item.productName || item.name,
+            price: item.price,
+            qty: 1,
+            size: item.size || null,
+            color: item.color || null,
+            productImage: item.productImage || null,
+          });
+        }
+        await refreshCartCount();
+      }
+    } catch (err) {}
     setCartOpen(true);
   };
 
-  const updateQty = (id, delta) => setCartItems(prev => prev.map(i => i.id === id ? { ...i, qty: Math.max(1, i.qty + delta) } : i));
-  const removeFromCart = (id) => setCartItems(prev => prev.filter(i => i.id !== id));
   const toggleWishlist = (id) => setWishlist(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
 
-  useEffect(() => {
-    const fetchCartCount = async () => {
-      try {
-        const user = await base44.auth.me();
-        if (user) {
-          const items = await base44.entities.CartItem.filter({ created_by: user.email }, '-created_date', 100);
-          setCartCount(items.length);
-        }
-      } catch (err) {
-        console.error('Failed to fetch cart count:', err);
-      }
-    };
-    fetchCartCount();
-  }, [cartOpen]);
+  const handleCartClose = () => {
+    setCartOpen(false);
+    refreshCartCount();
+  };
 
-  const subtotal = cartItems.reduce((s, i) => s + i.price * i.qty, 0);
-
-  const ctx = { cartItems, addToCart, updateQty, removeFromCart, subtotal, wishlist, toggleWishlist, setSizeGuideOpen, logo: LOGO, productImg: PRODUCT_IMG };
+  const ctx = { addToCart, wishlist, toggleWishlist, setSizeGuideOpen, logo: LOGO, productImg: PRODUCT_IMG };
 
   return (
     <div style={{ background: "var(--vt-bg)", minHeight: "100vh", fontFamily: "'Helvetica Neue',Arial,sans-serif", color: "var(--vt-text)", overflowX: "hidden" }}>
       <SizeGuideModal open={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} />
-      <VigoCartDrawer open={cartOpen} onClose={() => setCartOpen(false)} items={cartItems} subtotal={subtotal} updateQty={updateQty} removeFromCart={removeFromCart} onCheckout={() => { navigate("/checkout"); setCartOpen(false); }} productImg={PRODUCT_IMG} />
+      <VigoCartDrawer open={cartOpen} onClose={handleCartClose} onCheckout={() => { navigate("/checkout"); handleCartClose(); }} />
       <VigoNav cartCount={cartCount} onCartOpen={() => setCartOpen(true)} logo={LOGO} />
       <AnimatePresence mode="wait">
         <motion.div key={location.pathname} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.22, ease: "easeInOut" }}>

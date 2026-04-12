@@ -73,6 +73,7 @@ export default function VigoShop() {
   const initCat = searchParams.get("cat") || "All";
 
   const [activeCat, setActiveCat] = useState(initCat);
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
   const [priceRange, setPriceRange] = useState(300);
@@ -92,6 +93,10 @@ export default function VigoShop() {
 
   const filtered = useMemo(() => {
     let p = [...allProducts];
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      p = p.filter(x => (x.name||"").toLowerCase().includes(q) || (x.description||"").toLowerCase().includes(q) || (x.cat||"").toLowerCase().includes(q));
+    }
     if (activeCat !== "All") p = p.filter(x => x.cat === activeCat);
     if (selectedSizes.length) p = p.filter(x => x.sizes && x.sizes.some(s => selectedSizes.includes(s)));
     if (selectedColors.length) p = p.filter(x => x.colors && x.colors.some(c => selectedColors.includes(c)));
@@ -101,7 +106,7 @@ export default function VigoShop() {
     if (sort === "price-desc") p.sort((a,b) => b.price - a.price);
     if (sort === "new") p = p.filter(x => x.tag === "new").concat(p.filter(x => x.tag !== "new"));
     return p;
-  }, [activeCat, selectedSizes, selectedColors, priceRange, activeCollection, sort]);
+  }, [activeCat, searchQuery, selectedSizes, selectedColors, priceRange, activeCollection, sort, allProducts]);
 
   const [refreshKey, setRefreshKey] = useState(0);
   const handleRefresh = useCallback(() => new Promise(res => {
@@ -138,8 +143,9 @@ export default function VigoShop() {
       )}
 
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ SS25 Season</div>
-        <h1 style={{ fontSize: "clamp(32px,5vw,52px)", fontWeight: 900, letterSpacing: -2, marginBottom: 20 }}>Shop All</h1>
+      <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ SS25 Season</div>
+      <h1 style={{ fontSize: "clamp(32px,5vw,52px)", fontWeight: 900, letterSpacing: -2, marginBottom: searchQuery ? 8 : 20 }}>{searchQuery ? `Results for "${searchQuery}"` : "Shop All"}</h1>
+      {searchQuery && <button onClick={() => setSearchQuery("")} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "6px 14px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", marginBottom: 16 }}>✕ Clear Search</button>}
 
         <div className="vigo-cat-tabs" style={{ display: "none", overflowX: "auto", gap: 6, paddingBottom: 4, marginBottom: 16 }}>
           {CATEGORIES.map(c => (

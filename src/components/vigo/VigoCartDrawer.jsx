@@ -8,7 +8,7 @@ const G2 = "var(--vt-card)";
 const G3 = "var(--vt-border)";
 const SD = "var(--vt-sub)";
 
-export default function VigoCartDrawer({ open, onClose }) {
+export default function VigoCartDrawer({ open, onClose, onCheckout }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -47,9 +47,10 @@ export default function VigoCartDrawer({ open, onClose }) {
     setItems(items.filter(i => i.id !== id));
   };
 
-  const onCheckout = () => {
+  const handleCheckout = () => {
     onClose();
-    window.location.href = '/checkout';
+    if (onCheckout) onCheckout();
+    else window.location.href = '/checkout';
   };
 
   return (
@@ -124,7 +125,7 @@ export default function VigoCartDrawer({ open, onClose }) {
             {shipping > 0 && <div style={{ fontSize: 8, color: SD, textAlign: "right", marginBottom: 10 }}>Shipping: +${shipping.toFixed(2)}</div>}
             {shipping === 0 && <div style={{ fontSize: 8, color: "#0c6", textAlign: "right", marginBottom: 10, fontWeight: 700 }}>FREE SHIPPING</div>}
           </div>
-          <button onClick={onCheckout} style={{ background: S, color: "#000", border: "none", padding: "clamp(12px,2vw,16px)", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", width: "100%", fontFamily: "inherit" }}>
+          <button onClick={handleCheckout} disabled={items.length === 0} style={{ background: items.length === 0 ? "#555" : S, color: items.length === 0 ? "#999" : "#000", border: "none", padding: "clamp(12px,2vw,16px)", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: items.length === 0 ? "not-allowed" : "pointer", width: "100%", fontFamily: "inherit" }}>
             Checkout
           </button>
           <button onClick={onClose} style={{ background: "none", border: ".5px solid " + G3, color: SD, padding: "clamp(12px, 2vw, 16px)", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", width: "100%", fontFamily: "inherit" }}>

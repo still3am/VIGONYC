@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -7,14 +8,33 @@ const G3 = "var(--vt-border)";
 const SD = "var(--vt-sub)";
 
 export default function VigoCheckout() {
-  const { cartItems, subtotal, productImg } = useOutletContext();
+  const { productImg } = useOutletContext();
   const navigate = useNavigate();
+  const [cartItems, setCartItems] = useState([]);
   const [step, setStep] = useState(1);
   const [payMethod, setPayMethod] = useState("card");
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
   const [promoError, setPromoError] = useState(false);
+  const [placing, setPlacing] = useState(false);
+  const [orderPlaced, setOrderPlaced] = useState(false);
+  const [orderId, setOrderId] = useState("");
+  const [contact, setContact] = useState({ firstName: "", lastName: "", email: "", phone: "", address: "", city: "", state: "", zip: "" });
 
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const user = await base44.auth.me();
+        if (user) {
+          const items = await base44.entities.CartItem.filter({ created_by: user.email }, "-created_date", 100);
+          setCartItems(items);
+        }
+      } catch (e) {}
+    };
+    load();
+  }, []);
+
+  const subtotal = cartItems.reduce((s, i) => s + (i.price * i.qty), 0);
   const shipping = subtotal >= 150 ? 0 : 12;
   const tax = Math.round(subtotal * 0.0887);
   const discount = promoApplied ? Math.round(subtotal * 0.1) : 0;
@@ -24,6 +44,46 @@ export default function VigoCheckout() {
     if (promoCode.toUpperCase() === "VIGONYC10") { setPromoApplied(true); setPromoError(false); }
     else { setPromoError(true); setPromoApplied(false); }
   };
+
+  const setField = (k, v) => setContact(p => ({ ...p, [k]: v }));
+
+  const handlePlaceOrder = async () => {
+    setPlacing(true);
+    try {
+      const genId = "VIGO-" + Math.floor(Math.random() * 90000 + 10000);
+      await base44.entities.Order.create({
+        orderId: genId,
+        items: cartItems.map(i => `${i.productName} x${i.qty}`).join(", "),
+        total: total,
+        pieces: cartItems.reduce((s, i) => s + i.qty, 0),
+        status: "Pending",
+        shippingAddress: `${contact.address}, ${contact.city}, ${contact.state} ${contact.zip}`,
+      });
+      await Promise.all(cartItems.map(i => base44.entities.CartItem.delete(i.id)));
+      setOrderId(genId);
+      setOrderPlaced(true);
+    } catch (e) {
+      alert("Failed to place order. Please try again.");
+    } finally {
+      setPlacing(false);
+    }
+  };
+
+  if (orderPlaced) {
+    return (
+      <div style={{ padding: "80px 32px", maxWidth: 600, margin: "0 auto", textAlign: "center" }}>
+        <div style={{ fontSize: 48, marginBottom: 20 }}>✓</div>
+        <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 12 }}>Order Confirmed</div>
+        <h1 style={{ fontSize: 36, fontWeight: 900, letterSpacing: -1, marginBottom: 12 }}>Thank You!</h1>
+        <div style={{ fontSize: 12, color: SD, marginBottom: 8 }}>Your order has been placed successfully.</div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: S, marginBottom: 32 }}>Order #{orderId}</div>
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+          <button onClick={() => navigate("/")} style={btnP}>Continue Shopping</button>
+          <button onClick={() => navigate("/track-order")} style={btnGhost}>Track Order →</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: "48px 32px", maxWidth: 1100, margin: "0 auto" }}>
@@ -44,16 +104,16 @@ export default function VigoCheckout() {
           {step === 1 && (
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <div className="vigo-2col-sm" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                <Field label="First Name" />
-                <Field label="Last Name" />
+                <Field label="First Name" value={contact.firstName} onChange={v => setField("firstName", v)} />
+                <Field label="Last Name" value={contact.lastName} onChange={v => setField("lastName", v)} />
               </div>
-              <Field label="Email" type="email" />
-              <Field label="Phone" type="tel" />
-              <Field label="Address" />
+              <Field label="Email" type="email" value={contact.email} onChange={v => setField("email", v)} />
+              <Field label="Phone" type="tel" value={contact.phone} onChange={v => setField("phone", v)} />
+              <Field label="Address" value={contact.address} onChange={v => setField("address", v)} />
               <div className="vigo-3col-sm" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
-                <Field label="City" />
-                <Field label="State" />
-                <Field label="ZIP" />
+                <Field label="City" value={contact.city} onChange={v => setField("city", v)} />
+                <Field label="State" value={contact.state} onChange={v => setField("state", v)} />
+                <Field label="ZIP" value={contact.zip} onChange={v => setField("zip", v)} />
               </div>
               <button onClick={() => setStep(2)} style={btnP}>Continue to Shipping →</button>
             </div>
@@ -107,7 +167,13 @@ export default function VigoCheckout() {
               )}
               <div style={{ display: "flex", gap: 12 }}>
                 <button onClick={() => setStep(2)} style={btnGhost}>← Back</button>
-                <button onClick={() => navigate("/")} style={{ ...btnP, flex: 1 }}>Place Order — ${total}</button>
+                <button
+                  onClick={handlePlaceOrder}
+                  disabled={placing || cartItems.length === 0}
+                  style={{ ...btnP, flex: 1, opacity: (placing || cartItems.length === 0) ? 0.6 : 1, cursor: (placing || cartItems.length === 0) ? "not-allowed" : "pointer" }}
+                >
+                  {placing ? "Placing Order..." : `Place Order — $${total}`}
+                </button>
               </div>
             </div>
           )}
@@ -117,16 +183,17 @@ export default function VigoCheckout() {
           <div style={{ background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "24px" }}>
             <div style={{ fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: SD, marginBottom: 20 }}>Order Summary</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 20 }}>
+              {cartItems.length === 0 && <div style={{ fontSize: 11, color: SD, textAlign: "center", padding: "20px 0" }}>Your cart is empty</div>}
               {cartItems.map(item => (
                 <div key={item.id} style={{ display: "flex", gap: 12, alignItems: "center" }}>
                   <div style={{ width: 52, height: 52, background: "var(--vt-card)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <img src={productImg} alt="" style={{ width: 44, objectFit: "contain", opacity: .8 }} />
+                    <img src={item.productImage || productImg} alt="" style={{ width: 44, objectFit: "contain", opacity: .8 }} />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 11, color: "var(--vt-text)" }}>{item.name}</div>
-                    <div style={{ fontSize: 9, color: SD }}>{item.meta} · Qty: {item.qty}</div>
+                    <div style={{ fontSize: 11, color: "var(--vt-text)" }}>{item.productName}</div>
+                    <div style={{ fontSize: 9, color: SD }}>{item.size && `Size: ${item.size}`}{item.size && item.color ? " · " : ""}{item.color && `Color: ${item.color}`} · Qty: {item.qty}</div>
                   </div>
-                  <span style={{ fontSize: 12, fontWeight: 700 }}>${item.price * item.qty}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700 }}>${(item.price * item.qty).toFixed(2)}</span>
                 </div>
               ))}
             </div>
@@ -140,7 +207,7 @@ export default function VigoCheckout() {
             {promoError && <div style={{ fontSize: 10, color: "#e03", marginBottom: 12 }}>Invalid promo code. Try VIGONYC10.</div>}
 
             <div style={{ borderTop: `.5px solid ${G3}`, paddingTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
-              {[["Subtotal", `$${subtotal}`],["Shipping", shipping === 0 ? "Free 🎉" : `$${shipping}`],["NYC Tax (8.875%)", `$${tax}`],promoApplied ? ["Promo (VIGONYC10)", `-$${discount}`] : null].filter(Boolean).map(([l,v]) => (
+              {[["Subtotal", `$${subtotal.toFixed(2)}`],["Shipping", shipping === 0 ? "Free 🎉" : `$${shipping}`],["NYC Tax (8.875%)", `$${tax}`],promoApplied ? ["Promo (VIGONYC10)", `-$${discount}`] : null].filter(Boolean).map(([l,v]) => (
                 <div key={l} style={{ display: "flex", justifyContent: "space-between" }}>
                   <span style={{ fontSize: 10, color: SD }}>{l}</span>
                   <span style={{ fontSize: 11, color: l.startsWith("Promo") ? "#0c6" : l === "Shipping" && shipping === 0 ? "#0c6" : "var(--vt-text)" }}>{v}</span>
@@ -161,11 +228,11 @@ export default function VigoCheckout() {
   );
 }
 
-function Field({ label, type = "text", placeholder }) {
+function Field({ label, type = "text", placeholder, value, onChange }) {
   return (
     <div>
       <div style={{ fontSize: 9, letterSpacing: 2, color: "var(--vt-sub)", textTransform: "uppercase", marginBottom: 8 }}>{label}</div>
-      <input type={type} placeholder={placeholder} style={{ width: "100%", background: "var(--vt-card)", border: ".5px solid var(--vt-border)", color: "var(--vt-text)", padding: "12px 16px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
+      <input type={type} placeholder={placeholder} value={value || ""} onChange={onChange ? e => onChange(e.target.value) : undefined} style={{ width: "100%", background: "var(--vt-card)", border: ".5px solid var(--vt-border)", color: "var(--vt-text)", padding: "12px 16px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
     </div>
   );
 }
