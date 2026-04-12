@@ -5,23 +5,13 @@ import SectionDivider from "./SectionDivider";
 import SectionHeader from "./SectionHeader";
 
 const S = "#C0C0C0";
-const SD = "#777";
-const G1 = "#0a0a0a";
-const G3 = "#1a1a1a";
+const SD = "var(--vt-sub)";
+const G1 = "var(--vt-bg)";
+const G3 = "var(--vt-border)";
 
-// TODO: Fetch next drop date from Base44 Drop entity
 const NEXT_DROP = new Date();
-
-// TODO: Replace with Base44 entity queries
-// const PRODUCTS = await base44.entities.Product.filter({ featured: true });
 const PRODUCTS = [];
-
-// TODO: Replace with Base44 entity queries
-// const CATEGORIES = await base44.entities.Category.list();
 const CATEGORIES = [];
-
-// TODO: Replace with Base44 entity queries
-// const REVIEWS = await base44.entities.Review.filter({ featured: true });
 const REVIEWS = [];
 
 function MiniCountdown({ target }) {
@@ -37,12 +27,11 @@ function MiniCountdown({ target }) {
     <span style={{ display: "inline-flex", gap: 12, alignItems: "baseline" }}>
       {[["D", t.d], ["H", t.h], ["M", t.m], ["S", t.s]].map(([l, v]) =>
       <span key={l} style={{ display: "inline-flex", alignItems: "baseline", gap: 3 }}>
-          <span style={{ fontSize: 22, fontWeight: 900, color: "#fff", fontVariantNumeric: "tabular-nums" }}>{String(v).padStart(2, "0")}</span>
+          <span style={{ fontSize: 22, fontWeight: 900, color: "var(--vt-text)", fontVariantNumeric: "tabular-nums" }}>{String(v).padStart(2, "0")}</span>
           <span style={{ fontSize: 8, letterSpacing: 1, color: SD }}>{l}</span>
         </span>
       )}
     </span>);
-
 }
 
 export default function VigoHome() {
@@ -54,10 +43,8 @@ export default function VigoHome() {
 
   useEffect(() => {const t = setTimeout(() => setHeroLoaded(true), 80);return () => clearTimeout(t);}, []);
 
-  // TODO: Replace with Base44 function to submit newsletter subscription
   const handleSubscribe = async () => {
     if (email.trim()) {
-      // await base44.functions.invoke('subscribeNewsletter', { email });
       setSubscribed(true);
     }
   };
@@ -65,9 +52,9 @@ export default function VigoHome() {
   return (
     <div>
       {/* ── DROP ALERT BANNER ── */}
-      <div onClick={() => navigate("/drops")} style={{ background: `linear-gradient(90deg, #0a0a0a, #111, #0a0a0a)`, borderBottom: `.5px solid ${G3}`, padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "center", gap: 24, cursor: "pointer", flexWrap: "wrap", gap: 16 }}
+      <div onClick={() => navigate("/drops")} style={{ background: `linear-gradient(90deg, var(--vt-bg), var(--vt-card), var(--vt-bg))`, borderBottom: `.5px solid ${G3}`, padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "center", gap: 16, cursor: "pointer", flexWrap: "wrap" }}
       onMouseEnter={(e) => e.currentTarget.style.borderColor = S}
-      onMouseLeave={(e) => e.currentTarget.style.borderColor = G3} className="my-3 py-3">
+      onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--vt-border)"} className="my-3 py-3">
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 1.5s infinite" }} />
           <span style={{ fontSize: 9, letterSpacing: 4, color: SD, textTransform: "uppercase" }}>Drop 02 — Mirror Series</span>
@@ -101,7 +88,7 @@ export default function VigoHome() {
           <div className="vigo-kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 0, marginTop: 56, borderTop: `.5px solid ${G3}` }}>
             {[["500+", "Pieces Dropped"], ["12K+", "NYC Community"], ["100%", "Street Ready"], ["4.9★", "Avg. Rating"]].map(([n, l], i, arr) =>
             <div key={l} style={{ padding: "20px 0 0", paddingRight: i < arr.length - 1 ? 16 : 0, borderRight: i < arr.length - 1 ? `.5px solid ${G3}` : "none", paddingLeft: i > 0 ? 16 : 0, textAlign: "center" }}>
-                <div style={{ fontSize: 22, fontWeight: 900, color: "#fff", letterSpacing: -1 }}>{n}</div>
+                <div style={{ fontSize: 22, fontWeight: 900, color: "var(--vt-text)", letterSpacing: -1 }}>{n}</div>
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 4 }}>{l}</div>
               </div>
             )}
@@ -110,19 +97,16 @@ export default function VigoHome() {
 
         {/* Hero image panel */}
         <div style={{ position: "relative", background: G1, borderLeft: `.5px solid ${G3}`, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-          {/* Corner brackets */}
           <div style={{ position: "absolute", top: 24, left: 24, width: 32, height: 32, borderTop: `2px solid ${S}`, borderLeft: `2px solid ${S}`, zIndex: 2 }} />
           <div style={{ position: "absolute", top: 24, right: 24, width: 32, height: 32, borderTop: `2px solid ${S}`, borderRight: `2px solid ${S}`, zIndex: 2 }} />
           <div style={{ position: "absolute", bottom: 72, left: 24, width: 32, height: 32, borderBottom: `2px solid ${S}`, borderLeft: `2px solid ${S}`, zIndex: 2 }} />
           <div style={{ position: "absolute", bottom: 72, right: 24, width: 32, height: 32, borderBottom: `2px solid ${S}`, borderRight: `2px solid ${S}`, zIndex: 2 }} />
-          {/* Glow */}
           <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at center, rgba(192,192,192,.06) 0%, transparent 65%)`, pointerEvents: "none" }} />
           <img src={productImg} alt="VIGONYC SS25" style={{ width: "68%", maxWidth: 380, objectFit: "contain", filter: "drop-shadow(0 0 80px rgba(192,192,192,.2))", zIndex: 1 }} />
-          {/* Product tag */}
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "rgba(0,0,0,.9)", borderTop: `.5px solid ${G3}`, padding: "14px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 2 }}>
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "rgba(0,0,0,.85)", borderTop: `.5px solid rgba(255,255,255,.1)`, padding: "14px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 2 }}>
             <div>
               <div style={{ fontSize: 11, color: "#fff" }}>Chrome V Tee — SS25</div>
-              <div style={{ fontSize: 8, letterSpacing: 2, color: SD, marginTop: 2 }}>Limited · 100 Units</div>
+              <div style={{ fontSize: 8, letterSpacing: 2, color: "#888", marginTop: 2 }}>Limited · 100 Units</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
               <span style={{ fontSize: 18, fontWeight: 900, color: S }}>$68</span>
@@ -174,11 +158,11 @@ export default function VigoHome() {
       <div style={{ padding: "52px 32px" }}>
         <SectionHeader title="Shop by Category" sub="" />
         <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 2 }}>
-          {CATEGORIES.map((cat, i) =>
+          {CATEGORIES.map((cat) =>
           <div key={cat.name} onClick={() => navigate(`/shop?cat=${cat.name}`)}
-          style={{ background: G1, border: `.5px solid ${G3}`, padding: "40px 24px 32px", cursor: "pointer", transition: "border-color .2s, background .2s", textAlign: "center", position: "relative", overflow: "hidden" }}
-          onMouseEnter={(e) => {e.currentTarget.style.borderColor = S;e.currentTarget.style.background = "#0f0f0f";}}
-          onMouseLeave={(e) => {e.currentTarget.style.borderColor = G3;e.currentTarget.style.background = G1;}}>
+          style={{ background: G1, border: `.5px solid ${G3}`, padding: "40px 24px 32px", cursor: "pointer", transition: "border-color .2s", textAlign: "center", position: "relative", overflow: "hidden" }}
+          onMouseEnter={(e) => {e.currentTarget.style.borderColor = S;}}
+          onMouseLeave={(e) => {e.currentTarget.style.borderColor = "var(--vt-border)";}}>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 10 }}>{cat.count}</div>
               <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: -1 }}>{cat.name}</div>
               <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginTop: 16 }}>Browse →</div>
@@ -197,10 +181,10 @@ export default function VigoHome() {
           <div key={i} style={{ background: G1, border: `.5px solid ${G3}`, padding: "28px", position: "relative" }}>
               <div style={{ position: "absolute", top: -1, left: 0, right: 0, height: 1, background: `linear-gradient(90deg, transparent, ${S}, transparent)` }} />
               <div style={{ color: S, fontSize: 14, marginBottom: 14 }}>{"★".repeat(r.rating)}</div>
-              <p style={{ fontSize: 13, lineHeight: 1.8, color: "#ccc", marginBottom: 20 }}>"{r.text}"</p>
+              <p style={{ fontSize: 13, lineHeight: 1.8, color: SD, marginBottom: 20 }}>"{r.text}"</p>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
                 <div>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#fff" }}>{r.name}</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "var(--vt-text)" }}>{r.name}</div>
                   <div style={{ fontSize: 8, color: SD, marginTop: 2 }}>{r.loc}</div>
                 </div>
                 <div style={{ fontSize: 8, color: S, letterSpacing: 2 }}>VERIFIED</div>
@@ -235,7 +219,7 @@ export default function VigoHome() {
       </div>
 
       {/* ── NEWSLETTER ── */}
-      <div style={{ margin: "32px 32px 64px", background: `linear-gradient(135deg, #0a0a0a, #0f0f0f)`, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "52px 48px", textAlign: "center", position: "relative", overflow: "hidden" }}>
+      <div style={{ margin: "32px 32px 64px", background: `linear-gradient(135deg, var(--vt-bg), var(--vt-card))`, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "52px 48px", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: -60, right: -60, width: 200, height: 200, borderRadius: "50%", border: `.5px solid rgba(192,192,192,.06)` }} />
         <div style={{ position: "absolute", bottom: -40, left: -40, width: 140, height: 140, borderRadius: "50%", border: `.5px solid rgba(192,192,192,.04)` }} />
         <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14, position: "relative" }}>✦ Join The Drop List ✦</div>
@@ -243,9 +227,8 @@ export default function VigoHome() {
         <div style={{ fontSize: 12, color: SD, marginBottom: 32, position: "relative" }}>Drop alerts, exclusive offers, NYC-only releases. No spam, ever.</div>
         {subscribed ?
         <div style={{ fontSize: 13, color: "#0c6", padding: "16px 0" }}>✓ You're in. Watch for the next drop alert.</div> :
-
         <div style={{ display: "flex", gap: 0, maxWidth: 460, margin: "0 auto", position: "relative" }}>
-            <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" style={{ flex: 1, background: "#111", border: `.5px solid #333`, borderRight: "none", color: "#fff", padding: "14px 20px", fontSize: 12, outline: "none", fontFamily: "inherit" }} />
+            <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" style={{ flex: 1, background: "var(--vt-card)", border: `.5px solid ${G3}`, borderRight: "none", color: "var(--vt-text)", padding: "14px 20px", fontSize: 12, outline: "none", fontFamily: "inherit" }} />
             <button onClick={handleSubscribe} style={btnP}>Join the List</button>
           </div>
         }
@@ -264,8 +247,7 @@ export default function VigoHome() {
         @keyframes vigo-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
       `}</style>
     </div>);
-
 }
 
-const btnP = { background: S, color: "#000", border: "none", padding: "14px 32px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" };
-const btnO = { background: "none", border: `.5px solid ${S}`, color: S, padding: "14px 32px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" };
+const btnP = { background: "#C0C0C0", color: "#000", border: "none", padding: "14px 32px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" };
+const btnO = { background: "none", border: `.5px solid #C0C0C0`, color: "#C0C0C0", padding: "14px 32px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" };

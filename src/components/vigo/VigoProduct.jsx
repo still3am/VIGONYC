@@ -7,19 +7,14 @@ import SectionDivider from "./SectionDivider";
 import { toast } from "sonner";
 
 const S = "#C0C0C0";
-const G1 = "#0a0a0a";
-const G2 = "#111";
-const G3 = "#1a1a1a";
-const SD = "#777";
+const G1 = "var(--vt-bg)";
+const G2 = "var(--vt-card)";
+const G3 = "var(--vt-border)";
+const SD = "var(--vt-sub)";
 
-// TODO: Load from Base44 product entity
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
 const COLORS = [{ name: "Black", hex: "#111" }, { name: "Silver", hex: "#C0C0C0" }, { name: "Graphite", hex: "#555" }];
-
-// TODO: Fetch accordion content from Base44 product entity
 const accordionData = [];
-
-// TODO: Fetch related products from Base44
 const related = [];
 
 export default function VigoProduct() {
@@ -39,7 +34,6 @@ export default function VigoProduct() {
       toast.error("Please select a size");
       return;
     }
-    // TODO: Integrate with Base44 cart entity or function
     addToCart({ id: 1, name: "Chrome V Tee", meta: `Size: ${selectedSize} · Color: ${selectedColor}`, price: 68 });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
@@ -47,26 +41,13 @@ export default function VigoProduct() {
 
   return (
     <div style={{ minHeight: "100vh", background: G1 }}>
-      {/* Header with back button */}
-      
-
-      
-
-      {/* Main content */}
       <div style={{ padding: "clamp(20px,4vw,32px)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          
-          {/* Two column layout: images left, info right */}
           <div className="product-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(24px,5vw,48px)", marginBottom: "clamp(40px,6vw,60px)" }}>
-            
-            {/* Images section */}
             <div style={{ display: "flex", flexDirection: "column", gap: "clamp(12px,2vw,16px)" }}>
-              {/* Main image */}
               <div style={{ background: G2, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, aspectRatio: "3/4", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
                 <img src={productImg} alt="Chrome V Tee" style={{ width: "75%", objectFit: "contain", opacity: thumbOpacities[activeThumb], filter: "drop-shadow(0 0 40px rgba(192,192,192,.1))" }} />
               </div>
-              
-              {/* Thumbnail strip */}
               <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
                 {thumbOpacities.map((op, i) =>
                 <button key={i} onClick={() => setActiveThumb(i)} style={{ flexShrink: 0, width: 60, height: 60, background: G2, border: `.5px solid ${activeThumb === i ? S : G3}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .2s" }}>
@@ -76,40 +57,32 @@ export default function VigoProduct() {
               </div>
             </div>
 
-            {/* Info section */}
             <div style={{ display: "flex", flexDirection: "column" }}>
-              {/* Breadcrumb */}
               <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 16 }}>SS25 — Chrome Series</div>
-              
-              {/* Title & Price */}
               <div style={{ marginBottom: 24 }}>
                 <h1 style={{ fontSize: "clamp(32px,5vw,48px)", fontWeight: 900, letterSpacing: -1, lineHeight: 1.1, marginBottom: 8 }}>Chrome V Tee</h1>
                 <div style={{ fontSize: 10, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Tops / Essential</div>
               </div>
 
-              {/* Rating */}
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24, paddingBottom: 24, borderBottom: `.5px solid ${G3}` }}>
                 <span style={{ fontSize: 12, color: S }}>★★★★★</span>
                 <span style={{ fontSize: 9, color: SD }}>4.9 (128 reviews)</span>
               </div>
 
-              {/* Price + Actions row */}
               <div style={{ display: "flex", alignItems: "flex-start", gap: 24, marginBottom: 24 }}>
                 <div>
                   <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>Price</div>
                   <div style={{ fontSize: 36, fontWeight: 900, color: S }}>$68</div>
                 </div>
-                <button onClick={() => toggleWishlist(1)} style={{ background: wishlisted ? `rgba(${parseInt(S.slice(1, 3), 16)},${parseInt(S.slice(3, 5), 16)},${parseInt(S.slice(5, 7), 16)},.1)` : "transparent", border: `.5px solid ${wishlisted ? S : G3}`, color: wishlisted ? S : SD, width: 44, height: 44, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontFamily: "inherit", transition: "all .2s", marginTop: 12 }}>
+                <button onClick={() => toggleWishlist(1)} style={{ background: wishlisted ? `rgba(192,192,192,.1)` : "transparent", border: `.5px solid ${wishlisted ? S : G3}`, color: wishlisted ? S : SD, width: 44, height: 44, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontFamily: "inherit", transition: "all .2s", marginTop: 12 }}>
                   {wishlisted ? "♥" : "♡"}
                 </button>
               </div>
 
-              {/* Description */}
               <p style={{ fontSize: 12, color: SD, lineHeight: 1.8, marginBottom: 28 }}>Heavyweight 350gsm cotton. Oversized silhouette. Embossed chrome V logo. Built for the borough.</p>
 
-              {/* Color selector */}
               <div style={{ marginBottom: 28 }}>
-                <label style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", display: "block", marginBottom: 10 }}>Color: <span style={{ color: "#fff" }}>{selectedColor}</span></label>
+                <label style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", display: "block", marginBottom: 10 }}>Color: <span style={{ color: "var(--vt-text)" }}>{selectedColor}</span></label>
                 <div style={{ display: "flex", gap: 10 }}>
                   {COLORS.map((c) =>
                   <button key={c.name} onClick={() => setSelectedColor(c.name)} title={c.name} style={{ width: 32, height: 32, background: c.hex, border: selectedColor === c.name ? `2px solid ${S}` : `.5px solid ${G3}`, cursor: "pointer", borderRadius: "50%", transition: "all .2s" }} />
@@ -117,7 +90,6 @@ export default function VigoProduct() {
                 </div>
               </div>
 
-              {/* Size selector */}
               <div style={{ marginBottom: 28 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
                   <label style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Size {!selectedSize && <span style={{ color: "#e03" }}>*</span>}</label>
@@ -132,7 +104,6 @@ export default function VigoProduct() {
                 </div>
               </div>
 
-              {/* Quantity + Add button */}
               <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
                 <div style={{ display: "flex", alignItems: "center", border: `.5px solid ${G3}` }}>
                   <button onClick={() => setQty((q) => Math.max(1, q - 1))} style={{ width: 40, height: 48, background: "none", border: "none", color: SD, fontSize: 18, cursor: "pointer", fontFamily: "inherit" }}>−</button>
@@ -144,12 +115,11 @@ export default function VigoProduct() {
                 </button>
               </div>
 
-              {/* Trust badges */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, paddingTop: 16, borderTop: `.5px solid ${G3}` }}>
                 {[{ icon: Package, title: "Free Shipping", sub: "over $150" }, { icon: RotateCcw, title: "Easy Returns", sub: "30 days" }, { icon: Zap, title: "NYC Made", sub: "Limited run" }].map(({ icon: Icon, title, sub }) =>
                 <div key={title} style={{ textAlign: "center" }}>
                     <Icon size={18} style={{ marginBottom: 8, color: S, margin: "0 auto" }} />
-                    <div style={{ fontSize: 8, fontWeight: 700, color: "#fff", letterSpacing: 1 }}>{title}</div>
+                    <div style={{ fontSize: 8, fontWeight: 700, color: "var(--vt-text)", letterSpacing: 1 }}>{title}</div>
                     <div style={{ fontSize: 7, color: SD, marginTop: 2 }}>{sub}</div>
                   </div>
                 )}
@@ -157,12 +127,11 @@ export default function VigoProduct() {
             </div>
           </div>
 
-          {/* Details Accordion */}
           <div style={{ background: G2, border: `.5px solid ${G3}`, padding: "clamp(16px,3vw,24px)" }}>
             <Accordion type="single" collapsible className="w-full">
               {accordionData.map((item, idx) =>
               <AccordionItem key={idx} value={`item-${idx}`}>
-                  <AccordionTrigger style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "#fff", fontWeight: 700 }}>{item.title}</AccordionTrigger>
+                  <AccordionTrigger style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "var(--vt-text)", fontWeight: 700 }}>{item.title}</AccordionTrigger>
                   <AccordionContent style={{ fontSize: 11, color: SD, lineHeight: 1.8 }}>{item.content}</AccordionContent>
                 </AccordionItem>
               )}
@@ -171,7 +140,6 @@ export default function VigoProduct() {
         </div>
       </div>
 
-      {/* You May Also Like */}
       <SectionDivider label="You May Also Like" />
       <div style={{ padding: "clamp(24px,4vw,32px)", maxWidth: 1200, margin: "0 auto" }}>
         <div className="related-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
@@ -185,8 +153,7 @@ export default function VigoProduct() {
         </div>
       </div>
 
-      {/* Mobile sticky CTA */}
-      <div className="mobile-cta" style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "rgba(10,10,10,.98)", borderTop: `.5px solid ${G3}`, padding: "12px clamp(12px,4vw,24px) env(safe-area-inset-bottom, 12px)", display: "none", gap: 8, zIndex: 150, backdropFilter: "blur(12px)" }}>
+      <div className="mobile-cta" style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "var(--vt-nav-scrolled)", borderTop: `.5px solid ${G3}`, padding: "12px clamp(12px,4vw,24px) env(safe-area-inset-bottom, 12px)", display: "none", gap: 8, zIndex: 150, backdropFilter: "blur(12px)" }}>
         {!selectedSize && <div style={{ fontSize: 9, color: "#e03", textAlign: "center", letterSpacing: 1 }}>SELECT A SIZE</div>}
         <button onClick={handleAdd} style={{ width: "100%", background: added ? "#0c6" : S, color: "#000", border: "none", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", padding: "12px", fontFamily: "inherit", transition: "background .3s" }}>
           {added ? "✓ Added" : `Add to Bag · $68`}

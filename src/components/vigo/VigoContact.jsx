@@ -2,9 +2,9 @@ import { useState } from "react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 
 const S = "#C0C0C0";
-const G1 = "#0a0a0a";
-const G3 = "#1a1a1a";
-const SD = "#777";
+const G1 = "var(--vt-bg)";
+const G3 = "var(--vt-border)";
+const SD = "var(--vt-sub)";
 
 const TOPICS = ["General Inquiry", "Order Issue", "Return / Exchange", "Collaboration", "Press", "Other"];
 
@@ -15,15 +15,15 @@ function TopicPicker({ value, onChange }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        style={{ width: "100%", background: "#0a0a0a", border: `.5px solid ${value ? "#C0C0C0" : "#1a1a1a"}`, color: value ? "#fff" : "#777", padding: "13px 16px", fontSize: 12, outline: "none", fontFamily: "inherit", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", boxSizing: "border-box", textAlign: "left" }}
+        style={{ width: "100%", background: G1, border: `.5px solid ${value ? S : G3}`, color: value ? "var(--vt-text)" : SD, padding: "13px 16px", fontSize: 12, outline: "none", fontFamily: "inherit", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", boxSizing: "border-box", textAlign: "left" }}
       >
         <span>{value || "Select a topic"}</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent style={{ background: "#111", border: "none", borderTop: "2px solid #C0C0C0" }}>
+        <DrawerContent style={{ background: "var(--vt-card)", border: "none", borderTop: `2px solid ${S}` }}>
           <DrawerHeader>
-            <DrawerTitle style={{ color: "#fff", fontSize: 11, letterSpacing: 3, textTransform: "uppercase", textAlign: "left" }}>Select Topic</DrawerTitle>
+            <DrawerTitle style={{ color: "var(--vt-text)", fontSize: 11, letterSpacing: 3, textTransform: "uppercase", textAlign: "left" }}>Select Topic</DrawerTitle>
           </DrawerHeader>
           <div style={{ padding: "0 0 env(safe-area-inset-bottom,16px)" }}>
             {TOPICS.map(t => (
@@ -31,7 +31,7 @@ function TopicPicker({ value, onChange }) {
                 key={t}
                 type="button"
                 onClick={() => { onChange(t); setOpen(false); }}
-                style={{ width: "100%", background: value === t ? "rgba(192,192,192,.08)" : "none", border: "none", borderBottom: ".5px solid #1a1a1a", color: value === t ? "#C0C0C0" : "#ccc", padding: "18px 24px", fontSize: 13, textAlign: "left", cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                style={{ width: "100%", background: value === t ? "rgba(192,192,192,.08)" : "none", border: "none", borderBottom: `.5px solid ${G3}`, color: value === t ? S : "var(--vt-text)", padding: "18px 24px", fontSize: 13, textAlign: "left", cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}
               >
                 {t}
                 {value === t && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C0C0C0" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
@@ -59,7 +59,6 @@ export default function VigoContact() {
       <h1 style={{ fontSize: 48, fontWeight: 900, letterSpacing: -2, marginBottom: 52 }}>Contact Us</h1>
 
       <div className="vigo-2col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64 }}>
-        {/* Info panel */}
         <div>
           <div style={{ background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "36px 32px", marginBottom: 20 }}>
             <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 20 }}>Reach Us</div>
@@ -68,14 +67,14 @@ export default function VigoContact() {
                 <span style={{ fontSize: 18 }}>{ic}</span>
                 <div>
                   <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>{l}</div>
-                  <div style={{ fontSize: 12, color: "#fff" }}>{v}</div>
+                  <div style={{ fontSize: 12, color: "var(--vt-text)" }}>{v}</div>
                 </div>
               </div>
             ))}
           </div>
           <div style={{ background: G1, border: `.5px solid ${G3}`, padding: "24px 28px" }}>
             <div style={{ fontSize: 9, letterSpacing: 3, color: SD, textTransform: "uppercase", marginBottom: 12 }}>Hours</div>
-            <div style={{ fontSize: 12, color: "#ccc", lineHeight: 1.9 }}>
+            <div style={{ fontSize: 12, color: SD, lineHeight: 1.9 }}>
               Mon – Fri: 10am – 7pm EST<br />
               Sat: 11am – 5pm EST<br />
               Sun: Closed
@@ -83,7 +82,6 @@ export default function VigoContact() {
           </div>
         </div>
 
-        {/* Form */}
         {submitted ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 16, background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid #0c6`, padding: 48, textAlign: "center" }}>
             <div style={{ fontSize: 32 }}>✓</div>
@@ -103,7 +101,7 @@ export default function VigoContact() {
             </div>
             <div>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Message *</div>
-              <textarea required rows={5} placeholder="Tell us what's going on..." style={{ width: "100%", background: "#0a0a0a", border: `.5px solid #1a1a1a`, color: "#fff", padding: "12px 16px", fontSize: 12, outline: "none", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }} />
+              <textarea required rows={5} placeholder="Tell us what's going on..." style={{ width: "100%", background: G1, border: `.5px solid ${G3}`, color: "var(--vt-text)", padding: "12px 16px", fontSize: 12, outline: "none", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }} />
             </div>
             <button type="submit" style={{ background: S, color: "#000", border: "none", padding: "16px", fontSize: 10, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
               Send Message
@@ -119,8 +117,8 @@ export default function VigoContact() {
 function Field({ label, type = "text", required }) {
   return (
     <div>
-      <div style={{ fontSize: 12, letterSpacing: 2, color: "#777", textTransform: "uppercase", marginBottom: 8 }}>{label}{required && " *"}</div>
-      <input type={type} required={required} style={{ width: "100%", background: "#0a0a0a", border: ".5px solid #1a1a1a", color: "#fff", padding: "12px 16px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
+      <div style={{ fontSize: 12, letterSpacing: 2, color: "var(--vt-sub)", textTransform: "uppercase", marginBottom: 8 }}>{label}{required && " *"}</div>
+      <input type={type} required={required} style={{ width: "100%", background: "var(--vt-bg)", border: ".5px solid var(--vt-border)", color: "var(--vt-text)", padding: "12px 16px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
     </div>
   );
 }

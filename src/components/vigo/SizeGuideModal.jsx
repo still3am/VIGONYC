@@ -1,7 +1,7 @@
 const S = "#C0C0C0";
-const G1 = "#0a0a0a";
-const G3 = "#1a1a1a";
-const SD = "#777";
+const G1 = "var(--vt-bg)";
+const G3 = "var(--vt-border)";
+const SD = "var(--vt-sub)";
 
 const sizes = [
   { size: "XS", chest: "32–34", waist: "26–28", hip: "34–36", length: "26" },
@@ -21,7 +21,7 @@ export default function SizeGuideModal({ open, onClose }) {
         <div style={{ padding: "24px 28px", borderBottom: `.5px solid ${G3}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
             <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 4 }}>✦ Fit Guide</div>
-            <div style={{ fontSize: 20, fontWeight: 900, letterSpacing: -1 }}>Size Guide</div>
+            <div style={{ fontSize: 20, fontWeight: 900, letterSpacing: -1, color: "var(--vt-text)" }}>Size Guide</div>
           </div>
           <button onClick={onClose} style={{ background: "none", border: "none", color: SD, fontSize: 20, cursor: "pointer", lineHeight: 1 }}>✕</button>
         </div>
@@ -37,17 +37,17 @@ export default function SizeGuideModal({ open, onClose }) {
             </thead>
             <tbody>
               {sizes.map((row, i) => (
-                <tr key={row.size} style={{ borderBottom: `.5px solid ${G3}`, background: i % 2 === 0 ? "rgba(255,255,255,.02)" : "transparent" }}>
+                <tr key={row.size} style={{ borderBottom: `.5px solid ${G3}`, background: i % 2 === 0 ? "rgba(128,128,128,.04)" : "transparent" }}>
                   <td style={{ padding: "12px", fontWeight: 900, color: S, fontSize: 12 }}>{row.size}</td>
-                  <td style={{ padding: "12px", fontSize: 12, color: "#ccc" }}>{row.chest}"</td>
-                  <td style={{ padding: "12px", fontSize: 12, color: "#ccc" }}>{row.waist}"</td>
-                  <td style={{ padding: "12px", fontSize: 12, color: "#ccc" }}>{row.hip}"</td>
-                  <td style={{ padding: "12px", fontSize: 12, color: "#ccc" }}>{row.length}"</td>
+                  <td style={{ padding: "12px", fontSize: 12, color: "var(--vt-sub)" }}>{row.chest}"</td>
+                  <td style={{ padding: "12px", fontSize: 12, color: "var(--vt-sub)" }}>{row.waist}"</td>
+                  <td style={{ padding: "12px", fontSize: 12, color: "var(--vt-sub)" }}>{row.hip}"</td>
+                  <td style={{ padding: "12px", fontSize: 12, color: "var(--vt-sub)" }}>{row.length}"</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <div style={{ marginTop: 20, padding: "14px 16px", background: "rgba(192,192,192,.05)", border: `.5px solid ${G3}` }}>
+          <div style={{ marginTop: 20, padding: "14px 16px", background: "rgba(128,128,128,.06)", border: `.5px solid ${G3}` }}>
             <p style={{ fontSize: 10, color: SD, lineHeight: 1.7 }}>📏 How to measure: Chest — measure around the fullest part. Waist — measure around your natural waist. Hip — measure around the fullest part of your hips.</p>
           </div>
         </div>

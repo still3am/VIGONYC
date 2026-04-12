@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const S = "#C0C0C0";
-const G3 = "#1a1a1a";
+const G3 = "var(--vt-border)";
 
 const TAG_STYLES = {
   new: { background: "#E8E8E8", color: "#000" },
@@ -29,7 +29,7 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
       onMouseLeave={() => setHovered(false)}
       style={{
         cursor: "pointer",
-        background: "#0a0a0a",
+        background: "var(--vt-bg)",
         border: `.5px solid ${hovered ? S : G3}`,
         transition: "border-color .2s, transform .2s",
         transform: hovered ? "translateY(-2px)" : "none",
@@ -39,11 +39,9 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
         flexDirection: "column",
       }}
     >
-      {/* Shine */}
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,rgba(255,255,255,.03) 0%,transparent 50%)", opacity: hovered ? 1 : 0, transition: "opacity .3s", pointerEvents: "none", zIndex: 1 }} />
 
-      {/* Image */}
-      <div style={{ position: "relative", paddingBottom: "115%", background: "#111", overflow: "hidden" }}>
+      <div style={{ position: "relative", paddingBottom: "115%", background: "var(--vt-card)", overflow: "hidden" }}>
         <img
           src={img}
           alt={product.name}
@@ -55,7 +53,6 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
           }}
         />
 
-        {/* Tags */}
         <div style={{ position: "absolute", top: 10, left: 10, display: "flex", gap: 4, zIndex: 2 }}>
           {product.tag && (
             <span style={{ padding: "3px 8px", fontSize: 8, fontWeight: 900, letterSpacing: 2, textTransform: "uppercase", ...TAG_STYLES[product.tag] }}>
@@ -69,12 +66,11 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
           )}
         </div>
 
-        {/* Wishlist button — always visible on mobile */}
         <button
           onClick={e => { e.stopPropagation(); onWishlist?.(); }}
           style={{
             position: "absolute", top: 10, right: 10,
-            background: wishlisted ? "rgba(192,192,192,.15)" : "rgba(0,0,0,.65)",
+            background: wishlisted ? "rgba(192,192,192,.15)" : "rgba(0,0,0,.45)",
             border: `.5px solid ${wishlisted ? S : G3}`,
             width: 36, height: 36, borderRadius: "50%",
             display: "flex", alignItems: "center", justifyContent: "center",
@@ -88,21 +84,19 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
         </button>
       </div>
 
-      {/* Info */}
       <div style={{ padding: "14px 14px 0", flex: 1 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", lineHeight: 1.3 }}>{product.name}</div>
-        <div style={{ fontSize: 8, letterSpacing: 2, color: "#555", textTransform: "uppercase", marginTop: 4 }}>{product.cat}</div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: "var(--vt-text)", lineHeight: 1.3 }}>{product.name}</div>
+        <div style={{ fontSize: 8, letterSpacing: 2, color: "var(--vt-sub)", textTransform: "uppercase", marginTop: 4 }}>{product.cat}</div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
           <span style={{ fontSize: 16, fontWeight: 900, color: S }}>${product.price}</span>
           {product.sizes && product.sizes.length > 0 && (
-            <span style={{ fontSize: 8, color: "#444", letterSpacing: 1 }}>
+            <span style={{ fontSize: 8, color: "var(--vt-sub)", letterSpacing: 1 }}>
               {product.sizes.slice(0, 3).join(" · ")}{product.sizes.length > 3 ? " +" : ""}
             </span>
           )}
         </div>
       </div>
 
-      {/* Add to Bag — always visible at bottom */}
       <div style={{ padding: "12px 14px 14px" }}>
         <button
           onClick={handleAdd}

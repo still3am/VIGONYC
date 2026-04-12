@@ -1,19 +1,14 @@
 import { useState, useMemo, useCallback } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useOutletContext } from "react-router-dom";
 import PullToRefresh from "./PullToRefresh";
-import { useOutletContext } from "react-router-dom";
 import ProductCard from "./ProductCard";
 
 const S = "#C0C0C0";
-const G1 = "#0a0a0a";
-const G3 = "#1a1a1a";
-const SD = "#777";
+const G1 = "var(--vt-bg)";
+const G3 = "var(--vt-border)";
+const SD = "var(--vt-sub)";
 
-// TODO: Replace with Base44 entity queries
-// const ALL_PRODUCTS = await base44.entities.Product.list();
 const ALL_PRODUCTS = [];
-
-// TODO: Configure these from Base44 or app settings
 const CATEGORIES = [];
 const SIZES = ["XS","S","M","L","XL","XXL","One Size"];
 const COLORS = ["Black","White","Silver","Graphite"];
@@ -23,7 +18,7 @@ function FilterSection({ title, children }) {
   const [open, setOpen] = useState(true);
   return (
     <div style={{ borderBottom: `.5px solid ${G3}`, paddingBottom: 16, marginBottom: 16 }}>
-      <button onClick={() => setOpen(!open)} style={{ background: "none", border: "none", cursor: "pointer", width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 0 12px", color: "#fff", fontFamily: "inherit" }}>
+      <button onClick={() => setOpen(!open)} style={{ background: "none", border: "none", cursor: "pointer", width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 0 12px", color: "var(--vt-text)", fontFamily: "inherit" }}>
         <span style={{ fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: SD }}>{title}</span>
         <span style={{ color: SD, fontSize: 14 }}>{open ? "−" : "+"}</span>
       </button>
@@ -35,15 +30,15 @@ function FilterSection({ title, children }) {
 function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr }) {
   return (
     <div>
-      <div style={{ fontSize: 10, letterSpacing: 3, textTransform: "uppercase", color: "#fff", fontWeight: 700, marginBottom: 24, paddingBottom: 16, borderBottom: `.5px solid ${G3}` }}>Filters</div>
+      <div style={{ fontSize: 10, letterSpacing: 3, textTransform: "uppercase", color: "var(--vt-text)", fontWeight: 700, marginBottom: 24, paddingBottom: 16, borderBottom: `.5px solid ${G3}` }}>Filters</div>
       <FilterSection title="Category">
         {CATEGORIES.map(c => (
-          <button key={c} onClick={() => setActiveCat(c)} style={{ display: "block", background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "6px 0", fontSize: 11, color: activeCat === c ? "#fff" : SD, fontWeight: activeCat === c ? 700 : 400, fontFamily: "inherit", width: "100%" }}>{c}</button>
+          <button key={c} onClick={() => setActiveCat(c)} style={{ display: "block", background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "6px 0", fontSize: 11, color: activeCat === c ? "var(--vt-text)" : SD, fontWeight: activeCat === c ? 700 : 400, fontFamily: "inherit", width: "100%" }}>{c}</button>
         ))}
       </FilterSection>
       <FilterSection title="Collection">
         {COLLECTIONS.map(c => (
-          <button key={c} onClick={() => setActiveCollection(c)} style={{ display: "block", background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "6px 0", fontSize: 11, color: activeCollection === c ? "#fff" : SD, fontWeight: activeCollection === c ? 700 : 400, fontFamily: "inherit", width: "100%" }}>{c}</button>
+          <button key={c} onClick={() => setActiveCollection(c)} style={{ display: "block", background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "6px 0", fontSize: 11, color: activeCollection === c ? "var(--vt-text)" : SD, fontWeight: activeCollection === c ? 700 : 400, fontFamily: "inherit", width: "100%" }}>{c}</button>
         ))}
       </FilterSection>
       <FilterSection title="Size">
@@ -118,14 +113,12 @@ export default function VigoShop() {
   return (
     <PullToRefresh onRefresh={handleRefresh}>
     <div style={{ padding: "32px 20px", maxWidth: 1400, margin: "0 auto" }}>
-
-      {/* Mobile filter drawer overlay */}
       {drawerOpen && (
         <div style={{ position: "fixed", inset: 0, zIndex: 300, display: "flex" }}>
           <div onClick={() => setDrawerOpen(false)} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.7)" }} />
-          <div style={{ position: "relative", width: 300, maxWidth: "85vw", background: "#050505", borderRight: `.5px solid ${G3}`, padding: "24px 20px", overflowY: "auto", zIndex: 1 }}>
+          <div style={{ position: "relative", width: 300, maxWidth: "85vw", background: "var(--vt-bg)", borderRight: `.5px solid ${G3}`, padding: "24px 20px", overflowY: "auto", zIndex: 1 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-              <span style={{ fontSize: 13, fontWeight: 900, letterSpacing: 2 }}>FILTERS</span>
+              <span style={{ fontSize: 13, fontWeight: 900, letterSpacing: 2, color: "var(--vt-text)" }}>FILTERS</span>
               <button onClick={() => setDrawerOpen(false)} style={{ background: "none", border: "none", color: SD, fontSize: 20, cursor: "pointer" }}>✕</button>
             </div>
             <FilterPanel {...filterProps} />
@@ -136,19 +129,16 @@ export default function VigoShop() {
         </div>
       )}
 
-      {/* Header */}
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ SS25 Season</div>
         <h1 style={{ fontSize: "clamp(32px,5vw,52px)", fontWeight: 900, letterSpacing: -2, marginBottom: 20 }}>Shop All</h1>
 
-        {/* Mobile: Category scroll tabs */}
         <div className="vigo-cat-tabs" style={{ display: "none", overflowX: "auto", gap: 6, paddingBottom: 4, marginBottom: 16 }}>
           {CATEGORIES.map(c => (
             <button key={c} onClick={() => setActiveCat(c)} style={{ flexShrink: 0, padding: "8px 16px", background: activeCat === c ? S : "none", color: activeCat === c ? "#000" : SD, border: `.5px solid ${activeCat === c ? S : G3}`, fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: activeCat === c ? 900 : 400, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>{c}</button>
           ))}
         </div>
 
-        {/* Toolbar */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
           <span style={{ fontSize: 10, color: SD }}>{filtered.length} products</span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -166,12 +156,10 @@ export default function VigoShop() {
       </div>
 
       <div style={{ display: "flex", gap: 40 }}>
-        {/* Desktop Sidebar */}
         <div className="vigo-shop-sidebar" style={{ width: 220, flexShrink: 0 }}>
           <FilterPanel {...filterProps} />
         </div>
 
-        {/* Product Grid */}
         <div style={{ flex: 1 }}>
           {filtered.length === 0 ? (
             <div style={{ textAlign: "center", padding: "60px 20px" }}>

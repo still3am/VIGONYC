@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
 const S = "#C0C0C0";
-const G1 = "#0a0a0a";
-const G3 = "#1a1a1a";
-const SD = "#777";
+const G1 = "var(--vt-bg)";
+const G3 = "var(--vt-border)";
+const SD = "var(--vt-sub)";
 
 export default function VigoCheckout() {
   const { cartItems, subtotal, productImg } = useOutletContext();
@@ -30,18 +30,16 @@ export default function VigoCheckout() {
       <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 12 }}>✦ Secure Checkout</div>
       <h1 style={{ fontSize: 40, fontWeight: 900, letterSpacing: -2, marginBottom: 36 }}>Checkout</h1>
 
-      {/* Steps */}
       <div style={{ display: "flex", gap: 0, marginBottom: 40, borderBottom: `.5px solid ${G3}`, paddingBottom: 24 }}>
         {[["1","Contact & Shipping"],["2","Shipping Method"],["3","Payment"]].map(([n,l]) => (
           <div key={n} style={{ display: "flex", alignItems: "center", gap: 10, marginRight: 32, flexWrap: "wrap" }}>
             <div style={{ width: 26, height: 26, borderRadius: "50%", background: parseInt(n) <= step ? S : G1, border: `.5px solid ${parseInt(n) <= step ? S : G3}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 900, color: parseInt(n) <= step ? "#000" : SD, flexShrink: 0 }}>{n}</div>
-            <span style={{ fontSize: 9, letterSpacing: 2, textTransform: "uppercase", color: parseInt(n) <= step ? "#fff" : SD }}>{l}</span>
+            <span style={{ fontSize: 9, letterSpacing: 2, textTransform: "uppercase", color: parseInt(n) <= step ? "var(--vt-text)" : SD }}>{l}</span>
           </div>
         ))}
       </div>
 
       <div className="vigo-checkout-grid" style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 48 }}>
-        {/* Left: form */}
         <div>
           {step === 1 && (
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -69,7 +67,7 @@ export default function VigoCheckout() {
                     <div style={{ fontSize: 12, fontWeight: 700 }}>{n}</div>
                     <div style={{ fontSize: 10, color: SD }}>{d}</div>
                   </div>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: p === "Free" ? "#0c6" : "#fff" }}>{p} <span style={{ fontSize: 9, color: SD }}>{note}</span></span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: p === "Free" ? "#0c6" : "var(--vt-text)" }}>{p} <span style={{ fontSize: 9, color: SD }}>{note}</span></span>
                 </label>
               ))}
               <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
@@ -80,7 +78,6 @@ export default function VigoCheckout() {
           )}
           {step === 3 && (
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              {/* Payment methods */}
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 {[["card","💳 Card"],["applepay","🍎 Apple Pay"],["klarna","🟡 Klarna"]].map(([v,l]) => (
                   <button key={v} onClick={() => setPayMethod(v)} style={{ padding: "10px 20px", background: payMethod === v ? S : G1, color: payMethod === v ? "#000" : SD, border: `.5px solid ${payMethod === v ? S : G3}`, fontSize: 10, cursor: "pointer", fontWeight: payMethod === v ? 900 : 400, fontFamily: "inherit", letterSpacing: 1 }}>{l}</button>
@@ -105,7 +102,7 @@ export default function VigoCheckout() {
               {payMethod === "klarna" && (
                 <div style={{ background: G1, border: `.5px solid ${G3}`, padding: 24, textAlign: "center" }}>
                   <div style={{ fontSize: 24, marginBottom: 8 }}>🟡 Klarna</div>
-                  <div style={{ fontSize: 12, color: SD }}>Pay in 4 installments of <strong style={{ color: "#fff" }}>${Math.round(total / 4)}</strong>. No interest.</div>
+                  <div style={{ fontSize: 12, color: SD }}>Pay in 4 installments of <strong style={{ color: "var(--vt-text)" }}>${Math.round(total / 4)}</strong>. No interest.</div>
                 </div>
               )}
               <div style={{ display: "flex", gap: 12 }}>
@@ -116,18 +113,17 @@ export default function VigoCheckout() {
           )}
         </div>
 
-        {/* Right: summary */}
         <div>
           <div style={{ background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "24px" }}>
             <div style={{ fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: SD, marginBottom: 20 }}>Order Summary</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 20 }}>
               {cartItems.map(item => (
                 <div key={item.id} style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                  <div style={{ width: 52, height: 52, background: "#111", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ width: 52, height: 52, background: "var(--vt-card)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <img src={productImg} alt="" style={{ width: 44, objectFit: "contain", opacity: .8 }} />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 11, color: "#fff" }}>{item.name}</div>
+                    <div style={{ fontSize: 11, color: "var(--vt-text)" }}>{item.name}</div>
                     <div style={{ fontSize: 9, color: SD }}>{item.meta} · Qty: {item.qty}</div>
                   </div>
                   <span style={{ fontSize: 12, fontWeight: 700 }}>${item.price * item.qty}</span>
@@ -135,21 +131,19 @@ export default function VigoCheckout() {
               ))}
             </div>
 
-            {/* Promo */}
             <div style={{ display: "flex", gap: 0, marginBottom: 20 }}>
-              <input value={promoCode} onChange={e => { setPromoCode(e.target.value); setPromoError(false); }} placeholder="Promo code" style={{ flex: 1, background: "#111", border: `.5px solid ${G3}`, borderRight: "none", color: "#fff", padding: "10px 14px", fontSize: 11, outline: "none", fontFamily: "inherit" }} />
+              <input value={promoCode} onChange={e => { setPromoCode(e.target.value); setPromoError(false); }} placeholder="Promo code" style={{ flex: 1, background: "var(--vt-card)", border: `.5px solid ${G3}`, borderRight: "none", color: "var(--vt-text)", padding: "10px 14px", fontSize: 11, outline: "none", fontFamily: "inherit" }} />
               <button onClick={applyPromo} style={{ background: promoApplied ? "#0c6" : S, color: "#000", border: "none", padding: "10px 16px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
                 {promoApplied ? "✓ Applied" : "Apply"}
               </button>
             </div>
             {promoError && <div style={{ fontSize: 10, color: "#e03", marginBottom: 12 }}>Invalid promo code. Try VIGONYC10.</div>}
 
-            {/* Totals */}
             <div style={{ borderTop: `.5px solid ${G3}`, paddingTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
               {[["Subtotal", `$${subtotal}`],["Shipping", shipping === 0 ? "Free 🎉" : `$${shipping}`],["NYC Tax (8.875%)", `$${tax}`],promoApplied ? ["Promo (VIGONYC10)", `-$${discount}`] : null].filter(Boolean).map(([l,v]) => (
                 <div key={l} style={{ display: "flex", justifyContent: "space-between" }}>
                   <span style={{ fontSize: 10, color: SD }}>{l}</span>
-                  <span style={{ fontSize: 11, color: l.startsWith("Promo") ? "#0c6" : l === "Shipping" && shipping === 0 ? "#0c6" : "#fff" }}>{v}</span>
+                  <span style={{ fontSize: 11, color: l.startsWith("Promo") ? "#0c6" : l === "Shipping" && shipping === 0 ? "#0c6" : "var(--vt-text)" }}>{v}</span>
                 </div>
               ))}
               <div style={{ display: "flex", justifyContent: "space-between", borderTop: `.5px solid ${G3}`, paddingTop: 12, marginTop: 4 }}>
@@ -170,11 +164,11 @@ export default function VigoCheckout() {
 function Field({ label, type = "text", placeholder }) {
   return (
     <div>
-      <div style={{ fontSize: 9, letterSpacing: 2, color: "#777", textTransform: "uppercase", marginBottom: 8 }}>{label}</div>
-      <input type={type} placeholder={placeholder} style={{ width: "100%", background: "#0a0a0a", border: ".5px solid #1a1a1a", color: "#fff", padding: "12px 16px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
+      <div style={{ fontSize: 9, letterSpacing: 2, color: "var(--vt-sub)", textTransform: "uppercase", marginBottom: 8 }}>{label}</div>
+      <input type={type} placeholder={placeholder} style={{ width: "100%", background: "var(--vt-card)", border: ".5px solid var(--vt-border)", color: "var(--vt-text)", padding: "12px 16px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
     </div>
   );
 }
 
 const btnP = { background: "#C0C0C0", color: "#000", border: "none", padding: "15px 28px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" };
-const btnGhost = { background: "none", border: ".5px solid #1a1a1a", color: "#777", padding: "15px 20px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" };
+const btnGhost = { background: "none", border: ".5px solid var(--vt-border)", color: "var(--vt-sub)", padding: "15px 20px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" };

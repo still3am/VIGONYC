@@ -64,7 +64,7 @@ export default function VIGONYCFlagship() {
   const ctx = { cartItems, addToCart, updateQty, removeFromCart, subtotal, wishlist, toggleWishlist, setSizeGuideOpen, logo: LOGO, productImg: PRODUCT_IMG };
 
   return (
-    <div style={{ background: "#000", minHeight: "100vh", fontFamily: "'Helvetica Neue',Arial,sans-serif", color: "#fff", overflowX: "hidden" }}>
+    <div style={{ background: "var(--vt-bg)", minHeight: "100vh", fontFamily: "'Helvetica Neue',Arial,sans-serif", color: "var(--vt-text)", overflowX: "hidden" }}>
       <SizeGuideModal open={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} />
       <VigoCartDrawer open={cartOpen} onClose={() => setCartOpen(false)} items={cartItems} subtotal={subtotal} updateQty={updateQty} removeFromCart={removeFromCart} onCheckout={() => { navigate("/checkout"); setCartOpen(false); }} productImg={PRODUCT_IMG} />
       <VigoNav cartCount={cartCount} onCartOpen={() => setCartOpen(true)} logo={LOGO} />

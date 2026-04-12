@@ -2,12 +2,10 @@ import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
 const S = "#C0C0C0";
-const G1 = "#0a0a0a";
-const G3 = "#1a1a1a";
-const SD = "#777";
+const G1 = "var(--vt-bg)";
+const G3 = "var(--vt-border)";
+const SD = "var(--vt-sub)";
 
-// TODO: Replace with Base44 entity queries
-// const shots = await base44.entities.LookbookItem.list();
 const shots = [];
 
 export default function VigoLookbook() {
@@ -17,16 +15,13 @@ export default function VigoLookbook() {
 
   return (
     <div>
-      {/* Header */}
       <div style={{ padding: "64px 32px 48px", borderBottom: `.5px solid ${G3}` }}>
         <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 10 }}>✦ SS25 — Visual Archive</div>
         <h1 style={{ fontSize: 52, fontWeight: 900, letterSpacing: -2, marginBottom: 16 }}>Lookbook</h1>
         <p style={{ fontSize: 13, color: SD, maxWidth: 480, lineHeight: 1.8 }}>Streets of New York City. Shot across all five boroughs. The SS25 Chrome Series — in its element.</p>
       </div>
 
-      {/* Editorial grid */}
       <div style={{ padding: "32px 32px 0" }}>
-        {/* Hero editorial shot */}
         <div style={{ position: "relative", background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, marginBottom: 2, overflow: "hidden", cursor: "pointer" }}
           onClick={() => navigate("/product/1")}
           onMouseEnter={() => setHovered("hero")}
@@ -36,7 +31,6 @@ export default function VigoLookbook() {
             <div style={{ position: "absolute", bottom: 0, right: 0, width: 40, height: 40, borderBottom: `2px solid ${S}`, borderRight: `2px solid ${S}` }} />
             <img src={productImg} alt="SS25 Hero" style={{ height: 340, objectFit: "contain", filter: "drop-shadow(0 0 80px rgba(192,192,192,.2))", transform: hovered === "hero" ? "scale(1.03)" : "scale(1)", transition: "transform .6s" }} />
           </div>
-          {/* Hover overlay */}
           <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.6)", opacity: hovered === "hero" ? 1 : 0, transition: "opacity .3s", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <div style={{ textAlign: "center" }}>
               <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>SS25 Chrome Series</div>
@@ -54,7 +48,6 @@ export default function VigoLookbook() {
           </div>
         </div>
 
-        {/* Masonry grid */}
         <div className="vigo-lookbook-cols" style={{ columns: 3, gap: 2 }}>
           {shots.map((s, i) => (
             <div key={i} style={{ breakInside: "avoid", marginBottom: 2, background: G1, border: `.5px solid ${G3}`, position: "relative", overflow: "hidden", cursor: "pointer" }}
@@ -63,7 +56,6 @@ export default function VigoLookbook() {
               onMouseLeave={() => setHovered(null)}>
               <div style={{ paddingBottom: s.tall ? "130%" : "80%", position: "relative" }}>
                 <img src={productImg} alt={s.caption} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", opacity: s.opacity, padding: 24, transform: hovered === i ? "scale(1.05)" : "scale(1)", transition: "transform .5s" }} />
-                {/* Hover reveal */}
                 <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.7)", opacity: hovered === i ? 1 : 0, transition: "opacity .3s", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 8 }}>
                   <div style={{ fontSize: 14, fontWeight: 700 }}>{s.caption}</div>
                   <div style={{ fontSize: 16, fontWeight: 900, color: S }}>{s.price}</div>
@@ -71,7 +63,7 @@ export default function VigoLookbook() {
                 </div>
               </div>
               <div style={{ padding: "14px 18px", borderTop: `.5px solid ${G3}` }}>
-                <div style={{ fontSize: 11, color: "#ccc" }}>{s.caption}</div>
+                <div style={{ fontSize: 11, color: "var(--vt-text)" }}>{s.caption}</div>
                 <div style={{ fontSize: 9, color: SD, marginTop: 3 }}>{s.sub}</div>
               </div>
             </div>

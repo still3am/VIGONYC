@@ -5,10 +5,10 @@ import { useTheme } from "next-themes";
 import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
-const G1 = "#0a0a0a";
-const G2 = "#111";
-const G3 = "#1a1a1a";
-const SD = "#777";
+const G1 = "var(--vt-bg)";
+const G2 = "var(--vt-card)";
+const G3 = "var(--vt-border)";
+const SD = "var(--vt-sub)";
 
 const TABS = [
   { id: "profile", label: "Profile" },
@@ -29,9 +29,9 @@ function Field({ label, type = "text", value, onChange, placeholder, disabled })
         readOnly={!onChange}
         placeholder={placeholder}
         disabled={disabled}
-        style={{ width: "100%", background: disabled ? G1 : G2, border: `.5px solid ${G3}`, color: disabled ? SD : "#fff", padding: "13px 16px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit", transition: "border-color .2s", opacity: disabled ? 0.6 : 1 }}
+        style={{ width: "100%", background: disabled ? G1 : G2, border: `.5px solid ${G3}`, color: disabled ? SD : "var(--vt-text)", padding: "13px 16px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit", transition: "border-color .2s", opacity: disabled ? 0.6 : 1 }}
         onFocus={e => { if (!disabled) e.target.style.borderColor = S; }}
-        onBlur={e => e.target.style.borderColor = G3}
+        onBlur={e => e.target.style.borderColor = "var(--vt-border)"}
       />
     </div>
   );
@@ -41,14 +41,14 @@ function Toggle({ label, sub, checked, onChange }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 0", borderBottom: `.5px solid ${G3}` }}>
       <div style={{ paddingRight: 16 }}>
-        <div style={{ fontSize: 12, color: "#fff", marginBottom: 3 }}>{label}</div>
+        <div style={{ fontSize: 12, color: "var(--vt-text)", marginBottom: 3 }}>{label}</div>
         {sub && <div style={{ fontSize: 10, color: SD, lineHeight: 1.5 }}>{sub}</div>}
       </div>
       <button
         onClick={() => onChange(!checked)}
         style={{ width: 48, height: 26, borderRadius: 13, background: checked ? S : G3, border: "none", cursor: "pointer", position: "relative", transition: "background .2s", flexShrink: 0 }}
       >
-        <div style={{ position: "absolute", top: 3, left: checked ? 25 : 3, width: 20, height: 20, borderRadius: "50%", background: checked ? "#000" : "#555", transition: "left .2s" }} />
+        <div style={{ position: "absolute", top: 3, left: checked ? 25 : 3, width: 20, height: 20, borderRadius: "50%", background: checked ? "#000" : SD, transition: "left .2s" }} />
       </button>
     </div>
   );
@@ -77,7 +77,7 @@ function AddressModal({ address, onSave, onClose }) {
       <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 500, background: "rgba(0,0,0,.7)" }} />
       <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)", zIndex: 600, background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, width: "min(560px,95vw)", maxHeight: "90vh", overflowY: "auto" }}>
         <div style={{ padding: "24px 28px", borderBottom: `.5px solid ${G3}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ fontSize: 12, fontWeight: 900, letterSpacing: 1 }}>{address?.id ? "Edit Address" : "Add New Address"}</div>
+          <div style={{ fontSize: 12, fontWeight: 900, letterSpacing: 1, color: "var(--vt-text)" }}>{address?.id ? "Edit Address" : "Add New Address"}</div>
           <button onClick={onClose} style={{ background: "none", border: "none", color: SD, fontSize: 18, cursor: "pointer" }}>✕</button>
         </div>
         <div style={{ padding: "24px 28px", display: "flex", flexDirection: "column", gap: 14 }}>
@@ -135,7 +135,7 @@ function ThemeSelector({ user }) {
               textTransform: "capitalize",
               border: `.5px solid ${selectedTheme === t ? S : G3}`,
               background: selectedTheme === t ? S : "transparent",
-              color: selectedTheme === t ? "#000" : "#fff",
+              color: selectedTheme === t ? "#000" : "var(--vt-text)",
               cursor: "pointer", fontFamily: "inherit", transition: "all .2s",
             }}
           >{t}</button>
@@ -149,7 +149,7 @@ export default function VigoAccount() {
   const [tab, setTab] = useState("profile");
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [passwords, setPasswords] = useState({ current: "", newPass: "", confirm: "" });
-  const [addressModal, setAddressModal] = useState(null); // null | "new" | address object
+  const [addressModal, setAddressModal] = useState(null);
   const [profileSaved, setProfileSaved] = useState(false);
   const [notifSaved, setNotifSaved] = useState(false);
   const [pwSaved, setPwSaved] = useState(false);
@@ -258,7 +258,6 @@ export default function VigoAccount() {
 
   return (
     <div style={{ minHeight: "80vh" }}>
-      {/* Address Modal */}
       {addressModal && (
         <AddressModal
           address={addressModal === "new" ? null : addressModal}
@@ -268,7 +267,7 @@ export default function VigoAccount() {
       )}
 
       {/* Hero Header */}
-      <div style={{ background: "linear-gradient(180deg,#0d0d0d 0%,#0a0a0a 100%)", borderBottom: `.5px solid ${G3}`, position: "relative", overflow: "hidden" }}>
+      <div style={{ background: "linear-gradient(180deg,var(--vt-card) 0%,var(--vt-bg) 100%)", borderBottom: `.5px solid ${G3}`, position: "relative", overflow: "hidden" }}>
         <div style={{ height: 1, background: `linear-gradient(90deg,transparent,${S},transparent)`, opacity: .4 }} />
         <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(192,192,192,.03) 1px,transparent 1px)", backgroundSize: "24px 24px", pointerEvents: "none" }} />
         <div style={{ maxWidth: 900, margin: "0 auto", padding: "clamp(48px,7vw,64px) clamp(20px,4vw,32px)", position: "relative" }}>
@@ -281,7 +280,7 @@ export default function VigoAccount() {
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
               <div style={{ position: "relative", flexShrink: 0 }}>
                 <div style={{ width: "clamp(64px,10vw,88px)", height: "clamp(64px,10vw,88px)", borderRadius: "50%", background: G2, border: `2px solid ${S}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "clamp(22px,4vw,32px)", fontWeight: 900, color: S }}>{profile.firstName?.charAt(0) || 'U'}</div>
-                <div style={{ position: "absolute", bottom: 2, right: 2, width: 14, height: 14, borderRadius: "50%", background: "#0c6", border: "2px solid #0a0a0a" }} />
+                <div style={{ position: "absolute", bottom: 2, right: 2, width: 14, height: 14, borderRadius: "50%", background: "#0c6", border: "2px solid var(--vt-bg)" }} />
               </div>
               <h1 style={{ fontSize: "clamp(24px,4vw,40px)", fontWeight: 900, letterSpacing: -1.5, lineHeight: 1, marginBottom: 6 }}>{profile.firstName} {profile.lastName}</h1>
               <div style={{ fontSize: 11, color: SD, marginBottom: 10 }}>{profile.email}</div>
@@ -305,7 +304,7 @@ export default function VigoAccount() {
             <button key={t.id} onClick={() => setTab(t.id)} style={{
               padding: "14px clamp(12px,2.5vw,20px)", background: "none", border: "none",
               borderBottom: tab === t.id ? `2px solid ${S}` : "2px solid transparent",
-              color: tab === t.id ? "#fff" : SD, fontSize: 9, letterSpacing: 2,
+              color: tab === t.id ? "var(--vt-text)" : SD, fontSize: 9, letterSpacing: 2,
               textTransform: "uppercase", cursor: "pointer", fontWeight: tab === t.id ? 700 : 400,
               fontFamily: "inherit", whiteSpace: "nowrap", transition: "color .2s",
             }}>{t.label}</button>
@@ -343,7 +342,7 @@ export default function VigoAccount() {
               <div style={{ textAlign: "center", padding: "60px 20px" }}>
                 <div style={{ fontSize: 32, opacity: .15, marginBottom: 12 }}>—</div>
                 <div style={{ fontSize: 13, color: SD, marginBottom: 8 }}>No orders yet</div>
-                <div style={{ fontSize: 10, color: "#444", marginBottom: 24 }}>Your purchase history will appear here</div>
+                <div style={{ fontSize: 10, color: SD, marginBottom: 24 }}>Your purchase history will appear here</div>
                 <button onClick={() => navigate("/shop")} style={btnPrimary}>Browse the Shop</button>
               </div>
             ) : (
@@ -353,7 +352,7 @@ export default function VigoAccount() {
                   return (
                     <div key={order.id} style={{ background: G1, border: `.5px solid ${G3}`, padding: "clamp(16px,3vw,24px)", transition: "border-color .2s" }}
                       onMouseEnter={e => e.currentTarget.style.borderColor = S}
-                      onMouseLeave={e => e.currentTarget.style.borderColor = G3}>
+                      onMouseLeave={e => e.currentTarget.style.borderColor = "var(--vt-border)"}>
                       <div className="vigo-order-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
                         <div style={{ flex: 1 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6, flexWrap: "wrap" }}>
@@ -363,7 +362,7 @@ export default function VigoAccount() {
                           <div style={{ fontSize: 10, color: SD, marginBottom: 4 }}>
                             {new Date(order.created_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} · {order.pieces || 1} {order.pieces === 1 ? "item" : "items"}
                           </div>
-                          <div style={{ fontSize: 11, color: "#888" }}>{order.items}</div>
+                          <div style={{ fontSize: 11, color: SD }}>{order.items}</div>
                           {order.trackingNumber && <div style={{ fontSize: 9, color: SD, marginTop: 4 }}>Tracking: {order.trackingNumber}</div>}
                         </div>
                         <div className="vigo-order-amount" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
@@ -400,7 +399,7 @@ export default function VigoAccount() {
                 {addresses.map(a => (
                   <div key={a.id} style={{ background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "24px" }}>
                     <div style={{ fontSize: 8, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 16 }}>{a.label}</div>
-                    <div style={{ fontSize: 12, color: "#aaa", lineHeight: 1.9, marginBottom: 20 }}>
+                    <div style={{ fontSize: 12, color: SD, lineHeight: 1.9, marginBottom: 20 }}>
                       {a.fullName}<br />{a.street}<br />{a.city}, {a.state} {a.zip}<br />{a.country}
                     </div>
                     <div style={{ display: "flex", gap: 8 }}>
@@ -434,14 +433,11 @@ export default function VigoAccount() {
         {/* ── SETTINGS ── */}
         {tab === "settings" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 28, maxWidth: 520, width: "100%" }}>
-
-            {/* Theme */}
             <div>
               <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 16 }}>Appearance</div>
               <ThemeSelector user={user} />
             </div>
 
-            {/* Password */}
             <div>
               <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 16 }}>Change Password</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -455,7 +451,6 @@ export default function VigoAccount() {
               </div>
             </div>
 
-            {/* Danger Zone */}
             <div style={{ background: G1, border: `.5px solid #e03`, borderTop: `2px solid #e03`, padding: "28px" }}>
               <div style={{ fontSize: 10, letterSpacing: 2, color: "#e03", textTransform: "uppercase", fontWeight: 900, marginBottom: 10 }}>⚠ Danger Zone</div>
               <p style={{ fontSize: 11, color: SD, lineHeight: 1.8, marginBottom: 20 }}>Deleting your account is permanent and irreversible. All order history, saved items, and profile data will be removed.</p>
@@ -463,7 +458,7 @@ export default function VigoAccount() {
                 <button onClick={() => setDeleteConfirm(true)} style={{ background: "none", border: ".5px solid #e03", color: "#e03", padding: "12px 24px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>Delete Account</button>
               ) : (
                 <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-                  <span style={{ fontSize: 11, color: "#ccc" }}>This cannot be undone.</span>
+                  <span style={{ fontSize: 11, color: SD }}>This cannot be undone.</span>
                   <button onClick={deleteAccount} style={{ background: "#e03", color: "#fff", border: "none", padding: "12px 20px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontWeight: 900, fontFamily: "inherit" }}>Yes, Delete</button>
                   <button onClick={() => setDeleteConfirm(false)} style={btnGhost}>Cancel</button>
                 </div>
@@ -492,5 +487,5 @@ export default function VigoAccount() {
   );
 }
 
-const btnPrimary = { background: S, color: "#000", border: "none", padding: "13px 28px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" };
-const btnGhost = { background: "none", border: `.5px solid ${G3}`, color: SD, padding: "11px 20px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" };
+const btnPrimary = { background: "#C0C0C0", color: "#000", border: "none", padding: "13px 28px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" };
+const btnGhost = { background: "none", border: "0.5px solid var(--vt-border)", color: "var(--vt-sub)", padding: "11px 20px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" };

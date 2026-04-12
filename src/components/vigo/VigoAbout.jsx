@@ -1,11 +1,9 @@
 import { useNavigate } from "react-router-dom";
 
 const S = "#C0C0C0";
-const G1 = "#0a0a0a";
-const G3 = "#1a1a1a";
-const SD = "#777";
-
-const PRODUCT_IMG = "https://media.base44.com/mnt/user-data/uploads/IMG_8246-removebg-preview.png";
+const G1 = "var(--vt-bg)";
+const G3 = "var(--vt-border)";
+const SD = "var(--vt-sub)";
 
 export default function VigoAbout({ logo }) {
   const navigate = useNavigate();
@@ -19,7 +17,7 @@ export default function VigoAbout({ logo }) {
           <p style={{ fontSize: 14, color: SD, lineHeight: 1.9, marginBottom: 20, maxWidth: 420 }}>
             VIGONYC was founded in 2024 by creatives from all five boroughs — designers, photographers, and artists who grew up in the culture and wanted to dress it right.
           </p>
-          <p style={{ fontSize: 12, color: "#555", lineHeight: 1.9 }}>
+          <p style={{ fontSize: 12, color: SD, lineHeight: 1.9 }}>
             Every piece we drop carries the DNA of the streets that raised us. Limited production. No compromises. NYC or nothing.
           </p>
         </div>
