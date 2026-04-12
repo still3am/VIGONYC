@@ -90,7 +90,7 @@ function EntryModal({ entry, onSave, onClose }) {
               <button onClick={handleSave} disabled={saving || uploading} style={{ flex: 1, background: S, color: "#000", border: "none", padding: "12px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", opacity: saving ? 0.7 : 1 }}>
                 {saving ? "Saving..." : "Save Entry"}
               </button>
-              <button onClick={onClose} style={{ background: "none", border: `0.5px solid ${G3}`, color: SD, padding: "12px 16px", fontSize: 9, cursor: "pointer", fontFamily: "inherit" }}>✕</button>
+
             </div>
           </div>
         </div>
