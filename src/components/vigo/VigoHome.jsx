@@ -11,8 +11,17 @@ const G1 = "var(--vt-bg)";
 const G3 = "var(--vt-border)";
 
 const NEXT_DROP = new Date();
-const CATEGORIES = [];
-const REVIEWS = [];
+const CATEGORIES = [
+  { name: "Tops", count: "Tees · Hoodies · Crewnecks" },
+  { name: "Bottoms", count: "Cargo · Sweats · Denim" },
+  { name: "Outerwear", count: "Jackets · Coaches · Bombers" },
+  { name: "Accessories", count: "Caps · Bags · Extras" },
+];
+const REVIEWS = [
+  { rating: 5, text: "Literally the best tee I've ever owned. The weight is insane and it fits exactly how streetwear should — not too baggy, not fitted. NYC energy all day.", name: "Marcus T.", loc: "Brooklyn, NY" },
+  { rating: 5, text: "Copped the Chrome V hoodie from Drop 01 and haven't taken it off. Quality is elite, no cap. Worth every dollar and more.", name: "Jaylen R.", loc: "Harlem, NY" },
+  { rating: 5, text: "I've been waiting for a brand that actually gets it. VIGO is built different. The details, the packaging, the fit — all 10/10.", name: "Nia C.", loc: "Bronx, NY" },
+];
 
 function MiniCountdown({ target }) {
   const [t, setT] = useState({ d: 0, h: 0, m: 0, s: 0 });

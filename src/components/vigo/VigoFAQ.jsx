@@ -5,7 +5,24 @@ const G1 = "var(--vt-bg)";
 const G3 = "var(--vt-border)";
 const SD = "var(--vt-sub)";
 
-const faqs = { Orders: [], Returns: [], Brand: [] };
+const faqs = {
+  Orders: [
+    { q: "When does the next drop happen?", a: "Drops are announced on our site and via email. Sign up for the drop list to get first access — we always sell out fast." },
+    { q: "Can I cancel or change my order?", a: "Orders are processed immediately. If you need to make a change, contact us within 1 hour of placing the order and we'll do our best to help." },
+    { q: "Do you offer international shipping?", a: "Currently we ship within the US only. International shipping is coming soon — drop your email to be notified when it launches." },
+    { q: "How long does shipping take?", a: "Standard shipping takes 5–7 business days. Expedited options are available at checkout for 2–3 business day delivery." },
+  ],
+  Returns: [
+    { q: "What is your return policy?", a: "We accept returns within 14 days of delivery for unworn, unwashed items with tags attached. Sale items and limited drops are final sale." },
+    { q: "How do I start a return?", a: "Email us at hello@vigonyc.com with your order number and reason for return. We'll send you a prepaid label within 24 hours." },
+    { q: "When will I receive my refund?", a: "Refunds are processed within 5–7 business days after we receive and inspect your return. You'll get a confirmation email once it's done." },
+  ],
+  Brand: [
+    { q: "Where is VIGONYC based?", a: "We're born and bred in New York City — designed in Manhattan, shot across all five boroughs." },
+    { q: "Are your drops ever restocked?", a: "No. Every drop is strictly limited. Once it's gone, it's gone. No restocks, no exceptions. That's the point." },
+    { q: "Do you do collaborations?", a: "We're always open to creative partnerships that align with our vision. Reach out via the contact page with your proposal." },
+  ],
+};
 
 function FaqItem({ q, a }) {
   const [open, setOpen] = useState(false);

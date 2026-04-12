@@ -1,4 +1,5 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
 import { useNavigate, useSearchParams, useOutletContext } from "react-router-dom";
 import PullToRefresh from "./PullToRefresh";
 import ProductCard from "./ProductCard";
@@ -8,11 +9,8 @@ const G1 = "var(--vt-bg)";
 const G3 = "var(--vt-border)";
 const SD = "var(--vt-sub)";
 
-const ALL_PRODUCTS = [];
-const CATEGORIES = [];
 const SIZES = ["XS","S","M","L","XL","XXL","One Size"];
 const COLORS = ["Black","White","Silver","Graphite"];
-const COLLECTIONS = [];
 
 function FilterSection({ title, children }) {
   const [open, setOpen] = useState(true);
@@ -27,17 +25,17 @@ function FilterSection({ title, children }) {
   );
 }
 
-function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr }) {
+function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories, collections }) {
   return (
     <div>
       <div style={{ fontSize: 10, letterSpacing: 3, textTransform: "uppercase", color: "var(--vt-text)", fontWeight: 700, marginBottom: 24, paddingBottom: 16, borderBottom: `.5px solid ${G3}` }}>Filters</div>
       <FilterSection title="Category">
-        {CATEGORIES.map(c => (
+        {categories.map(c => (
           <button key={c} onClick={() => setActiveCat(c)} style={{ display: "block", background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "6px 0", fontSize: 11, color: activeCat === c ? "var(--vt-text)" : SD, fontWeight: activeCat === c ? 700 : 400, fontFamily: "inherit", width: "100%" }}>{c}</button>
         ))}
       </FilterSection>
       <FilterSection title="Collection">
-        {COLLECTIONS.map(c => (
+        {collections.map(c => (
           <button key={c} onClick={() => setActiveCollection(c)} style={{ display: "block", background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "6px 0", fontSize: 11, color: activeCollection === c ? "var(--vt-text)" : SD, fontWeight: activeCollection === c ? 700 : 400, fontFamily: "inherit", width: "100%" }}>{c}</button>
         ))}
       </FilterSection>
@@ -81,11 +79,19 @@ export default function VigoShop() {
   const [activeCollection, setActiveCollection] = useState("All Collections");
   const [sort, setSort] = useState("featured");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [allProducts, setAllProducts] = useState([]);
+
+  useEffect(() => {
+    base44.entities.Product.list("-created_date", 200).then(data => setAllProducts(data || [])).catch(() => {});
+  }, []);
+
+  const CATEGORIES = useMemo(() => ["All", ...new Set(allProducts.map(p => p.cat).filter(Boolean))], [allProducts]);
+  const COLLECTIONS = useMemo(() => ["All Collections", ...new Set(allProducts.map(p => p.collection).filter(Boolean))], [allProducts]);
 
   const toggleArr = (arr, setArr, val) => setArr(prev => prev.includes(val) ? prev.filter(x => x !== val) : [...prev, val]);
 
   const filtered = useMemo(() => {
-    let p = [...ALL_PRODUCTS];
+    let p = [...allProducts];
     if (activeCat !== "All") p = p.filter(x => x.cat === activeCat);
     if (selectedSizes.length) p = p.filter(x => x.sizes && x.sizes.some(s => selectedSizes.includes(s)));
     if (selectedColors.length) p = p.filter(x => x.colors && x.colors.some(c => selectedColors.includes(c)));
@@ -98,9 +104,11 @@ export default function VigoShop() {
   }, [activeCat, selectedSizes, selectedColors, priceRange, activeCollection, sort]);
 
   const [refreshKey, setRefreshKey] = useState(0);
-  const handleRefresh = useCallback(() => new Promise(res => setTimeout(() => { setRefreshKey(k => k + 1); res(); }, 800)), []);
+  const handleRefresh = useCallback(() => new Promise(res => {
+    base44.entities.Product.list("-created_date", 200).then(data => { setAllProducts(data || []); res(); }).catch(() => res());
+  }), []);
 
-  const filterProps = { activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr };
+  const filterProps = { activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories: CATEGORIES, collections: COLLECTIONS };
 
   const activeFiltersCount = [
     activeCat !== "All" ? 1 : 0,
