@@ -1,4 +1,4 @@
-/* Google Fonts loaded via index.html link tag for non-blocking render */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -89,77 +89,4 @@
   display: flex;
   white-space: nowrap;
   animation: vigo-ticker 30s linear infinite;
-}
-
-@keyframes vigo-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: .3; transform: scale(.8); }
-}
-
-/* VigoHome media queries */
-@media(max-width:900px) {
-  .vigo-hero-grid { grid-template-columns: 1fr !important; }
-  .vigo-hero-grid > div:last-child { min-height: 320px; }
-  .vigo-kpi-grid { grid-template-columns: repeat(2,1fr) !important; }
-  .vigo-4col { grid-template-columns: repeat(2,1fr) !important; }
-  .vigo-3col { grid-template-columns: 1fr !important; }
-  .vigo-2col { grid-template-columns: 1fr !important; }
-}
-@media(max-width:480px) {
-  .vigo-4col { grid-template-columns: 1fr 1fr !important; }
-}
-
-/* VigoShop media queries */
-@media(max-width:900px) {
-  .vigo-shop-sidebar { display: none !important; }
-  .vigo-filter-btn { display: flex !important; }
-  .vigo-cat-tabs { display: flex !important; }
-  .vigo-shop-grid { grid-template-columns: repeat(2,1fr) !important; }
-}
-@media(max-width:480px) {
-  .vigo-shop-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
-}
-
-/* VigoCheckout media queries */
-@media(max-width:900px) {
-  .vigo-checkout-grid { grid-template-columns: 1fr !important; }
-  .vigo-2col-sm { grid-template-columns: 1fr !important; }
-  .vigo-3col-sm { grid-template-columns: 1fr !important; }
-}
-
-/* VigoFooter media queries */
-@media(max-width:900px) { .vigo-footer-grid { grid-template-columns: 1fr 1fr !important; } }
-@media(max-width:480px) { .vigo-footer-grid { grid-template-columns: 1fr !important; } }
-
-/* VigoDrops media queries */
-@media(max-width:900px) {
-  .vigo-drops-layout { grid-template-columns: 1fr !important; }
-  .vigo-hero-drop { grid-template-columns: 1fr !important; }
-  .vigo-corner { display: none !important; }
-}
-
-/* VigoBottomNav */
-@media(min-width:900px) { .vigo-bottom-nav { display: none !important; } }
-
-/* VigoWishlist */
-@media(max-width:900px) { .vigo-wish-grid { grid-template-columns: repeat(2,1fr) !important; } }
-
-/* VigoAccount */
-@media(max-width:600px) {
-  .vigo-2col { grid-template-columns: 1fr !important; }
-  .vigo-address-grid { grid-template-columns: 1fr !important; }
-  .vigo-order-row { flex-direction: column !important; align-items: flex-start !important; }
-  .vigo-order-amount { align-items: flex-start !important; margin-top: 12px !important; }
-}
-
-/* VigoAbout */
-@media(max-width:900px) { .vigo-about-2col, .vigo-about-3col, .vigo-about-4col { grid-template-columns: 1fr !important; } }
-
-/* Nav */
-@media(min-width:900px) { .vigo-mobile-menu-btn { display: none !important; } }
-@media(max-width:899px) {
-  .vigo-desktop-nav { display: none !important; }
-  .vigo-icon-desktop { display: none !important; }
-  .vigo-nav-logo { position: absolute; left: 50%; transform: translateX(-50%); }
-  .vigo-nav-logo-img { width: 60px !important; height: 60px !important; }
 }

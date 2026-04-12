@@ -1,4 +1,3 @@
-// Server-side role enforcement is handled by Base44 entity permissions. This component is a UI guard only.
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
