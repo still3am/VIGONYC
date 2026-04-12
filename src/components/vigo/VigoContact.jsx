@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -47,9 +48,17 @@ function TopicPicker({ value, onChange }) {
 export default function VigoContact() {
   const [topic, setTopic] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setSending(true);
+    await base44.entities.ContactEntry.create({ firstName, lastName, email, topic, message }).catch(() => {});
+    setSending(false);
     setSubmitted(true);
   };
 
@@ -91,20 +100,20 @@ export default function VigoContact() {
         ) : (
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             <div className="vigo-2col-sm" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <Field label="First Name" required />
-              <Field label="Last Name" required />
+              <Field label="First Name" value={firstName} onChange={setFirstName} required />
+              <Field label="Last Name" value={lastName} onChange={setLastName} required />
             </div>
-            <Field label="Email Address" type="email" required />
+            <Field label="Email Address" type="email" value={email} onChange={setEmail} required />
             <div>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Topic *</div>
               <TopicPicker value={topic} onChange={setTopic} />
             </div>
             <div>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Message *</div>
-              <textarea required rows={5} placeholder="Tell us what's going on..." style={{ width: "100%", background: G1, border: `.5px solid ${G3}`, color: "var(--vt-text)", padding: "12px 16px", fontSize: 12, outline: "none", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }} />
+              <textarea required rows={5} value={message} onChange={e => setMessage(e.target.value)} placeholder="Tell us what's going on..." style={{ width: "100%", background: G1, border: `.5px solid ${G3}`, color: "var(--vt-text)", padding: "12px 16px", fontSize: 12, outline: "none", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }} />
             </div>
-            <button type="submit" style={{ background: S, color: "#000", border: "none", padding: "16px", fontSize: 10, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
-              Send Message
+            <button type="submit" disabled={sending} style={{ background: S, color: "#000", border: "none", padding: "16px", fontSize: 10, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: sending ? "not-allowed" : "pointer", fontFamily: "inherit", opacity: sending ? 0.7 : 1 }}>
+              {sending ? "Sending..." : "Send Message"}
             </button>
           </form>
         )}
@@ -114,11 +123,11 @@ export default function VigoContact() {
   );
 }
 
-function Field({ label, type = "text", required }) {
+function Field({ label, type = "text", required, value, onChange }) {
   return (
     <div>
       <div style={{ fontSize: 12, letterSpacing: 2, color: "var(--vt-sub)", textTransform: "uppercase", marginBottom: 8 }}>{label}{required && " *"}</div>
-      <input type={type} required={required} style={{ width: "100%", background: "var(--vt-bg)", border: ".5px solid var(--vt-border)", color: "var(--vt-text)", padding: "12px 16px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
+      <input type={type} required={required} value={value || ""} onChange={onChange ? e => onChange(e.target.value) : undefined} style={{ width: "100%", background: "var(--vt-bg)", border: ".5px solid var(--vt-border)", color: "var(--vt-text)", padding: "12px 16px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
     </div>
   );
 }

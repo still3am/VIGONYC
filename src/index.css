@@ -80,3 +80,13 @@
     --foreground: 0 0% 98%;
   }
 }
+
+@keyframes vigo-ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.vigo-ticker-track {
+  display: flex;
+  white-space: nowrap;
+  animation: vigo-ticker 30s linear infinite;
+}

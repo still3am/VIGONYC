@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -56,7 +57,7 @@ export default function VigoFAQ() {
       <div style={{ marginTop: 48, background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "32px", textAlign: "center" }}>
         <div style={{ fontSize: 9, letterSpacing: 3, color: SD, textTransform: "uppercase", marginBottom: 10 }}>Still have questions?</div>
         <div style={{ fontSize: 20, fontWeight: 900, marginBottom: 20 }}>We're Here to Help</div>
-        <a href="/contact" style={{ display: "inline-block", background: S, color: "#000", border: "none", padding: "14px 36px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", textDecoration: "none", fontFamily: "inherit" }}>Contact Us</a>
+        <Link to="/contact" style={{ display: "inline-block", background: S, color: "#000", border: "none", padding: "14px 36px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", textDecoration: "none", fontFamily: "inherit" }}>Contact Us</Link>
       </div>
     </div>
   );

@@ -83,6 +83,7 @@ export default function VigoHome() {
         await base44.auth.updateMe({ newsletterEmail: email.trim(), notificationsNewsletter: true }).catch(() => {});
       }
       setSubscribed(true);
+      setEmail("");
     }
   };
 
@@ -147,7 +148,7 @@ export default function VigoHome() {
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
               <span style={{ fontSize: 18, fontWeight: 900, color: S }}>$68</span>
-              <button onClick={() => navigate("/product/1")} style={{ background: S, color: "#000", border: "none", padding: "8px 16px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Shop Now</button>
+              <button onClick={() => navigate("/shop")} style={{ background: S, color: "#000", border: "none", padding: "8px 16px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Shop Now</button>
             </div>
           </div>
         </div>
@@ -162,7 +163,7 @@ export default function VigoHome() {
           <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
           wishlisted={wishlist.includes(p.id)}
           onWishlist={() => toggleWishlist(p.id)}
-          onAdd={() => addToCart({ id: p.id, name: p.name, meta: "Size: M · Color: Black", price: p.price })}
+          onAdd={() => addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: "M", color: "Black", productImage: p.images?.[0] || productImg, price: p.price })}
           onClick={() => navigate(`/product/${p.id}`)} />
           )}
         </div>

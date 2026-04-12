@@ -20,7 +20,7 @@ export default function VigoLookbook() {
   }, []);
 
   const heroEntry = entries.find(e => e.featured) || entries[0];
-  const gridEntries = entries.filter(e => !e.featured || entries.indexOf(e) > 0);
+  const gridEntries = entries.filter(e => e !== heroEntry);
 
   return (
     <div>

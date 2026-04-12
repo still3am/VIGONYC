@@ -148,6 +148,7 @@ function ThemeSelector({ user }) {
 export default function VigoAccount() {
   const [tab, setTab] = useState("profile");
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [passwords, setPasswords] = useState({ current: "", newPass: "", confirm: "" });
   const [addressModal, setAddressModal] = useState(null);
   const [profileSaved, setProfileSaved] = useState(false);
@@ -164,7 +165,7 @@ export default function VigoAccount() {
     },
   });
 
-  const { data: orders = [] } = useQuery({
+  const { data: orders = [], isLoading: ordersLoading } = useQuery({
     queryKey: ['orders'],
     queryFn: async () => {
       try { return await base44.entities.Order.filter({ created_by: user?.email }, '-created_date', 100); }
@@ -173,7 +174,7 @@ export default function VigoAccount() {
     enabled: !!user?.email,
   });
 
-  const { data: addresses = [], refetch: refetchAddresses } = useQuery({
+  const { data: addresses = [], isLoading: addressesLoading, refetch: refetchAddresses } = useQuery({
     queryKey: ['addresses'],
     queryFn: async () => {
       try { return await base44.entities.Address.filter({ created_by: user?.email }, '-created_date', 100); }
@@ -204,36 +205,48 @@ export default function VigoAccount() {
   }, [user]);
 
   const saveProfile = async () => {
-    await base44.auth.updateMe({
-      full_name: `${profile.firstName} ${profile.lastName}`.trim(),
-      phone: profile.phone,
-      birthday: profile.birthday,
-    });
-    queryClient.invalidateQueries({ queryKey: ['user'] });
-    setProfileSaved(true);
-    setTimeout(() => setProfileSaved(false), 2500);
+    try {
+      await base44.auth.updateMe({
+        full_name: `${profile.firstName} ${profile.lastName}`.trim(),
+        phone: profile.phone,
+        birthday: profile.birthday,
+      });
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+      setProfileSaved(true);
+      setTimeout(() => setProfileSaved(false), 2500);
+    } catch {
+      alert("Failed to save profile. Please try again.");
+    }
   };
 
   const saveNotifications = async () => {
-    await base44.auth.updateMe({
-      notificationsDrops: notifications.drops,
-      notificationsOrders: notifications.orders,
-      notificationsPromotions: notifications.promotions,
-      notificationsNewsletter: notifications.newsletter,
-    });
-    queryClient.invalidateQueries({ queryKey: ['user'] });
-    setNotifSaved(true);
-    setTimeout(() => setNotifSaved(false), 2500);
+    try {
+      await base44.auth.updateMe({
+        notificationsDrops: notifications.drops,
+        notificationsOrders: notifications.orders,
+        notificationsPromotions: notifications.promotions,
+        notificationsNewsletter: notifications.newsletter,
+      });
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+      setNotifSaved(true);
+      setTimeout(() => setNotifSaved(false), 2500);
+    } catch {
+      alert("Failed to save notification preferences. Please try again.");
+    }
   };
 
   const savePassword = async () => {
     if (!passwords.current || !passwords.newPass) { alert("Please fill in all password fields"); return; }
     if (passwords.newPass !== passwords.confirm) { alert("Passwords do not match"); return; }
     if (passwords.newPass.length < 8) { alert("Password must be at least 8 characters"); return; }
-    await base44.functions.invoke('changePassword', { currentPassword: passwords.current, newPassword: passwords.newPass });
-    setPasswords({ current: "", newPass: "", confirm: "" });
-    setPwSaved(true);
-    setTimeout(() => setPwSaved(false), 2500);
+    try {
+      await base44.functions.invoke('changePassword', { currentPassword: passwords.current, newPassword: passwords.newPass });
+      setPasswords({ current: "", newPass: "", confirm: "" });
+      setPwSaved(true);
+      setTimeout(() => setPwSaved(false), 2500);
+    } catch {
+      alert("Failed to update password. Please check your current password and try again.");
+    }
   };
 
   const saveAddress = async (form) => {
@@ -252,8 +265,14 @@ export default function VigoAccount() {
   };
 
   const deleteAccount = async () => {
-    await base44.functions.invoke('deleteAccount', {});
-    base44.auth.logout();
+    setDeleting(true);
+    try {
+      await base44.functions.invoke('deleteAccount', {});
+      base44.auth.logout();
+    } catch {
+      alert("Failed to delete account. Please try again.");
+      setDeleting(false);
+    }
   };
 
   return (
@@ -338,7 +357,9 @@ export default function VigoAccount() {
         {tab === "orders" && (
           <div style={{ width: "100%" }}>
             <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 20 }}>Order History</div>
-            {orders.length === 0 ? (
+            {ordersLoading ? (
+              <div style={{ textAlign: "center", padding: "60px 20px", color: SD, fontSize: 12 }}>Loading orders...</div>
+            ) : orders.length === 0 ? (
               <div style={{ textAlign: "center", padding: "60px 20px" }}>
                 <div style={{ fontSize: 32, opacity: .15, marginBottom: 12 }}>—</div>
                 <div style={{ fontSize: 13, color: SD, marginBottom: 8 }}>No orders yet</div>
@@ -388,7 +409,9 @@ export default function VigoAccount() {
               <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase" }}>Saved Addresses</div>
               <button onClick={() => setAddressModal("new")} style={btnPrimary}>+ Add New Address</button>
             </div>
-            {addresses.length === 0 ? (
+            {addressesLoading ? (
+              <div style={{ textAlign: "center", padding: "60px 20px", color: SD, fontSize: 12 }}>Loading addresses...</div>
+            ) : addresses.length === 0 ? (
               <div style={{ textAlign: "center", padding: "60px 20px" }}>
                 <div style={{ fontSize: 32, opacity: .15, marginBottom: 12 }}>⌂</div>
                 <div style={{ fontSize: 13, color: SD, marginBottom: 20 }}>No saved addresses yet</div>
@@ -459,7 +482,7 @@ export default function VigoAccount() {
               ) : (
                 <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
                   <span style={{ fontSize: 11, color: SD }}>This cannot be undone.</span>
-                  <button onClick={deleteAccount} style={{ background: "#e03", color: "#fff", border: "none", padding: "12px 20px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontWeight: 900, fontFamily: "inherit" }}>Yes, Delete</button>
+                  <button onClick={deleteAccount} disabled={deleting} style={{ background: "#e03", color: "#fff", border: "none", padding: "12px 20px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: deleting ? "not-allowed" : "pointer", fontWeight: 900, fontFamily: "inherit", opacity: deleting ? 0.6 : 1 }}>{deleting ? "Deleting..." : "Yes, Delete"}</button>
                   <button onClick={() => setDeleteConfirm(false)} style={btnGhost}>Cancel</button>
                 </div>
               )}

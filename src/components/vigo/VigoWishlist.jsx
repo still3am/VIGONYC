@@ -33,7 +33,7 @@ export default function VigoWishlist() {
   const totalValue = savedItems.reduce((s, p) => s + p.price, 0);
 
   const handleAdd = (p) => {
-    addToCart({ id: p.id, name: p.name, meta: `Size: ${selectedSizes[p.id] || "M"} · Color: Black`, price: p.price });
+    addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: selectedSizes[p.id] || "M", color: "Black", productImage: p.images?.[0] || productImg, price: p.price });
     setAddedIds(prev => [...prev, p.id]);
     setTimeout(() => setAddedIds(prev => prev.filter(id => id !== p.id)), 2000);
   };
@@ -116,7 +116,7 @@ export default function VigoWishlist() {
                     onClick={() => navigate(`/product/${p.id}`)}
                   >
                     <img
-                      src={productImg}
+                      src={p.images?.[0] || productImg}
                       alt={p.name}
                       style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", padding: 16, transition: "transform .5s", transform: isHovered ? "scale(1.06)" : "scale(1)" }}
                     />

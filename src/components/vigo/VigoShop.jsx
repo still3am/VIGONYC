@@ -73,6 +73,11 @@ export default function VigoShop() {
   const initCat = searchParams.get("cat") || "All";
 
   const [activeCat, setActiveCat] = useState(initCat);
+
+  useEffect(() => {
+    setActiveCat(searchParams.get("cat") || "All");
+    setSearchQuery(searchParams.get("q") || "");
+  }, [searchParams]);
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
@@ -101,14 +106,14 @@ export default function VigoShop() {
     if (selectedSizes.length) p = p.filter(x => x.sizes && x.sizes.some(s => selectedSizes.includes(s)));
     if (selectedColors.length) p = p.filter(x => x.colors && x.colors.some(c => selectedColors.includes(c)));
     if (activeCollection !== "All Collections") p = p.filter(x => x.collection === activeCollection);
-    p = p.filter(x => !x.price || x.price <= priceRange);
+    if (sort === "featured") p = p.filter(x => x.featured).concat(p.filter(x => !x.featured));
+    p = p.filter(x => typeof x.price === "number" && x.price <= priceRange);
     if (sort === "price-asc") p.sort((a,b) => a.price - b.price);
     if (sort === "price-desc") p.sort((a,b) => b.price - a.price);
     if (sort === "new") p = p.filter(x => x.tag === "new").concat(p.filter(x => x.tag !== "new"));
     return p;
   }, [activeCat, searchQuery, selectedSizes, selectedColors, priceRange, activeCollection, sort, allProducts]);
 
-  const [refreshKey, setRefreshKey] = useState(0);
   const handleRefresh = useCallback(() => new Promise(res => {
     base44.entities.Product.list("-created_date", 200).then(data => { setAllProducts(data || []); res(); }).catch(() => res());
   }), []);
@@ -170,7 +175,7 @@ export default function VigoShop() {
       </div>
 
       <div style={{ display: "flex", gap: 40 }}>
-        <div className="vigo-shop-sidebar" style={{ width: 220, flexShrink: 0 }}>
+        <div className="vigo-shop-sidebar" style={{ width: 220, minWidth: 200, flexShrink: 0 }}>
           <FilterPanel {...filterProps} />
         </div>
 
@@ -188,7 +193,7 @@ export default function VigoShop() {
                 <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
                   wishlisted={wishlist.includes(p.id)}
                   onWishlist={() => toggleWishlist(p.id)}
-                  onAdd={() => addToCart({ id: p.id, name: p.name, meta: "Size: M · Color: Black", price: p.price })}
+                  onAdd={() => addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: "M", color: "Black", productImage: p.images?.[0] || productImg, price: p.price })}
                   onClick={() => navigate(`/product/${p.id}`)} />
               ))}
             </div>

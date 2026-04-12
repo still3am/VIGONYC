@@ -36,11 +36,11 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
   const handleLogoClick = () => {
     const newTaps = logoTaps + 1;
     setLogoTaps(newTaps);
-    if (newTaps === 5) {
+    if (newTaps === 7) {
       navigate("/admin");
       setLogoTaps(0);
     } else {
-      setTimeout(() => setLogoTaps(0), 3000);
+      setTimeout(() => setLogoTaps(0), 1500);
     }
   };
 
@@ -121,6 +121,9 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
               {cartCount > 0 && <span style={{ position: "absolute", top: -3, right: -3, background: S, color: "#000", fontSize: 8, fontWeight: 900, borderRadius: "50%", width: 15, height: 15, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
             </button>
+            <button className="vigo-mobile-menu-btn" onClick={() => setMobileOpen(!mobileOpen)} style={{ ...iconBtn, background: "none", border: "none" }} title="Menu">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
           </div>
         </div>
 
@@ -135,8 +138,6 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
       </nav>
 
       <style>{`
-        @keyframes vigo-ticker { from { transform: translateX(0) } to { transform: translateX(-50%) } }
-        .vigo-ticker-track { display: flex; white-space: nowrap; animation: vigo-ticker 30s linear infinite; }
         @media (min-width: 900px) { .vigo-mobile-menu-btn { display: none !important; } }
         @media (max-width: 899px) { .vigo-desktop-nav { display: none !important; } .vigo-icon-desktop { display: none !important; } }
         @media (max-width: 899px) { .vigo-nav-logo { position: absolute; left: 50%; transform: translateX(-50%); } .vigo-nav-logo-img { width: 60px !important; height: 60px !important; } }

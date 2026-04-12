@@ -1,11 +1,12 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
 const G3 = "var(--vt-border)";
 const SD = "var(--vt-sub)";
 
-export default function VigoAbout({ logo }) {
+export default function VigoAbout() {
+  const { logo } = useOutletContext();
   const navigate = useNavigate();
   return (
     <div>

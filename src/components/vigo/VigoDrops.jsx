@@ -70,22 +70,21 @@ export default function VigoDrops() {
   const [allDrops, setAllDrops] = useState([]);
   const [selectedDrop, setSelectedDrop] = useState(null);
 
-  const loadDrops = async () => {
+  const loadDrops = useCallback(async () => {
     const data = await base44.entities.Drop.list("-date", 100).catch(() => []);
     const mapped = data.map(d => {
-    let dateObj = null;
-    if (d.date) {
-      // Try parsing just the date string (YYYY-MM-DD) which is reliable
-      dateObj = new Date(d.date);
-      if (isNaN(dateObj.getTime())) dateObj = null;
-    }
-    return { ...d, date: dateObj };
-  });
+      let dateObj = null;
+      if (d.date) {
+        dateObj = new Date(d.date + "T00:00:00");
+        if (isNaN(dateObj.getTime())) dateObj = null;
+      }
+      return { ...d, date: dateObj };
+    });
     setAllDrops(mapped);
-    if (!selectedDrop && mapped.length > 0) setSelectedDrop(mapped[0]);
-  };
+    setSelectedDrop(prev => prev ? prev : (mapped.length > 0 ? mapped[0] : null));
+  }, []);
 
-  useEffect(() => { loadDrops(); }, []);
+  useEffect(() => { loadDrops(); }, [loadDrops]);
 
   const ALL_DROPS = allDrops;
   const PAST_DROPS = allDrops.filter(d => d.status === "soldout");
@@ -99,9 +98,15 @@ export default function VigoDrops() {
   for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
 
   const dropOnDay = day => day ? ALL_DROPS.find(dr => isSameDay(dr.date, day)) : null;
-  const handleNotify = id => { if (email.trim()) setNotified(p => ({ ...p, [id]: true })); };
-  const [refreshKey, setRefreshKey] = useState(0);
-  const handleRefresh = useCallback(() => new Promise(res => { loadDrops().then(() => setTimeout(res, 400)); }), []);
+  const handleNotify = async (id) => {
+    if (!email.trim()) return;
+    const user = await base44.auth.me().catch(() => null);
+    if (user) {
+      await base44.auth.updateMe({ newsletterEmail: email.trim(), notificationsDrops: true }).catch(() => {});
+    }
+    setNotified(p => ({ ...p, [id]: true }));
+  };
+  const handleRefresh = useCallback(() => new Promise(res => { loadDrops().then(() => setTimeout(res, 400)); }), [loadDrops]);
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
@@ -307,7 +312,7 @@ export default function VigoDrops() {
             <div style={{ flex: 1, height: .5, background: G3 }} />
             <div style={{ fontSize: 8, letterSpacing: 3, color: SD, textTransform: "uppercase", display: "flex", alignItems: "center", gap: 8, whiteSpace: "nowrap" }}>
               <div style={{ width: 5, height: 5, background: "#e03", transform: "rotate(45deg)" }} />
-              Drop 01 — Sold Out
+              Past Drops — Sold Out
               <div style={{ width: 5, height: 5, background: "#e03", transform: "rotate(45deg)" }} />
             </div>
             <div style={{ flex: 1, height: .5, background: G3 }} />
