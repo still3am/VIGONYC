@@ -96,7 +96,7 @@ export default function VigoShop() {
     if (selectedSizes.length) p = p.filter(x => x.sizes && x.sizes.some(s => selectedSizes.includes(s)));
     if (selectedColors.length) p = p.filter(x => x.colors && x.colors.some(c => selectedColors.includes(c)));
     if (activeCollection !== "All Collections") p = p.filter(x => x.collection === activeCollection);
-    p = p.filter(x => x.price <= priceRange);
+    p = p.filter(x => !x.price || x.price <= priceRange);
     if (sort === "price-asc") p.sort((a,b) => a.price - b.price);
     if (sort === "price-desc") p.sort((a,b) => b.price - a.price);
     if (sort === "new") p = p.filter(x => x.tag === "new").concat(p.filter(x => x.tag !== "new"));
@@ -179,7 +179,7 @@ export default function VigoShop() {
           ) : (
             <div className="vigo-shop-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
               {filtered.map(p => (
-                <ProductCard key={p.id} product={p} img={productImg}
+                <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
                   wishlisted={wishlist.includes(p.id)}
                   onWishlist={() => toggleWishlist(p.id)}
                   onAdd={() => addToCart({ id: p.id, name: p.name, meta: "Size: M · Color: Black", price: p.price })}

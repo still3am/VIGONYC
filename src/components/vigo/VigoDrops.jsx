@@ -71,7 +71,16 @@ export default function VigoDrops() {
 
   const loadDrops = async () => {
     const data = await base44.entities.Drop.list("-date", 100).catch(() => []);
-    const mapped = data.map(d => ({ ...d, date: d.date ? new Date(d.date) : null }));
+    const mapped = data.map(d => {
+    let dateObj = null;
+    if (d.date) {
+      // Combine date + time if available for accurate countdown
+      const combined = d.time ? `${d.date}T${d.time.replace(/\s*(AM|PM).*$/i, '')}` : d.date;
+      dateObj = new Date(combined);
+      if (isNaN(dateObj.getTime())) dateObj = new Date(d.date);
+    }
+    return { ...d, date: dateObj };
+  });
     setAllDrops(mapped);
     if (!selectedDrop && mapped.length > 0) setSelectedDrop(mapped[0]);
   };

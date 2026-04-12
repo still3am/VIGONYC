@@ -10,7 +10,7 @@ const SD = "var(--vt-sub)";
 const G1 = "var(--vt-bg)";
 const G3 = "var(--vt-border)";
 
-const NEXT_DROP = new Date();
+
 const CATEGORIES = [
   { name: "Tops", count: "Tees · Hoodies · Crewnecks" },
   { name: "Bottoms", count: "Cargo · Sweats · Denim" },
@@ -23,24 +23,35 @@ const REVIEWS = [
   { rating: 5, text: "I've been waiting for a brand that actually gets it. VIGO is built different. The details, the packaging, the fit — all 10/10.", name: "Nia C.", loc: "Bronx, NY" },
 ];
 
+function parseDropTarget(target) {
+  if (!target) return null;
+  const d = new Date(target);
+  return isNaN(d.getTime()) ? null : d;
+}
+
 function MiniCountdown({ target }) {
   const [t, setT] = useState({ d: 0, h: 0, m: 0, s: 0 });
+  const parsed = parseDropTarget(target);
   useEffect(() => {
+    if (!parsed) return;
     const tick = () => {
-      const diff = Math.max(0, target - Date.now());
+      const diff = Math.max(0, parsed - Date.now());
       setT({ d: Math.floor(diff / 86400000), h: Math.floor(diff % 86400000 / 3600000), m: Math.floor(diff % 3600000 / 60000), s: Math.floor(diff % 60000 / 1000) });
     };
-    tick();const id = setInterval(tick, 1000);return () => clearInterval(id);
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
   }, [target]);
   return (
     <span style={{ display: "inline-flex", gap: 12, alignItems: "baseline" }}>
       {[["D", t.d], ["H", t.h], ["M", t.m], ["S", t.s]].map(([l, v]) =>
-      <span key={l} style={{ display: "inline-flex", alignItems: "baseline", gap: 3 }}>
+        <span key={l} style={{ display: "inline-flex", alignItems: "baseline", gap: 3 }}>
           <span style={{ fontSize: 22, fontWeight: 900, color: "var(--vt-text)", fontVariantNumeric: "tabular-nums" }}>{String(v).padStart(2, "0")}</span>
           <span style={{ fontSize: 8, letterSpacing: 1, color: SD }}>{l}</span>
         </span>
       )}
-    </span>);
+    </span>
+  );
 }
 
 export default function VigoHome() {
@@ -50,8 +61,16 @@ export default function VigoHome() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const [products, setProducts] = useState([]);
+  const [nextDrop, setNextDrop] = useState(null);
 
-  useEffect(() => {const t = setTimeout(() => setHeroLoaded(true), 80);return () => clearTimeout(t);}, []);
+  useEffect(() => { const t = setTimeout(() => setHeroLoaded(true), 80); return () => clearTimeout(t); }, []);
+
+  useEffect(() => {
+    base44.entities.Drop.list("-date", 50).then(drops => {
+      const upcoming = drops.find(d => d.status === "upcoming" && d.date);
+      if (upcoming) setNextDrop(upcoming);
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     base44.entities.Product.filter({ featured: true }, "-created_date", 8).then(data => setProducts(data || [])).catch(() => {});
@@ -71,9 +90,9 @@ export default function VigoHome() {
       onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--vt-border)"} className="my-3 py-3">
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 1.5s infinite" }} />
-          <span style={{ fontSize: 9, letterSpacing: 4, color: SD, textTransform: "uppercase" }}>Drop 02 — Mirror Series</span>
+          <span style={{ fontSize: 9, letterSpacing: 4, color: SD, textTransform: "uppercase" }}>{nextDrop ? `${nextDrop.name} — ${nextDrop.series}` : "Drop 02 — Mirror Series"}</span>
         </div>
-        <MiniCountdown target={NEXT_DROP} />
+        {nextDrop && <MiniCountdown target={new Date(nextDrop.date + (nextDrop.time ? ` ${nextDrop.time}` : ""))} />}
         <span style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase" }}>Get Notified →</span>
       </div>
 
