@@ -7,7 +7,7 @@ const G2 = "#161616";
 const G3 = "#222222";
 const SD = "#666666";
 
-const EMPTY = { name: "", price: "", cat: "", collection: "", tag: "", sizes: [], colors: [], featured: false };
+const EMPTY = { name: "", price: "", cat: "", collection: "", tag: "", sizes: [], colors: [], featured: false, images: [], videos: [], description: "" };
 const CATS = ["Tops", "Bottoms", "Outerwear", "Accessories", "Footwear"];
 const TAGS = ["new", "drop", "ltd", "hot"];
 const ALL_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
@@ -16,6 +16,8 @@ const ALL_COLORS = ["Black", "White", "Chrome", "Grey", "Navy", "Red"];
 function ProductModal({ product, onSave, onClose }) {
   const [form, setForm] = useState(product || EMPTY);
   const [saving, setSaving] = useState(false);
+  const [uploadingImg, setUploadingImg] = useState(false);
+  const [uploadingVid, setUploadingVid] = useState(false);
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
   const toggleArr = (k, v) => setForm(p => ({ ...p, [k]: p[k]?.includes(v) ? p[k].filter(x => x !== v) : [...(p[k] || []), v] }));
 
@@ -62,6 +64,59 @@ function ProductModal({ product, onSave, onClose }) {
                 <button key={c} onClick={() => toggleArr("colors", c)} style={{ padding: "6px 14px", fontSize: 10, background: form.colors?.includes(c) ? S : G2, color: form.colors?.includes(c) ? "#000" : SD, border: `0.5px solid ${form.colors?.includes(c) ? S : G3}`, cursor: "pointer", fontFamily: "inherit" }}>{c}</button>
               ))}
             </div>
+          </div>
+
+          {/* Media: Images */}
+          <div>
+            <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Product Images</div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+              {(form.images || []).map((url, i) => (
+                <div key={i} style={{ position: "relative", width: 80, height: 80 }}>
+                  <img src={url} alt="" style={{ width: 80, height: 80, objectFit: "cover", border: `0.5px solid ${G3}` }} />
+                  <button onClick={() => set("images", form.images.filter((_, j) => j !== i))} style={{ position: "absolute", top: 2, right: 2, background: "rgba(0,0,0,.8)", border: "none", color: "#e03", width: 18, height: 18, fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }}>✕</button>
+                </div>
+              ))}
+              <label style={{ width: 80, height: 80, background: G2, border: `0.5px dashed ${G3}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexDirection: "column", gap: 4 }}>
+                {uploadingImg ? <span style={{ fontSize: 9, color: SD }}>...</span> : <><span style={{ fontSize: 20, color: SD }}>+</span><span style={{ fontSize: 8, color: SD }}>Image</span></>}
+                <input type="file" accept="image/*" multiple style={{ display: "none" }} onChange={async (e) => {
+                  setUploadingImg(true);
+                  const files = Array.from(e.target.files);
+                  const urls = await Promise.all(files.map(f => base44.integrations.Core.UploadFile({ file: f }).then(r => r.file_url)));
+                  set("images", [...(form.images || []), ...urls]);
+                  setUploadingImg(false);
+                }} />
+              </label>
+            </div>
+          </div>
+
+          {/* Media: Videos */}
+          <div>
+            <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Product Videos</div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
+              {(form.videos || []).map((url, i) => (
+                <div key={i} style={{ position: "relative", width: 80, height: 80, background: G2, border: `0.5px solid ${G3}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <video src={url} style={{ width: 80, height: 80, objectFit: "cover" }} />
+                  <button onClick={() => set("videos", form.videos.filter((_, j) => j !== i))} style={{ position: "absolute", top: 2, right: 2, background: "rgba(0,0,0,.8)", border: "none", color: "#e03", width: 18, height: 18, fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }}>✕</button>
+                </div>
+              ))}
+              <label style={{ width: 80, height: 80, background: G2, border: `0.5px dashed ${G3}`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexDirection: "column", gap: 4 }}>
+                {uploadingVid ? <span style={{ fontSize: 9, color: SD }}>...</span> : <><span style={{ fontSize: 20, color: SD }}>+</span><span style={{ fontSize: 8, color: SD }}>Video</span></>}
+                <input type="file" accept="video/*" style={{ display: "none" }} onChange={async (e) => {
+                  setUploadingVid(true);
+                  const file = e.target.files[0];
+                  const { file_url } = await base44.integrations.Core.UploadFile({ file });
+                  set("videos", [...(form.videos || []), file_url]);
+                  setUploadingVid(false);
+                }} />
+              </label>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div>
+            <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 6 }}>Description</div>
+            <textarea value={form.description ?? ""} onChange={e => set("description", e.target.value)} rows={3} style={{ width: "100%", background: G2, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 14px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit", resize: "vertical" }}
+              onFocus={e => e.target.style.borderColor = S} onBlur={e => e.target.style.borderColor = G3} />
           </div>
 
           <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>

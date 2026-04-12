@@ -45,6 +45,24 @@
     "featured": {
       "type": "boolean",
       "description": "Featured product"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Product image URLs"
+    },
+    "videos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Product video URLs"
+    },
+    "description": {
+      "type": "string",
+      "description": "Product description"
     }
   },
   "required": [
