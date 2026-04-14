@@ -52,24 +52,28 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
 
   return (
     <>
-      {/* Top silver accent bar */}
-      <div style={{ height: 2, background: "linear-gradient(90deg,transparent,#888,#E8E8E8,#C0C0C0,#E8E8E8,#888,transparent)" }} />
+      {!isCheckout && (
+        <>
+          {/* Top silver accent bar */}
+          <div style={{ height: 2, background: "linear-gradient(90deg,transparent,#888,#E8E8E8,#C0C0C0,#E8E8E8,#888,transparent)" }} />
 
-      {/* Ticker */}
-      <div style={{ background: "var(--vt-bg)", borderBottom: `.5px solid ${G3}`, overflow: "hidden", height: 30, display: "flex", alignItems: "center" }}>
-        <div className="vigo-ticker-track">
-          {[...Array(2)].map((_, ri) =>
-          <span key={ri} style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
-              {(settings.ticker_text || "").split("✦").map(t => t.trim()).filter(Boolean).map((t, i) =>
-            <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 24, padding: "0 12px" }}>
-                  <span style={{ fontSize: 9, letterSpacing: 3, color: SD, textTransform: "uppercase", whiteSpace: "nowrap" }}>{t}</span>
-                  <span style={{ color: S, fontSize: 8 }}>✦</span>
+          {/* Ticker */}
+          <div style={{ background: "var(--vt-bg)", borderBottom: `.5px solid ${G3}`, overflow: "hidden", height: 30, display: "flex", alignItems: "center" }}>
+            <div className="vigo-ticker-track">
+              {[...Array(2)].map((_, ri) =>
+              <span key={ri} style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
+                  {(settings.ticker_text || "").split("✦").map(t => t.trim()).filter(Boolean).map((t, i) =>
+                <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 24, padding: "0 12px" }}>
+                      <span style={{ fontSize: 9, letterSpacing: 3, color: SD, textTransform: "uppercase", whiteSpace: "nowrap" }}>{t}</span>
+                      <span style={{ color: S, fontSize: 8 }}>✦</span>
+                    </span>
+                )}
                 </span>
-            )}
-            </span>
-          )}
-        </div>
-      </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Search overlay */}
       {searchOpen &&
@@ -84,54 +88,62 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
 
       {/* Main nav */}
       <nav className="vigo-nav-top" style={{ position: "sticky", top: 0, zIndex: 100, background: scrolled ? "var(--vt-nav-scrolled)" : "var(--vt-bg)", borderBottom: `.5px solid ${G3}`, transition: "background .3s", backdropFilter: scrolled ? "blur(12px)" : "none" }}>
-        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
-          {!isRoot ?
-          <button onClick={() => navigate(-1)} className="vigo-back-btn" style={{ background: "none", border: "none", color: "var(--vt-text)", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontFamily: "inherit", padding: "4px 0" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
-              Back
-            </button> :
+        {isCheckout ? (
+          <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <button onClick={() => navigate("/shop")} style={{ background: "none", border: "none", color: SD, cursor: "pointer", fontSize: 11, fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6 }}>← Shop</button>
+            <img src={logo} alt="VIGONYC" style={{ width: 36, height: 36, objectFit: "contain" }} />
+            <div style={{ width: 60 }} />
+          </div>
+        ) : (
+          <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
+            {!isRoot ?
+            <button onClick={() => navigate(-1)} className="vigo-back-btn" style={{ background: "none", border: "none", color: "var(--vt-text)", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontFamily: "inherit", padding: "4px 0" }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
+                Back
+              </button> :
 
-          <div className="vigo-nav-logo" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", cursor: "pointer" }} onClick={handleLogoClick}>
-            <img src={logo} alt="VIGONYC" className="vigo-nav-logo-img" style={{ width: 40, height: 40, objectFit: "contain" }} />
-            <div style={{ lineHeight: 1 }}>
-              <style>{`.vigo-nav-wordmark { display: block; } @media(max-width:768px){ .vigo-nav-wordmark { display: none !important; } }`}</style>
-              <style>{`.vigo-nav-subtitle { display: block; } @media(max-width:768px){ .vigo-nav-subtitle { display: none !important; } }`}</style>
+            <div className="vigo-nav-logo" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", cursor: "pointer" }} onClick={handleLogoClick}>
+              <img src={logo} alt="VIGONYC" className="vigo-nav-logo-img" style={{ width: 40, height: 40, objectFit: "contain" }} />
+              <div style={{ lineHeight: 1 }}>
+                <style>{`.vigo-nav-wordmark { display: block; } @media(max-width:768px){ .vigo-nav-wordmark { display: none !important; } }`}</style>
+                <style>{`.vigo-nav-subtitle { display: block; } @media(max-width:768px){ .vigo-nav-subtitle { display: none !important; } }`}</style>
+              </div>
+            </div>
+            }
+
+            {/* Desktop links */}
+            <div className="vigo-desktop-nav" style={{ display: "flex", gap: 28, alignItems: "center" }}>
+              {links.map((l) =>
+              <NavLink key={l.to} to={l.to} end={l.to === "/"} style={({ isActive }) => ({
+                textDecoration: "none", fontSize: 9, letterSpacing: 3, textTransform: "uppercase",
+                color: isActive ? "var(--vt-text)" : SD,
+                borderBottom: isActive ? `1px solid ${S}` : "1px solid transparent",
+                paddingBottom: 3, transition: "color .2s"
+              })}>{l.label}</NavLink>
+              )}
+            </div>
+
+            {/* Icons */}
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <button onClick={() => setSearchOpen(true)} className="vigo-icon-desktop" style={iconBtn} title="Search">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>
+              </button>
+              <Link to="/wishlist" className="vigo-icon-desktop" style={{ ...iconBtn, textDecoration: "none" }}>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
+              </Link>
+              <Link to="/account" className="vigo-icon-desktop" style={{ ...iconBtn, textDecoration: "none" }}>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+              </Link>
+              <button className="vigo-icon-desktop" style={{ ...iconBtn, position: "relative" }} onClick={onCartOpen} title="Cart">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
+                {cartCount > 0 && <span style={{ position: "absolute", top: -3, right: -3, background: S, color: "#000", fontSize: 8, fontWeight: 900, borderRadius: "50%", width: 15, height: 15, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
+              </button>
+              {!isCheckout && <button className="vigo-mobile-menu-btn" onClick={() => setMobileOpen(!mobileOpen)} style={{ ...iconBtn, background: "none", border: "none" }} title="Menu">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>}
             </div>
           </div>
-          }
-
-          {/* Desktop links */}
-          <div className="vigo-desktop-nav" style={{ display: "flex", gap: 28, alignItems: "center" }}>
-            {links.map((l) =>
-            <NavLink key={l.to} to={l.to} end={l.to === "/"} style={({ isActive }) => ({
-              textDecoration: "none", fontSize: 9, letterSpacing: 3, textTransform: "uppercase",
-              color: isActive ? "var(--vt-text)" : SD,
-              borderBottom: isActive ? `1px solid ${S}` : "1px solid transparent",
-              paddingBottom: 3, transition: "color .2s"
-            })}>{l.label}</NavLink>
-            )}
-          </div>
-
-          {/* Icons */}
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <button onClick={() => setSearchOpen(true)} className="vigo-icon-desktop" style={iconBtn} title="Search">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>
-            </button>
-            <Link to="/wishlist" className="vigo-icon-desktop" style={{ ...iconBtn, textDecoration: "none" }}>
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
-            </Link>
-            <Link to="/account" className="vigo-icon-desktop" style={{ ...iconBtn, textDecoration: "none" }}>
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-            </Link>
-            <button className="vigo-icon-desktop" style={{ ...iconBtn, position: "relative" }} onClick={onCartOpen} title="Cart">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
-              {cartCount > 0 && <span style={{ position: "absolute", top: -3, right: -3, background: S, color: "#000", fontSize: 8, fontWeight: 900, borderRadius: "50%", width: 15, height: 15, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
-            </button>
-            {!isCheckout && <button className="vigo-mobile-menu-btn" onClick={() => setMobileOpen(!mobileOpen)} style={{ ...iconBtn, background: "none", border: "none" }} title="Menu">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-              </button>}
-          </div>
-        </div>
+        )}
 
         {/* Mobile menu */}
         {mobileOpen &&
