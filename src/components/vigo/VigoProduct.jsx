@@ -87,6 +87,8 @@ export default function VigoProduct() {
   }
 
   const images = product.images && product.images.length > 0 ? product.images : [productImg];
+  const videos = product.videos && product.videos.length > 0 ? product.videos : [];
+  const allMedia = [...images.map(url => ({ type: "image", url })), ...videos.map(url => ({ type: "video", url }))];
   const sizes = product.sizes && product.sizes.length > 0 ? product.sizes : DEFAULT_SIZES;
   const colors = product.colors && product.colors.length > 0 ? product.colors : ["Black"];
   const wishlisted = wishlist.includes(id);
@@ -156,24 +158,46 @@ export default function VigoProduct() {
                 onTouchEnd={e => {
                   const dx = e.changedTouches[0].clientX - e.currentTarget._touchX;
                   if (Math.abs(dx) < 40) return;
-                  if (dx < 0) setActiveThumb(t => Math.min(t + 1, images.length - 1));
+                  if (dx < 0) setActiveThumb(t => Math.min(t + 1, allMedia.length - 1));
                   else setActiveThumb(t => Math.max(t - 1, 0));
                 }}
               >
-                <img src={images[activeThumb] || productImg} alt={product.name} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                {images.length > 1 && (
+                {allMedia[activeThumb]?.type === "video" ? (
+                  <video
+                    key={allMedia[activeThumb].url}
+                    src={allMedia[activeThumb].url}
+                    controls
+                    autoPlay
+                    muted
+                    playsInline
+                    loop
+                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", background: "#000" }}
+                  />
+                ) : (
+                  <img src={allMedia[activeThumb]?.url || productImg} alt={product.name} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                )}
+                {allMedia.length > 1 && (
                   <div style={{ position: "absolute", bottom: 12, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 6, zIndex: 2 }}>
-                    {images.map((_, i) => (
+                    {allMedia.map((_, i) => (
                       <div key={i} onClick={() => setActiveThumb(i)} style={{ width: i === activeThumb ? 18 : 6, height: 6, borderRadius: 3, background: i === activeThumb ? S : "rgba(192,192,192,.4)", transition: "all .2s", cursor: "pointer" }} />
                     ))}
                   </div>
                 )}
               </div>
-              {images.length > 1 && (
+              {allMedia.length > 1 && (
                 <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
-                  {images.map((img, i) => (
-                    <button key={i} onClick={() => setActiveThumb(i)} style={{ flexShrink: 0, width: 60, height: 60, background: G2, border: `.5px solid ${activeThumb === i ? S : G3}`, cursor: "pointer", overflow: "hidden", transition: "all .2s", padding: 0 }}>
-                      <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  {allMedia.map((media, i) => (
+                    <button key={i} onClick={() => setActiveThumb(i)} style={{ flexShrink: 0, width: 60, height: 60, background: G2, border: `.5px solid ${activeThumb === i ? S : G3}`, cursor: "pointer", overflow: "hidden", transition: "all .2s", padding: 0, position: "relative" }}>
+                      {media.type === "video" ? (
+                        <>
+                          <video src={media.url} muted playsInline preload="metadata" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,.4)" }}>
+                            <span style={{ fontSize: 16, color: "#fff" }}>▶</span>
+                          </div>
+                        </>
+                      ) : (
+                        <img src={media.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      )}
                     </button>
                   ))}
                 </div>
