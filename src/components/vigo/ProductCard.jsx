@@ -45,7 +45,6 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
         <img
           src={img}
           alt={product.name}
-          loading="lazy"
           style={{
             position: "absolute", inset: 0, width: "100%", height: "100%",
             objectFit: "cover", opacity: product.inStock === false ? 0.5 : (product.opacity ?? 1),

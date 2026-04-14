@@ -190,7 +190,7 @@ function ProductModal({ product, onSave, onClose }) {
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   {(form.images || []).map((url, i) => (
                     <div key={i} style={{ position: "relative", width: 76, height: 76 }}>
-                      <img src={url} alt="" loading="lazy" style={{ width: 76, height: 76, objectFit: "cover", border: `0.5px solid ${G3}`, display: "block" }} />
+                      <img src={url} alt="" style={{ width: 76, height: 76, objectFit: "cover", border: `0.5px solid ${G3}`, display: "block" }} />
                       {i === 0 && <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "rgba(0,0,0,.7)", fontSize: 6, color: S, textAlign: "center", padding: "2px", letterSpacing: 1 }}>MAIN</div>}
                       <button onClick={() => set("images", form.images.filter((_, j) => j !== i))} style={{ position: "absolute", top: 3, right: 3, background: "rgba(0,0,0,.8)", border: "none", color: "#e03", width: 18, height: 18, fontSize: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
                     </div>
@@ -368,7 +368,7 @@ export default function AdminShop() {
               onClick={() => setModal(p)}>
               <input type="checkbox" checked={selectedIds.includes(p.id)} onChange={e => setSelectedIds(prev => e.target.checked ? [...prev, p.id] : prev.filter(id => id !== p.id))} onClick={e => e.stopPropagation()} style={{ accentColor: S }} />
               <div style={{ width: 44, height: 44, background: G2, border: `0.5px solid ${G3}`, overflow: "hidden", flexShrink: 0 }}>
-                {p.images?.[0] ? <img src={p.images[0]} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ width: "100%", height: "100%", background: G3 }} />}
+                {p.images?.[0] ? <img src={p.images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ width: "100%", height: "100%", background: G3 }} />}
               </div>
               <div>
                 <div style={{ fontSize: 12, color: "#fff", marginBottom: 3, fontWeight: 500 }}>{p.name}</div>
@@ -403,7 +403,7 @@ export default function AdminShop() {
             <div key={p.id} style={{ background: G1, border: `0.5px solid ${G3}`, padding: "14px 16px" }} onClick={() => setModal(p)}>
               <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
                 <div style={{ width: 60, height: 60, background: G2, border: `0.5px solid ${G3}`, overflow: "hidden", flexShrink: 0 }}>
-                   {p.images?.[0] ? <img src={p.images[0]} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ width: "100%", height: "100%", background: G3 }} />}
+                  {p.images?.[0] ? <img src={p.images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ width: "100%", height: "100%", background: G3 }} />}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 2 }}>{p.name}</div>
