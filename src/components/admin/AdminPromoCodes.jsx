@@ -41,11 +41,16 @@ export default function AdminPromoCodes() {
   const cancel = () => { setShowForm(false); setEditingId(null); };
 
   const save = async () => {
-    if (!form.code.trim()) return;
+    if (!form.code.trim()) return alert("Code is required");
+    if (!form.discountPercent || form.discountPercent < 1 || form.discountPercent > 100) return alert("Discount must be 1-100%");
     setSaving(true);
     const payload = { ...form, code: form.code.trim().toUpperCase(), discountPercent: Number(form.discountPercent) };
     if (editingId) await base44.entities.PromoCode.update(editingId, payload).catch(() => {});
-    else await base44.entities.PromoCode.create(payload).catch(() => {});
+    else {
+      const existing = await base44.entities.PromoCode.filter({ code: payload.code }, "-created_date", 1).catch(() => []);
+      if (existing?.length > 0) { alert("Code already exists"); setSaving(false); return; }
+      await base44.entities.PromoCode.create(payload).catch(() => {});
+    }
     setSaving(false);
     setShowForm(false);
     setEditingId(null);

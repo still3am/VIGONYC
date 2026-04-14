@@ -27,6 +27,10 @@
         "Completed"
       ],
       "description": "Return status"
+    },
+    "internalNotes": {
+      "type": "string",
+      "description": "Internal notes for admin team"
     }
   },
   "required": [

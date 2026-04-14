@@ -93,8 +93,16 @@ function ProductModal({ product, onSave, onClose }) {
                 <SelectField label="Category *" value={form.cat} options={CATS} onChange={v => set("cat", v)} />
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <Field label="SKU" value={form.sku} onChange={v => set("sku", v)} placeholder="e.g. VIGO-SS25-001" />
+                <Field label="Weight (oz)" type="number" value={form.weight} onChange={v => set("weight", v)} placeholder="For shipping calc" />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                 <Field label="Collection" value={form.collection} onChange={v => set("collection", v)} />
                 <SelectField label="Tag" value={form.tag} options={TAGS} onChange={v => set("tag", v)} />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <Field label="SKU" value={form.sku} onChange={v => set("sku", v)} placeholder="e.g. VIGO-SS25-001" />
+                <Field label="Weight (oz)" type="number" value={form.weight} onChange={v => set("weight", v)} placeholder="For shipping calc" />
               </div>
               <div>
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 6 }}>Description</div>
@@ -377,6 +385,10 @@ export default function AdminShop() {
                   {p.tag && <span style={{ fontSize: 7, color: SD, border: `0.5px solid ${G3}`, padding: "1px 5px", letterSpacing: 1, textTransform: "uppercase" }}>{p.tag}</span>}
                   {p.collection && <span style={{ fontSize: 7, color: SD }}>{p.collection}</span>}
                 </div>
+                <div style={{ display: "flex", gap: 6, marginTop: 4, fontSize: 8, color: SD }}>
+                  {p.sku && <span>SKU: {p.sku}</span>}
+                  {p.weight && <span>{p.weight}oz</span>}
+                </div>
               </div>
               <div style={{ fontSize: 11, color: SD }}>{p.cat}</div>
               <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
@@ -407,7 +419,8 @@ export default function AdminShop() {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 2 }}>{p.name}</div>
-                  <div style={{ fontSize: 10, color: SD, marginBottom: 6 }}>{p.cat}{p.collection ? ` · ${p.collection}` : ""}</div>
+                  <div style={{ fontSize: 9, color: SD, marginBottom: 4 }}>{p.cat}{p.collection ? ` · ${p.collection}` : ""}</div>
+                  {(p.sku || p.weight) && <div style={{ fontSize: 8, color: SD, marginBottom: 6 }}>{p.sku && `SKU: ${p.sku}`}{p.sku && p.weight ? " · " : ""}{p.weight && `${p.weight}oz`}</div>}
                   <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                     <span style={{ fontSize: 16, fontWeight: 900, color: S }}>${p.price}</span>
                     <div style={{ display: "flex", alignItems: "center", gap: 4 }}>

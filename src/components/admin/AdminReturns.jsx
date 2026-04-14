@@ -13,6 +13,7 @@ export default function AdminReturns() {
   const [returns, setReturns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("All");
+  const [notes, setNotes] = useState({});
 
   const load = () => {
     base44.entities.ReturnRequest.list("-created_date", 200).catch(() => []).then(data => {
@@ -26,6 +27,15 @@ export default function AdminReturns() {
   const handleUpdate = async (id, status) => {
     await base44.entities.ReturnRequest.update(id, { status });
     setReturns(prev => prev.map(r => r.id === id ? { ...r, status } : r));
+  };
+
+  const handleSaveNote = async (id) => {
+    const note = notes[id]?.trim();
+    if (note) {
+      await base44.entities.ReturnRequest.update(id, { internalNotes: note });
+      setReturns(prev => prev.map(r => r.id === id ? { ...r, internalNotes: note } : r));
+      setNotes(prev => ({ ...prev, [id]: "" }));
+    }
   };
 
   const pending = returns.filter(r => r.status === "Pending").length;
@@ -63,14 +73,21 @@ export default function AdminReturns() {
                   <div style={{ fontSize: 10, color: SD, marginBottom: 4, wordBreak: "break-word" }}>{r.userEmail}</div>
                   <div style={{ fontSize: 11, color: S, marginBottom: 4 }}>Reason: {r.reason}</div>
                   {r.message && <div style={{ fontSize: 11, color: SD }}>{r.message}</div>}
+                  {r.internalNotes && <div style={{ fontSize: 9, color: "#fa0", marginTop: 4, padding: "6px 8px", background: "rgba(250,160,0,.06)", border: ".5px solid rgba(250,160,0,.2)" }}>📝 {r.internalNotes}</div>}
                   <div style={{ fontSize: 9, color: SD, marginTop: 8 }}>{r.created_date ? new Date(r.created_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : ""}</div>
                 </div>
-                {r.status === "Pending" && (
-                  <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                    <button onClick={() => handleUpdate(r.id, "Approved")} style={{ background: "#0c6", color: "#fff", border: "none", padding: "9px 16px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", fontWeight: 900 }}>Approve</button>
-                    <button onClick={() => handleUpdate(r.id, "Rejected")} style={{ background: "none", border: `0.5px solid #e03`, color: "#e03", padding: "9px 14px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>Reject</button>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, flexShrink: 0 }}>
+                  {r.status === "Pending" && (
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button onClick={() => handleUpdate(r.id, "Approved")} style={{ background: "#0c6", color: "#fff", border: "none", padding: "9px 16px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", fontWeight: 900 }}>Approve</button>
+                      <button onClick={() => handleUpdate(r.id, "Rejected")} style={{ background: "none", border: `0.5px solid #e03`, color: "#e03", padding: "9px 14px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>Reject</button>
+                    </div>
+                  )}
+                  <div style={{ display: "flex", gap: 6, alignItems: "flex-end" }}>
+                    <textarea value={notes[r.id] || ""} onChange={e => setNotes(prev => ({ ...prev, [r.id]: e.target.value }))} placeholder="Internal note..." style={{ flex: 1, background: G2, border: `.5px solid ${G3}`, color: "#fff", padding: "6px 10px", fontSize: 9, outline: "none", fontFamily: "inherit", minHeight: 32, resize: "none" }} />
+                    <button onClick={() => handleSaveNote(r.id)} style={{ background: notes[r.id]?.trim() ? S : G3, color: notes[r.id]?.trim() ? "#000" : SD, border: "none", padding: "6px 10px", fontSize: 8, cursor: notes[r.id]?.trim() ? "pointer" : "not-allowed", fontFamily: "inherit", whiteSpace: "nowrap" }}>Save</button>
                   </div>
-                )}
+                </div>
               </div>
             </div>
           );

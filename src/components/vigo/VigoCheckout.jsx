@@ -21,8 +21,9 @@ export default function VigoCheckout() {
   const [shippingMethod, setShippingMethod] = useState("standard");
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
-  const [promoDiscount, setPromoDiscount] = useState(10);
+  const [promoDiscount, setPromoDiscount] = useState(0);
   const [promoError, setPromoError] = useState(false);
+  const [checkingPromo, setCheckingPromo] = useState(false);
   const [placing, setPlacing] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderId, setOrderId] = useState("");
@@ -49,6 +50,7 @@ export default function VigoCheckout() {
         console.error("Failed to load cart:", e);
       } finally {
         setCartLoaded(true);
+        window.scrollTo(0, 0);
       }
     };
     load();
@@ -64,16 +66,22 @@ export default function VigoCheckout() {
   const total = subtotal + shipping + tax - discount;
 
   const applyPromo = async () => {
-    if (!promoCode.trim()) return;
+    if (!promoCode.trim()) { setPromoError(true); return; }
+    setCheckingPromo(true);
     try {
-      const results = await base44.entities.PromoCode.filter({ code: promoCode.trim().toUpperCase() }, "-created_date", 1);
+      const results = await base44.entities.PromoCode.filter({ code: promoCode.trim().toUpperCase() }, "-created_date", 1).catch(() => []);
       const promo = results?.[0];
-      if (!promo || promo.active === false) { setPromoError(true); setPromoApplied(false); return; }
-      if (promo.expiresAt && new Date(promo.expiresAt) < new Date()) { setPromoError(true); setPromoApplied(false); return; }
+      if (!promo) { setPromoError(true); setPromoApplied(false); setCheckingPromo(false); return; }
+      if (promo.active === false) { setPromoError(true); setPromoApplied(false); setCheckingPromo(false); return; }
+      const now = new Date();
+      if (promo.expiresAt) {
+        const expDate = new Date(promo.expiresAt);
+        if (expDate < now) { setPromoError(true); setPromoApplied(false); setCheckingPromo(false); return; }
+      }
       setPromoDiscount(promo.discountPercent);
       setPromoApplied(true);
       setPromoError(false);
-    } catch { setPromoError(true); }
+    } catch { setPromoError(true); setPromoApplied(false); } finally { setCheckingPromo(false); }
   };
 
   const setField = (k, v) => setContact(p => ({ ...p, [k]: v }));
@@ -123,14 +131,27 @@ export default function VigoCheckout() {
     );
   }
 
+  if (cartLoaded && cartItems.length === 0) {
+    return (
+      <div style={{ padding: "80px 32px", maxWidth: 640, margin: "0 auto", textAlign: "center" }}>
+        <div style={{ fontSize: 48, opacity: 0.15, marginBottom: 20 }}>🛍️</div>
+        <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 12 }}>Your Cart</div>
+        <h1 style={{ fontSize: 36, fontWeight: 900, letterSpacing: -2, marginBottom: 16 }}>Cart is Empty</h1>
+        <p style={{ fontSize: 13, color: SD, marginBottom: 32, lineHeight: 1.8 }}>Add some items to get started.</p>
+        <button onClick={() => navigate("/shop")} style={btnP}>Continue Shopping →</button>
+      </div>
+    );
+  }
+
   if (orderPlaced) {
     return (
       <div style={{ padding: "80px 32px", maxWidth: 600, margin: "0 auto", textAlign: "center" }}>
         <div style={{ fontSize: 48, marginBottom: 20 }}>✓</div>
         <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 12 }}>Order Confirmed</div>
         <h1 style={{ fontSize: 36, fontWeight: 900, letterSpacing: -1, marginBottom: 12 }}>Thank You!</h1>
-        <div style={{ fontSize: 12, color: SD, marginBottom: 8 }}>Your order has been placed successfully.</div>
-        <div style={{ fontSize: 14, fontWeight: 700, color: S, marginBottom: 32 }}>Order #{orderId}</div>
+        <div style={{ fontSize: 12, color: SD, marginBottom: 8 }}>Your order has been placed successfully. Check your email for a confirmation.</div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: S, marginBottom: 12 }}>Order #{orderId}</div>
+        <div style={{ fontSize: 11, color: SD, marginBottom: 32, padding: "12px", background: "rgba(192,192,192,.06)", border: ".5px solid rgba(192,192,192,.2)" }}>We'll send you a tracking number as soon as your order ships. Most orders ship within 24 hours.</div>
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
           <button onClick={() => navigate("/")} style={btnP}>Continue Shopping</button>
           <button onClick={() => navigate("/track-order")} style={btnGhost}>Track Order →</button>
@@ -144,9 +165,9 @@ export default function VigoCheckout() {
       <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 12 }}>✦ Secure Checkout</div>
       <h1 style={{ fontSize: 40, fontWeight: 900, letterSpacing: -2, marginBottom: 36 }}>Checkout</h1>
 
-      <div style={{ display: "flex", gap: 0, marginBottom: 40, borderBottom: `.5px solid ${G3}`, paddingBottom: 24 }}>
+      <div style={{ display: "flex", gap: 0, marginBottom: 40, borderBottom: `.5px solid ${G3}`, paddingBottom: 24, overflowX: "auto" }}>
         {[["1","Contact & Shipping"],["2","Shipping Method"],["3","Payment"]].map(([n,l]) => (
-          <div key={n} style={{ display: "flex", alignItems: "center", gap: 10, marginRight: 32, flexWrap: "wrap" }}>
+          <div key={n} style={{ display: "flex", alignItems: "center", gap: 10, marginRight: 32, flexWrap: "wrap", minWidth: "max-content" }}>
             <div style={{ width: 26, height: 26, borderRadius: "50%", background: parseInt(n) < step ? "#0c6" : parseInt(n) === step ? S : G1, border: `.5px solid ${parseInt(n) <= step ? (parseInt(n) < step ? "#0c6" : S) : G3}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 900, color: parseInt(n) <= step ? "#000" : SD, flexShrink: 0 }}>
               {parseInt(n) < step ? "✓" : n}
             </div>
@@ -155,7 +176,7 @@ export default function VigoCheckout() {
         ))}
       </div>
 
-      <div className="vigo-checkout-grid" style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 48 }}>
+      <div className="vigo-checkout-grid" style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 48, alignItems: "start" }}>
         <div>
           {step === 1 && (
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -272,9 +293,9 @@ export default function VigoCheckout() {
             </div>
 
             <div style={{ display: "flex", gap: 0, marginBottom: 20 }}>
-              <input value={promoCode} onChange={e => { setPromoCode(e.target.value); setPromoError(false); }} placeholder="Promo code" style={{ flex: 1, background: "var(--vt-card)", border: `.5px solid ${G3}`, borderRight: "none", color: "var(--vt-text)", padding: "10px 14px", fontSize: 11, outline: "none", fontFamily: "inherit" }} />
-              <button onClick={applyPromo} style={{ background: promoApplied ? "#0c6" : S, color: "#000", border: "none", padding: "10px 16px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
-                {promoApplied ? "✓ Applied" : "Apply"}
+              <input value={promoCode} onChange={e => { setPromoCode(e.target.value); setPromoError(false); }} onKeyDown={e => e.key === "Enter" && applyPromo()} placeholder="Promo code" style={{ flex: 1, background: "var(--vt-card)", border: `.5px solid ${promoError ? "#e03" : G3}`, borderRight: "none", color: "var(--vt-text)", padding: "10px 14px", fontSize: 11, outline: "none", fontFamily: "inherit" }} disabled={promoApplied} />
+              <button onClick={() => { if (promoApplied) { setPromoApplied(false); setPromoCode(""); setPromoDiscount(0); } else { applyPromo(); } }} disabled={checkingPromo} style={{ background: promoApplied ? "rgba(224,48,48,.2)" : S, color: promoApplied ? "#e03" : "#000", border: "none", padding: "10px 16px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", fontWeight: 900, cursor: checkingPromo ? "not-allowed" : "pointer", fontFamily: "inherit", whiteSpace: "nowrap", opacity: checkingPromo ? 0.6 : 1 }}>
+                {checkingPromo ? "..." : promoApplied ? "Remove" : "Apply"}
               </button>
             </div>
             {promoError && <div style={{ fontSize: 10, color: "#e03", marginBottom: 12 }}>Invalid or expired promo code.</div>}
@@ -295,7 +316,11 @@ export default function VigoCheckout() {
         </div>
       </div>
       <style>{`
-        @media(max-width:900px){.vigo-checkout-grid{grid-template-columns:1fr !important;} .vigo-2col-sm,.vigo-3col-sm{grid-template-columns:1fr !important;}}
+        @media(max-width:900px){
+          .vigo-checkout-grid{grid-template-columns:1fr !important;}
+          .vigo-2col-sm,.vigo-3col-sm{grid-template-columns:1fr !important;}
+          .vigo-checkout-grid > div:last-child{position:sticky;top:20px;}
+        }
       `}</style>
     </div>
   );
