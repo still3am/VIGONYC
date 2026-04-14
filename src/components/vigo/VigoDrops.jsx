@@ -330,23 +330,7 @@ export default function VigoDrops() {
               </div>
             )}
 
-            <div style={{ background: G1, border: `.5px solid ${G3}` }}>
-              <div style={{ padding: "10px 16px", borderBottom: `.5px solid ${G3}`, fontSize: 7, letterSpacing: 3, color: SD, textTransform: "uppercase" }}>All Drops</div>
-              {ALL_DROPS.map(dr => (
-                <div key={dr.id} onClick={() => { setSelectedDrop(prev => prev?.id === dr.id ? null : dr); if (dr.date) setViewDate(new Date(dr.date.getFullYear(), dr.date.getMonth(), 1)); }} style={{ padding: "12px 16px", borderBottom: `.5px solid ${G3}`, cursor: "pointer", background: selectedDrop?.id === dr.id ? "rgba(192,192,192,.05)" : "transparent", transition: "background .15s", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}
-                  onMouseEnter={e => { if (selectedDrop?.id !== dr.id) e.currentTarget.style.background = "rgba(192,192,192,.03)"; }}
-                  onMouseLeave={e => { if (selectedDrop?.id !== dr.id) e.currentTarget.style.background = "transparent"; }}>
-                  <div>
-                    <div style={{ fontSize: 11, fontWeight: 700, marginBottom: 2 }}>{dr.series}</div>
-                    <div style={{ fontSize: 8, color: SD }}>{dr.date ? dr.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Date TBD"}</div>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
-                    <div style={{ width: 5, height: 5, borderRadius: "50%", background: dr.tagColor }} />
-                    <span style={{ fontSize: 7, color: dr.tagColor, letterSpacing: 1, textTransform: "uppercase" }}>{dr.tag}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+
           </div>
         </div>
       </div>
