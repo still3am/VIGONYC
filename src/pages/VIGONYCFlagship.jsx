@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { motion, AnimatePresence } from "framer-motion";
 import VigoNav from "../components/vigo/VigoNav";
 import VigoCartDrawer from "../components/vigo/VigoCartDrawer";
 import VigoBottomNav from "../components/vigo/VigoBottomNav";
@@ -120,11 +119,7 @@ export default function VIGONYCFlagship() {
       <SizeGuideModal open={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} />
       <VigoCartDrawer open={cartOpen} onClose={handleCartClose} onCheckout={() => { navigate("/checkout"); handleCartClose(); }} />
       <VigoNav cartCount={cartCount} onCartOpen={() => setCartOpen(true)} logo={LOGO} />
-      <AnimatePresence mode="wait">
-        <motion.div key={location.pathname} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.22, ease: "easeInOut" }}>
-          <Outlet context={ctx} />
-        </motion.div>
-      </AnimatePresence>
+      <Outlet context={ctx} />
       <VigoFooter logo={LOGO} />
       <VigoBottomNav />
       {showBackToTop && (
