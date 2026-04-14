@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
@@ -61,7 +62,7 @@ export default function VigoLookbook() {
             <div style={{ position: "absolute", top: 0, left: 0, width: 40, height: 40, borderTop: `2px solid ${S}`, borderLeft: `2px solid ${S}`, zIndex: 2 }} />
             <div style={{ position: "absolute", bottom: 0, right: 0, width: 40, height: 40, borderBottom: `2px solid ${S}`, borderRight: `2px solid ${S}`, zIndex: 2 }} />
             {heroEntry.image_url ? (
-              <img src={heroEntry.image_url} alt={heroEntry.title} style={{ width: "100%", height: 400, objectFit: "cover", transform: hovered === "hero" ? "scale(1.03)" : "scale(1)", transition: "transform .6s" }} />
+               <img src={heroEntry.image_url} alt={heroEntry.title} loading="lazy" style={{ width: "100%", height: 400, objectFit: "cover", transform: hovered === "hero" ? "scale(1.03)" : "scale(1)", transition: "transform .6s" }} />
             ) : (
               <div style={{ height: 400, display: "flex", alignItems: "center", justifyContent: "center", color: SD }}>No Image</div>
             )}
@@ -89,7 +90,7 @@ export default function VigoLookbook() {
               onMouseLeave={() => setHovered(null)}>
               <div style={{ paddingBottom: "100%", position: "relative" }}>
                 {e.image_url ? (
-                  <img src={e.image_url} alt={e.title} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", transform: hovered === i ? "scale(1.05)" : "scale(1)", transition: "transform .5s" }} />
+                   <img src={e.image_url} alt={e.title} loading="lazy" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", transform: hovered === i ? "scale(1.05)" : "scale(1)", transition: "transform .5s" }} />
                 ) : (
                   <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: SD }}>No Image</div>
                 )}

@@ -143,13 +143,13 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
         </div>
 
         {/* Mobile menu */}
-        {mobileOpen &&
+        {mobileOpen && (
         <div style={{ background: "var(--vt-bg)", borderTop: `.5px solid ${G3}`, padding: "20px 24px", display: "flex", flexDirection: "column", gap: 18 }}>
-            {links.map((l) =>
+            {links.map((l) => (
           <NavLink key={l.to} to={l.to} onClick={() => setMobileOpen(false)} style={({ isActive }) => ({ textDecoration: "none", fontSize: 10, letterSpacing: 4, textTransform: "uppercase", color: isActive ? "var(--vt-text)" : SD })}>{l.label}</NavLink>
-          )}
+            ))}
           </div>
-        }
+        )}
       </nav>
 
       <style>{`

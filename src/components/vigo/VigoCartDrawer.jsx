@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { X, Trash2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { PRODUCT_IMG } from "@/pages/VIGONYCFlagship";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -103,7 +104,7 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
 
             <div key={item.id} style={{ background: G2, border: `.5px solid ${G3}`, padding: "clamp(12px,2vw,16px)", marginBottom: 12, display: "flex", gap: 12 }}>
               <div style={{ width: 60, height: 60, background: G1, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: `.5px solid ${G3}` }}>
-                {item.productImage ? <img src={item.productImage} alt={item.productName} style={{ width: 50, objectFit: "contain" }} /> : <div style={{ fontSize: 10, color: SD }}>No image</div>}
+                {item.productImage ? <img src={item.productImage} alt={item.productName} loading="lazy" style={{ width: 50, objectFit: "contain" }} /> : <div style={{ fontSize: 10, color: SD }}>No image</div>}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6, gap: 8 }}>
@@ -132,7 +133,7 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
               {suggestions.map(p => (
                 <div key={p.id} style={{ display: "flex", gap: 10, marginBottom: 12, alignItems: "center" }}>
                   <div style={{ width: 48, height: 48, background: G2, flexShrink: 0, border: `.5px solid ${G3}`, overflow: "hidden" }}>
-                    {p.images?.[0] && <img src={p.images[0]} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
+                    {p.images?.[0] && <img src={p.images[0]} alt={p.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 10, fontWeight: 700, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--vt-text)" }}>{p.name}</div>
