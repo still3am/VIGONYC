@@ -52,10 +52,10 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
 
   return (
     <>
-      {/* Top silver accent bar */}
+      {/* Top silver accent bar & Ticker - hidden on checkout */}
+      {!isCheckout && (
+      <>
       <div style={{ height: 2, background: "linear-gradient(90deg,transparent,#888,#E8E8E8,#C0C0C0,#E8E8E8,#888,transparent)" }} />
-
-      {/* Ticker */}
       <div style={{ background: "var(--vt-bg)", borderBottom: `.5px solid ${G3}`, overflow: "hidden", height: 30, display: "flex", alignItems: "center" }}>
         <div className="vigo-ticker-track">
           {[...Array(2)].map((_, ri) =>
@@ -70,6 +70,8 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
           )}
         </div>
       </div>
+      </>
+      )}
 
       {/* Search overlay */}
       {searchOpen &&
@@ -84,6 +86,13 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
 
       {/* Main nav */}
       <nav className="vigo-nav-top" style={{ position: "sticky", top: 0, zIndex: 100, background: scrolled ? "var(--vt-nav-scrolled)" : "var(--vt-bg)", borderBottom: `.5px solid ${G3}`, transition: "background .3s", backdropFilter: scrolled ? "blur(12px)" : "none" }}>
+        {isCheckout ? (
+          <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <button onClick={() => navigate("/shop")} style={{ background: "none", border: "none", color: SD, cursor: "pointer", fontSize: 11, fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6 }}>← Shop</button>
+            <img src={logo} alt="VIGONYC" style={{ width: 36, height: 36, objectFit: "contain" }} />
+            <div style={{ width: 60 }} />
+          </div>
+        ) : (
         <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
           {!isRoot ?
           <button onClick={() => navigate(-1)} className="vigo-back-btn" style={{ background: "none", border: "none", color: "var(--vt-text)", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontFamily: "inherit", padding: "4px 0" }}>

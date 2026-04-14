@@ -27,6 +27,8 @@ export default function VigoCheckout() {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderId, setOrderId] = useState("");
   const [contact, setContact] = useState({ firstName: "", lastName: "", email: "", phone: "", address: "", city: "", state: "", zip: "" });
+  const [isGift, setIsGift] = useState(false);
+  const [giftMessage, setGiftMessage] = useState("");
 
   useEffect(() => {
     const load = async () => {
@@ -88,6 +90,9 @@ export default function VigoCheckout() {
         status: "Pending",
         shippingAddress: `${contact.address}, ${contact.city}, ${contact.state} ${contact.zip}`,
         userEmail: contact.email,
+        shippingMethod,
+        isGift,
+        giftMessage: isGift ? giftMessage : "",
       });
       // Update stock
       for (const item of cartItems) {
@@ -142,7 +147,9 @@ export default function VigoCheckout() {
       <div style={{ display: "flex", gap: 0, marginBottom: 40, borderBottom: `.5px solid ${G3}`, paddingBottom: 24 }}>
         {[["1","Contact & Shipping"],["2","Shipping Method"],["3","Payment"]].map(([n,l]) => (
           <div key={n} style={{ display: "flex", alignItems: "center", gap: 10, marginRight: 32, flexWrap: "wrap" }}>
-            <div style={{ width: 26, height: 26, borderRadius: "50%", background: parseInt(n) <= step ? S : G1, border: `.5px solid ${parseInt(n) <= step ? S : G3}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 900, color: parseInt(n) <= step ? "#000" : SD, flexShrink: 0 }}>{n}</div>
+            <div style={{ width: 26, height: 26, borderRadius: "50%", background: parseInt(n) < step ? "#0c6" : parseInt(n) === step ? S : G1, border: `.5px solid ${parseInt(n) <= step ? (parseInt(n) < step ? "#0c6" : S) : G3}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 900, color: parseInt(n) <= step ? "#000" : SD, flexShrink: 0 }}>
+              {parseInt(n) < step ? "✓" : n}
+            </div>
             <span style={{ fontSize: 9, letterSpacing: 2, textTransform: "uppercase", color: parseInt(n) <= step ? "var(--vt-text)" : SD }}>{l}</span>
           </div>
         ))}

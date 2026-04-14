@@ -15,9 +15,11 @@ export default function VigoSearch() {
   const query = searchParams.get("q") || "";
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [inputVal, setInputVal] = useState(query);
 
   useEffect(() => {
     document.title = query ? `"${query}" — VIGONYC` : "Search — VIGONYC";
+    setInputVal(query);
     return () => { document.title = "VIGONYC — NYC Streetwear"; };
   }, [query]);
 
@@ -40,6 +42,16 @@ export default function VigoSearch() {
 
   return (
     <div style={{ padding: "clamp(32px,5vw,64px) clamp(20px,4vw,32px)", maxWidth: 1200, margin: "0 auto" }}>
+      <form onSubmit={e => { e.preventDefault(); if (inputVal.trim()) navigate(`/search?q=${encodeURIComponent(inputVal.trim())}`); }} style={{ display: "flex", gap: 0, marginBottom: 32, maxWidth: 560 }}>
+        <input
+          value={inputVal}
+          onChange={e => setInputVal(e.target.value)}
+          placeholder="Search products, styles, drops..."
+          autoFocus
+          style={{ flex: 1, background: "var(--vt-card)", border: `.5px solid ${G3}`, borderRight: "none", color: "var(--vt-text)", padding: "14px 20px", fontSize: 13, outline: "none", fontFamily: "inherit" }}
+        />
+        <button type="submit" style={{ background: S, color: "#000", border: "none", padding: "14px 24px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Search</button>
+      </form>
       <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ Search</div>
       <h1 style={{ fontSize: "clamp(28px,5vw,52px)", fontWeight: 900, letterSpacing: -2, marginBottom: 8 }}>
         {query ? `"${query}"` : "Search"}
@@ -63,7 +75,13 @@ export default function VigoSearch() {
             <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
               wishlisted={wishlist.includes(p.id)}
               onWishlist={() => toggleWishlist(p.id)}
-              onAdd={() => addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: "M", color: "Black", productImage: p.images?.[0] || productImg, price: p.price })}
+              onAdd={() => {
+                if (p.sizes && p.sizes.length > 1) {
+                  navigate(`/product/${p.id}`);
+                } else {
+                  addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: p.sizes?.[0] || null, color: p.colors?.[0] || "Black", productImage: p.images?.[0] || productImg, price: p.price });
+                }
+              }}
               onClick={() => navigate(`/product/${p.id}`)} />
           ))}
         </div>

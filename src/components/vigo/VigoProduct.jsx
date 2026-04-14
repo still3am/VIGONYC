@@ -52,9 +52,17 @@ export default function VigoProduct() {
       const recent = JSON.parse(localStorage.getItem("vigo_recent") || "[]");
       const updated = [id, ...recent.filter(x => x !== id)].slice(0, MAX_RECENT);
       localStorage.setItem("vigo_recent", JSON.stringify(updated));
-      base44.entities.Product.list("-created_date", 8).then(all => {
-        setRelated(all.filter(x => x.id !== id).slice(0, 4));
-      }).catch(() => {});
+      base44.entities.Product.filter({ cat: p.cat }, "-created_date", 8)
+        .then(sameCat => {
+          const filtered = sameCat.filter(x => x.id !== id);
+          if (filtered.length >= 3) {
+            setRelated(filtered.slice(0, 4));
+          } else {
+            base44.entities.Product.list("-created_date", 8).then(all => {
+              setRelated(all.filter(x => x.id !== id).slice(0, 4));
+            });
+          }
+        }).catch(() => {});
       base44.entities.Review.filter({ productId: id }, "-created_date", 50).then(setReviews).catch(() => {});
       base44.auth.me().then(u => {
         if (u) {
@@ -107,17 +115,19 @@ export default function VigoProduct() {
       toast.error("Please select a size");
       return;
     }
-    addToCart({
-      id: product.id,
-      productId: product.id,
-      name: product.name,
-      productName: product.name,
-      size: selectedSize,
-      color: selectedColor,
-      meta: `Size: ${selectedSize} · Color: ${selectedColor}`,
-      price: product.price,
-      productImage: images[0],
-    });
+    for (let i = 0; i < qty; i++) {
+      addToCart({
+        id: product.id,
+        productId: product.id,
+        name: product.name,
+        productName: product.name,
+        size: selectedSize,
+        color: selectedColor,
+        meta: `Size: ${selectedSize} · Color: ${selectedColor}`,
+        price: product.price,
+        productImage: images[0],
+      });
+    }
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
