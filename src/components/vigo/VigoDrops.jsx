@@ -87,7 +87,7 @@ export default function VigoDrops() {
       return { ...d, date: dateObj };
     });
     setAllDrops(mapped);
-    setSelectedDrop(prev => prev ? prev : (mapped.length > 0 ? mapped[0] : null));
+    setSelectedDrop(prev => prev ? mapped.find(d => d.id === prev.id) || null : null);
   }, [setAllDrops, setSelectedDrop]);
 
   useEffect(() => { loadDrops(); }, [loadDrops]);
@@ -244,7 +244,7 @@ export default function VigoDrops() {
                 return (
                   <div
                     key={i}
-                    onClick={() => { if (drop) { setSelectedDrop(drop); setViewDate(new Date(drop.date.getFullYear(), drop.date.getMonth(), 1)); } }}
+                    onClick={() => { if (drop) { setSelectedDrop(prev => prev?.id === drop.id ? null : drop); setViewDate(new Date(drop.date.getFullYear(), drop.date.getMonth(), 1)); } }}
                     style={{ minHeight: "clamp(52px,8vw,72px)", padding: "8px 6px 6px", borderRight: (i + 1) % 7 !== 0 ? `.5px solid ${G3}` : "none", borderBottom: `.5px solid ${G3}`, cursor: drop ? "pointer" : "default", background: isSelected ? "rgba(192,192,192,.08)" : "transparent", transition: "background .15s", position: "relative" }}
                     onMouseEnter={e => { if (drop && !isSelected) e.currentTarget.style.background = "rgba(192,192,192,.04)"; }}
                     onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
@@ -333,7 +333,7 @@ export default function VigoDrops() {
             <div style={{ background: G1, border: `.5px solid ${G3}` }}>
               <div style={{ padding: "10px 16px", borderBottom: `.5px solid ${G3}`, fontSize: 7, letterSpacing: 3, color: SD, textTransform: "uppercase" }}>All Drops</div>
               {ALL_DROPS.map(dr => (
-                <div key={dr.id} onClick={() => { setSelectedDrop(dr); if (dr.date) setViewDate(new Date(dr.date.getFullYear(), dr.date.getMonth(), 1)); }} style={{ padding: "12px 16px", borderBottom: `.5px solid ${G3}`, cursor: "pointer", background: selectedDrop?.id === dr.id ? "rgba(192,192,192,.05)" : "transparent", transition: "background .15s", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}
+                <div key={dr.id} onClick={() => { setSelectedDrop(prev => prev?.id === dr.id ? null : dr); if (dr.date) setViewDate(new Date(dr.date.getFullYear(), dr.date.getMonth(), 1)); }} style={{ padding: "12px 16px", borderBottom: `.5px solid ${G3}`, cursor: "pointer", background: selectedDrop?.id === dr.id ? "rgba(192,192,192,.05)" : "transparent", transition: "background .15s", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}
                   onMouseEnter={e => { if (selectedDrop?.id !== dr.id) e.currentTarget.style.background = "rgba(192,192,192,.03)"; }}
                   onMouseLeave={e => { if (selectedDrop?.id !== dr.id) e.currentTarget.style.background = "transparent"; }}>
                   <div>
