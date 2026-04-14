@@ -104,6 +104,9 @@ export default function VigoDrops() {
 
   const ALL_DROPS = allDrops;
   const PAST_DROPS = allDrops.filter(d => d.status === "soldout");
+  const pastLabel = PAST_DROPS.length > 0
+   ? PAST_DROPS.map(d => d.name).join(", ") + " — Sold Out"
+   : "Past Drops — Sold Out";
   const nextDrop = allDrops.find(d => d.status === "live") || allDrops.find(d => d.status === "upcoming");
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
@@ -341,7 +344,7 @@ export default function VigoDrops() {
             <div style={{ flex: 1, height: .5, background: G3 }} />
             <div style={{ fontSize: 8, letterSpacing: 3, color: SD, textTransform: "uppercase", display: "flex", alignItems: "center", gap: 8, whiteSpace: "nowrap" }}>
               <div style={{ width: 5, height: 5, background: "#e03", transform: "rotate(45deg)" }} />
-              Past Drops — Sold Out
+              {pastLabel}
               <div style={{ width: 5, height: 5, background: "#e03", transform: "rotate(45deg)" }} />
             </div>
             <div style={{ flex: 1, height: .5, background: G3 }} />
@@ -352,7 +355,7 @@ export default function VigoDrops() {
                 <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.55)", zIndex: 3, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
                   <span style={{ fontSize: 8, letterSpacing: 3, color: SD, textTransform: "uppercase", border: `.5px solid ${G3}`, padding: "5px 12px" }}>Sold Out</span>
                 </div>
-                <ProductCard product={p} img={productImg} wishlisted={wishlist.includes(p.id)} onWishlist={() => {}} onAdd={() => {}} onClick={() => navigate(`/product/${p.id}`)} />
+                <ProductCard product={p} img={p.images?.[0] || productImg} wishlisted={wishlist.includes(p.id)} onWishlist={() => {}} onAdd={() => {}} onClick={() => navigate(`/product/${p.id}`)} />
               </div>
             ))}
           </div>

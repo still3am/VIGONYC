@@ -6,7 +6,7 @@ const G3 = "var(--vt-border)";
 const SD = "var(--vt-sub)";
 
 const cols = {
-  Shop: [["New Arrivals", "/new"], ["Tops", "/shop?cat=Tops"], ["Bottoms", "/shop?cat=Bottoms"], ["Outerwear", "/shop?cat=Outerwear"], ["Accessories", "/shop?cat=Accessories"], ["Drop Calendar", "/drops"]],
+  Shop: [["New Arrivals", "/new"], ["Tops", "/shop?cat=Tops"], ["Bottoms", "/shop?cat=Bottoms"], ["Outerwear", "/shop?cat=Outerwear"], ["Accessories", "/shop?cat=Accessories"], ["Wishlist", "/wishlist"], ["Drop Calendar", "/drops"]],
   Info: [["About", "/about"], ["Lookbook", "/lookbook"], ["FAQ", "/faq"]],
   Support: [["Contact", "/contact"], ["Track Order", "/track-order"], ["Returns", "/returns"], ["Size Guide", "/shop"], ["Terms of Service", "/terms"], ["Privacy Policy", "/privacy"]]
 };
@@ -35,6 +35,14 @@ export default function VigoFooter({ logo }) {
             </div>
           </div>
         ))}
+      </div>
+      {/* Newsletter */}
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "20px 32px", borderTop: `.5px solid ${G3}`, display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", justifyContent: "space-between" }}>
+        <div style={{ fontSize: 11, color: SD }}>Stay in the loop — get first access to every drop.</div>
+        <div style={{ display: "flex", gap: 0 }}>
+          <input placeholder="your@email.com" style={{ background: "var(--vt-card)", border: `.5px solid ${G3}`, borderRight: "none", color: "var(--vt-text)", padding: "10px 16px", fontSize: 11, outline: "none", fontFamily: "inherit", width: 220 }} />
+          <button style={{ background: S, color: "#000", border: "none", padding: "10px 16px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Join →</button>
+        </div>
       </div>
       {/* Social + copyright bar */}
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "20px 32px", borderTop: `.5px solid ${G3}`, display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>

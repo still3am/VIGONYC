@@ -29,6 +29,7 @@ export default function VigoProduct() {
   const [activeThumb, setActiveThumb] = useState(0);
   const [added, setAdded] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [zoomed, setZoomed] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [notifyEmail, setNotifyEmail] = useState("");
   const [notifySubmitted, setNotifySubmitted] = useState(false);
@@ -52,8 +53,10 @@ export default function VigoProduct() {
       const recent = JSON.parse(localStorage.getItem("vigo_recent") || "[]");
       const updated = [id, ...recent.filter(x => x !== id)].slice(0, MAX_RECENT);
       localStorage.setItem("vigo_recent", JSON.stringify(updated));
-      base44.entities.Product.list("-created_date", 8).then(all => {
-        setRelated(all.filter(x => x.id !== id).slice(0, 4));
+      base44.entities.Product.filter({ cat: p.cat }, "-created_date", 8).then(sameCat => {
+        const filtered = sameCat.filter(x => x.id !== id);
+        if (filtered.length >= 3) { setRelated(filtered.slice(0, 4)); }
+        else { base44.entities.Product.list("-created_date", 8).then(all => { setRelated(all.filter(x => x.id !== id).slice(0, 4)); }).catch(() => {}); }
       }).catch(() => {});
       base44.entities.Review.filter({ productId: id }, "-created_date", 50).then(setReviews).catch(() => {});
       base44.auth.me().then(u => {
@@ -174,20 +177,26 @@ export default function VigoProduct() {
                   else setActiveThumb(t => Math.max(t - 1, 0));
                 }}
               >
-                {allMedia[activeThumb]?.type === "video" ? (
-                  <video
-                    key={allMedia[activeThumb].url}
-                    src={allMedia[activeThumb].url}
-                    controls
-                    autoPlay
-                    muted
-                    playsInline
-                    loop
-                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", background: "#000" }}
-                  />
-                ) : (
-                  <img src={allMedia[activeThumb]?.url || productImg} alt={product.name} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                )}
+                {zoomed && (
+                    <div onClick={() => setZoomed(false)} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,.92)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "zoom-out" }}>
+                      <img src={allMedia[activeThumb]?.url || productImg} alt={product.name} style={{ maxWidth: "90vw", maxHeight: "90vh", objectFit: "contain" }} />
+                      <button onClick={() => setZoomed(false)} style={{ position: "absolute", top: 20, right: 20, background: "none", border: "none", color: "#fff", fontSize: 24, cursor: "pointer" }}>✕</button>
+                    </div>
+                  )}
+                  {allMedia[activeThumb]?.type === "video" ? (
+                    <video
+                      key={allMedia[activeThumb].url}
+                      src={allMedia[activeThumb].url}
+                      controls
+                      autoPlay
+                      muted
+                      playsInline
+                      loop
+                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", background: "#000" }}
+                    />
+                  ) : (
+                    <img src={allMedia[activeThumb]?.url || productImg} alt={product.name} onClick={() => setZoomed(true)} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", cursor: "zoom-in" }} />
+                  )}
                 {allMedia.length > 1 && (
                   <div style={{ position: "absolute", bottom: 12, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 6, zIndex: 2 }}>
                     {allMedia.map((_, i) => (

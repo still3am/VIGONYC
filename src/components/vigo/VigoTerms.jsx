@@ -34,7 +34,10 @@ export default function VigoTerms() {
       <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
         {SECTIONS.map((s, i) => (
           <div key={i} id={`section-${i}`} style={{ borderTop: `.5px solid ${G3}`, padding: "28px 0" }}>
-            <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 12 }}>{String(i + 1).padStart(2, "0")} — {s.title}</div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase" }}>{String(i + 1).padStart(2, "0")} — {s.title}</div>
+              <button onClick={() => navigator.clipboard.writeText(s.body)} style={{ fontSize: 8, letterSpacing: 1, color: SD, background: "none", border: `.5px solid ${G3}`, padding: "4px 10px", cursor: "pointer", fontFamily: "inherit", textTransform: "uppercase" }}>Copy</button>
+            </div>
             <p style={{ fontSize: 13, color: SD, lineHeight: 1.9 }}>{s.body}</p>
           </div>
         ))}

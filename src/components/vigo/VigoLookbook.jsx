@@ -16,6 +16,7 @@ export default function VigoLookbook() {
   const [entries, setEntries] = useState([]);
   const [activeCollection, setActiveCollection] = useState("All");
   const [loading, setLoading] = useState(true);
+  const [lightboxEntry, setLightboxEntry] = useState(null);
 
   useEffect(() => {
     base44.entities.LookbookEntry.list("sort_order", 100).then(data => { setEntries(data || []); setLoading(false); }).catch(() => setLoading(false));
@@ -39,6 +40,20 @@ export default function VigoLookbook() {
 
   return (
     <div>
+      {lightboxEntry && (
+        <div onClick={() => setLightboxEntry(null)} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,.95)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+          <div style={{ maxWidth: "90vw", maxHeight: "90vh", position: "relative" }} onClick={e => e.stopPropagation()}>
+            <img src={lightboxEntry.image_url} alt={lightboxEntry.title} style={{ maxWidth: "100%", maxHeight: "85vh", objectFit: "contain", display: "block" }} />
+            <div style={{ padding: "16px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>{lightboxEntry.title}</div>
+                {lightboxEntry.subtitle && <div style={{ fontSize: 10, color: "#888", marginTop: 4 }}>{lightboxEntry.subtitle}</div>}
+              </div>
+              <button onClick={() => setLightboxEntry(null)} style={{ background: "none", border: ".5px solid #444", color: "#888", padding: "6px 14px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
       <div style={{ padding: "64px 32px 48px", borderBottom: `.5px solid ${G3}` }}>
         <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 10 }}>✦ SS25 — Visual Archive</div>
         <h1 style={{ fontSize: 52, fontWeight: 900, letterSpacing: -2, marginBottom: 16 }}>Lookbook</h1>
@@ -55,6 +70,7 @@ export default function VigoLookbook() {
         )}
         {heroEntry && (
         <div style={{ position: "relative", background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, marginBottom: 2, overflow: "hidden", cursor: "pointer" }}
+          onClick={() => setLightboxEntry(heroEntry)}
           onMouseEnter={() => setHovered("hero")}
           onMouseLeave={() => setHovered(null)}>
           <div style={{ position: "relative", minHeight: 400, overflow: "hidden" }}>
@@ -85,8 +101,9 @@ export default function VigoLookbook() {
         <div className="vigo-lookbook-cols" style={{ columns: 3, gap: 2 }}>
           {gridEntries.map((e, i) => (
             <div key={e.id} style={{ breakInside: "avoid", marginBottom: 2, background: G1, border: `.5px solid ${G3}`, position: "relative", overflow: "hidden", cursor: "pointer" }}
-              onMouseEnter={() => setHovered(i)}
-              onMouseLeave={() => setHovered(null)}>
+                onClick={() => setLightboxEntry(e)}
+                onMouseEnter={() => setHovered(i)}
+                onMouseLeave={() => setHovered(null)}>
               <div style={{ paddingBottom: "100%", position: "relative" }}>
                 {e.image_url ? (
                   <img src={e.image_url} alt={e.title} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", transform: hovered === i ? "scale(1.05)" : "scale(1)", transition: "transform .5s" }} />
