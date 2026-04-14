@@ -149,7 +149,6 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
             )}
             </div>
             )}
-          </div>
         </nav>
 
       <style>{`
