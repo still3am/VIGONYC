@@ -40,6 +40,7 @@ export default function VigoBottomNav({ cartCount = 0, onCartOpen }) {
         backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
         display: "flex",
+        height: 72,
         padding: "0 0 env(safe-area-inset-bottom)",
       }}>
         <button onClick={onCartOpen} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 5, color: "var(--vt-sub)", background: "none", border: "none", cursor: "pointer", padding: "10px 0 8px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", fontFamily: "inherit", position: "relative", WebkitTapHighlightColor: "transparent" }}>
@@ -91,7 +92,7 @@ export default function VigoBottomNav({ cartCount = 0, onCartOpen }) {
       </nav>
       <style>{`
         @media (min-width: 900px) { .vigo-bottom-nav { display: none !important; } }
-        @media (max-width: 899px) { body { padding-bottom: calc(68px + env(safe-area-inset-bottom)); } }
+        @media (max-width: 899px) { body { padding-bottom: calc(72px + env(safe-area-inset-bottom)); } }
       `}</style>
     </>
   );
