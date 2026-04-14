@@ -22,6 +22,7 @@ const DEFAULT_SETTINGS = [
   { key: "hero_sub", value: "Born in New York City. Built from concrete and culture.", section: "hero" },
   { key: "banner_text", value: "SS25 Collection — Now Live", section: "global" },
   { key: "banner_dot", value: "green", section: "global" },
+  { key: "banner_visible", value: "true", section: "global" },
   { key: "ticker_text", value: "Free shipping over $150 ✦ New drop every friday ✦ VIGONYC SS25 ✦ NYC made — limited units ✦ No restocks. Move fast. ✦ Free returns within 30 days", section: "global" },
   { key: "free_shipping_threshold", value: "150", section: "global" },
   { key: "contact_email", value: "hello@vigonyc.com", section: "contact" },
@@ -82,7 +83,16 @@ export default function AdminAbout() {
             <Field label="Headline Line 1" value={settings.hero_headline_1} onChange={v => set("hero_headline_1", v)} />
             <Field label="Headline Line 2" value={settings.hero_headline_2} onChange={v => set("hero_headline_2", v)} />
             <TextArea label="Hero Subheading" value={settings.hero_sub} onChange={v => set("hero_sub", v)} />
-            <Field label="Banner Text" value={settings.banner_text} onChange={v => set("banner_text", v)} />
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Banner Text</div>
+                <button onClick={() => set("banner_visible", settings.banner_visible === "false" ? "true" : "false")} style={{ fontSize: 7, letterSpacing: 2, textTransform: "uppercase", border: `.5px solid ${settings.banner_visible === "false" ? "#e03" : "#0c6"}`, background: "transparent", color: settings.banner_visible === "false" ? "#e03" : "#0c6", padding: "3px 10px", cursor: "pointer", fontFamily: "inherit", transition: "all .2s" }}>
+                  {settings.banner_visible === "false" ? "● Hidden" : "● Visible"}
+                </button>
+              </div>
+              <input value={settings.banner_text ?? ""} onChange={e => set("banner_text", e.target.value)} style={{ width: "100%", background: G2, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 14px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit", opacity: settings.banner_visible === "false" ? 0.4 : 1 }}
+                onFocus={e => e.target.style.borderColor = S} onBlur={e => e.target.style.borderColor = G3} />
+            </div>
             <div>
               <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Banner Dot Status</div>
               <div style={{ display: "flex", gap: 8 }}>
