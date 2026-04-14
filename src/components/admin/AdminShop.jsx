@@ -20,12 +20,23 @@ function ProductModal({ product, onSave, onClose }) {
   const [uploadingVid, setUploadingVid] = useState(false);
   const [pendingColor, setPendingColor] = useState("#C0C0C0");
   const [pendingColorName, setPendingColorName] = useState("");
+  // colorMeta stores {name -> hex} for display only, not saved to DB
+  const [colorMeta, setColorMeta] = useState(() => {
+    // Try to init from existing colors that look like hex
+    const meta = {};
+    (product?.colors || []).forEach(c => { if (c.startsWith("#")) meta[c] = c; });
+    return meta;
+  });
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
   const toggleArr = (k, v) => setForm(p => ({ ...p, [k]: p[k]?.includes(v) ? p[k].filter(x => x !== v) : [...(p[k] || []), v] }));
 
   const addPendingColor = () => {
     const name = pendingColorName.trim() || pendingColor;
-    if (!(form.colors || []).includes(name)) set("colors", [...(form.colors || []), name]);
+    if (!(form.colors || []).includes(name)) {
+      set("colors", [...(form.colors || []), name]);
+      // Store hex so we can show the swatch
+      setColorMeta(prev => ({ ...prev, [name]: pendingColor }));
+    }
     setPendingColorName("");
   };
 
@@ -75,9 +86,9 @@ function ProductModal({ product, onSave, onClose }) {
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center", marginBottom: 8 }}>
               {(form.colors || []).map(c => (
                 <div key={c} style={{ display: "flex", alignItems: "center", gap: 4, background: G2, border: `0.5px solid ${G3}`, padding: "4px 8px 4px 6px" }}>
-                  <div style={{ width: 14, height: 14, borderRadius: "50%", background: c, border: "0.5px solid rgba(255,255,255,.2)", flexShrink: 0 }} />
+                  <div style={{ width: 14, height: 14, borderRadius: "50%", background: colorMeta[c] || c, border: "0.5px solid rgba(255,255,255,.2)", flexShrink: 0 }} />
                   <span style={{ fontSize: 10, color: "#fff" }}>{c}</span>
-                  <button onClick={() => set("colors", form.colors.filter(x => x !== c))} style={{ background: "none", border: "none", color: "#e03", cursor: "pointer", fontSize: 12, lineHeight: 1, padding: "0 0 0 4px", fontFamily: "inherit" }}>✕</button>
+                  <button onClick={() => { set("colors", form.colors.filter(x => x !== c)); setColorMeta(prev => { const n = { ...prev }; delete n[c]; return n; }); }} style={{ background: "none", border: "none", color: "#e03", cursor: "pointer", fontSize: 12, lineHeight: 1, padding: "0 0 0 4px", fontFamily: "inherit" }}>✕</button>
                 </div>
               ))}
               <div style={{ display: "flex", alignItems: "center", gap: 6, background: G2, border: `0.5px dashed ${G3}`, padding: "4px 8px" }}>
