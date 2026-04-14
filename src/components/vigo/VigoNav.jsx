@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const S = "#C0C0C0";
 const SD = "var(--vt-sub)";
@@ -18,6 +19,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
   const [scrolled, setScrolled] = useState(false);
   const [query, setQuery] = useState("");
   const [logoTaps, setLogoTaps] = useState(0);
+  const { settings } = useSiteSettings();
   const navigate = useNavigate();
   const location = useLocation();
   const isRoot = location.pathname === "/" || location.pathname === "/shop" || location.pathname === "/drops" || location.pathname === "/wishlist" || location.pathname === "/account" || location.pathname === "/lookbook" || location.pathname === "/about";
@@ -54,7 +56,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
         <div className="vigo-ticker-track">
           {[...Array(2)].map((_, ri) =>
           <span key={ri} style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
-              {["Free shipping over $150", "New drop every friday", "VIGONYC SS25", "NYC made — limited units", "No restocks. Move fast.", "Free returns within 30 days"].map((t, i) =>
+              {(settings.ticker_text || "").split("✦").map(t => t.trim()).filter(Boolean).map((t, i) =>
             <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 24, padding: "0 12px" }}>
                   <span style={{ fontSize: 9, letterSpacing: 3, color: SD, textTransform: "uppercase", whiteSpace: "nowrap" }}>{t}</span>
                   <span style={{ color: S, fontSize: 8 }}>✦</span>

@@ -63,6 +63,14 @@
     "description": {
       "type": "string",
       "description": "Product description"
+    },
+    "stock": {
+      "type": "number",
+      "description": "Units in stock"
+    },
+    "inStock": {
+      "type": "boolean",
+      "description": "Whether product is available"
     }
   },
   "required": [

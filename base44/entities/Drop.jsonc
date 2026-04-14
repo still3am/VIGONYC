@@ -46,6 +46,17 @@
     "tag": {
       "type": "string",
       "description": "Display tag label"
+    },
+    "image": {
+      "type": "string",
+      "description": "Drop cover image URL"
+    },
+    "productIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of products in this drop"
     }
   },
   "required": [

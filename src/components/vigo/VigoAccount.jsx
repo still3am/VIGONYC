@@ -157,11 +157,11 @@ export default function VigoAccount() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { data: user } = useQuery({
+  const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['user'],
     queryFn: async () => {
-      const userData = await base44.auth.me();
-      return userData || {};
+      const userData = await base44.auth.me().catch(() => null);
+      return userData || null;
     }
   });
 
@@ -274,6 +274,17 @@ export default function VigoAccount() {
       setDeleting(false);
     }
   };
+
+  if (!userLoading && !user) {
+    return (
+      <div style={{ padding: "80px 32px", maxWidth: 640, margin: "0 auto", textAlign: "center" }}>
+        <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 16 }}>✦ Account</div>
+        <h1 style={{ fontSize: 36, fontWeight: 900, letterSpacing: -2, marginBottom: 16 }}>Sign In to Your Account</h1>
+        <p style={{ fontSize: 13, color: SD, marginBottom: 32 }}>Access your orders, saved addresses, and profile.</p>
+        <button onClick={() => base44.auth.redirectToLogin(window.location.href)} style={btnPrimary}>Sign In →</button>
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight: "80vh" }}>

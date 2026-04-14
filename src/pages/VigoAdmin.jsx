@@ -6,6 +6,9 @@ import AdminShop from "@/components/admin/AdminShop";
 import AdminDrops from "@/components/admin/AdminDrops";
 import AdminLookbook from "@/components/admin/AdminLookbook";
 import AdminAbout from "@/components/admin/AdminAbout";
+import AdminOrders from "@/components/admin/AdminOrders";
+import AdminCustomers from "@/components/admin/AdminCustomers";
+import AdminReturns from "@/components/admin/AdminReturns";
 
 const S = "#C0C0C0";
 const G1 = "#0d0d0d";
@@ -15,6 +18,9 @@ const SD = "#555555";
 
 const NAV = [
   { id: "dashboard", label: "Dashboard", icon: "◈" },
+  { id: "orders", label: "Orders", icon: "◇" },
+  { id: "customers", label: "Customers", icon: "◯" },
+  { id: "returns", label: "Returns", icon: "↩" },
   { id: "shop", label: "Shop", icon: "◻" },
   { id: "drops", label: "Drops", icon: "◆" },
   { id: "lookbook", label: "Lookbook", icon: "◉" },
@@ -23,6 +29,9 @@ const NAV = [
 
 const SECTION_MAP = {
   dashboard: AdminDashboard,
+  orders: AdminOrders,
+  customers: AdminCustomers,
+  returns: AdminReturns,
   shop: AdminShop,
   drops: AdminDrops,
   lookbook: AdminLookbook,
@@ -59,7 +68,7 @@ export default function VigoAdmin() {
     return (
       <div style={{ minHeight: "100vh", background: G1, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Inter, sans-serif" }}>
         <div style={{ textAlign: "center", padding: 48 }}>
-          <div style={{ fontSize: 2, color: S, marginBottom: 24, fontWeight: 900 }}>
+          <div style={{ marginBottom: 24 }}>
             <div style={{ width: 48, height: 48, border: `1.5px solid ${S}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px", fontSize: 20 }}>✕</div>
           </div>
           <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 12 }}>Access Denied</div>
@@ -111,7 +120,7 @@ export default function VigoAdmin() {
         <div style={{ padding: "16px 20px", borderTop: `0.5px solid ${G3}` }}>
           <div style={{ fontSize: 9, color: SD, marginBottom: 12 }}>{user.email}</div>
           <button onClick={() => navigate("/")} style={{ width: "100%", background: "none", border: `0.5px solid ${G3}`, color: SD, padding: "8px 0", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", marginBottom: 8 }}>← View Store</button>
-          <button onClick={() => base44.auth.logout()} style={{ width: "100%", background: "none", border: `0.5px solid ${G3}`, color: "#e03", padding: "8px 0", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>Sign Out</button>
+          <button onClick={async () => { await base44.auth.logout(); navigate("/"); }} style={{ width: "100%", background: "none", border: `0.5px solid ${G3}`, color: "#e03", padding: "8px 0", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>Sign Out</button>
         </div>
       </div>
 

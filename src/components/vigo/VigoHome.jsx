@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import ProductCard from "./ProductCard";
 import SectionDivider from "./SectionDivider";
 import SectionHeader from "./SectionHeader";
@@ -57,10 +58,12 @@ function MiniCountdown({ target }) {
 export default function VigoHome() {
   const { productImg, wishlist, toggleWishlist, addToCart } = useOutletContext();
   const navigate = useNavigate();
+  const { settings } = useSiteSettings();
   const [heroLoaded, setHeroLoaded] = useState(false);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const [products, setProducts] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(true);
   const [nextDrop, setNextDrop] = useState(null);
 
   useEffect(() => { const t = setTimeout(() => setHeroLoaded(true), 80); return () => clearTimeout(t); }, []);
@@ -73,7 +76,13 @@ export default function VigoHome() {
   }, []);
 
   useEffect(() => {
-    base44.entities.Product.filter({ featured: true }, "-created_date", 8).then(data => setProducts(data || [])).catch(() => {});
+    base44.entities.Product.filter({ featured: true }, "-created_date", 4)
+      .then(data => {
+        if (data && data.length > 0) setProducts(data);
+        else base44.entities.Product.list("-created_date", 4).then(d => setProducts(d || []));
+      })
+      .catch(() => {})
+      .finally(() => setProductsLoading(false));
   }, []);
 
   const handleSubscribe = async () => {
@@ -106,16 +115,16 @@ export default function VigoHome() {
         <div style={{ padding: "72px 48px 72px 32px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 28, background: "rgba(192,192,192,.06)", border: `.5px solid rgba(192,192,192,.15)`, padding: "8px 16px", alignSelf: "center" }}>
             <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 2s infinite" }} />
-            <span style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase" }}>SS25 Collection — Now Live</span>
+            <span style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase" }}>{settings.banner_text}</span>
           </div>
           <h1 style={{ fontSize: "clamp(56px,7vw,104px)", fontWeight: 900, letterSpacing: -4, lineHeight: .86, marginBottom: 28 }} className="text-center">
-            STREETS<br />OF{" "}
+            {settings.hero_headline_1}<br />
             <span style={{ position: "relative", display: "inline-block" }}>
-              <em style={{ color: "transparent", WebkitTextStroke: `1px ${S}`, fontStyle: "italic" }} className="text-black">NYC</em>
+              <em style={{ color: "transparent", WebkitTextStroke: `1px ${S}`, fontStyle: "italic" }} className="text-black">{settings.hero_headline_2}</em>
             </span>
           </h1>
           <p style={{ fontSize: 13, color: SD, lineHeight: 1.9, maxWidth: 360, marginBottom: 36, margin: "0 auto 36px" }} className="text-center">
-            Born in New York City. Built from concrete and culture. Worn by the ones who make the city move.
+            {settings.hero_sub}
           </p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
             <button onClick={() => navigate("/shop")} style={btnP}>Shop the Drop</button>
@@ -124,7 +133,7 @@ export default function VigoHome() {
 
           {/* KPIs */}
           <div className="vigo-kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 0, marginTop: 56, borderTop: `.5px solid ${G3}` }}>
-            {[["500+", "Pieces Dropped"], ["12K+", "NYC Community"], ["100%", "Street Ready"], ["4.9★", "Avg. Rating"]].map(([n, l], i, arr) =>
+            {[[settings.kpi_pieces, "Pieces Dropped"], [settings.kpi_community, "NYC Community"], ["100%", "Street Ready"], [settings.kpi_rating, "Avg. Rating"]].map(([n, l], i, arr) =>
             <div key={l} style={{ padding: "20px 0 0", paddingRight: i < arr.length - 1 ? 16 : 0, borderRight: i < arr.length - 1 ? `.5px solid ${G3}` : "none", paddingLeft: i > 0 ? 16 : 0, textAlign: "center" }}>
                 <div style={{ fontSize: 22, fontWeight: 900, color: "var(--vt-text)", letterSpacing: -1 }}>{n}</div>
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 4 }}>{l}</div>
@@ -158,8 +167,13 @@ export default function VigoHome() {
       <div style={{ padding: "52px 32px" }}>
         <SectionHeader title="Featured Drops" sub="SS25 Season" cta="View All →" onCta={() => navigate("/shop")} />
         <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
-          {products.length === 0 && <div style={{ gridColumn: "1/-1", padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>No featured products yet — add some in the admin panel.</div>}
-          {products.map((p) =>
+          {productsLoading ? (
+            Array(4).fill(0).map((_, i) => (
+              <div key={i} style={{ background: "var(--vt-card)", border: ".5px solid var(--vt-border)", aspectRatio: "3/4", animation: "vigo-pulse 1.5s infinite" }} />
+            ))
+          ) : products.length === 0 && <div style={{ gridColumn: "1/-1", padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>No featured products yet — add some in the admin panel.</div>}
+          {!productsLoading &&
+          products.map((p) =>
           <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
           wishlisted={wishlist.includes(p.id)}
           onWishlist={() => toggleWishlist(p.id)}
@@ -239,15 +253,15 @@ export default function VigoHome() {
           <div style={{ padding: "52px 48px", borderRight: `.5px solid ${G3}` }}>
             <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ The Brand</div>
             <div style={{ fontSize: 36, fontWeight: 900, letterSpacing: -1, lineHeight: .95, marginBottom: 20 }}>
-              Born From<br />The Five<br />Boroughs
+              {settings.about_headline}
             </div>
             <p style={{ fontSize: 12, color: SD, lineHeight: 1.9, marginBottom: 28 }}>
-              VIGONYC is more than clothing — it's a declaration. Every thread carries the energy of the streets that built us.
+              {settings.about_story}
             </p>
             <button onClick={() => navigate("/about")} style={btnO}>Our Story →</button>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderRight: "none" }}>
-            {[["500+", "Pieces Dropped"], ["12K+", "Community"], ["100%", "NYC Made"], ["4.9★", "Avg Rating"]].map(([n, l], i) =>
+            {[[settings.kpi_pieces, "Pieces Dropped"], [settings.kpi_community, "Community"], ["100%", "NYC Made"], [settings.kpi_rating, "Avg Rating"]].map(([n, l], i) =>
             <div key={l} style={{ padding: "36px 28px", borderRight: i % 2 === 0 ? `.5px solid ${G3}` : "none", borderBottom: i < 2 ? `.5px solid ${G3}` : "none", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 <div style={{ fontSize: 32, fontWeight: 900, color: S, letterSpacing: -1 }}>{n}</div>
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 8 }}>{l}</div>

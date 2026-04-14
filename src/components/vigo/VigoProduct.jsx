@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams, Link } from "react-router-dom";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Package, RotateCcw, Zap } from "lucide-react";
 import ProductCard from "./ProductCard";
@@ -28,6 +28,10 @@ export default function VigoProduct() {
   const [qty, setQty] = useState(1);
   const [activeThumb, setActiveThumb] = useState(0);
   const [added, setAdded] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [reviewForm, setReviewForm] = useState({ rating: 0, title: "", body: "", reviewerName: "" });
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -42,6 +46,8 @@ export default function VigoProduct() {
       base44.entities.Product.list("-created_date", 8).then(all => {
         setRelated(all.filter(x => x.id !== id).slice(0, 4));
       }).catch(() => {});
+      base44.entities.Review.filter({ productId: id }, "-created_date", 50).then(setReviews).catch(() => {});
+      base44.auth.me().then(u => { if (u) setReviewForm(f => ({ ...f, reviewerName: u.full_name || "" })); }).catch(() => {});
     }).catch(() => {
       setNotFound(true);
       setLoading(false);
@@ -99,8 +105,33 @@ export default function VigoProduct() {
     setTimeout(() => setAdded(false), 2000);
   };
 
+  const soldOut = product.inStock === false || product.stock === 0;
+  const avgRating = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : null;
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    if (!reviewForm.rating) return toast.error("Please select a star rating");
+    setSubmittingReview(true);
+    await base44.entities.Review.create({ productId: id, ...reviewForm });
+    const updated = await base44.entities.Review.filter({ productId: id }, "-created_date", 50).catch(() => reviews);
+    setReviews(updated);
+    setReviewForm({ rating: 0, title: "", body: "", reviewerName: reviewForm.reviewerName });
+    setSubmittingReview(false);
+    toast.success("Review submitted!");
+  };
+
   return (
     <div style={{ minHeight: "100vh", background: G1 }}>
+      {/* Breadcrumb */}
+      <div style={{ padding: "12px clamp(20px,4vw,32px)", borderBottom: `.5px solid ${G3}`, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+        {[["Home", "/"], ["Shop", "/shop"], [product.cat, `/shop?cat=${product.cat}`]].map(([label, to], i) => (
+          <span key={to} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Link to={to} style={{ fontSize: 9, color: SD, letterSpacing: 1, textDecoration: "none", textTransform: "uppercase" }}>{label}</Link>
+            <span style={{ fontSize: 9, color: SD }}>›</span>
+          </span>
+        ))}
+        <span style={{ fontSize: 9, color: "var(--vt-text)", letterSpacing: 1, textTransform: "uppercase" }}>{product.name}</span>
+      </div>
       <div style={{ padding: "clamp(20px,4vw,32px)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div className="product-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(24px,5vw,48px)", marginBottom: "clamp(40px,6vw,60px)" }}>
@@ -129,8 +160,8 @@ export default function VigoProduct() {
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24, paddingBottom: 24, borderBottom: `.5px solid ${G3}` }}>
-                <span style={{ fontSize: 12, color: S }}>★★★★★</span>
-                <span style={{ fontSize: 9, color: SD }}>4.9 (128 reviews)</span>
+                <span style={{ fontSize: 12, color: S }}>{avgRating ? "★".repeat(Math.round(parseFloat(avgRating))) : "☆☆☆☆☆"}</span>
+                <span style={{ fontSize: 9, color: SD }}>{avgRating ? `${avgRating} (${reviews.length} review${reviews.length !== 1 ? "s" : ""})` : "No reviews yet"}</span>
               </div>
 
               <div style={{ display: "flex", alignItems: "flex-start", gap: 24, marginBottom: 24 }}>
@@ -157,13 +188,14 @@ export default function VigoProduct() {
 
               {/* Size */}
               <div style={{ marginBottom: 28 }}>
+                {soldOut && <div style={{ fontSize: 9, letterSpacing: 2, color: "#e03", textTransform: "uppercase", marginBottom: 10, fontWeight: 700 }}>SOLD OUT</div>}
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-                  <label style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Size {!selectedSize && <span style={{ color: "#e03" }}>*</span>}</label>
+                  <label style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Size {!selectedSize && !soldOut && <span style={{ color: "#e03" }}>*</span>}</label>
                   <button onClick={() => setSizeGuideOpen(true)} style={{ background: "none", border: "none", fontSize: 8, letterSpacing: 2, color: S, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>Size Guide →</button>
                 </div>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                   {sizes.map((s) => (
-                    <button key={s} onClick={() => setSelectedSize(s)} style={{ width: 48, height: 40, border: `.5px solid ${selectedSize === s ? S : G3}`, background: selectedSize === s ? S : "transparent", color: selectedSize === s ? "#000" : SD, fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", transition: "all .15s" }}>{s}</button>
+                    <button key={s} onClick={() => !soldOut && setSelectedSize(s)} style={{ width: 48, height: 40, border: `.5px solid ${selectedSize === s && !soldOut ? S : G3}`, background: selectedSize === s && !soldOut ? S : "transparent", color: selectedSize === s && !soldOut ? "#000" : SD, fontSize: 10, fontWeight: 700, cursor: soldOut ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "all .15s", opacity: soldOut ? 0.4 : 1 }}>{s}</button>
                   ))}
                 </div>
               </div>
@@ -174,9 +206,18 @@ export default function VigoProduct() {
                   <div style={{ width: 32, textAlign: "center", fontSize: 12, borderLeft: `.5px solid ${G3}`, borderRight: `.5px solid ${G3}` }}>{qty}</div>
                   <button onClick={() => setQty((q) => q + 1)} style={{ width: 40, height: 48, background: "none", border: "none", color: SD, fontSize: 18, cursor: "pointer", fontFamily: "inherit" }}>+</button>
                 </div>
-                <button onClick={handleAdd} style={{ flex: 1, background: added ? "#0c6" : S, color: "#000", border: "none", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", height: 48, transition: "background .3s", fontFamily: "inherit" }}>
-                  {added ? "✓ Added to Bag" : "Add to Bag"}
+                <button onClick={handleAdd} disabled={soldOut} style={{ flex: 1, background: soldOut ? G2 : added ? "#0c6" : S, color: soldOut ? SD : "#000", border: soldOut ? `.5px solid ${G3}` : "none", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: soldOut ? "not-allowed" : "pointer", height: 48, transition: "background .3s", fontFamily: "inherit" }}>
+                  {soldOut ? "Sold Out" : added ? "✓ Added to Bag" : "Add to Bag"}
                 </button>
+              </div>
+
+              {/* Share row */}
+              <div style={{ display: "flex", gap: 8, paddingTop: 16, paddingBottom: 16, borderTop: `.5px solid ${G3}`, flexWrap: "wrap", alignItems: "center" }}>
+                <span style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Share:</span>
+                <button onClick={() => { navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 2000); }} style={shareBtn}>
+                  {copied ? "✓ Copied" : "Copy Link"}
+                </button>
+                <a href={`https://twitter.com/intent/tweet?text=Check out ${encodeURIComponent(product.name)} on @VIGONYC&url=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" style={{ ...shareBtn, textDecoration: "none" }}>X / Twitter</a>
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, paddingTop: 16, borderTop: `.5px solid ${G3}` }}>
@@ -189,6 +230,37 @@ export default function VigoProduct() {
                 ))}
               </div>
             </div>
+          </div>
+
+          {/* Reviews */}
+          <div style={{ background: G2, border: `.5px solid ${G3}`, padding: "clamp(16px,3vw,24px)", marginBottom: 16 }}>
+            <div style={{ fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: S, marginBottom: 20 }}>Reviews {reviews.length > 0 && `(${reviews.length})`}</div>
+            {reviews.length === 0 && <div style={{ fontSize: 12, color: SD, marginBottom: 20 }}>No reviews yet — be the first!</div>}
+            {reviews.map((r, i) => (
+              <div key={i} style={{ borderBottom: `.5px solid var(--vt-border)`, paddingBottom: 16, marginBottom: 16 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                  <div style={{ color: S, fontSize: 12 }}>{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</div>
+                  <div style={{ fontSize: 9, color: SD }}>{r.created_date ? new Date(r.created_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : ""}</div>
+                </div>
+                {r.title && <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 4 }}>{r.title}</div>}
+                {r.body && <div style={{ fontSize: 11, color: SD, lineHeight: 1.8 }}>{r.body}</div>}
+                <div style={{ fontSize: 9, color: SD, marginTop: 6 }}>— {r.reviewerName || "Anonymous"}</div>
+              </div>
+            ))}
+            <form onSubmit={handleReviewSubmit} style={{ borderTop: `.5px solid var(--vt-border)`, paddingTop: 20, display: "flex", flexDirection: "column", gap: 12 }}>
+              <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>Write a Review</div>
+              <div style={{ display: "flex", gap: 4 }}>
+                {[1,2,3,4,5].map(star => (
+                  <button key={star} type="button" onClick={() => setReviewForm(f => ({ ...f, rating: star }))} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 20, color: star <= reviewForm.rating ? S : SD, padding: "0 2px" }}>★</button>
+                ))}
+              </div>
+              <input value={reviewForm.title} onChange={e => setReviewForm(f => ({ ...f, title: e.target.value }))} placeholder="Review title (optional)" style={{ background: G1, border: `.5px solid ${G3}`, color: "var(--vt-text)", padding: "10px 14px", fontSize: 12, outline: "none", fontFamily: "inherit" }} />
+              <textarea value={reviewForm.body} onChange={e => setReviewForm(f => ({ ...f, body: e.target.value }))} rows={3} placeholder="Share your experience..." style={{ background: G1, border: `.5px solid ${G3}`, color: "var(--vt-text)", padding: "10px 14px", fontSize: 12, outline: "none", fontFamily: "inherit", resize: "vertical" }} />
+              <input value={reviewForm.reviewerName} onChange={e => setReviewForm(f => ({ ...f, reviewerName: e.target.value }))} placeholder="Your name" style={{ background: G1, border: `.5px solid ${G3}`, color: "var(--vt-text)", padding: "10px 14px", fontSize: 12, outline: "none", fontFamily: "inherit" }} />
+              <button type="submit" disabled={submittingReview} style={{ background: S, color: "#000", border: "none", padding: "12px 24px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: submittingReview ? "not-allowed" : "pointer", fontFamily: "inherit", alignSelf: "flex-start" }}>
+                {submittingReview ? "Submitting..." : "Submit Review"}
+              </button>
+            </form>
           </div>
 
           <div style={{ background: G2, border: `.5px solid ${G3}`, padding: "clamp(16px,3vw,24px)" }}>
@@ -242,3 +314,5 @@ export default function VigoProduct() {
     </div>
   );
 }
+
+const shareBtn = { background: "none", border: ".5px solid var(--vt-border)", color: "var(--vt-sub)", padding: "6px 12px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" };

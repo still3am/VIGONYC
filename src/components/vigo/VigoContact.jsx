@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { base44 } from "@/api/base44Client";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -46,6 +47,7 @@ function TopicPicker({ value, onChange }) {
 }
 
 export default function VigoContact() {
+  const { settings } = useSiteSettings();
   const [topic, setTopic] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [firstName, setFirstName] = useState("");
@@ -71,7 +73,7 @@ export default function VigoContact() {
         <div>
           <div style={{ background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "36px 32px", marginBottom: 20 }}>
             <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 20 }}>Reach Us</div>
-            {[["📧","Email","hello@vigonyc.com"],["📸","Instagram","@VIGONYC"],["📍","Location","New York City, NY"],["⏰","Response Time","Within 24 hours"],].map(([ic,l,v]) => (
+            {[["📧","Email",settings.contact_email],["📸","Instagram",settings.contact_instagram],["📍","Location","New York City, NY"],["⏰","Response Time",settings.contact_response_time],].map(([ic,l,v]) => (
               <div key={l} style={{ display: "flex", gap: 16, alignItems: "flex-start", paddingBottom: 18, marginBottom: 18, borderBottom: `.5px solid ${G3}` }}>
                 <span style={{ fontSize: 18 }}>{ic}</span>
                 <div>

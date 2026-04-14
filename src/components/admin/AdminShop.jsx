@@ -7,7 +7,7 @@ const G2 = "#161616";
 const G3 = "#222222";
 const SD = "#666666";
 
-const EMPTY = { name: "", price: "", cat: "", collection: "", tag: "", sizes: [], colors: [], featured: false, images: [], videos: [], description: "" };
+const EMPTY = { name: "", price: "", cat: "", collection: "", tag: "", sizes: [], colors: [], featured: false, images: [], videos: [], description: "", stock: 0, inStock: true };
 const CATS = ["Tops", "Bottoms", "Outerwear", "Accessories", "Footwear"];
 const TAGS = ["new", "drop", "ltd", "hot"];
 const ALL_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
@@ -24,9 +24,14 @@ function ProductModal({ product, onSave, onClose }) {
   const handleSave = async () => {
     if (!form.name || !form.price || !form.cat) return alert("Name, price, and category are required.");
     setSaving(true);
-    await onSave({ ...form, price: parseFloat(form.price) });
-    setSaving(false);
-    onClose();
+    try {
+      await onSave({ ...form, price: parseFloat(form.price) });
+      onClose();
+    } catch (err) {
+      alert("Failed to save product: " + (err.message || "Unknown error"));
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -117,6 +122,16 @@ function ProductModal({ product, onSave, onClose }) {
             <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 6 }}>Description</div>
             <textarea value={form.description ?? ""} onChange={e => set("description", e.target.value)} rows={3} style={{ width: "100%", background: G2, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 14px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit", resize: "vertical" }}
               onFocus={e => e.target.style.borderColor = S} onBlur={e => e.target.style.borderColor = G3} />
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <Field label="Stock Count" type="number" value={form.stock ?? 0} onChange={v => set("stock", parseInt(v) || 0)} />
+            <div style={{ display: "flex", alignItems: "center", gap: 10, paddingTop: 20, cursor: "pointer" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+                <input type="checkbox" checked={form.inStock !== false} onChange={e => set("inStock", e.target.checked)} style={{ accentColor: S, width: 14, height: 14 }} />
+                <span style={{ fontSize: 11, color: "#fff" }}>In Stock</span>
+              </label>
+            </div>
           </div>
 
           <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>

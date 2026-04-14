@@ -82,13 +82,13 @@ export default function VigoDrops() {
     });
     setAllDrops(mapped);
     setSelectedDrop(prev => prev ? prev : (mapped.length > 0 ? mapped[0] : null));
-  }, []);
+  }, [setAllDrops, setSelectedDrop]);
 
   useEffect(() => { loadDrops(); }, [loadDrops]);
 
   const ALL_DROPS = allDrops;
   const PAST_DROPS = allDrops.filter(d => d.status === "soldout");
-  const nextDrop = allDrops.find(d => d.status === "upcoming");
+  const nextDrop = allDrops.find(d => d.status === "live") || allDrops.find(d => d.status === "upcoming");
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
   const firstDay = new Date(year, month, 1).getDay();
@@ -106,7 +106,17 @@ export default function VigoDrops() {
     }
     setNotified(p => ({ ...p, [id]: true }));
   };
-  const handleRefresh = useCallback(() => new Promise(res => { loadDrops().then(() => setTimeout(res, 400)); }), [loadDrops]);
+  const handleRefresh = useCallback(() => {
+    return new Promise(res => {
+      base44.entities.Drop.list("-date", 100)
+        .catch(() => [])
+        .then(data => {
+          const mapped = data.map(d => ({ ...d, date: d.date ? new Date(d.date + "T00:00:00") : null }));
+          setAllDrops(mapped);
+          setTimeout(res, 400);
+        });
+    });
+  }, []);
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
@@ -140,7 +150,9 @@ export default function VigoDrops() {
                     </div>
                   ))}
                 </div>
-                {notified[nextDrop.id] ? (
+                {nextDrop.status === "live" ? (
+                  <button onClick={() => navigate("/shop")} style={btnP}>Shop Now →</button>
+                ) : notified[nextDrop.id] ? (
                   <div style={{ fontSize: 12, color: "#0c6", padding: "10px 0" }}>✓ You're on the list — we'll notify you.</div>
                 ) : (
                   <div style={{ display: "flex", maxWidth: 380 }}>

@@ -17,6 +17,7 @@ export default function VIGONYCFlagship() {
   const [cartCount, setCartCount] = useState(0);
   const [cartOpen, setCartOpen] = useState(false);
   const [wishlist, setWishlist] = useState([]);
+  const [wishlistItems, setWishlistItems] = useState([]);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -29,6 +30,17 @@ export default function VIGONYCFlagship() {
     prevPath.current = location.pathname;
   }, [location.pathname]);
 
+  const refreshWishlist = async () => {
+    try {
+      const user = await base44.auth.me();
+      if (user) {
+        const items = await base44.entities.WishlistItem.filter({ created_by: user.email }, '-created_date', 200);
+        setWishlistItems(items || []);
+        setWishlist((items || []).map(i => i.productId));
+      }
+    } catch (err) {}
+  };
+
   const refreshCartCount = async () => {
     try {
       const user = await base44.auth.me();
@@ -39,7 +51,7 @@ export default function VIGONYCFlagship() {
     } catch (err) {}
   };
 
-  useEffect(() => { refreshCartCount(); }, []);
+  useEffect(() => { refreshCartCount(); refreshWishlist(); }, []);
 
   const addToCart = async (item) => {
     try {
@@ -67,7 +79,27 @@ export default function VIGONYCFlagship() {
     setCartOpen(true);
   };
 
-  const toggleWishlist = (id) => setWishlist(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  const toggleWishlist = async (id, productData) => {
+    if (wishlist.includes(id)) {
+      const record = wishlistItems.find(i => i.productId === id);
+      if (record) {
+        await base44.entities.WishlistItem.delete(record.id).catch(() => {});
+        setWishlistItems(prev => prev.filter(i => i.productId !== id));
+      }
+      setWishlist(prev => prev.filter(x => x !== id));
+    } else {
+      try {
+        const created = await base44.entities.WishlistItem.create({
+          productId: id,
+          productName: productData?.name || productData?.productName || "",
+          productImage: productData?.images?.[0] || productData?.productImage || "",
+          price: productData?.price || 0,
+        });
+        setWishlistItems(prev => [...prev, created]);
+      } catch (e) {}
+      setWishlist(prev => [...prev, id]);
+    }
+  };
 
   const handleCartClose = () => {
     setCartOpen(false);

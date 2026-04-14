@@ -15,7 +15,7 @@ const faqs = {
   ],
   Returns: [
     { q: "What is your return policy?", a: "We accept returns within 14 days of delivery for unworn, unwashed items with tags attached. Sale items and limited drops are final sale." },
-    { q: "How do I start a return?", a: "Email us at hello@vigonyc.com with your order number and reason for return. We'll send you a prepaid label within 24 hours." },
+    { q: "How do I start a return?", a: "returns" },
     { q: "When will I receive my refund?", a: "Refunds are processed within 5–7 business days after we receive and inspect your return. You'll get a confirmation email once it's done." },
   ],
   Brand: [
@@ -27,13 +27,22 @@ const faqs = {
 
 function FaqItem({ q, a }) {
   const [open, setOpen] = useState(false);
+  const isReturns = a === "returns";
   return (
     <div style={{ borderBottom: `.5px solid ${G3}` }}>
       <button onClick={() => setOpen(!open)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 0", background: "none", border: "none", cursor: "pointer", color: "var(--vt-text)", fontFamily: "inherit", textAlign: "left" }}>
         <span style={{ fontSize: 13, fontWeight: 500, paddingRight: 24 }}>{q}</span>
         <span style={{ color: S, fontSize: 20, fontWeight: 300, flexShrink: 0, transition: "transform .2s", display: "inline-block", transform: open ? "rotate(45deg)" : "rotate(0deg)" }}>+</span>
       </button>
-      {open && <p style={{ fontSize: 12, color: SD, lineHeight: 1.9, paddingBottom: 18 }}>{a}</p>}
+      {open && (
+        isReturns ? (
+          <p style={{ fontSize: 12, color: SD, lineHeight: 1.9, paddingBottom: 18 }}>
+            Visit our <Link to="/returns" style={{ color: S }}>Returns page</Link> to submit a request online. We'll get back to you within 24 hours.
+          </p>
+        ) : (
+          <p style={{ fontSize: 12, color: SD, lineHeight: 1.9, paddingBottom: 18 }}>{a}</p>
+        )
+      )}
     </div>
   );
 }

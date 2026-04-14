@@ -36,6 +36,10 @@
     "trackingNumber": {
       "type": "string",
       "description": "Shipping tracking number"
+    },
+    "userEmail": {
+      "type": "string",
+      "description": "Email of the customer who placed the order"
     }
   },
   "required": [

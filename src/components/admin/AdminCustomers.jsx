@@ -1,0 +1,73 @@
+import { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
+
+const S = "#C0C0C0";
+const G1 = "#111111";
+const G2 = "#161616";
+const G3 = "#222222";
+const SD = "#666666";
+
+export default function AdminCustomers() {
+  const [users, setUsers] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    Promise.all([
+      base44.entities.User.list("-created_date", 200).catch(() => []),
+      base44.entities.Order.list("-created_date", 500).catch(() => [])
+    ]).then(([u, o]) => {
+      setUsers(u || []);
+      setOrders(o || []);
+      setLoading(false);
+    });
+  }, []);
+
+  const orderCountFor = (email) => orders.filter(o => o.created_by === email || o.userEmail === email).length;
+
+  const filtered = users.filter(u => !search ||
+    u.email?.toLowerCase().includes(search.toLowerCase()) ||
+    u.full_name?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const withOrders = users.filter(u => orderCountFor(u.email) > 0).length;
+
+  return (
+    <div>
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 6 }}>✦ Customers</div>
+        <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: -1, color: "#fff" }}>Customer List</h2>
+      </div>
+
+      <div style={{ display: "flex", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
+        {[["Total Customers", users.length], ["With Orders", withOrders]].map(([l, v]) => (
+          <div key={l} style={{ background: G1, border: `0.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "16px 24px" }}>
+            <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>{l}</div>
+            <div style={{ fontSize: 24, fontWeight: 900, color: S }}>{v}</div>
+          </div>
+        ))}
+      </div>
+
+      <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by email or name..." style={{ background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 16px", fontSize: 12, outline: "none", fontFamily: "inherit", width: "100%", maxWidth: 320, marginBottom: 16, boxSizing: "border-box" }} />
+
+      <div style={{ background: G1, border: `0.5px solid ${G3}` }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 80px 120px", padding: "10px 20px", borderBottom: `0.5px solid ${G3}`, fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>
+          <span>Name</span><span>Email</span><span>Orders</span><span>Joined</span>
+        </div>
+        {loading && <div style={{ padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>Loading customers...</div>}
+        {!loading && filtered.length === 0 && <div style={{ padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>No customers found</div>}
+        {!loading && filtered.map(u => (
+          <div key={u.id} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 80px 120px", padding: "14px 20px", borderBottom: `0.5px solid ${G3}`, alignItems: "center" }}
+            onMouseEnter={e => e.currentTarget.style.background = G2}
+            onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+            <div style={{ fontSize: 12, color: "#fff" }}>{u.full_name || "—"}</div>
+            <div style={{ fontSize: 11, color: SD }}>{u.email}</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: orderCountFor(u.email) > 0 ? S : SD }}>{orderCountFor(u.email)}</div>
+            <div style={{ fontSize: 9, color: SD }}>{u.created_date ? new Date(u.created_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

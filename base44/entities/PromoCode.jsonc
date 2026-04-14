@@ -1,0 +1,26 @@
+{
+  "name": "PromoCode",
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "string",
+      "description": "Promo code string (uppercase)"
+    },
+    "discountPercent": {
+      "type": "number",
+      "description": "Discount percentage (e.g. 10 for 10%)"
+    },
+    "active": {
+      "type": "boolean",
+      "description": "Whether the code is active"
+    },
+    "expiresAt": {
+      "type": "string",
+      "description": "Expiry date ISO string, optional"
+    }
+  },
+  "required": [
+    "code",
+    "discountPercent"
+  ]
+}

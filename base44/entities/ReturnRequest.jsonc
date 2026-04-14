@@ -1,0 +1,37 @@
+{
+  "name": "ReturnRequest",
+  "type": "object",
+  "properties": {
+    "orderId": {
+      "type": "string",
+      "description": "Order ID"
+    },
+    "userEmail": {
+      "type": "string",
+      "description": "Customer email"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Return reason"
+    },
+    "message": {
+      "type": "string",
+      "description": "Additional details"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Pending",
+        "Approved",
+        "Rejected",
+        "Completed"
+      ],
+      "description": "Return status"
+    }
+  },
+  "required": [
+    "orderId",
+    "reason",
+    "status"
+  ]
+}

@@ -8,7 +8,7 @@ const SD = "var(--vt-sub)";
 const cols = {
   Shop: [["New Arrivals", "/shop"], ["Tops", "/shop?cat=Tops"], ["Bottoms", "/shop?cat=Bottoms"], ["Outerwear", "/shop?cat=Outerwear"], ["Accessories", "/shop?cat=Accessories"], ["Drop Calendar", "/drops"]],
   Info: [["About", "/about"], ["Lookbook", "/lookbook"], ["FAQ", "/faq"]],
-  Support: [["Contact", "/contact"], ["Track Order", "/track-order"], ["Size Guide", "/shop"], ["Wishlist", "/wishlist"]]
+  Support: [["Contact", "/contact"], ["Track Order", "/track-order"], ["Size Guide", "/shop"], ["Wishlist", "/wishlist"], ["Returns", "/returns"], ["Terms of Service", "/terms"], ["Privacy Policy", "/privacy"]]
 };
 
 export default function VigoFooter({ logo }) {

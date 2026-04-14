@@ -86,9 +86,10 @@ export default function VigoShop() {
   const [sort, setSort] = useState("featured");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.entities.Product.list("-created_date", 200).then(data => setAllProducts(data || [])).catch(() => {});
+    base44.entities.Product.list("-created_date", 200).then(data => setAllProducts(data || [])).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
   const CATEGORIES = useMemo(() => ["All", ...new Set(allProducts.map(p => p.cat).filter(Boolean))], [allProducts]);
@@ -186,6 +187,12 @@ export default function VigoShop() {
               <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>No products found</div>
               <p style={{ fontSize: 11, color: SD, marginBottom: 24 }}>Try adjusting your filters.</p>
               <button onClick={() => { setActiveCat("All"); setSelectedSizes([]); setSelectedColors([]); setPriceRange(300); setActiveCollection("All Collections"); }} style={{ background: S, color: "#000", border: "none", padding: "12px 28px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Clear Filters</button>
+            </div>
+          ) : loading ? (
+            <div className="vigo-shop-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
+              {Array(6).fill(0).map((_, i) => (
+                <div key={i} style={{ background: "var(--vt-card)", border: ".5px solid var(--vt-border)", aspectRatio: "3/4", animation: "vigo-pulse 1.5s infinite" }} />
+              ))}
             </div>
           ) : (
             <div className="vigo-shop-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>

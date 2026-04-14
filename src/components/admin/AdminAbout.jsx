@@ -18,6 +18,11 @@ const DEFAULT_SETTINGS = [
   { key: "hero_headline_2", value: "OF NYC", section: "hero" },
   { key: "hero_sub", value: "Born in New York City. Built from concrete and culture.", section: "hero" },
   { key: "banner_text", value: "SS25 Collection — Now Live", section: "global" },
+  { key: "ticker_text", value: "Free shipping over $150 ✦ New drop every friday ✦ VIGONYC SS25 ✦ NYC made — limited units ✦ No restocks. Move fast. ✦ Free returns within 30 days", section: "global" },
+  { key: "free_shipping_threshold", value: "150", section: "global" },
+  { key: "contact_email", value: "hello@vigonyc.com", section: "contact" },
+  { key: "contact_instagram", value: "@VIGONYC", section: "contact" },
+  { key: "contact_response_time", value: "Within 24 hours", section: "contact" },
 ];
 
 export default function AdminAbout() {
@@ -90,6 +95,19 @@ export default function AdminAbout() {
           <Field label="Community Size" value={settings.kpi_community} onChange={v => set("kpi_community", v)} />
           <Field label="Avg. Rating" value={settings.kpi_rating} onChange={v => set("kpi_rating", v)} />
         </div>
+      </Section>
+
+      {/* Global Settings */}
+      <Section title="Global Settings">
+        <TextArea label="Ticker Text (separate items with ✦)" value={settings.ticker_text} onChange={v => set("ticker_text", v)} rows={3} />
+        <Field label="Free Shipping Threshold ($)" value={settings.free_shipping_threshold} onChange={v => set("free_shipping_threshold", v)} />
+      </Section>
+
+      {/* Contact Info */}
+      <Section title="Contact Info">
+        <Field label="Contact Email" value={settings.contact_email} onChange={v => set("contact_email", v)} />
+        <Field label="Instagram Handle" value={settings.contact_instagram} onChange={v => set("contact_instagram", v)} />
+        <Field label="Response Time" value={settings.contact_response_time} onChange={v => set("contact_response_time", v)} />
       </Section>
 
       <button onClick={handleSave} disabled={saving} style={{ background: saved ? "#0c6" : S, color: "#000", border: "none", padding: "14px 36px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", transition: "background .3s", opacity: saving ? 0.8 : 1 }}>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -9,12 +10,17 @@ const SD = "var(--vt-sub)";
 
 export default function VigoCheckout() {
   const { productImg } = useOutletContext();
+  const { settings } = useSiteSettings();
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
+  const [cartLoaded, setCartLoaded] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [savedAddresses, setSavedAddresses] = useState([]);
   const [step, setStep] = useState(1);
   const [payMethod, setPayMethod] = useState("card");
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
+  const [promoDiscount, setPromoDiscount] = useState(10);
   const [promoError, setPromoError] = useState(false);
   const [placing, setPlacing] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
@@ -25,24 +31,44 @@ export default function VigoCheckout() {
     const load = async () => {
       try {
         const user = await base44.auth.me();
+        setCurrentUser(user);
         if (user) {
-          const items = await base44.entities.CartItem.filter({ created_by: user.email }, "-created_date", 100);
-          setCartItems(items);
+          const nameParts = (user.full_name || "").split(" ");
+          setContact(prev => ({ ...prev, firstName: nameParts[0] || "", lastName: nameParts.slice(1).join(" ") || "", email: user.email || "", phone: user.phone || "" }));
+          const [items, addresses] = await Promise.all([
+            base44.entities.CartItem.filter({ created_by: user.email }, "-created_date", 100),
+            base44.entities.Address.filter({ created_by: user.email }, "-created_date", 20).catch(() => []),
+          ]);
+          setCartItems(items || []);
+          setSavedAddresses(addresses || []);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error("Failed to load cart:", e);
+      } finally {
+        setCartLoaded(true);
+      }
     };
     load();
   }, []);
 
+  const freeShippingThreshold = parseInt(settings.free_shipping_threshold || "150");
   const subtotal = cartItems.reduce((s, i) => s + (i.price * i.qty), 0);
-  const shipping = subtotal >= 150 ? 0 : 12;
+  const shipping = subtotal >= freeShippingThreshold ? 0 : 12;
   const tax = Math.round(subtotal * 0.0887);
-  const discount = promoApplied ? Math.round(subtotal * 0.1) : 0;
+  const discount = promoApplied ? Math.round(subtotal * promoDiscount / 100) : 0;
   const total = subtotal + shipping + tax - discount;
 
-  const applyPromo = () => {
-    if (promoCode.toUpperCase() === "VIGONYC10") { setPromoApplied(true); setPromoError(false); }
-    else { setPromoError(true); setPromoApplied(false); }
+  const applyPromo = async () => {
+    if (!promoCode.trim()) return;
+    try {
+      const results = await base44.entities.PromoCode.filter({ code: promoCode.trim().toUpperCase() }, "-created_date", 1);
+      const promo = results?.[0];
+      if (!promo || promo.active === false) { setPromoError(true); setPromoApplied(false); return; }
+      if (promo.expiresAt && new Date(promo.expiresAt) < new Date()) { setPromoError(true); setPromoApplied(false); return; }
+      setPromoDiscount(promo.discountPercent);
+      setPromoApplied(true);
+      setPromoError(false);
+    } catch { setPromoError(true); }
   };
 
   const setField = (k, v) => setContact(p => ({ ...p, [k]: v }));
@@ -58,7 +84,16 @@ export default function VigoCheckout() {
         pieces: cartItems.reduce((s, i) => s + i.qty, 0),
         status: "Pending",
         shippingAddress: `${contact.address}, ${contact.city}, ${contact.state} ${contact.zip}`,
+        userEmail: contact.email,
       });
+      // Update stock
+      for (const item of cartItems) {
+        const prod = await base44.entities.Product.get(item.productId).catch(() => null);
+        if (prod && typeof prod.stock === "number" && prod.stock > 0) {
+          const newStock = Math.max(0, prod.stock - item.qty);
+          await base44.entities.Product.update(item.productId, { stock: newStock, inStock: newStock > 0 }).catch(() => {});
+        }
+      }
       await Promise.all(cartItems.map(i => base44.entities.CartItem.delete(i.id)));
       setOrderId(genId);
       setOrderPlaced(true);
@@ -68,6 +103,17 @@ export default function VigoCheckout() {
       setPlacing(false);
     }
   };
+
+  if (cartLoaded && !currentUser) {
+    return (
+      <div style={{ padding: "80px 32px", maxWidth: 640, margin: "0 auto", textAlign: "center" }}>
+        <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 16 }}>✦ Sign In Required</div>
+        <h1 style={{ fontSize: 36, fontWeight: 900, letterSpacing: -2, marginBottom: 16 }}>Sign In to Checkout</h1>
+        <p style={{ fontSize: 13, color: SD, marginBottom: 32, lineHeight: 1.8 }}>You need to be signed in to complete your purchase.</p>
+        <button onClick={() => base44.auth.redirectToLogin(window.location.href)} style={btnP}>Sign In →</button>
+      </div>
+    );
+  }
 
   if (orderPlaced) {
     return (
@@ -103,6 +149,18 @@ export default function VigoCheckout() {
         <div>
           {step === 1 && (
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {savedAddresses.length > 0 && (
+                <div>
+                  <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Use a Saved Address</div>
+                  <select onChange={e => {
+                    const sel = savedAddresses[parseInt(e.target.value)];
+                    if (sel) setContact(prev => ({ ...prev, address: sel.street, city: sel.city, state: sel.state, zip: sel.zip }));
+                  }} style={{ width: "100%", background: "var(--vt-card)", border: `.5px solid ${G3}`, color: "var(--vt-text)", padding: "12px 16px", fontSize: 12, outline: "none", fontFamily: "inherit" }}>
+                    <option value="">— Select a saved address —</option>
+                    {savedAddresses.map((a, i) => <option key={a.id} value={i}>{a.label}: {a.street}, {a.city}</option>)}
+                  </select>
+                </div>
+              )}
               <div className="vigo-2col-sm" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                 <Field label="First Name" value={contact.firstName} onChange={v => setField("firstName", v)} />
                 <Field label="Last Name" value={contact.lastName} onChange={v => setField("lastName", v)} />
@@ -204,7 +262,7 @@ export default function VigoCheckout() {
                 {promoApplied ? "✓ Applied" : "Apply"}
               </button>
             </div>
-            {promoError && <div style={{ fontSize: 10, color: "#e03", marginBottom: 12 }}>Invalid promo code. Try VIGONYC10.</div>}
+            {promoError && <div style={{ fontSize: 10, color: "#e03", marginBottom: 12 }}>Invalid or expired promo code.</div>}
 
             <div style={{ borderTop: `.5px solid ${G3}`, paddingTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
               {[["Subtotal", `$${subtotal.toFixed(2)}`],["Shipping", shipping === 0 ? "Free 🎉" : `$${shipping}`],["NYC Tax (8.875%)", `$${tax}`],promoApplied ? ["Promo (VIGONYC10)", `-$${discount}`] : null].filter(Boolean).map(([l,v]) => (

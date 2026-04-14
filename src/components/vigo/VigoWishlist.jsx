@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useOutletContext, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -19,18 +20,22 @@ const TAG_LABELS = { new: "New", drop: "Drop", ltd: "Lmt", hot: "Hot" };
 export default function VigoWishlist() {
   const { wishlist, toggleWishlist, addToCart, productImg } = useOutletContext();
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
+  const [wishlistItems, setWishlistItems] = useState([]);
   const [addedIds, setAddedIds] = useState([]);
   const [hoveredId, setHoveredId] = useState(null);
   const [allAddedBag, setAllAddedBag] = useState(false);
   const [selectedSizes, setSelectedSizes] = useState({});
 
   useEffect(() => {
-    base44.entities.Product.list().then(setProducts).catch(() => setProducts([]));
-  }, []);
+    base44.auth.me().then(user => {
+      if (user) {
+        base44.entities.WishlistItem.filter({ created_by: user.email }, "-created_date", 200).then(setWishlistItems).catch(() => setWishlistItems([]));
+      }
+    }).catch(() => {});
+  }, [wishlist]);
 
-  const savedItems = products.filter(p => wishlist.includes(p.id));
-  const totalValue = savedItems.reduce((s, p) => s + p.price, 0);
+  const savedItems = wishlistItems;
+  const totalValue = savedItems.reduce((s, p) => s + (p.price || 0), 0);
 
   const handleAdd = (p) => {
     addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: selectedSizes[p.id] || "M", color: "Black", productImage: p.images?.[0] || productImg, price: p.price });
