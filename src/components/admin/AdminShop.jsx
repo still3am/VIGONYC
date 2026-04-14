@@ -82,26 +82,47 @@ function ProductModal({ product, onSave, onClose }) {
           </div>
 
           <div>
-            <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Colors</div>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center", marginBottom: 8 }}>
-              {(form.colors || []).map(c => (
-                <div key={c} style={{ display: "flex", alignItems: "center", gap: 4, background: G2, border: `0.5px solid ${G3}`, padding: "4px 8px 4px 6px" }}>
-                  <div style={{ width: 14, height: 14, borderRadius: "50%", background: colorMeta[c] || c, border: "0.5px solid rgba(255,255,255,.2)", flexShrink: 0 }} />
-                  <span style={{ fontSize: 10, color: "#fff" }}>{c}</span>
-                  <button onClick={() => { set("colors", form.colors.filter(x => x !== c)); setColorMeta(prev => { const n = { ...prev }; delete n[c]; return n; }); }} style={{ background: "none", border: "none", color: "#e03", cursor: "pointer", fontSize: 12, lineHeight: 1, padding: "0 0 0 4px", fontFamily: "inherit" }}>✕</button>
-                </div>
-              ))}
-              <div style={{ display: "flex", alignItems: "center", gap: 6, background: G2, border: `0.5px dashed ${G3}`, padding: "4px 8px" }}>
-                <input type="color" value={pendingColor} onChange={e => setPendingColor(e.target.value)} style={{ width: 24, height: 24, border: "none", background: "none", cursor: "pointer", padding: 0, flexShrink: 0 }} title="Pick color" />
-                <input value={pendingColorName} onChange={e => setPendingColorName(e.target.value)} onKeyDown={e => e.key === "Enter" && addPendingColor()} placeholder="Name (e.g. Arctic)" style={{ background: "none", border: "none", outline: "none", color: "#fff", fontSize: 10, fontFamily: "inherit", width: 90 }} />
-                <button onClick={addPendingColor} style={{ background: S, color: "#000", border: "none", padding: "3px 8px", fontSize: 8, letterSpacing: 1, cursor: "pointer", fontFamily: "inherit", fontWeight: 900, whiteSpace: "nowrap" }}>+ Add</button>
+            <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 10 }}>Colors</div>
+
+            {/* Preset swatches */}
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
+              {[
+                { name: "Black", hex: "#111111" }, { name: "White", hex: "#f5f5f5" },
+                { name: "Chrome", hex: "#C0C0C0" }, { name: "Grey", hex: "#888888" },
+                { name: "Navy", hex: "#1a2744" }, { name: "Red", hex: "#cc0033" },
+              ].map(({ name, hex }) => {
+                const selected = (form.colors || []).includes(name);
+                return (
+                  <button key={name} title={name} onClick={() => {
+                    if (selected) { set("colors", form.colors.filter(x => x !== name)); }
+                    else { set("colors", [...(form.colors || []), name]); setColorMeta(prev => ({ ...prev, [name]: hex })); }
+                  }} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", background: hex, border: selected ? `2px solid ${S}` : "2px solid transparent", outline: selected ? `1px solid ${S}` : "1px solid rgba(255,255,255,.12)", transition: "all .15s", boxSizing: "border-box" }} />
+                    <span style={{ fontSize: 7, color: selected ? S : SD, letterSpacing: 1, textTransform: "uppercase", transition: "color .15s" }}>{name}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Custom color picker */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, background: G2, border: `0.5px solid ${G3}`, padding: "8px 12px", marginBottom: 10 }}>
+              <input type="color" value={pendingColor} onChange={e => setPendingColor(e.target.value)} style={{ width: 28, height: 28, border: "none", background: "none", cursor: "pointer", padding: 0, flexShrink: 0, borderRadius: "50%" }} title="Pick color" />
+              <input value={pendingColorName} onChange={e => setPendingColorName(e.target.value)} onKeyDown={e => e.key === "Enter" && addPendingColor()} placeholder="Custom color name…" style={{ flex: 1, background: "none", border: "none", outline: "none", color: "#fff", fontSize: 11, fontFamily: "inherit" }} />
+              <button onClick={addPendingColor} style={{ background: S, color: "#000", border: "none", padding: "5px 12px", fontSize: 8, letterSpacing: 1, cursor: "pointer", fontFamily: "inherit", fontWeight: 900, whiteSpace: "nowrap" }}>+ Add</button>
+            </div>
+
+            {/* Selected color chips */}
+            {(form.colors || []).length > 0 && (
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                {(form.colors || []).map(c => (
+                  <div key={c} style={{ display: "flex", alignItems: "center", gap: 5, background: G2, border: `0.5px solid ${G3}`, padding: "4px 10px 4px 7px", borderRadius: 2 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: colorMeta[c] || c, border: "0.5px solid rgba(255,255,255,.15)", flexShrink: 0 }} />
+                    <span style={{ fontSize: 10, color: "#ccc" }}>{c}</span>
+                    <button onClick={() => { set("colors", form.colors.filter(x => x !== c)); setColorMeta(prev => { const n = { ...prev }; delete n[c]; return n; }); }} style={{ background: "none", border: "none", color: "#e03", cursor: "pointer", fontSize: 11, lineHeight: 1, padding: "0 0 0 3px", fontFamily: "inherit", opacity: 0.7 }}>✕</button>
+                  </div>
+                ))}
               </div>
-            </div>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {ALL_COLORS.map(c => (
-                <button key={c} onClick={() => { if (!(form.colors || []).includes(c)) set("colors", [...(form.colors || []), c]); }} style={{ padding: "5px 10px", fontSize: 9, background: (form.colors || []).includes(c) ? S : G2, color: (form.colors || []).includes(c) ? "#000" : SD, border: `0.5px solid ${(form.colors || []).includes(c) ? S : G3}`, cursor: "pointer", fontFamily: "inherit", letterSpacing: 1, textTransform: "uppercase" }}>{c}</button>
-              ))}
-            </div>
+            )}
           </div>
 
           <div>
