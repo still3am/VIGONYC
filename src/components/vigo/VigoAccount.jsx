@@ -464,8 +464,8 @@ export default function VigoAccount() {
                         )}
                       </div>
                     )}
-                    </div>);
-
+                  </div>
+                );
             })}
                 <div style={{ textAlign: "center", padding: "20px 0", fontSize: 10, color: SD }}>
                   {orders.length} {orders.length === 1 ? 'order' : 'orders'} total
