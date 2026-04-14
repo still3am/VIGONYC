@@ -273,7 +273,7 @@ export default function VigoCheckout() {
             {promoError && <div style={{ fontSize: 10, color: "#e03", marginBottom: 12 }}>Invalid or expired promo code.</div>}
 
             <div style={{ borderTop: `.5px solid ${G3}`, paddingTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
-              {[["Subtotal", `$${subtotal.toFixed(2)}`],["Shipping", shipping === 0 ? "Free 🎉" : `$${shipping}`],["NYC Tax (8.875%)", `$${tax}`],promoApplied ? [`Promo (${promoCode.toUpperCase()})`, `-$${discount}`] : null].filter(Boolean).map(([l,v]) => (
+              {[["Subtotal", `$${subtotal.toFixed(2)}`],["Shipping", shipping === 0 ? "Free" : `$${shipping}`],["NYC Tax (8.875%)", `$${tax}`],promoApplied ? [`Promo (${promoCode.toUpperCase()})`, `-$${discount}`] : null].filter(Boolean).map(([l,v]) => (
                 <div key={l} style={{ display: "flex", justifyContent: "space-between" }}>
                   <span style={{ fontSize: 10, color: SD }}>{l}</span>
                   <span style={{ fontSize: 11, color: l.startsWith("Promo") ? "#0c6" : l === "Shipping" && shipping === 0 ? "#0c6" : "var(--vt-text)" }}>{v}</span>
