@@ -130,7 +130,26 @@ export default function VigoCheckout() {
         <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 12 }}>Order Confirmed</div>
         <h1 style={{ fontSize: 36, fontWeight: 900, letterSpacing: -1, marginBottom: 12 }}>Thank You!</h1>
         <div style={{ fontSize: 12, color: SD, marginBottom: 8 }}>Your order has been placed successfully.</div>
-        <div style={{ fontSize: 14, fontWeight: 700, color: S, marginBottom: 32 }}>Order #{orderId}</div>
+        <div style={{ background: "var(--vt-card)", border: ".5px solid var(--vt-border)", borderTop: "2px solid #C0C0C0", padding: "20px 24px", marginTop: 24, textAlign: "left", maxWidth: 480, margin: "16px auto 24px" }}>
+          <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 12 }}>Order Summary</div>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+            <span style={{ fontSize: 11, color: SD }}>Order</span>
+            <span style={{ fontSize: 11, fontWeight: 700 }}>#{orderId}</span>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+            <span style={{ fontSize: 11, color: SD }}>Email</span>
+            <span style={{ fontSize: 11 }}>{contact.email}</span>
+          </div>
+          {shippingMethod && <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+            <span style={{ fontSize: 11, color: SD }}>Shipping</span>
+            <span style={{ fontSize: 11, textTransform: "capitalize" }}>{shippingMethod}</span>
+          </div>}
+          <div style={{ display: "flex", justifyContent: "space-between", borderTop: ".5px solid var(--vt-border)", paddingTop: 8 }}>
+            <span style={{ fontSize: 12, fontWeight: 700 }}>Total</span>
+            <span style={{ fontSize: 14, fontWeight: 900, color: "#C0C0C0" }}>${total}</span>
+          </div>
+          {isGift && <div style={{ fontSize: 10, color: "#fa0", marginTop: 8 }}>🎁 Gift order</div>}
+        </div>
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
           <button onClick={() => navigate("/")} style={btnP}>Continue Shopping</button>
           <button onClick={() => navigate("/track-order")} style={btnGhost}>Track Order →</button>
@@ -145,9 +164,11 @@ export default function VigoCheckout() {
       <h1 style={{ fontSize: 40, fontWeight: 900, letterSpacing: -2, marginBottom: 36 }}>Checkout</h1>
 
       <div style={{ display: "flex", gap: 0, marginBottom: 40, borderBottom: `.5px solid ${G3}`, paddingBottom: 24 }}>
-        {[["1","Contact & Shipping"],["2","Shipping Method"],["3","Payment"]].map(([n,l]) => (
-          <div key={n} style={{ display: "flex", alignItems: "center", gap: 10, marginRight: 32, flexWrap: "wrap" }}>
-            <div style={{ width: 26, height: 26, borderRadius: "50%", background: parseInt(n) <= step ? S : G1, border: `.5px solid ${parseInt(n) <= step ? S : G3}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 900, color: parseInt(n) <= step ? "#000" : SD, flexShrink: 0 }}>{n}</div>
+       {[["1","Contact & Shipping"],["2","Shipping Method"],["3","Payment"]].map(([n,l]) => (
+         <div key={n} style={{ display: "flex", alignItems: "center", gap: 10, marginRight: 32, flexWrap: "wrap" }}>
+           <div style={{ width: 26, height: 26, borderRadius: "50%", background: parseInt(n) < step ? "#0c6" : parseInt(n) === step ? S : G1, border: `.5px solid ${parseInt(n) <= step ? (parseInt(n) < step ? "#0c6" : S) : G3}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 900, color: parseInt(n) <= step ? "#000" : SD, flexShrink: 0 }}>
+             {parseInt(n) < step ? "✓" : n}
+           </div>
             <span style={{ fontSize: 9, letterSpacing: 2, textTransform: "uppercase", color: parseInt(n) <= step ? "var(--vt-text)" : SD }}>{l}</span>
           </div>
         ))}

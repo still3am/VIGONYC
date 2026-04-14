@@ -77,10 +77,10 @@ export default function VigoLookbook() {
             <div style={{ position: "absolute", top: 0, left: 0, width: 40, height: 40, borderTop: `2px solid ${S}`, borderLeft: `2px solid ${S}`, zIndex: 2 }} />
             <div style={{ position: "absolute", bottom: 0, right: 0, width: 40, height: 40, borderBottom: `2px solid ${S}`, borderRight: `2px solid ${S}`, zIndex: 2 }} />
             {heroEntry.image_url ? (
-              <img src={heroEntry.image_url} alt={heroEntry.title} style={{ width: "100%", height: 400, objectFit: "cover", transform: hovered === "hero" ? "scale(1.03)" : "scale(1)", transition: "transform .6s" }} />
-            ) : (
-              <div style={{ height: 400, display: "flex", alignItems: "center", justifyContent: "center", color: SD }}>No Image</div>
-            )}
+               <img src={heroEntry.image_url} alt={heroEntry.title} loading="lazy" style={{ width: "100%", height: 400, objectFit: "cover", transform: hovered === "hero" ? "scale(1.03)" : "scale(1)", transition: "transform .6s" }} />
+             ) : (
+               <div style={{ height: 400, display: "flex", alignItems: "center", justifyContent: "center", color: SD }}>No Image</div>
+             )}
             <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.6)", opacity: hovered === "hero" ? 1 : 0, transition: "opacity .3s", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 3 }}>
               <div style={{ textAlign: "center" }}>
                 <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>{heroEntry.collection || "Collection"}</div>
@@ -106,10 +106,10 @@ export default function VigoLookbook() {
                 onMouseLeave={() => setHovered(null)}>
               <div style={{ paddingBottom: "100%", position: "relative" }}>
                 {e.image_url ? (
-                  <img src={e.image_url} alt={e.title} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", transform: hovered === i ? "scale(1.05)" : "scale(1)", transition: "transform .5s" }} />
-                ) : (
-                  <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: SD }}>No Image</div>
-                )}
+                   <img src={e.image_url} alt={e.title} loading="lazy" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", transform: hovered === i ? "scale(1.05)" : "scale(1)", transition: "transform .5s" }} />
+                 ) : (
+                   <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", color: SD }}>No Image</div>
+                 )}
                 <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.7)", opacity: hovered === i ? 1 : 0, transition: "opacity .3s", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 8 }}>
                   <div style={{ fontSize: 14, fontWeight: 700 }}>{e.title}</div>
                   {e.collection && <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>{e.collection}</div>}

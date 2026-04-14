@@ -121,6 +121,7 @@ export default function AdminPromoCodes() {
                     {c.expiresAt && <div style={{ fontSize: 9, color: SD }}>Exp. {new Date(c.expiresAt).toLocaleDateString()}</div>}
                   </div>
                   <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                    <button onClick={() => navigator.clipboard.writeText(c.code)} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "7px 12px", fontSize: 8, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>Copy</button>
                     <button onClick={() => toggleActive(c)} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "7px 12px", fontSize: 8, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>
                       {c.active ? "Disable" : "Enable"}
                     </button>

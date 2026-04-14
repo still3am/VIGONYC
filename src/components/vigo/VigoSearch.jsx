@@ -16,6 +16,7 @@ export default function VigoSearch() {
   const [inputVal, setInputVal] = useState(query);
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filterCat, setFilterCat] = useState("All");
 
   useEffect(() => {
     document.title = query ? `"${query}" — VIGONYC` : "Search — VIGONYC";
@@ -39,6 +40,8 @@ export default function VigoSearch() {
   }, [query, allProducts]);
 
   const suggestions = useMemo(() => allProducts.filter(p => p.featured).slice(0, 4), [allProducts]);
+  const cats = useMemo(() => ["All", ...new Set(results.map(p => p.cat).filter(Boolean))], [results]);
+  const displayResults = filterCat === "All" ? results : results.filter(p => p.cat === filterCat);
 
   return (
     <div style={{ padding: "clamp(32px,5vw,64px) clamp(20px,4vw,32px)", maxWidth: 1200, margin: "0 auto" }}>
@@ -56,7 +59,14 @@ export default function VigoSearch() {
         />
         <button type="submit" style={{ background: S, color: "#000", border: "none", padding: "14px 24px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Search</button>
       </form>
-      {!loading && <div style={{ fontSize: 11, color: SD, marginBottom: 32 }}>{results.length} result{results.length !== 1 ? "s" : ""}</div>}
+      {!loading && <div style={{ fontSize: 11, color: SD, marginBottom: 16 }}>{displayResults.length} result{displayResults.length !== 1 ? "s" : ""}</div>}
+      {!loading && cats.length > 2 && (
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 24 }}>
+          {cats.map(c => (
+            <button key={c} onClick={() => setFilterCat(c)} style={{ padding: "6px 14px", background: filterCat === c ? S : "var(--vt-card)", color: filterCat === c ? "#000" : SD, border: `.5px solid ${filterCat === c ? S : "var(--vt-border)"}`, fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>{c}</button>
+          ))}
+        </div>
+      )}
 
       {!loading && results.length === 0 && query && (
         <>
@@ -71,7 +81,7 @@ export default function VigoSearch() {
         </div>
       ) : (
         <div className="vigo-search-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
-          {(results.length > 0 || !query ? results : suggestions).map(p => (
+          {(displayResults.length > 0 || !query ? displayResults : suggestions).map(p => (
             <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
               wishlisted={wishlist.includes(p.id)}
               onWishlist={() => toggleWishlist(p.id)}

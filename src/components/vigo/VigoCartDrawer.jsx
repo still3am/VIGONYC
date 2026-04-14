@@ -77,8 +77,13 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
         {/* Header */}
         <div style={{ padding: "clamp(16px,3vw,24px) clamp(16px,4vw,24px)", borderBottom: `.5px solid ${G3}`, display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0, background: G1 }}>
           <div>
-            <div style={{ fontSize: 10, letterSpacing: 3, textTransform: "uppercase", color: "var(--vt-text)", fontWeight: 700, marginBottom: 2 }}>Your Bag</div>
-            <div style={{ fontSize: 9, color: SD, letterSpacing: 1 }}>{items.length} {items.length === 1 ? "item" : "items"}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ fontSize: 10, letterSpacing: 3, textTransform: "uppercase", color: "var(--vt-text)", fontWeight: 700 }}>Your Bag</div>
+              {items.length > 0 && (
+                <span style={{ background: S, color: "#000", fontSize: 8, fontWeight: 900, borderRadius: "10px", padding: "2px 7px" }}>{items.length}</span>
+              )}
+            </div>
+            <div style={{ fontSize: 9, color: SD, letterSpacing: 1, marginTop: 4 }}>{items.length} {items.length === 1 ? "item" : "items"}</div>
           </div>
           <button onClick={onClose} style={{ background: "none", border: "none", color: SD, cursor: "pointer", padding: 4, display: "flex", alignItems: "center", justifyContent: "center", transition: "color .2s" }}>
             <X size={18} />

@@ -43,9 +43,10 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
 
       <div style={{ position: "relative", paddingBottom: "115%", background: "var(--vt-card)", overflow: "hidden" }}>
         <img
-          src={img}
-          alt={product.name}
-          style={{
+           src={img}
+           alt={product.name}
+           loading="lazy"
+           style={{
             position: "absolute", inset: 0, width: "100%", height: "100%",
             objectFit: "cover", opacity: product.inStock === false ? 0.5 : (product.opacity ?? 1),
             transition: "transform .5s",

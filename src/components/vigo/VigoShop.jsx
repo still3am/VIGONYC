@@ -177,6 +177,14 @@ export default function VigoShop() {
           </button>
         </div>
 
+        {activeFiltersCount > 0 && (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 0", marginBottom: 8 }}>
+            <span style={{ fontSize: 9, color: SD }}>{activeFiltersCount} filter{activeFiltersCount > 1 ? "s" : ""} active</span>
+            <button onClick={() => { setActiveCat("All"); setSelectedSizes([]); setSelectedColors([]); setPriceRange(300); setActiveCollection("All Collections"); setInStockOnly(false); setSearchQuery(""); }} style={{ background: "none", border: `.5px solid var(--vt-border)`, color: S, padding: "4px 12px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>
+              ✕ Clear All
+            </button>
+          </div>
+        )}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
           <span style={{ fontSize: 10, color: SD }}>{filtered.length} products</span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

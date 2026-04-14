@@ -12,17 +12,11 @@
     },
     "section": {
       "type": "string",
-      "enum": [
-        "about",
-        "hero",
-        "global"
-      ],
-      "description": "Section this setting belongs to"
+      "description": "Section grouping (hero, about, global, contact)"
     }
   },
   "required": [
     "key",
-    "value",
-    "section"
+    "value"
   ]
 }

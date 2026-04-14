@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { toast } from "sonner";
 
 const S = "#C0C0C0";
 const G1 = "#111111";
@@ -69,6 +70,8 @@ export default function AdminAbout() {
     );
     setSaving(false);
     setSaved(true);
+    toast.success("Settings saved successfully!");
+    window.scrollTo({ top: 0, behavior: "smooth" });
     setTimeout(() => setSaved(false), 2500);
   };
 

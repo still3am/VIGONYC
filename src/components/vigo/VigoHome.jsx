@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -63,6 +63,7 @@ export default function VigoHome() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
   const [productsLoading, setProductsLoading] = useState(true);
   const [nextDrop, setNextDrop] = useState(null);
   const [recentProducts, setRecentProducts] = useState([]);
@@ -87,14 +88,19 @@ export default function VigoHome() {
   }, []);
 
   useEffect(() => {
-    base44.entities.Product.filter({ featured: true }, "-created_date", 4)
-      .then(data => {
-        if (data && data.length > 0) setProducts(data);
-        else base44.entities.Product.list("-created_date", 4).then(d => setProducts(d || []));
-      })
-      .catch(() => {})
-      .finally(() => setProductsLoading(false));
+   base44.entities.Product.list("-created_date", 200).then(all => {
+     setAllProducts(all || []);
+     const featured = (all || []).filter(p => p.featured);
+     setProducts(featured.length > 0 ? featured.slice(0, 4) : (all || []).slice(0, 4));
+     setProductsLoading(false);
+   }).catch(() => setProductsLoading(false));
   }, []);
+
+  const categoryData = useMemo(() => {
+   const counts = {};
+   allProducts.forEach(p => { if (p.cat) counts[p.cat] = (counts[p.cat] || 0) + 1; });
+   return CATEGORIES.map(c => ({ ...c, productCount: counts[c.name] || 0 }));
+  }, [allProducts]);
 
   const heroProduct = products[0] || null;
 
@@ -229,14 +235,14 @@ export default function VigoHome() {
       <div style={{ padding: "52px 32px" }}>
         <SectionHeader title="Shop by Category" sub="" />
         <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 2 }}>
-          {CATEGORIES.map((cat) =>
-          <div key={cat.name} onClick={() => navigate(`/shop?cat=${cat.name}`)}
-          style={{ background: G1, border: `.5px solid ${G3}`, padding: "40px 24px 32px", cursor: "pointer", transition: "border-color .2s", textAlign: "center", position: "relative", overflow: "hidden" }}
-          onMouseEnter={(e) => {e.currentTarget.style.borderColor = S;}}
-          onMouseLeave={(e) => {e.currentTarget.style.borderColor = "var(--vt-border)";}}>
-              <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 10 }}>{cat.count}</div>
-              <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: -1 }}>{cat.name}</div>
-              <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginTop: 16 }}>Browse →</div>
+          {categoryData.map((cat) =>
+            <div key={cat.name} onClick={() => navigate(`/shop?cat=${cat.name}`)}
+            style={{ background: G1, border: `.5px solid ${G3}`, padding: "40px 24px 32px", cursor: "pointer", transition: "border-color .2s", textAlign: "center", position: "relative", overflow: "hidden" }}
+            onMouseEnter={(e) => {e.currentTarget.style.borderColor = S;}}
+            onMouseLeave={(e) => {e.currentTarget.style.borderColor = "var(--vt-border)";}}>
+                <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 10 }}>{cat.productCount > 0 ? `${cat.productCount} pieces` : cat.count}</div>
+                <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: -1 }}>{cat.name}</div>
+                <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginTop: 16 }}>Browse →</div>
               <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: 40, height: 2, background: `linear-gradient(90deg, transparent, ${S}, transparent)` }} />
             </div>
           )}

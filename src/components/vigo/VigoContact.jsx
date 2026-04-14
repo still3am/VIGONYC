@@ -112,7 +112,7 @@ export default function VigoContact() {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 16, background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid #0c6`, padding: 48, textAlign: "center" }}>
             <div style={{ fontSize: 32 }}>✓</div>
             <div style={{ fontSize: 20, fontWeight: 900 }}>Message Sent</div>
-            <div style={{ fontSize: 12, color: SD }}>We'll get back to you within 24 hours.</div>
+            <div style={{ fontSize: 12, color: SD }}>We'll get back to you {settings.contact_response_time || "within 24 hours"}.</div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>

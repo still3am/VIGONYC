@@ -94,7 +94,10 @@ export default function VigoTrackOrder() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16, marginBottom: 16 }}>
               <div>
                 <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>Order</div>
-                <div style={{ fontSize: 16, fontWeight: 900 }}>#{order.orderId}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{ fontSize: 16, fontWeight: 900 }}>#{order.orderId}</div>
+                    <button onClick={() => navigator.clipboard.writeText(order.orderId)} style={{ fontSize: 8, letterSpacing: 1, color: SD, background: "none", border: `.5px solid var(--vt-border)`, padding: "3px 8px", cursor: "pointer", fontFamily: "inherit" }}>Copy</button>
+                  </div>
               </div>
               <div>
                 <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>Status</div>

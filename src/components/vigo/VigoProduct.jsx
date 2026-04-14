@@ -131,6 +131,17 @@ export default function VigoProduct() {
   const soldOut = product.inStock === false || product.stock === 0;
   const avgRating = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : null;
 
+  useEffect(() => {
+   const handleKey = (e) => {
+     if (allMedia.length <= 1) return;
+     if (e.key === "ArrowLeft") setActiveThumb(t => Math.max(0, t - 1));
+     if (e.key === "ArrowRight") setActiveThumb(t => Math.min(allMedia.length - 1, t + 1));
+     if (e.key === "Escape" && zoomed) setZoomed(false);
+   };
+   window.addEventListener("keydown", handleKey);
+   return () => window.removeEventListener("keydown", handleKey);
+  }, [allMedia.length, zoomed]);
+
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     if (!reviewForm.rating) return toast.error("Please select a star rating");
@@ -305,9 +316,15 @@ export default function VigoProduct() {
                 <button onClick={handleAdd} disabled={soldOut} style={{ flex: 1, background: soldOut ? G2 : added ? "#0c6" : S, color: soldOut ? SD : "#000", border: soldOut ? `.5px solid ${G3}` : "none", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: soldOut ? "not-allowed" : "pointer", height: 48, transition: "background .3s", fontFamily: "inherit" }}>
                   {soldOut ? "Sold Out" : added ? "✓ Added to Bag" : "Add to Bag"}
                 </button>
-              </div>
+                </div>
+                {reviews.length >= 5 && (
+                <div style={{ fontSize: 9, color: SD, display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                  <span style={{ color: "#0c6" }}>🔥</span>
+                  Popular item — {reviews.length} reviews
+                </div>
+                )}
 
-              {/* Share row */}
+                {/* Share row */}
               <div style={{ display: "flex", gap: 8, paddingTop: 16, paddingBottom: 16, borderTop: `.5px solid ${G3}`, flexWrap: "wrap", alignItems: "center" }}>
                 <span style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Share:</span>
                 <button onClick={() => { navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 2000); }} style={shareBtn}>

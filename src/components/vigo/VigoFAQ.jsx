@@ -68,9 +68,9 @@ export default function VigoFAQ() {
       <h1 style={{ fontSize: 48, fontWeight: 900, letterSpacing: -2, marginBottom: 24 }}>FAQ</h1>
       <input value={faqSearch} onChange={e => setFaqSearch(e.target.value)} placeholder="Search FAQ..." style={{ width: "100%", background: "var(--vt-card)", border: `.5px solid ${G3}`, color: "var(--vt-text)", padding: "12px 18px", fontSize: 12, outline: "none", fontFamily: "inherit", marginBottom: 24, boxSizing: "border-box" }} />
       {!searchResults && (
-        <div style={{ display: "flex", gap: 2, marginBottom: 40 }}>
+        <div style={{ display: "flex", gap: 2, marginBottom: 40, overflowX: "auto", paddingBottom: 4, WebkitOverflowScrolling: "touch" }}>
           {Object.keys(faqs).map(section => (
-            <button key={section} onClick={() => setActiveSection(section)} style={{ padding: "10px 24px", background: activeSection === section ? S : G1, color: activeSection === section ? "#000" : SD, border: `.5px solid ${activeSection === section ? S : G3}`, fontSize: 9, letterSpacing: 3, textTransform: "uppercase", cursor: "pointer", fontWeight: activeSection === section ? 900 : 400, fontFamily: "inherit" }}>
+            <button key={section} onClick={() => setActiveSection(section)} style={{ padding: "10px 24px", background: activeSection === section ? S : G1, color: activeSection === section ? "#000" : SD, border: `.5px solid ${activeSection === section ? S : G3}`, fontSize: 9, letterSpacing: 3, textTransform: "uppercase", cursor: "pointer", fontWeight: activeSection === section ? 900 : 400, fontFamily: "inherit", flexShrink: 0 }}>
               {section}
             </button>
           ))}

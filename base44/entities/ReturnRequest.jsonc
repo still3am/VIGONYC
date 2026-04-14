@@ -27,6 +27,10 @@
         "Completed"
       ],
       "description": "Return status"
+    },
+    "adminNote": {
+      "type": "string",
+      "description": "Internal admin note about this return"
     }
   },
   "required": [
