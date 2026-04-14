@@ -25,9 +25,9 @@ function FilterSection({ title, children }) {
   );
 }
 
-function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories, collections, inStockOnly, setInStockOnly, setSizeGuideOpen }) {
-   return (
-     <div>
+function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories, collections, inStockOnly, setInStockOnly }) {
+  return (
+    <div>
       <div style={{ fontSize: 10, letterSpacing: 3, textTransform: "uppercase", color: "var(--vt-text)", fontWeight: 700, marginBottom: 24, paddingBottom: 16, borderBottom: `.5px solid ${G3}` }}>Filters</div>
       <div style={{ paddingBottom: 16, marginBottom: 16, borderBottom: `.5px solid ${G3}` }}>
         <button onClick={() => setInStockOnly(!inStockOnly)} style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "inherit" }}>
@@ -53,9 +53,6 @@ function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes,
             <button key={s} onClick={() => toggleArr(selectedSizes, setSelectedSizes, s)} style={{ padding: "6px 10px", border: `.5px solid ${selectedSizes.includes(s) ? S : G3}`, background: selectedSizes.includes(s) ? S : "none", color: selectedSizes.includes(s) ? "#000" : SD, fontSize: 9, cursor: "pointer", fontFamily: "inherit" }}>{s}</button>
           ))}
         </div>
-        {setSizeGuideOpen && <button onClick={() => setSizeGuideOpen(true)} style={{ fontSize: 9, letterSpacing: 2, color: S, textTransform: "uppercase", background: "none", border: "none", cursor: "pointer", padding: "8px 0", fontFamily: "inherit", display: "block", marginTop: 8 }}>
-          Size Guide →
-        </button>}
       </FilterSection>
       <FilterSection title="Color">
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -132,8 +129,7 @@ export default function VigoShop() {
     base44.entities.Product.list("-created_date", 200).then(data => { setAllProducts(data || []); res(); }).catch(() => res());
   }), []);
 
-  const { setSizeGuideOpen } = useOutletContext();
-  const filterProps = { activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories: CATEGORIES, collections: COLLECTIONS, inStockOnly, setInStockOnly, setSizeGuideOpen };
+  const filterProps = { activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories: CATEGORIES, collections: COLLECTIONS, inStockOnly, setInStockOnly };
 
   useEffect(() => {
     document.title = "Shop All — VIGONYC";
@@ -223,13 +219,7 @@ export default function VigoShop() {
                 <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
                   wishlisted={wishlist.includes(p.id)}
                   onWishlist={() => toggleWishlist(p.id)}
-                  onAdd={() => {
-                   if (p.sizes && p.sizes.length > 1) {
-                     navigate(`/product/${p.id}`);
-                   } else {
-                     addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: p.sizes?.[0] || null, color: p.colors?.[0] || "Black", productImage: p.images?.[0] || productImg, price: p.price });
-                   }
-                  }}
+                  onAdd={() => addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: "M", color: "Black", productImage: p.images?.[0] || productImg, price: p.price })}
                   onClick={() => navigate(`/product/${p.id}`)} />
               ))}
             </div>

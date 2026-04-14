@@ -96,8 +96,6 @@ export default function VigoHome() {
       .finally(() => setProductsLoading(false));
   }, []);
 
-  const heroProduct = products.length > 0 ? products[0] : null;
-
   const handleSubscribe = async () => {
     if (!email.trim() || !/\S+@\S+\.\S+/.test(email.trim())) { alert("Please enter a valid email address."); return; }
     const user = await base44.auth.me().catch(() => null);
@@ -161,15 +159,15 @@ export default function VigoHome() {
           <div style={{ position: "absolute", bottom: 72, left: 24, width: 32, height: 32, borderBottom: `2px solid ${S}`, borderLeft: `2px solid ${S}`, zIndex: 2 }} />
           <div style={{ position: "absolute", bottom: 72, right: 24, width: 32, height: 32, borderBottom: `2px solid ${S}`, borderRight: `2px solid ${S}`, zIndex: 2 }} />
           <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at center, rgba(192,192,192,.06) 0%, transparent 65%)`, pointerEvents: "none" }} />
-          <img src={heroProduct?.images?.[0] || productImg} alt={heroProduct?.name || "VIGONYC SS25"} loading="lazy" style={{ width: "68%", maxWidth: 380, objectFit: "contain", filter: "drop-shadow(0 0 80px rgba(192,192,192,.2))", zIndex: 1 }} />
+          <img src={productImg} alt="VIGONYC SS25" style={{ width: "68%", maxWidth: 380, objectFit: "contain", filter: "drop-shadow(0 0 80px rgba(192,192,192,.2))", zIndex: 1 }} />
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "rgba(0,0,0,.85)", borderTop: `.5px solid rgba(255,255,255,.1)`, padding: "14px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 2 }}>
             <div>
-              <div style={{ fontSize: 11, color: "#fff" }}>{heroProduct?.name || settings.hero_product_name || "Chrome V Tee — SS25"}</div>
-              <div style={{ fontSize: 8, letterSpacing: 2, color: "#888", marginTop: 2 }}>{settings.hero_product_label || "Limited"} · {heroProduct?.stock ? `${heroProduct.stock} Units` : settings.hero_product_units || "100 Units"}</div>
+              <div style={{ fontSize: 11, color: "#fff" }}>Chrome V Tee — SS25</div>
+              <div style={{ fontSize: 8, letterSpacing: 2, color: "#888", marginTop: 2 }}>Limited · 100 Units</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-              <span style={{ fontSize: 18, fontWeight: 900, color: S }}>${heroProduct?.price || "68"}</span>
-              <button onClick={() => navigate(heroProduct ? `/product/${heroProduct.id}` : "/shop")} style={{ background: S, color: "#000", border: "none", padding: "8px 16px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Shop Now</button>
+              <span style={{ fontSize: 18, fontWeight: 900, color: S }}>$68</span>
+              <button onClick={() => navigate("/shop")} style={{ background: S, color: "#000", border: "none", padding: "8px 16px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Shop Now</button>
             </div>
           </div>
         </div>
@@ -184,18 +182,12 @@ export default function VigoHome() {
               <div key={i} style={{ background: "var(--vt-card)", border: ".5px solid var(--vt-border)", aspectRatio: "3/4", animation: "vigo-pulse 1.5s infinite" }} />
             ))
           ) : products.length === 0 && <div style={{ gridColumn: "1/-1", padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>No featured products yet — add some in the admin panel.</div>}
-          {!productsLoading && products.length > 0 &&
+          {!productsLoading &&
           products.map((p) =>
           <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
           wishlisted={wishlist.includes(p.id)}
           onWishlist={() => toggleWishlist(p.id)}
-          onAdd={() => {
-            if (p.sizes && p.sizes.length > 1) {
-              navigate(`/product/${p.id}`);
-            } else {
-              addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: p.sizes?.[0] || null, color: p.colors?.[0] || "Black", productImage: p.images?.[0] || productImg, price: p.price });
-            }
-          }}
+          onAdd={() => addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: "M", color: "Black", productImage: p.images?.[0] || productImg, price: p.price })}
           onClick={() => navigate(`/product/${p.id}`)} />
           )}
         </div>
@@ -305,13 +297,7 @@ export default function VigoHome() {
               <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
                 wishlisted={wishlist.includes(p.id)}
                 onWishlist={() => toggleWishlist(p.id)}
-                onAdd={() => {
-            if (p.sizes && p.sizes.length > 1) {
-              navigate(`/product/${p.id}`);
-            } else {
-              addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: p.sizes?.[0] || null, color: p.colors?.[0] || "Black", productImage: p.images?.[0] || productImg, price: p.price });
-            }
-          }}
+                onAdd={() => addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: "M", color: "Black", productImage: p.images?.[0] || productImg, price: p.price })}
                 onClick={() => navigate(`/product/${p.id}`)} />
             ))}
           </div>

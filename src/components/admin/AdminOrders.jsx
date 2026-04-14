@@ -17,8 +17,6 @@ export default function AdminOrders() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [trackingEdits, setTrackingEdits] = useState({});
   const [expanded, setExpanded] = useState(null);
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
 
   useEffect(() => {
     base44.entities.Order.list("-created_date", 200).catch(() => []).then(data => {
@@ -50,11 +48,7 @@ export default function AdminOrders() {
   const filtered = orders.filter(o => {
     const matchSearch = !search || o.orderId?.toLowerCase().includes(search.toLowerCase());
     const matchStatus = statusFilter === "All" || o.status === statusFilter;
-    const oDate = o.created_date ? new Date(o.created_date).getTime() : 0;
-    const fromDate = dateFrom ? new Date(dateFrom).getTime() : 0;
-    const toDate = dateTo ? new Date(dateTo).getTime() + 86400000 : Infinity;
-    const matchDate = (!dateFrom || oDate >= fromDate) && (!dateTo || oDate <= toDate);
-    return matchSearch && matchStatus && matchDate;
+    return matchSearch && matchStatus;
   });
 
   return (
@@ -64,15 +58,13 @@ export default function AdminOrders() {
         <h2 style={{ fontSize: "clamp(20px,5vw,28px)", fontWeight: 900, letterSpacing: -1, color: "#fff" }}>Order Management</h2>
       </div>
 
-      <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
-         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search order ID..." style={{ flex: 1, minWidth: 160, background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 14px", fontSize: 12, outline: "none", fontFamily: "inherit" }} />
-         <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 12px", fontSize: 11, outline: "none", fontFamily: "inherit" }}>
-           <option value="All">All Statuses</option>
-           {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-         </select>
-         <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} placeholder="From" style={{ background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "8px 12px", fontSize: 11, outline: "none", fontFamily: "inherit" }} title="From date" />
-         <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} placeholder="To" style={{ background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "8px 12px", fontSize: 11, outline: "none", fontFamily: "inherit" }} title="To date" />
-         <div style={{ fontSize: 10, color: SD }}>{filtered.length} order{filtered.length !== 1 ? "s" : ""}</div>
+      <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
+        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search order ID..." style={{ flex: 1, minWidth: 160, background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 14px", fontSize: 12, outline: "none", fontFamily: "inherit" }} />
+        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 12px", fontSize: 11, outline: "none", fontFamily: "inherit" }}>
+          <option value="All">All Statuses</option>
+          {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+        <div style={{ fontSize: 10, color: SD, alignSelf: "center" }}>{filtered.length} orders</div>
         <button onClick={() => {
           const headers = ["Order ID","Items","Total","Status","Tracking","Date","Email"];
           const rows = filtered.map(o => [o.orderId,`"${o.items||""}"`,o.total,o.status,o.trackingNumber||"",o.created_date?new Date(o.created_date).toLocaleDateString():"",o.userEmail||o.created_by||""]);

@@ -77,7 +77,7 @@ export default function VigoWishlist() {
               {savedItems.length > 0 && (
                 <>
                   <div style={{ width: 1, height: 12, background: G3 }} />
-                  <span style={{ fontSize: 10, color: SD }}>Est. total: <span style={{ color: S, fontWeight: 900 }}>${totalValue.toFixed(2)}</span></span>
+                  <span style={{ fontSize: 10, color: SD }}>Est. total: <span style={{ color: S, fontWeight: 900 }}>${totalValue}</span></span>
                 </>
               )}
             </div>
@@ -127,11 +127,10 @@ export default function VigoWishlist() {
                     onClick={() => navigate(`/product/${pid}`)}
                   >
                     <img
-                       src={p.productImage || productImg}
-                       alt={p.productName}
-                       loading="lazy"
-                       style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", padding: 16, transition: "transform .5s", transform: isHovered ? "scale(1.06)" : "scale(1)" }}
-                     />
+                      src={p.productImage || productImg}
+                      alt={p.productName}
+                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", padding: 16, transition: "transform .5s", transform: isHovered ? "scale(1.06)" : "scale(1)" }}
+                    />
 
                     <button
                       onClick={e => { e.stopPropagation(); toggleWishlist(pid); }}
@@ -142,9 +141,6 @@ export default function VigoWishlist() {
 
                   <div style={{ padding: "clamp(10px,2vw,16px)", display: "flex", flexDirection: "column", flex: 1 }}>
                     <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>{p.productName}</div>
-                    <button onClick={() => navigate(`/product/${pid}`)} style={{ background: "none", border: "none", color: SD, fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", padding: "4px 0", textDecoration: "underline" }}>
-                      View Product →
-                    </button>
 
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto", paddingTop: 12 }}>
                       <span style={{ fontSize: 20, fontWeight: 900, color: S }}>${p.price}</span>
