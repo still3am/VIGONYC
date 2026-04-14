@@ -148,8 +148,9 @@ function ThemeSelector({ user }) {
 export default function VigoAccount() {
   useEffect(() => { document.title = "My Account — VIGONYC"; return () => { document.title = "VIGONYC — NYC Streetwear"; }; }, []);
   const [tab, setTab] = useState("profile");
-  const [deleteConfirm, setDeleteConfirm] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+   const [deleteConfirm, setDeleteConfirm] = useState(false);
+   const [deleting, setDeleting] = useState(false);
+   const [expandedOrderId, setExpandedOrderId] = useState(null);
   const [passwords, setPasswords] = useState({ current: "", newPass: "", confirm: "" });
   const [addressModal, setAddressModal] = useState(null);
   const [profileSaved, setProfileSaved] = useState(false);
@@ -389,7 +390,8 @@ export default function VigoAccount() {
                 {orders.map((order) => {
               const statusColor = order.status === 'Delivered' ? '#0c6' : order.status === 'Shipped' ? S : order.status === 'Processing' ? '#fa0' : '#e03';
               return (
-                <div key={order.id} style={{ background: G1, border: `.5px solid ${G3}`, padding: "clamp(16px,3vw,24px)", transition: "border-color .2s" }}
+                <div key={order.id} style={{ background: G1, border: `.5px solid ${G3}`, padding: "clamp(16px,3vw,24px)", transition: "border-color .2s", cursor: "pointer" }}
+                onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)}
                 onMouseEnter={(e) => e.currentTarget.style.borderColor = S}
                 onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--vt-border)"}>
                       <div className="vigo-order-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
@@ -428,6 +430,40 @@ export default function VigoAccount() {
                           }} style={btnGhost}>Reorder</button>
                         </div>
                       </div>
+                    </div>
+                    {expandedOrderId === order.id && (
+                      <div style={{ background: "var(--vt-bg)", border: `.5px solid ${G3}`, borderTop: "none", padding: "16px 20px", marginBottom: 8 }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 12 }}>
+                          <div>
+                            <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 6 }}>Items</div>
+                            {(order.items || "").split(", ").map((item, idx) => (
+                              <div key={idx} style={{ fontSize: 11, color: "var(--vt-text)", marginBottom: 3 }}>· {item}</div>
+                            ))}
+                          </div>
+                          <div>
+                            <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 6 }}>Shipping</div>
+                            <div style={{ fontSize: 11, color: "var(--vt-text)" }}>{order.shippingAddress || "—"}</div>
+                            {order.shippingMethod && <div style={{ fontSize: 9, color: SD, marginTop: 4, textTransform: "capitalize" }}>{order.shippingMethod}</div>}
+                          </div>
+                        </div>
+                        {order.isGift && (
+                          <div style={{ background: "rgba(192,192,192,.06)", border: `.5px solid rgba(192,192,192,.2)`, padding: "10px 14px", display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 10 }}>
+                            <span>🎁</span>
+                            <div>
+                              <div style={{ fontSize: 9, color: S, marginBottom: 2 }}>Gift Order</div>
+                              {order.giftMessage && <div style={{ fontSize: 10, color: SD, fontStyle: "italic" }}>"{order.giftMessage}"</div>}
+                            </div>
+                          </div>
+                        )}
+                        {order.trackingNumber && (
+                          <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10 }}>
+                            <div style={{ fontSize: 9, color: SD, textTransform: "uppercase", letterSpacing: 1 }}>Tracking:</div>
+                            <div style={{ fontSize: 11, color: S, fontWeight: 700 }}>{order.trackingNumber}</div>
+                            <button onClick={() => navigator.clipboard.writeText(order.trackingNumber)} style={{ fontSize: 8, letterSpacing: 1, color: SD, background: "none", border: `.5px solid ${G3}`, padding: "3px 8px", cursor: "pointer", fontFamily: "inherit" }}>Copy</button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                     </div>);
 
             })}
