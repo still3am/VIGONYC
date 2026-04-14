@@ -470,7 +470,7 @@ export default function VigoAccount() {
                   {orders.length} {orders.length === 1 ? 'order' : 'orders'} total
                 </div>
               </div>
-            )}
+            }
 
         {/* ── ADDRESSES ── */}
         {tab === "addresses" &&
