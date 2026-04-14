@@ -430,8 +430,9 @@ export default function VigoAccount() {
                           }} style={btnGhost}>Reorder</button>
                         </div>
                       </div>
-                    </div>
-                    {expandedOrderId === order.id && (
+                      </div>
+                      )}
+                      {expandedOrderId === order.id && (
                       <div style={{ background: "var(--vt-bg)", border: `.5px solid ${G3}`, borderTop: "none", padding: "16px 20px", marginBottom: 8 }}>
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 12 }}>
                           <div>
