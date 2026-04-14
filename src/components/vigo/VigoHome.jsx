@@ -313,12 +313,13 @@ export default function VigoHome() {
       <style>{`
         @media(max-width:900px){
           .vigo-hero-grid{grid-template-columns:1fr !important;}
-          .vigo-hero-grid>div:last-child{min-height:320px;}
+          .vigo-hero-grid>div:first-child{padding:40px 24px 32px !important; align-items:center !important;}
+          .vigo-hero-grid>div:last-child{min-height:260px;}
           .vigo-kpi-grid{grid-template-columns:repeat(2,1fr) !important;}
           .vigo-4col{grid-template-columns:repeat(2,1fr) !important;}
           .vigo-3col{grid-template-columns:1fr !important;}
           .vigo-2col{grid-template-columns:1fr !important;}
-          .vigo-hero-badge{align-self:flex-start !important;}
+          .vigo-hero-badge{align-self:center !important;}
         }
         @media(max-width:480px){.vigo-4col{grid-template-columns:1fr !important;}}
         @keyframes vigo-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
