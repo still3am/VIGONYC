@@ -153,13 +153,25 @@ function ProductModal({ product, onSave, onClose }) {
             <textarea value={form.description ?? ""} onChange={e => set("description", e.target.value)} rows={3} style={{ width: "100%", background: G2, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 14px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit", resize: "vertical" }} />
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-            <Field label="Stock Count" type="number" value={form.stock ?? 0} onChange={v => set("stock", parseInt(v) || 0)} />
-            <div style={{ display: "flex", alignItems: "center", gap: 10, paddingTop: 20 }}>
-              <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
-                <input type="checkbox" checked={form.inStock !== false} onChange={e => set("inStock", e.target.checked)} style={{ accentColor: S, width: 14, height: 14 }} />
-                <span style={{ fontSize: 11, color: "#fff" }}>In Stock</span>
-              </label>
+          <Field label="Stock Count" type="number" value={form.stock ?? 0} onChange={v => set("stock", parseInt(v) || 0)} />
+
+          <div>
+            <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Availability Status</div>
+            <div style={{ display: "flex", gap: 8 }}>
+              {[["in_stock", "#0c6", "In Stock"], ["low_stock", "#fa0", "Low Stock"], ["sold_out", "#e03", "Sold Out"]].map(([val, color, label]) => {
+                const current = form.inStock === false ? "sold_out" : (form.tag === "low" ? "low_stock" : "in_stock");
+                const active = current === val;
+                return (
+                  <button key={val} onClick={() => {
+                    if (val === "sold_out") { set("inStock", false); }
+                    else if (val === "low_stock") { set("inStock", true); set("tag", "ltd"); }
+                    else { set("inStock", true); }
+                  }} style={{ flex: 1, padding: "10px 8px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", border: `0.5px solid ${active ? color : G3}`, background: active ? `${color}18` : "transparent", color: active ? color : SD, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, transition: "all .2s" }}>
+                    <div style={{ width: 7, height: 7, borderRadius: "50%", background: color, flexShrink: 0 }} />
+                    {label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
