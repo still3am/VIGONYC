@@ -139,18 +139,18 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
             {!isCheckout && <button className="vigo-mobile-menu-btn" onClick={() => setMobileOpen(!mobileOpen)} style={{ ...iconBtn, background: "none", border: "none" }} title="Menu">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
               </button>}
-          </div>
-        </div>
+            </div>
 
-        {/* Mobile menu */}
-        {mobileOpen && (
-        <div style={{ background: "var(--vt-bg)", borderTop: `.5px solid ${G3}`, padding: "20px 24px", display: "flex", flexDirection: "column", gap: 18 }}>
-          {links.map((l) =>
-            <NavLink key={l.to} to={l.to} onClick={() => setMobileOpen(false)} style={({ isActive }) => ({ textDecoration: "none", fontSize: 10, letterSpacing: 4, textTransform: "uppercase", color: isActive ? "var(--vt-text)" : SD })}>{l.label}</NavLink>
-          )}
-        </div>
-        )}
-      </nav>
+            {/* Mobile menu */}
+            {mobileOpen && (
+            <div style={{ background: "var(--vt-bg)", borderTop: `.5px solid ${G3}`, padding: "20px 24px", display: "flex", flexDirection: "column", gap: 18 }}>
+            {links.map((l) =>
+              <NavLink key={l.to} to={l.to} onClick={() => setMobileOpen(false)} style={({ isActive }) => ({ textDecoration: "none", fontSize: 10, letterSpacing: 4, textTransform: "uppercase", color: isActive ? "var(--vt-text)" : SD })}>{l.label}</NavLink>
+            )}
+            </div>
+            )}
+            </div>
+            </nav>
 
       <style>{`
         @media (min-width: 900px) { .vigo-mobile-menu-btn { display: none !important; } }
