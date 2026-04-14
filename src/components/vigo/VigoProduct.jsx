@@ -38,6 +38,16 @@ export default function VigoProduct() {
   const [hasReviewed, setHasReviewed] = useState(false);
 
   useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === "ArrowLeft") setActiveThumb(t => Math.max(0, t - 1));
+      if (e.key === "ArrowRight") setActiveThumb(t => t + 1);
+      if (e.key === "Escape") setZoomed(false);
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [zoomed]);
+
+  useEffect(() => {
     setLoading(true);
     setNotFound(false);
     setProduct(null);
@@ -129,18 +139,7 @@ export default function VigoProduct() {
   };
 
   const soldOut = product.inStock === false || product.stock === 0;
-  const avgRating = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : null;
-
-  useEffect(() => {
-   const handleKey = (e) => {
-     if (allMedia.length <= 1) return;
-     if (e.key === "ArrowLeft") setActiveThumb(t => Math.max(0, t - 1));
-     if (e.key === "ArrowRight") setActiveThumb(t => Math.min(allMedia.length - 1, t + 1));
-     if (e.key === "Escape" && zoomed) setZoomed(false);
-   };
-   window.addEventListener("keydown", handleKey);
-   return () => window.removeEventListener("keydown", handleKey);
-  }, [allMedia.length, zoomed]);
+   const avgRating = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : null;
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
