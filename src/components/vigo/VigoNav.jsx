@@ -24,6 +24,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
   const navigate = useNavigate();
   const location = useLocation();
   const isRoot = location.pathname === "/" || location.pathname === "/shop" || location.pathname === "/drops" || location.pathname === "/wishlist" || location.pathname === "/account" || location.pathname === "/lookbook" || location.pathname === "/about";
+  const isCheckout = location.pathname === "/checkout";
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 10);
@@ -126,9 +127,9 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
               {cartCount > 0 && <span style={{ position: "absolute", top: -3, right: -3, background: S, color: "#000", fontSize: 8, fontWeight: 900, borderRadius: "50%", width: 15, height: 15, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
             </button>
-            <button className="vigo-mobile-menu-btn" onClick={() => setMobileOpen(!mobileOpen)} style={{ ...iconBtn, background: "none", border: "none" }} title="Menu">
+            {!isCheckout && <button className="vigo-mobile-menu-btn" onClick={() => setMobileOpen(!mobileOpen)} style={{ ...iconBtn, background: "none", border: "none" }} title="Menu">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-            </button>
+              </button>}
           </div>
         </div>
 
