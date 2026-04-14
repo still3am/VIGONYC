@@ -349,6 +349,7 @@ export default function VigoHome() {
           .vigo-4col{grid-template-columns:repeat(2,1fr) !important;}
           .vigo-3col{grid-template-columns:1fr !important;}
           .vigo-2col{grid-template-columns:1fr !important;}
+          .vigo-2col>div:first-child{border-right: none !important;}
           .vigo-hero-badge{align-self:center !important;}
         }
         @media(max-width:480px){.vigo-4col{grid-template-columns:1fr !important;}}
