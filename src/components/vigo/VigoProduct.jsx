@@ -381,7 +381,7 @@ export default function VigoProduct() {
         </>
       )}
 
-      <div className="mobile-cta" style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "var(--vt-nav-scrolled)", borderTop: `.5px solid ${G3}`, padding: "12px clamp(12px,4vw,24px) calc(12px + env(safe-area-inset-bottom))", display: "none", gap: 8, zIndex: 150, backdropFilter: "blur(12px)" }}>
+      <div className="mobile-cta" style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "var(--vt-nav-scrolled)", borderTop: `.5px solid ${G3}`, padding: "12px clamp(12px,4vw,24px) env(safe-area-inset-bottom, 12px)", display: "none", gap: 8, zIndex: 150, backdropFilter: "blur(12px)" }}>
         {!selectedSize && <div style={{ fontSize: 9, color: "#e03", textAlign: "center", letterSpacing: 1 }}>SELECT A SIZE</div>}
         <button onClick={handleAdd} style={{ width: "100%", background: added ? "#0c6" : S, color: "#000", border: "none", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", padding: "12px", fontFamily: "inherit", transition: "background .3s" }}>
           {added ? "✓ Added" : `Add to Bag · $${product.price}`}
