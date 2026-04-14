@@ -120,7 +120,7 @@ export default function VigoHome() {
       {/* ── HERO ── */}
       <div className="vigo-hero-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "88vh", borderBottom: `.5px solid ${G3}`, opacity: heroLoaded ? 1 : 0, transform: heroLoaded ? "none" : "translateY(12px)", transition: "opacity .5s, transform .5s" }}>
         <div style={{ padding: "72px 48px 72px 32px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 28, background: "rgba(192,192,192,.06)", border: `.5px solid rgba(192,192,192,.15)`, padding: "8px 16px", alignSelf: "center" }}>
+          <div className="vigo-hero-badge" style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 28, background: "rgba(192,192,192,.06)", border: `.5px solid rgba(192,192,192,.15)`, padding: "8px 16px", alignSelf: "center" }}>
             <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 2s infinite" }} />
             <span style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase" }}>{settings.banner_text}</span>
           </div>
@@ -318,6 +318,7 @@ export default function VigoHome() {
           .vigo-4col{grid-template-columns:repeat(2,1fr) !important;}
           .vigo-3col{grid-template-columns:1fr !important;}
           .vigo-2col{grid-template-columns:1fr !important;}
+          .vigo-hero-badge{align-self:flex-start !important;}
         }
         @media(max-width:480px){.vigo-4col{grid-template-columns:1fr !important;}}
         @keyframes vigo-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
