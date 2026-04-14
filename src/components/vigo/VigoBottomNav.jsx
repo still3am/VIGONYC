@@ -43,7 +43,7 @@ export default function VigoBottomNav({ cartCount = 0, onCartOpen }) {
         height: 72,
         padding: "0 0 env(safe-area-inset-bottom)",
       }}>
-        <button onClick={onCartOpen} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 5, color: "var(--vt-sub)", background: "none", border: "none", cursor: "pointer", padding: "10px 0 8px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", fontFamily: "inherit", position: "relative", WebkitTapHighlightColor: "transparent" }}>
+        <button onClick={onCartOpen} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, color: "var(--vt-sub)", background: "none", border: "none", cursor: "pointer", padding: "6px 0 10px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", fontFamily: "inherit", position: "relative", WebkitTapHighlightColor: "transparent" }}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           {cartCount > 0 && <span style={{ position: "absolute", top: 6, right: "calc(50% - 18px)", background: "#C0C0C0", color: "#000", fontSize: 7, fontWeight: 900, borderRadius: "50%", width: 14, height: 14, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
           <span>Cart</span>
@@ -58,7 +58,7 @@ export default function VigoBottomNav({ cartCount = 0, onCartOpen }) {
             gap: 5,
             color: isActive ? S : "var(--vt-sub)",
             textDecoration: "none",
-            padding: "10px 0 8px",
+            padding: "6px 0 10px",
             fontSize: 9,
             letterSpacing: 1,
             textTransform: "uppercase",
