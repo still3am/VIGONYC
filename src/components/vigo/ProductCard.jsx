@@ -47,8 +47,8 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
           alt={product.name}
           style={{
             position: "absolute", inset: 0, width: "100%", height: "100%",
-            objectFit: "contain", opacity: product.inStock === false ? 0.5 : (product.opacity ?? 1),
-            padding: 20, transition: "transform .5s",
+            objectFit: "cover", opacity: product.inStock === false ? 0.5 : (product.opacity ?? 1),
+            transition: "transform .5s",
             transform: hovered ? "scale(1.07)" : "scale(1)"
           }}
         />
