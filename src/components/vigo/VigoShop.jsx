@@ -25,10 +25,18 @@ function FilterSection({ title, children }) {
   );
 }
 
-function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories, collections }) {
+function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories, collections, inStockOnly, setInStockOnly }) {
   return (
     <div>
       <div style={{ fontSize: 10, letterSpacing: 3, textTransform: "uppercase", color: "var(--vt-text)", fontWeight: 700, marginBottom: 24, paddingBottom: 16, borderBottom: `.5px solid ${G3}` }}>Filters</div>
+      <div style={{ paddingBottom: 16, marginBottom: 16, borderBottom: `.5px solid ${G3}` }}>
+        <button onClick={() => setInStockOnly(!inStockOnly)} style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "inherit" }}>
+          <div style={{ width: 18, height: 18, border: `.5px solid ${inStockOnly ? S : G3}`, background: inStockOnly ? S : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            {inStockOnly && <span style={{ color: "#000", fontSize: 12, fontWeight: 900 }}>✓</span>}
+          </div>
+          <span style={{ fontSize: 11, color: inStockOnly ? "var(--vt-text)" : SD }}>In Stock Only</span>
+        </button>
+      </div>
       <FilterSection title="Category">
         {categories.map(c => (
           <button key={c} onClick={() => setActiveCat(c)} style={{ display: "block", background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "6px 0", fontSize: 11, color: activeCat === c ? "var(--vt-text)" : SD, fontWeight: activeCat === c ? 700 : 400, fontFamily: "inherit", width: "100%" }}>{c}</button>
@@ -84,6 +92,7 @@ export default function VigoShop() {
   const [priceRange, setPriceRange] = useState(300);
   const [activeCollection, setActiveCollection] = useState("All Collections");
   const [sort, setSort] = useState("featured");
+  const [inStockOnly, setInStockOnly] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -112,14 +121,20 @@ export default function VigoShop() {
     if (sort === "price-asc") p.sort((a,b) => a.price - b.price);
     if (sort === "price-desc") p.sort((a,b) => b.price - a.price);
     if (sort === "new") p = p.filter(x => x.tag === "new").concat(p.filter(x => x.tag !== "new"));
+    if (inStockOnly) p = p.filter(x => x.inStock !== false);
     return p;
-  }, [activeCat, searchQuery, selectedSizes, selectedColors, priceRange, activeCollection, sort, allProducts]);
+  }, [activeCat, searchQuery, selectedSizes, selectedColors, priceRange, activeCollection, sort, allProducts, inStockOnly]);
 
   const handleRefresh = useCallback(() => new Promise(res => {
     base44.entities.Product.list("-created_date", 200).then(data => { setAllProducts(data || []); res(); }).catch(() => res());
   }), []);
 
-  const filterProps = { activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories: CATEGORIES, collections: COLLECTIONS };
+  const filterProps = { activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories: CATEGORIES, collections: COLLECTIONS, inStockOnly, setInStockOnly };
+
+  useEffect(() => {
+    document.title = "Shop All — VIGONYC";
+    return () => { document.title = "VIGONYC — NYC Streetwear"; };
+  }, []);
 
   const activeFiltersCount = [
     activeCat !== "All" ? 1 : 0,
@@ -157,6 +172,9 @@ export default function VigoShop() {
           {CATEGORIES.map(c => (
             <button key={c} onClick={() => setActiveCat(c)} style={{ flexShrink: 0, padding: "8px 16px", background: activeCat === c ? S : "none", color: activeCat === c ? "#000" : SD, border: `.5px solid ${activeCat === c ? S : G3}`, fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: activeCat === c ? 900 : 400, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>{c}</button>
           ))}
+          <button onClick={() => { setSort("new"); setActiveCat("All"); }} style={{ flexShrink: 0, padding: "8px 16px", background: sort === "new" && activeCat === "All" ? S : "none", color: sort === "new" && activeCat === "All" ? "#000" : SD, border: `.5px solid ${sort === "new" && activeCat === "All" ? S : G3}`, fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: sort === "new" && activeCat === "All" ? 900 : 400, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#0c6", display: "inline-block" }} />New Arrivals
+          </button>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>

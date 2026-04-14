@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { base44 } from "@/api/base44Client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -55,9 +55,14 @@ export default function VigoContact() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
+  useEffect(() => { document.title = "Contact — VIGONYC"; return () => { document.title = "VIGONYC — NYC Streetwear"; }; }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!firstName.trim() || !lastName.trim()) return alert("Please enter your full name.");
+    if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) return alert("Please enter a valid email address.");
+    if (!topic) return alert("Please select a topic.");
+    if (!message.trim() || message.trim().length < 10) return alert("Please enter a message (at least 10 characters).");
     setSending(true);
     await base44.entities.ContactEntry.create({ firstName, lastName, email, topic, message }).catch(() => {});
     setSending(false);

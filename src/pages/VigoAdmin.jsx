@@ -170,7 +170,7 @@ export default function VigoAdmin() {
 
         {/* Section content */}
         <div style={{ padding: "clamp(24px,4vw,40px) clamp(20px,4vw,36px)" }}>
-          <ActiveSection />
+          <ActiveSection onNavigate={setSection} />
         </div>
       </div>
 

@@ -168,6 +168,11 @@ export default function AdminLookbook() {
                 <button onClick={() => setModal(e)} style={{ background: S, color: "#000", border: "none", padding: "9px 18px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Edit</button>
                 <button onClick={() => handleDelete(e.id)} style={{ background: "none", border: `0.5px solid #e03`, color: "#e03", padding: "9px 14px", fontSize: 8, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>Delete</button>
               </div>
+              {/* Reorder buttons */}
+              <div style={{ position: "absolute", top: 8, left: 8, display: "flex", flexDirection: "column", gap: 4, zIndex: 5 }}>
+                <button onClick={async (ev) => { ev.stopPropagation(); const sorted = [...entries].sort((a,b) => (a.sort_order||0)-(b.sort_order||0)); const idx = sorted.findIndex(x => x.id === e.id); if (idx === 0) return; const prev = sorted[idx-1]; await Promise.all([base44.entities.LookbookEntry.update(e.id, { sort_order: prev.sort_order||0 }), base44.entities.LookbookEntry.update(prev.id, { sort_order: e.sort_order||idx })]); load(); }} style={{ background: "rgba(0,0,0,.8)", border: `0.5px solid ${G3}`, color: SD, width: 24, height: 24, cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center" }}>↑</button>
+                <button onClick={async (ev) => { ev.stopPropagation(); const sorted = [...entries].sort((a,b) => (a.sort_order||0)-(b.sort_order||0)); const idx = sorted.findIndex(x => x.id === e.id); if (idx === sorted.length-1) return; const next = sorted[idx+1]; await Promise.all([base44.entities.LookbookEntry.update(e.id, { sort_order: next.sort_order||idx+1 }), base44.entities.LookbookEntry.update(next.id, { sort_order: e.sort_order||idx })]); load(); }} style={{ background: "rgba(0,0,0,.8)", border: `0.5px solid ${G3}`, color: SD, width: 24, height: 24, cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center" }}>↓</button>
+              </div>
             </div>
             <div style={{ padding: "14px 16px", borderTop: `0.5px solid ${G3}` }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: "#fff", marginBottom: 3 }}>{e.title}</div>

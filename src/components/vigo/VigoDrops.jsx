@@ -62,13 +62,19 @@ function MiniCountdown({ drop }) {
 }
 
 export default function VigoDrops() {
-  const { productImg, wishlist, toggleWishlist } = useOutletContext();
+  const { productImg, wishlist, toggleWishlist, addToCart } = useOutletContext();
   const navigate = useNavigate();
   const [notified, setNotified] = useState({});
   const [email, setEmail] = useState("");
   const [viewDate, setViewDate] = useState(new Date(TODAY.getFullYear(), TODAY.getMonth(), 1));
   const [allDrops, setAllDrops] = useState([]);
   const [selectedDrop, setSelectedDrop] = useState(null);
+  const [dropProducts, setDropProducts] = useState([]);
+
+  useEffect(() => {
+    document.title = "Drops — VIGONYC";
+    return () => { document.title = "VIGONYC — NYC Streetwear"; };
+  }, []);
 
   const loadDrops = useCallback(async () => {
     const data = await base44.entities.Drop.list("-date", 100).catch(() => []);
@@ -85,6 +91,16 @@ export default function VigoDrops() {
   }, [setAllDrops, setSelectedDrop]);
 
   useEffect(() => { loadDrops(); }, [loadDrops]);
+
+  useEffect(() => {
+    const drop = allDrops.find(d => d.status === "live") || allDrops.find(d => d.status === "upcoming");
+    if (drop?.productIds?.length > 0) {
+      Promise.all(drop.productIds.map(id => base44.entities.Product.get(id).catch(() => null)))
+        .then(results => setDropProducts(results.filter(Boolean)));
+    } else {
+      setDropProducts([]);
+    }
+  }, [allDrops]);
 
   const ALL_DROPS = allDrops;
   const PAST_DROPS = allDrops.filter(d => d.status === "soldout");
@@ -175,6 +191,23 @@ export default function VigoDrops() {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {dropProducts.length > 0 && (
+        <div style={{ padding: "clamp(24px,4vw,40px) 20px", background: G1, borderTop: `.5px solid ${G3}` }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+            <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 20 }}>✦ Drop Products</div>
+            <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
+              {dropProducts.map(p => (
+                <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
+                  wishlisted={wishlist.includes(p.id)}
+                  onWishlist={() => toggleWishlist(p.id, p)}
+                  onAdd={() => addToCart({ id: p.id, productId: p.id, productName: p.name, name: p.name, size: "M", color: p.colors?.[0] || "Black", price: p.price, productImage: p.images?.[0] || productImg })}
+                  onClick={() => navigate(`/product/${p.id}`)} />
+              ))}
             </div>
           </div>
         </div>

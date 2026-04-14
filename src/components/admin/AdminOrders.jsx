@@ -27,6 +27,13 @@ export default function AdminOrders() {
   const handleStatusChange = async (order, newStatus) => {
     await base44.entities.Order.update(order.id, { status: newStatus });
     setOrders(prev => prev.map(o => o.id === order.id ? { ...o, status: newStatus } : o));
+    if (newStatus === "Shipped") {
+      base44.functions.invoke("sendShipmentNotification", {
+        email: order.userEmail || order.created_by,
+        orderId: order.orderId,
+        trackingNumber: trackingEdits[order.id] || order.trackingNumber || ""
+      }).catch(() => {});
+    }
   };
 
   const handleTrackingBlur = async (order) => {

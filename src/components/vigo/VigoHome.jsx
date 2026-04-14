@@ -65,6 +65,14 @@ export default function VigoHome() {
   const [products, setProducts] = useState([]);
   const [productsLoading, setProductsLoading] = useState(true);
   const [nextDrop, setNextDrop] = useState(null);
+  const [recentProducts, setRecentProducts] = useState([]);
+
+  useEffect(() => {
+    const ids = JSON.parse(localStorage.getItem("vigo_recent") || "[]");
+    if (ids.length === 0) return;
+    Promise.all(ids.slice(0, 4).map(id => base44.entities.Product.get(id).catch(() => null)))
+      .then(results => setRecentProducts(results.filter(Boolean)));
+  }, []);
 
   useEffect(() => { const t = setTimeout(() => setHeroLoaded(true), 80); return () => clearTimeout(t); }, []);
 
@@ -86,14 +94,13 @@ export default function VigoHome() {
   }, []);
 
   const handleSubscribe = async () => {
-    if (email.trim()) {
-      const user = await base44.auth.me().catch(() => null);
-      if (user) {
-        await base44.auth.updateMe({ newsletterEmail: email.trim(), notificationsNewsletter: true }).catch(() => {});
-      }
-      setSubscribed(true);
-      setEmail("");
+    if (!email.trim() || !/\S+@\S+\.\S+/.test(email.trim())) { alert("Please enter a valid email address."); return; }
+    const user = await base44.auth.me().catch(() => null);
+    if (user) {
+      await base44.auth.updateMe({ newsletterEmail: email.trim(), notificationsNewsletter: true }).catch(() => {});
     }
+    setSubscribed(true);
+    setEmail("");
   };
 
   return (
@@ -133,7 +140,7 @@ export default function VigoHome() {
 
           {/* KPIs */}
           <div className="vigo-kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 0, marginTop: 56, borderTop: `.5px solid ${G3}` }}>
-            {[[settings.kpi_pieces, "Pieces Dropped"], [settings.kpi_community, "NYC Community"], ["100%", "Street Ready"], [settings.kpi_rating, "Avg. Rating"]].map(([n, l], i, arr) =>
+            {[[settings.kpi_pieces, "Pieces Dropped"], [settings.kpi_community, "NYC Community"], [settings.kpi_street_ready || "100%", "Street Ready"], [settings.kpi_rating, "Avg. Rating"]].map(([n, l], i, arr) =>
             <div key={l} style={{ padding: "20px 0 0", paddingRight: i < arr.length - 1 ? 16 : 0, borderRight: i < arr.length - 1 ? `.5px solid ${G3}` : "none", paddingLeft: i > 0 ? 16 : 0, textAlign: "center" }}>
                 <div style={{ fontSize: 22, fontWeight: 900, color: "var(--vt-text)", letterSpacing: -1 }}>{n}</div>
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 4 }}>{l}</div>
@@ -261,7 +268,7 @@ export default function VigoHome() {
             <button onClick={() => navigate("/about")} style={btnO}>Our Story →</button>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderRight: "none" }}>
-            {[[settings.kpi_pieces, "Pieces Dropped"], [settings.kpi_community, "Community"], ["100%", "NYC Made"], [settings.kpi_rating, "Avg Rating"]].map(([n, l], i) =>
+            {[[settings.kpi_pieces, "Pieces Dropped"], [settings.kpi_community, "Community"], [settings.kpi_street_ready || "100%", "NYC Made"], [settings.kpi_rating, "Avg Rating"]].map(([n, l], i) =>
             <div key={l} style={{ padding: "36px 28px", borderRight: i % 2 === 0 ? `.5px solid ${G3}` : "none", borderBottom: i < 2 ? `.5px solid ${G3}` : "none", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 <div style={{ fontSize: 32, fontWeight: 900, color: S, letterSpacing: -1 }}>{n}</div>
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 8 }}>{l}</div>
@@ -270,6 +277,22 @@ export default function VigoHome() {
           </div>
         </div>
       </div>
+
+      {/* ── RECENTLY VIEWED ── */}
+      {recentProducts.length > 0 && (
+        <div style={{ padding: "52px 32px 0" }}>
+          <SectionHeader title="Recently Viewed" sub="" cta="Shop All →" onCta={() => navigate("/shop")} />
+          <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
+            {recentProducts.map(p => (
+              <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
+                wishlisted={wishlist.includes(p.id)}
+                onWishlist={() => toggleWishlist(p.id)}
+                onAdd={() => addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: "M", color: "Black", productImage: p.images?.[0] || productImg, price: p.price })}
+                onClick={() => navigate(`/product/${p.id}`)} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ── NEWSLETTER ── */}
       <div style={{ margin: "32px 32px 64px", background: `linear-gradient(135deg, var(--vt-bg), var(--vt-card))`, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "52px 48px", textAlign: "center", position: "relative", overflow: "hidden" }}>

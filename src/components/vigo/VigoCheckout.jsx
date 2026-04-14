@@ -18,6 +18,7 @@ export default function VigoCheckout() {
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [step, setStep] = useState(1);
   const [payMethod, setPayMethod] = useState("card");
+  const [shippingMethod, setShippingMethod] = useState("standard");
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
   const [promoDiscount, setPromoDiscount] = useState(10);
@@ -49,11 +50,13 @@ export default function VigoCheckout() {
       }
     };
     load();
+    document.title = "Checkout — VIGONYC";
+    return () => { document.title = "VIGONYC — NYC Streetwear"; };
   }, []);
 
   const freeShippingThreshold = parseInt(settings.free_shipping_threshold || "150");
   const subtotal = cartItems.reduce((s, i) => s + (i.price * i.qty), 0);
-  const shipping = subtotal >= freeShippingThreshold ? 0 : 12;
+  const shipping = shippingMethod === "overnight" ? 28 : shippingMethod === "express" ? 12 : (subtotal >= freeShippingThreshold ? 0 : 12);
   const tax = Math.round(subtotal * 0.0887);
   const discount = promoApplied ? Math.round(subtotal * promoDiscount / 100) : 0;
   const total = subtotal + shipping + tax - discount;
@@ -173,14 +176,19 @@ export default function VigoCheckout() {
                 <Field label="State" value={contact.state} onChange={v => setField("state", v)} />
                 <Field label="ZIP" value={contact.zip} onChange={v => setField("zip", v)} />
               </div>
-              <button onClick={() => setStep(2)} style={btnP}>Continue to Shipping →</button>
+              <button onClick={() => {
+                if (!contact.firstName.trim() || !contact.lastName.trim()) return alert("Please enter your full name.");
+                if (!contact.email.trim() || !/\S+@\S+\.\S+/.test(contact.email)) return alert("Please enter a valid email address.");
+                if (!contact.address.trim() || !contact.city.trim() || !contact.state.trim() || !contact.zip.trim()) return alert("Please fill in your complete shipping address.");
+                setStep(2);
+              }} style={btnP}>Continue to Shipping →</button>
             </div>
           )}
           {step === 2 && (
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {[["standard","Standard","5–7 business days","Free","(qualifies)"],["express","Express","2–3 business days","$12",""],["overnight","Overnight","Next business day","$28",""]].map(([v,n,d,p,note]) => (
                 <label key={v} style={{ display: "flex", alignItems: "center", gap: 16, background: G1, border: `.5px solid ${G3}`, padding: "20px 24px", cursor: "pointer" }}>
-                  <input type="radio" name="ship" value={v} defaultChecked={v === "standard"} style={{ accentColor: S }} />
+                  <input type="radio" name="ship" value={v} checked={shippingMethod === v} onChange={() => setShippingMethod(v)} style={{ accentColor: S }} />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 12, fontWeight: 700 }}>{n}</div>
                     <div style={{ fontSize: 10, color: SD }}>{d}</div>
@@ -265,7 +273,7 @@ export default function VigoCheckout() {
             {promoError && <div style={{ fontSize: 10, color: "#e03", marginBottom: 12 }}>Invalid or expired promo code.</div>}
 
             <div style={{ borderTop: `.5px solid ${G3}`, paddingTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
-              {[["Subtotal", `$${subtotal.toFixed(2)}`],["Shipping", shipping === 0 ? "Free 🎉" : `$${shipping}`],["NYC Tax (8.875%)", `$${tax}`],promoApplied ? ["Promo (VIGONYC10)", `-$${discount}`] : null].filter(Boolean).map(([l,v]) => (
+              {[["Subtotal", `$${subtotal.toFixed(2)}`],["Shipping", shipping === 0 ? "Free 🎉" : `$${shipping}`],["NYC Tax (8.875%)", `$${tax}`],promoApplied ? [`Promo (${promoCode.toUpperCase()})`, `-$${discount}`] : null].filter(Boolean).map(([l,v]) => (
                 <div key={l} style={{ display: "flex", justifyContent: "space-between" }}>
                   <span style={{ fontSize: 10, color: SD }}>{l}</span>
                   <span style={{ fontSize: 11, color: l.startsWith("Promo") ? "#0c6" : l === "Shipping" && shipping === 0 ? "#0c6" : "var(--vt-text)" }}>{v}</span>

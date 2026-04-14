@@ -30,7 +30,7 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-export default function AdminDashboard() {
+export default function AdminDashboard({ onNavigate }) {
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -120,9 +120,10 @@ export default function AdminDashboard() {
                     <div style={{ fontSize: 11, color: "#fff", marginBottom: 2 }}>{o.orderId}</div>
                     <div style={{ fontSize: 9, color: SD }}>{o.items?.slice(0, 30)}</div>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ fontSize: 7, color: statusColor, border: `0.5px solid ${statusColor}`, padding: "2px 7px", letterSpacing: 1, textTransform: "uppercase" }}>{o.status}</span>
                     <span style={{ fontSize: 13, fontWeight: 900, color: S }}>${o.total}</span>
+                    <button onClick={() => onNavigate?.("orders")} style={{ background: "none", border: `0.5px solid ${G3}`, color: SD, padding: "4px 10px", fontSize: 8, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>Manage →</button>
                   </div>
                 </div>
               );

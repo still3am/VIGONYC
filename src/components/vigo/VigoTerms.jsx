@@ -18,7 +18,8 @@ export default function VigoTerms() {
   return (
     <div style={{ padding: "64px 32px", maxWidth: 800, margin: "0 auto" }}>
       <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ Legal</div>
-      <h1 style={{ fontSize: 48, fontWeight: 900, letterSpacing: -2, marginBottom: 48 }}>Terms of Service</h1>
+      <h1 style={{ fontSize: 48, fontWeight: 900, letterSpacing: -2, marginBottom: 12 }}>Terms of Service</h1>
+      <div style={{ fontSize: 10, color: SD, marginBottom: 36 }}>Last Updated: April 2026</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
         {SECTIONS.map((s, i) => (
           <div key={i} style={{ borderTop: `.5px solid ${G3}`, padding: "28px 0" }}>

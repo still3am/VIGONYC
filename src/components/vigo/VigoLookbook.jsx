@@ -14,13 +14,18 @@ export default function VigoLookbook() {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState(null);
   const [entries, setEntries] = useState([]);
+  const [activeCollection, setActiveCollection] = useState("All");
 
   useEffect(() => {
     base44.entities.LookbookEntry.list("sort_order", 100).then(data => setEntries(data || [])).catch(() => {});
+    document.title = "Lookbook — VIGONYC";
+    return () => { document.title = "VIGONYC — NYC Streetwear"; };
   }, []);
 
-  const heroEntry = entries.find(e => e.featured) || entries[0];
-  const gridEntries = entries.filter(e => e !== heroEntry);
+  const collections = ["All", ...new Set(entries.map(e => e.collection).filter(Boolean))];
+  const displayEntries = activeCollection === "All" ? entries : entries.filter(e => e.collection === activeCollection);
+  const heroEntry = displayEntries.find(e => e.featured) || displayEntries[0];
+  const gridEntries = displayEntries.filter(e => e !== heroEntry);
 
   return (
     <div>
@@ -31,6 +36,13 @@ export default function VigoLookbook() {
       </div>
 
       <div style={{ padding: "32px 32px 0" }}>
+        {collections.length > 1 && (
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", paddingBottom: 24 }}>
+            {collections.map(c => (
+              <button key={c} onClick={() => setActiveCollection(c)} style={{ padding: "8px 18px", background: activeCollection === c ? S : G1, color: activeCollection === c ? "#000" : SD, border: `.5px solid ${activeCollection === c ? S : G3}`, fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontWeight: activeCollection === c ? 900 : 400, fontFamily: "inherit" }}>{c}</button>
+            ))}
+          </div>
+        )}
         {heroEntry && (
         <div style={{ position: "relative", background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, marginBottom: 2, overflow: "hidden", cursor: "pointer" }}
           onMouseEnter={() => setHovered("hero")}

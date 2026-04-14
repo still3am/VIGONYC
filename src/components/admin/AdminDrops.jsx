@@ -8,13 +8,19 @@ const G2 = "#161616";
 const G3 = "#222222";
 const SD = "#666666";
 
-const EMPTY = { name: "", series: "", description: "", date: "", time: "", pieces: "", price: "", status: "upcoming", tag: "", tagColor: S };
+const EMPTY = { name: "", series: "", description: "", date: "", time: "", pieces: "", price: "", status: "upcoming", tag: "", tagColor: S, image: "", productIds: [] };
 const STATUSES = ["upcoming", "live", "soldout"];
 
 function DropModal({ drop, onSave, onClose }) {
   const [form, setForm] = useState(drop || EMPTY);
   const [saving, setSaving] = useState(false);
+  const [uploadingImg, setUploadingImg] = useState(false);
+  const [allProducts, setAllProducts] = useState([]);
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
+
+  useEffect(() => {
+    base44.entities.Product.list("-created_date", 200).then(setAllProducts).catch(() => {});
+  }, []);
 
   const handleSave = async () => {
     if (!form.name || !form.series) return alert("Name and series are required.");
@@ -51,6 +57,50 @@ function DropModal({ drop, onSave, onClose }) {
             <Field label="Tag Label (e.g. Coming Soon)" value={form.tag} onChange={v => set("tag", v)} />
             <Field label="Tag Color (hex)" value={form.tagColor} onChange={v => set("tagColor", v)} />
           </div>
+
+          {/* Image Upload */}
+          <div>
+            <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Drop Cover Image</div>
+            {form.image && (
+              <div style={{ position: "relative", width: "100%", height: 160, marginBottom: 8, overflow: "hidden", background: G2 }}>
+                <img src={form.image} alt="cover" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <button onClick={() => set("image", "")} style={{ position: "absolute", top: 6, right: 6, background: "rgba(0,0,0,.8)", border: "none", color: "#e03", width: 22, height: 22, fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+              </div>
+            )}
+            <label style={{ display: "inline-flex", alignItems: "center", gap: 10, cursor: "pointer", marginBottom: 6 }}>
+              <span style={{ background: G2, border: `0.5px solid ${G3}`, color: SD, padding: "8px 16px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer" }}>
+                {uploadingImg ? "Uploading..." : "Upload Image"}
+              </span>
+              <input type="file" accept="image/*" style={{ display: "none" }} onChange={async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                setUploadingImg(true);
+                try { const { file_url } = await base44.integrations.Core.UploadFile({ file }); set("image", file_url); } catch {}
+                setUploadingImg(false);
+              }} />
+            </label>
+            <div style={{ fontSize: 8, color: SD, marginBottom: 4 }}>Or paste URL:</div>
+            <input value={form.image || ""} onChange={e => set("image", e.target.value)} placeholder="https://..." style={{ width: "100%", background: G2, border: `0.5px solid ${G3}`, color: "#fff", padding: "8px 12px", fontSize: 11, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
+          </div>
+
+          {/* Product Linking */}
+          <div>
+            <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Products in This Drop</div>
+            {allProducts.length === 0 && <div style={{ fontSize: 10, color: SD }}>Loading products...</div>}
+            <div style={{ maxHeight: 180, overflowY: "auto", border: `0.5px solid ${G3}`, background: G2 }}>
+              {allProducts.map(p => (
+                <label key={p.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", cursor: "pointer", borderBottom: `0.5px solid ${G3}` }}>
+                  <input type="checkbox" checked={(form.productIds || []).includes(p.id)} onChange={() => {
+                    const curr = form.productIds || [];
+                    set("productIds", curr.includes(p.id) ? curr.filter(x => x !== p.id) : [...curr, p.id]);
+                  }} style={{ accentColor: S }} />
+                  <span style={{ fontSize: 11, color: "#fff", flex: 1 }}>{p.name}</span>
+                  <span style={{ fontSize: 9, color: SD }}>${p.price}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
           <div style={{ display: "flex", gap: 10, paddingTop: 8 }}>
             <button onClick={handleSave} disabled={saving} style={{ background: S, color: "#000", border: "none", padding: "12px 28px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", opacity: saving ? 0.7 : 1 }}>
               {saving ? "Saving..." : "Save Drop"}

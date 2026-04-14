@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { X, Trash2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -11,6 +12,8 @@ const SD = "var(--vt-sub)";
 export default function VigoCartDrawer({ open, onClose, onCheckout }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const { settings } = useSiteSettings();
 
   useEffect(() => {
     if (!open) return;
@@ -24,6 +27,8 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
         }
       } catch (err) {
         console.error('Failed to fetch cart:', err);
+        setError(true);
+        setItems([]);
       } finally {
         setLoading(false);
       }
@@ -31,8 +36,9 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
     fetchCart();
   }, [open]);
 
+  const freeShippingThreshold = parseInt(settings.free_shipping_threshold || "150");
   const subtotal = items.reduce((sum, item) => sum + (item.price * item.qty), 0);
-  const shipping = subtotal >= 150 ? 0 : 12;
+  const shipping = subtotal >= freeShippingThreshold ? 0 : 12;
 
   const updateQty = async (id, delta) => {
     const item = items.find(i => i.id === id);
@@ -112,7 +118,7 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
 
         {/* Footer */}
         <div style={{ padding: "clamp(16px,3vw,24px) clamp(16px,4vw,24px)", borderTop: `.5px solid ${G3}`, display: "flex", flexDirection: "column", gap: 12, flexShrink: 0, background: G2 }}>
-          {subtotal >= 150 && (
+          {subtotal >= freeShippingThreshold && (
             <div style={{ fontSize: 8, letterSpacing: 1, color: "#0c6", textAlign: "center", background: "rgba(0,204,102,.08)", padding: "10px 12px", border: ".5px solid rgba(0,204,102,.25)", fontWeight: 700, textTransform: "uppercase" }}>
               ✓ Free shipping unlocked
             </div>

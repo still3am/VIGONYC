@@ -32,7 +32,12 @@ export default function VigoWishlist() {
         base44.entities.WishlistItem.filter({ created_by: user.email }, "-created_date", 200).then(setWishlistItems).catch(() => setWishlistItems([]));
       }
     }).catch(() => {});
-  }, [wishlist]);
+  }, []);
+
+  useEffect(() => {
+    document.title = "Wishlist — VIGONYC";
+    return () => { document.title = "VIGONYC — NYC Streetwear"; };
+  }, []);
 
   const savedItems = wishlistItems;
   const totalValue = savedItems.reduce((s, p) => s + (p.price || 0), 0);

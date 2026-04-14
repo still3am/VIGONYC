@@ -32,6 +32,7 @@ export default function VigoProduct() {
   const [reviews, setReviews] = useState([]);
   const [reviewForm, setReviewForm] = useState({ rating: 0, title: "", body: "", reviewerName: "" });
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -43,15 +44,27 @@ export default function VigoProduct() {
       setProduct(p);
       setSelectedColor((p.colors && p.colors[0]) || "Black");
       setLoading(false);
+      document.title = `${p.name} — VIGONYC`;
+      // Save to recently viewed
+      const MAX_RECENT = 8;
+      const recent = JSON.parse(localStorage.getItem("vigo_recent") || "[]");
+      const updated = [id, ...recent.filter(x => x !== id)].slice(0, MAX_RECENT);
+      localStorage.setItem("vigo_recent", JSON.stringify(updated));
       base44.entities.Product.list("-created_date", 8).then(all => {
         setRelated(all.filter(x => x.id !== id).slice(0, 4));
       }).catch(() => {});
       base44.entities.Review.filter({ productId: id }, "-created_date", 50).then(setReviews).catch(() => {});
-      base44.auth.me().then(u => { if (u) setReviewForm(f => ({ ...f, reviewerName: u.full_name || "" })); }).catch(() => {});
+      base44.auth.me().then(u => {
+        if (u) {
+          setReviewForm(f => ({ ...f, reviewerName: u.full_name || "" }));
+          base44.entities.Review.filter({ productId: id, created_by: u.email }, "-created_date", 1).then(existing => { if (existing?.length > 0) setHasReviewed(true); }).catch(() => {});
+        }
+      }).catch(() => {});
     }).catch(() => {
       setNotFound(true);
       setLoading(false);
     });
+    return () => { document.title = "VIGONYC — NYC Streetwear"; };
   }, [id]);
 
   if (loading) {
@@ -247,6 +260,9 @@ export default function VigoProduct() {
                 <div style={{ fontSize: 9, color: SD, marginTop: 6 }}>— {r.reviewerName || "Anonymous"}</div>
               </div>
             ))}
+            {hasReviewed ? (
+              <div style={{ padding: "16px", background: "var(--vt-card)", border: ".5px solid var(--vt-border)", fontSize: 11, color: SD }}>✓ You've already reviewed this product. Thank you!</div>
+            ) : (
             <form onSubmit={handleReviewSubmit} style={{ borderTop: `.5px solid var(--vt-border)`, paddingTop: 20, display: "flex", flexDirection: "column", gap: 12 }}>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>Write a Review</div>
               <div style={{ display: "flex", gap: 4 }}>
@@ -261,6 +277,7 @@ export default function VigoProduct() {
                 {submittingReview ? "Submitting..." : "Submit Review"}
               </button>
             </form>
+            )}
           </div>
 
           <div style={{ background: G2, border: `.5px solid ${G3}`, padding: "clamp(16px,3vw,24px)" }}>

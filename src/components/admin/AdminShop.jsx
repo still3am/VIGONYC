@@ -157,6 +157,7 @@ export default function AdminShop() {
   const [modal, setModal] = useState(null);
   const [search, setSearch] = useState("");
   const [deleting, setDeleting] = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   const load = async () => {
     setLoading(true);
@@ -204,19 +205,37 @@ export default function AdminShop() {
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..." style={{ width: "100%", maxWidth: 320, background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 16px", fontSize: 12, outline: "none", fontFamily: "inherit", boxSizing: "border-box" }} />
       </div>
 
+      {selectedIds.length > 0 && (
+        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", background: "rgba(192,192,192,.08)", border: `0.5px solid rgba(192,192,192,.2)`, marginBottom: 12 }}>
+          <span style={{ fontSize: 10, color: S }}>{selectedIds.length} selected</span>
+          <button onClick={async () => {
+            if (!window.confirm(`Delete ${selectedIds.length} product${selectedIds.length > 1 ? "s" : ""}? This cannot be undone.`)) return;
+            await Promise.all(selectedIds.map(id => base44.entities.Product.delete(id)));
+            setProducts(prev => prev.filter(p => !selectedIds.includes(p.id)));
+            setSelectedIds([]);
+          }} style={{ background: "#e03", color: "#fff", border: "none", padding: "6px 16px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Delete Selected</button>
+          <button onClick={() => setSelectedIds([])} style={{ background: "none", border: `0.5px solid ${G3}`, color: SD, padding: "6px 12px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>Cancel</button>
+        </div>
+      )}
       <div style={{ background: G1, border: `0.5px solid ${G3}` }}>
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 80px", padding: "10px 20px", borderBottom: `0.5px solid ${G3}`, fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>
-          <span>Product</span><span>Category</span><span>Tag</span><span>Price</span><span></span>
+        <div style={{ display: "grid", gridTemplateColumns: "32px 52px 2fr 1fr 1fr 1fr 80px", padding: "10px 20px", borderBottom: `0.5px solid ${G3}`, fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", alignItems: "center" }}>
+          <input type="checkbox" checked={selectedIds.length === filtered.length && filtered.length > 0} onChange={e => setSelectedIds(e.target.checked ? filtered.map(p => p.id) : [])} style={{ accentColor: S }} />
+          <span></span><span>Product</span><span>Category</span><span>Tag</span><span>Price</span><span></span>
         </div>
         {loading && <div style={{ padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>Loading...</div>}
         {!loading && filtered.length === 0 && <div style={{ padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>No products found</div>}
         {!loading && filtered.map(p => (
-          <div key={p.id} style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 80px", padding: "14px 20px", borderBottom: `0.5px solid ${G3}`, alignItems: "center", transition: "background .15s" }}
+          <div key={p.id} style={{ display: "grid", gridTemplateColumns: "32px 52px 2fr 1fr 1fr 1fr 80px", padding: "10px 20px", borderBottom: `0.5px solid ${G3}`, alignItems: "center", transition: "background .15s" }}
             onMouseEnter={e => e.currentTarget.style.background = G2}
             onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+            <input type="checkbox" checked={selectedIds.includes(p.id)} onChange={e => setSelectedIds(prev => e.target.checked ? [...prev, p.id] : prev.filter(id => id !== p.id))} onClick={e => e.stopPropagation()} style={{ accentColor: S }} />
+            <div style={{ width: 44, height: 44, background: G2, border: `0.5px solid ${G3}`, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              {p.images?.[0] ? <img src={p.images[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <div style={{ width: 44, height: 44, background: G3 }} />}
+            </div>
             <div>
               <div style={{ fontSize: 12, color: "#fff", marginBottom: 2 }}>{p.name}</div>
               {p.featured && <span style={{ fontSize: 7, color: S, letterSpacing: 1, textTransform: "uppercase" }}>★ Featured</span>}
+              {p.inStock === false && <span style={{ fontSize: 7, color: "#e03", letterSpacing: 1, textTransform: "uppercase", marginLeft: 6 }}>Sold Out</span>}
             </div>
             <div style={{ fontSize: 11, color: SD }}>{p.cat}</div>
             <div>{p.tag && <span style={{ fontSize: 7, color: S, border: `0.5px solid ${G3}`, padding: "2px 6px", letterSpacing: 1, textTransform: "uppercase" }}>{p.tag}</span>}</div>

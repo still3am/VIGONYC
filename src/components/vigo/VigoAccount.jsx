@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
 import { base44 } from "@/api/base44Client";
@@ -146,6 +146,7 @@ function ThemeSelector({ user }) {
 }
 
 export default function VigoAccount() {
+  useEffect(() => { document.title = "My Account — VIGONYC"; return () => { document.title = "VIGONYC — NYC Streetwear"; }; }, []);
   const [tab, setTab] = useState("profile");
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -165,10 +166,18 @@ export default function VigoAccount() {
     }
   });
 
+  const outletCtx = useOutletContext();
+  const addToCart = outletCtx?.addToCart;
+
   const { data: orders = [], isLoading: ordersLoading } = useQuery({
     queryKey: ['orders'],
     queryFn: async () => {
-      try {return await base44.entities.Order.filter({ created_by: user?.email }, '-created_date', 100);}
+      try {
+        const byEmail = user?.email ? await base44.entities.Order.filter({ userEmail: user.email }, '-created_date', 100).catch(() => []) : [];
+        const byCreator = user?.email ? await base44.entities.Order.filter({ created_by: user.email }, '-created_date', 100).catch(() => []) : [];
+        const combined = [...byEmail, ...byCreator.filter(o => !byEmail.find(e => e.id === o.id))];
+        return combined.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+      }
       catch {return [];}
     },
     enabled: !!user?.email
@@ -394,12 +403,31 @@ export default function VigoAccount() {
                           <div style={{ fontSize: 10, color: SD, marginBottom: 4 }}>
                             {new Date(order.created_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} · {order.pieces || 1} {order.pieces === 1 ? "item" : "items"}
                           </div>
-                          <div style={{ fontSize: 11, color: SD }}>{order.items}</div>
+                          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                            {(order.items || "").split(", ").map((item, idx) => (
+                              <li key={idx} style={{ fontSize: 10, color: SD, padding: "1px 0" }}>· {item}</li>
+                            ))}
+                          </ul>
                           {order.trackingNumber && <div style={{ fontSize: 9, color: SD, marginTop: 4 }}>Tracking: {order.trackingNumber}</div>}
                         </div>
                         <div className="vigo-order-amount" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
                           <div style={{ fontSize: 20, fontWeight: 900, color: S }}>${order.total}</div>
                           <button onClick={() => navigate("/track-order")} style={btnGhost}>Track →</button>
+                          <button onClick={async () => {
+                            const itemStrings = (order.items || "").split(", ");
+                            for (const itemStr of itemStrings) {
+                              const match = itemStr.match(/^(.+) x(\d+)$/);
+                              if (!match) continue;
+                              const [, name, qty] = match;
+                              const results = await base44.entities.Product.filter({ name }, "-created_date", 1).catch(() => []);
+                              if (results?.[0]) {
+                                const p = results[0];
+                                for (let i = 0; i < parseInt(qty); i++) {
+                                  addToCart?.({ id: p.id, productId: p.id, productName: p.name, name: p.name, size: "M", color: p.colors?.[0] || "Black", price: p.price, productImage: p.images?.[0] || "" });
+                                }
+                              }
+                            }
+                          }} style={btnGhost}>Reorder</button>
                         </div>
                       </div>
                     </div>);

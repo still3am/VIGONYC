@@ -47,7 +47,7 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
           alt={product.name}
           style={{
             position: "absolute", inset: 0, width: "100%", height: "100%",
-            objectFit: "contain", opacity: product.opacity,
+            objectFit: "contain", opacity: product.inStock === false ? 0.5 : (product.opacity ?? 1),
             padding: 20, transition: "transform .5s",
             transform: hovered ? "scale(1.07)" : "scale(1)"
           }}
@@ -66,6 +66,11 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
           )}
         </div>
 
+        {product.inStock === false && (
+          <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 4, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ fontSize: 8, letterSpacing: 3, color: "#C0C0C0", border: ".5px solid rgba(192,192,192,0.5)", padding: "5px 14px", textTransform: "uppercase", background: "rgba(0,0,0,0.6)" }}>Sold Out</span>
+          </div>
+        )}
         <button
           onClick={e => { e.stopPropagation(); onWishlist?.(); }}
           style={{
@@ -99,27 +104,29 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
 
       <div style={{ padding: "12px 14px 14px" }}>
         <button
-          onClick={handleAdd}
+          onClick={product.inStock === false ? undefined : handleAdd}
+          disabled={product.inStock === false}
           style={{
             width: "100%",
-            background: added ? "#0c6" : S,
-            color: "#000",
+            background: product.inStock === false ? "#333" : added ? "#0c6" : S,
+            color: product.inStock === false ? "#888" : "#000",
             border: "none",
             padding: "11px",
             fontSize: 9,
             letterSpacing: 2,
             textTransform: "uppercase",
             fontWeight: 900,
-            cursor: "pointer",
+            cursor: product.inStock === false ? "not-allowed" : "pointer",
             fontFamily: "inherit",
             transition: "background .3s",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             gap: 6,
+            opacity: product.inStock === false ? 0.7 : 1,
           }}
         >
-          {added ? (
+          {product.inStock === false ? "Sold Out" : added ? (
             <>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
               Added!

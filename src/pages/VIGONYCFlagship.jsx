@@ -19,6 +19,13 @@ export default function VIGONYCFlagship() {
   const [wishlist, setWishlist] = useState([]);
   const [wishlistItems, setWishlistItems] = useState([]);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const fn = () => setShowBackToTop(window.scrollY > 400);
+    window.addEventListener("scroll", fn, { passive: true });
+    return () => window.removeEventListener("scroll", fn);
+  }, []);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -120,6 +127,9 @@ export default function VIGONYCFlagship() {
       </AnimatePresence>
       <VigoFooter logo={LOGO} />
       <VigoBottomNav />
+      {showBackToTop && (
+        <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} style={{ position: "fixed", bottom: "calc(80px + env(safe-area-inset-bottom,0px))", right: 20, zIndex: 250, width: 44, height: 44, background: "var(--vt-card)", border: ".5px solid var(--vt-border)", color: "var(--vt-text)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, boxShadow: "0 4px 20px rgba(0,0,0,.3)" }} title="Back to top">↑</button>
+      )}
       <style>{`
         * { -webkit-tap-highlight-color: transparent; }
         button, a, nav, [role="button"] { -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
