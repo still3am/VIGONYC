@@ -150,8 +150,24 @@ export default function VigoProduct() {
           <div className="product-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(24px,5vw,48px)", marginBottom: "clamp(40px,6vw,60px)" }}>
             {/* Images */}
             <div style={{ display: "flex", flexDirection: "column", gap: "clamp(12px,2vw,16px)" }}>
-              <div style={{ background: G2, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, aspectRatio: "3/4", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+              <div
+                style={{ background: G2, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, aspectRatio: "3/4", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}
+                onTouchStart={e => { e.currentTarget._touchX = e.touches[0].clientX; }}
+                onTouchEnd={e => {
+                  const dx = e.changedTouches[0].clientX - e.currentTarget._touchX;
+                  if (Math.abs(dx) < 40) return;
+                  if (dx < 0) setActiveThumb(t => Math.min(t + 1, images.length - 1));
+                  else setActiveThumb(t => Math.max(t - 1, 0));
+                }}
+              >
                 <img src={images[activeThumb] || productImg} alt={product.name} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                {images.length > 1 && (
+                  <div style={{ position: "absolute", bottom: 12, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 6, zIndex: 2 }}>
+                    {images.map((_, i) => (
+                      <div key={i} onClick={() => setActiveThumb(i)} style={{ width: i === activeThumb ? 18 : 6, height: 6, borderRadius: 3, background: i === activeThumb ? S : "rgba(192,192,192,.4)", transition: "all .2s", cursor: "pointer" }} />
+                    ))}
+                  </div>
+                )}
               </div>
               {images.length > 1 && (
                 <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
