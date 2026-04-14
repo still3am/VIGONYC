@@ -35,14 +35,14 @@ export default function AdminReturns() {
     <div>
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 6 }}>✦ Returns</div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: -1, color: "#fff" }}>Return Requests</h2>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <h2 style={{ fontSize: "clamp(20px,5vw,28px)", fontWeight: 900, letterSpacing: -1, color: "#fff" }}>Return Requests</h2>
           {pending > 0 && <span style={{ background: "#fa0", color: "#000", fontSize: 8, fontWeight: 900, padding: "3px 10px", letterSpacing: 1, textTransform: "uppercase" }}>{pending} Pending</span>}
         </div>
       </div>
 
       <div style={{ marginBottom: 16 }}>
-        <select value={filter} onChange={e => setFilter(e.target.value)} style={{ background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 14px", fontSize: 11, outline: "none", fontFamily: "inherit" }}>
+        <select value={filter} onChange={e => setFilter(e.target.value)} style={{ background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 14px", fontSize: 11, outline: "none", fontFamily: "inherit", width: "100%", maxWidth: 240 }}>
           {["All", "Pending", "Approved", "Rejected", "Completed"].map(s => <option key={s} value={s}>{s}</option>)}
         </select>
       </div>
@@ -53,22 +53,22 @@ export default function AdminReturns() {
         {!loading && filtered.map(r => {
           const col = STATUS_COLORS[r.status] || SD;
           return (
-            <div key={r.id} style={{ background: G1, border: `0.5px solid ${G3}`, borderLeft: `3px solid ${col}`, padding: "20px 24px" }}>
+            <div key={r.id} style={{ background: G1, border: `0.5px solid ${G3}`, borderLeft: `3px solid ${col}`, padding: "16px 20px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, flexWrap: "wrap" }}>
                     <div style={{ fontSize: 13, fontWeight: 900, color: "#fff" }}>#{r.orderId}</div>
                     <span style={{ fontSize: 7, color: col, border: `0.5px solid ${col}`, padding: "2px 8px", letterSpacing: 1, textTransform: "uppercase" }}>{r.status}</span>
                   </div>
-                  <div style={{ fontSize: 10, color: SD, marginBottom: 4 }}>{r.userEmail}</div>
+                  <div style={{ fontSize: 10, color: SD, marginBottom: 4, wordBreak: "break-word" }}>{r.userEmail}</div>
                   <div style={{ fontSize: 11, color: S, marginBottom: 4 }}>Reason: {r.reason}</div>
                   {r.message && <div style={{ fontSize: 11, color: SD }}>{r.message}</div>}
                   <div style={{ fontSize: 9, color: SD, marginTop: 8 }}>{r.created_date ? new Date(r.created_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : ""}</div>
                 </div>
                 {r.status === "Pending" && (
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <button onClick={() => handleUpdate(r.id, "Approved")} style={{ background: "#0c6", color: "#fff", border: "none", padding: "8px 16px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", fontWeight: 900 }}>Approve</button>
-                    <button onClick={() => handleUpdate(r.id, "Rejected")} style={{ background: "none", border: `0.5px solid #e03`, color: "#e03", padding: "8px 16px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>Reject</button>
+                  <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                    <button onClick={() => handleUpdate(r.id, "Approved")} style={{ background: "#0c6", color: "#fff", border: "none", padding: "9px 16px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", fontWeight: 900 }}>Approve</button>
+                    <button onClick={() => handleUpdate(r.id, "Rejected")} style={{ background: "none", border: `0.5px solid #e03`, color: "#e03", padding: "9px 14px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>Reject</button>
                   </div>
                 )}
               </div>

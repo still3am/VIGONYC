@@ -75,7 +75,7 @@ export default function AdminAbout() {
         <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 6 }}>✦ Content</div>
         <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: -1, color: "#fff" }}>Site Content</h2>
       </div>
-      <div className="admin-content-grid" style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: 32, alignItems: "start" }}>
+      <div className="admin-content-grid" style={{ display: "grid", gridTemplateColumns: "1fr min(360px,100%)", gap: 24, alignItems: "start" }}>
         <div>
           <Section title="Hero Section">
             <Field label="Headline Line 1" value={settings.hero_headline_1} onChange={v => set("hero_headline_1", v)} />
@@ -89,7 +89,7 @@ export default function AdminAbout() {
             <TextArea label="Mission Statement" value={settings.about_mission} onChange={v => set("about_mission", v)} rows={3} />
           </Section>
           <Section title="Brand KPIs">
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+            <div className="admin-kpi-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
               <Field label="Pieces Dropped" value={settings.kpi_pieces} onChange={v => set("kpi_pieces", v)} />
               <Field label="Community Size" value={settings.kpi_community} onChange={v => set("kpi_community", v)} />
               <Field label="Avg. Rating" value={settings.kpi_rating} onChange={v => set("kpi_rating", v)} />
@@ -140,7 +140,10 @@ export default function AdminAbout() {
           </div>
         </div>
       </div>
-      <style>{`@media(max-width:900px){.admin-content-grid{grid-template-columns:1fr !important;}}`}</style>
+      <style>{`
+        @media(max-width:900px){.admin-content-grid{grid-template-columns:1fr !important;}}
+        @media(max-width:480px){.admin-kpi-grid{grid-template-columns:1fr 1fr !important;}}
+      `}</style>
     </div>
   );
 }

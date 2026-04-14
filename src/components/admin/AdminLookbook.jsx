@@ -44,7 +44,7 @@ function EntryModal({ entry, onSave, onClose }) {
           <button onClick={onClose} style={{ background: "none", border: `0.5px solid ${G3}`, color: SD, fontSize: 14, cursor: "pointer", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0 }}>
+        <div className="admin-lookbook-modal-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0 }}>
           {/* Left: Image */}
           <div style={{ borderRight: `0.5px solid ${G3}`, padding: "20px" }}>
             <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 10 }}>Image</div>
@@ -182,7 +182,11 @@ export default function AdminLookbook() {
           </div>
         ))}
       </div>
-      <style>{`@media(max-width:900px){.admin-3col{grid-template-columns:1fr 1fr !important;}} @media(max-width:480px){.admin-3col{grid-template-columns:1fr !important;}}`}</style>
+      <style>{`
+        @media(max-width:900px){.admin-3col{grid-template-columns:1fr 1fr !important;}}
+        @media(max-width:480px){.admin-3col{grid-template-columns:1fr !important;}}
+        @media(max-width:560px){.admin-lookbook-modal-grid{grid-template-columns:1fr !important;}}
+      `}</style>
     </div>
   );
 }
