@@ -18,8 +18,16 @@ function ProductModal({ product, onSave, onClose }) {
   const [saving, setSaving] = useState(false);
   const [uploadingImg, setUploadingImg] = useState(false);
   const [uploadingVid, setUploadingVid] = useState(false);
+  const [pendingColor, setPendingColor] = useState("#C0C0C0");
+  const [pendingColorName, setPendingColorName] = useState("");
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
   const toggleArr = (k, v) => setForm(p => ({ ...p, [k]: p[k]?.includes(v) ? p[k].filter(x => x !== v) : [...(p[k] || []), v] }));
+
+  const addPendingColor = () => {
+    const name = pendingColorName.trim() || pendingColor;
+    if (!(form.colors || []).includes(name)) set("colors", [...(form.colors || []), name]);
+    setPendingColorName("");
+  };
 
   const handleSave = async () => {
     if (!form.name || !form.price || !form.cat) return alert("Name, price, and category are required.");
@@ -72,13 +80,11 @@ function ProductModal({ product, onSave, onClose }) {
                   <button onClick={() => set("colors", form.colors.filter(x => x !== c))} style={{ background: "none", border: "none", color: "#e03", cursor: "pointer", fontSize: 12, lineHeight: 1, padding: "0 0 0 4px", fontFamily: "inherit" }}>✕</button>
                 </div>
               ))}
-              <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", background: G2, border: `0.5px dashed ${G3}`, padding: "6px 10px", fontSize: 9, color: SD, letterSpacing: 1, textTransform: "uppercase" }} title="Pick a color">
-                <input type="color" defaultValue="#C0C0C0" onChange={e => {
-                  const hex = e.target.value;
-                  if (!(form.colors || []).includes(hex)) set("colors", [...(form.colors || []), hex]);
-                }} style={{ width: 20, height: 20, border: "none", background: "none", cursor: "pointer", padding: 0 }} />
-                + Add Color
-              </label>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, background: G2, border: `0.5px dashed ${G3}`, padding: "4px 8px" }}>
+                <input type="color" value={pendingColor} onChange={e => setPendingColor(e.target.value)} style={{ width: 24, height: 24, border: "none", background: "none", cursor: "pointer", padding: 0, flexShrink: 0 }} title="Pick color" />
+                <input value={pendingColorName} onChange={e => setPendingColorName(e.target.value)} onKeyDown={e => e.key === "Enter" && addPendingColor()} placeholder="Name (e.g. Arctic)" style={{ background: "none", border: "none", outline: "none", color: "#fff", fontSize: 10, fontFamily: "inherit", width: 90 }} />
+                <button onClick={addPendingColor} style={{ background: S, color: "#000", border: "none", padding: "3px 8px", fontSize: 8, letterSpacing: 1, cursor: "pointer", fontFamily: "inherit", fontWeight: 900, whiteSpace: "nowrap" }}>+ Add</button>
+              </div>
             </div>
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
               {ALL_COLORS.map(c => (
