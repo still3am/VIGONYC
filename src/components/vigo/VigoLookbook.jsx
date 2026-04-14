@@ -15,12 +15,22 @@ export default function VigoLookbook() {
   const [hovered, setHovered] = useState(null);
   const [entries, setEntries] = useState([]);
   const [activeCollection, setActiveCollection] = useState("All");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.entities.LookbookEntry.list("sort_order", 100).then(data => setEntries(data || [])).catch(() => {});
+    base44.entities.LookbookEntry.list("sort_order", 100).then(data => { setEntries(data || []); setLoading(false); }).catch(() => setLoading(false));
     document.title = "Lookbook — VIGONYC";
     return () => { document.title = "VIGONYC — NYC Streetwear"; };
   }, []);
+
+  if (loading) return (
+    <div style={{ padding: "64px 32px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 2 }}>
+        {Array(6).fill(0).map((_, i) => <div key={i} style={{ background: "var(--vt-card)", border: ".5px solid var(--vt-border)", aspectRatio: "3/4", animation: "pulse 1.5s infinite" }} />)}
+      </div>
+      <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}`}</style>
+    </div>
+  );
 
   const collections = ["All", ...new Set(entries.map(e => e.collection).filter(Boolean))];
   const displayEntries = activeCollection === "All" ? entries : entries.filter(e => e.collection === activeCollection);
@@ -32,7 +42,7 @@ export default function VigoLookbook() {
       <div style={{ padding: "64px 32px 48px", borderBottom: `.5px solid ${G3}` }}>
         <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 10 }}>✦ SS25 — Visual Archive</div>
         <h1 style={{ fontSize: 52, fontWeight: 900, letterSpacing: -2, marginBottom: 16 }}>Lookbook</h1>
-        <p style={{ fontSize: 13, color: SD, maxWidth: 480, lineHeight: 1.8 }}>Streets of New York City. Shot across all five boroughs. The SS25 Chrome Series — in its element.</p>
+        <p style={{ fontSize: 13, color: SD, maxWidth: 480, lineHeight: 1.8 }}>{entries.length > 0 ? `${entries.length} pieces. ` : ""}Streets of New York City. Shot across all five boroughs.</p>
       </div>
 
       <div style={{ padding: "32px 32px 0" }}>

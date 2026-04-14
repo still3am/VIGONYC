@@ -8,6 +8,7 @@ const G3 = "var(--vt-border)";
 
 const links = [
 { label: "Home", to: "/" },
+{ label: "New", to: "/new" },
 { label: "Shop", to: "/shop" },
 { label: "Drops", to: "/drops" },
 { label: "Lookbook", to: "/lookbook" },
@@ -30,9 +31,11 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
+  useEffect(() => { setMobileOpen(false); }, [location.pathname]);
+
   const handleSearch = (e) => {
     e.preventDefault();
-    if (query.trim()) {navigate(`/shop?q=${encodeURIComponent(query)}`);setSearchOpen(false);setQuery("");}
+    if (query.trim()) {navigate(`/search?q=${encodeURIComponent(query)}`);setSearchOpen(false);setQuery("");}
   };
 
   const handleLogoClick = () => {

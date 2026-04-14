@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
@@ -9,31 +10,39 @@ const SD = "var(--vt-sub)";
 const STATUS_STEPS = ["Pending", "Processing", "Shipped", "Delivered"];
 
 export default function VigoTrackOrder() {
-  const [orderNum, setOrderNum] = useState("");
+  const [searchParams] = useSearchParams();
+  const [orderNum, setOrderNum] = useState(searchParams.get("order") || "");
   const [email, setEmail] = useState("");
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
-  const handleTrack = async (e) => {
-    e.preventDefault();
-    if (!orderNum.trim()) return;
+  const doTrack = async (num, em) => {
+    if (!num.trim()) return;
     setLoading(true);
     setNotFound(false);
     setOrder(null);
     try {
-      const results = await base44.entities.Order.filter({ orderId: orderNum.trim() }, "-created_date", 1);
-      if (results && results.length > 0) {
-        setOrder(results[0]);
-      } else {
-        setNotFound(true);
+      const results = await base44.entities.Order.filter({ orderId: num.trim() }, "-created_date", 1);
+      const found = results?.[0];
+      if (!found) { setNotFound(true); return; }
+      if (em.trim() && found.userEmail && found.userEmail.toLowerCase() !== em.trim().toLowerCase()) {
+        setNotFound(true); return;
       }
+      setOrder(found);
     } catch (e) {
       setNotFound(true);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const preOrder = searchParams.get("order");
+    if (preOrder) { setOrderNum(preOrder); doTrack(preOrder, ""); }
+  }, []);
+
+  const handleTrack = (e) => { e.preventDefault(); doTrack(orderNum, email); };
 
   const handleReset = () => {
     setOrder(null);

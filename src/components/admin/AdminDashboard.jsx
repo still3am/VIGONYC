@@ -50,6 +50,8 @@ export default function AdminDashboard({ onNavigate }) {
   const pending = orders.filter(o => o.status === "Pending").length;
   const shipped = orders.filter(o => o.status === "Shipped").length;
   const delivered = orders.filter(o => o.status === "Delivered").length;
+  const avgOrder = orders.length ? (totalRevenue / orders.length).toFixed(2) : 0;
+  const lowStock = products.filter(p => typeof p.stock === "number" && p.stock <= 5 && p.inStock !== false);
 
   // Build chart data from orders grouped by day
   const chartData = (() => {
@@ -74,11 +76,23 @@ export default function AdminDashboard({ onNavigate }) {
       </div>
 
       {/* Stat Cards */}
+      {lowStock.length > 0 && (
+        <div style={{ background: "rgba(250,160,0,.08)", border: "0.5px solid rgba(250,160,0,.3)", padding: "16px 20px", marginBottom: 4 }}>
+          <div style={{ fontSize: 9, letterSpacing: 2, color: "#fa0", textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>⚠ Low Stock Alert</div>
+          {lowStock.map(p => (
+            <div key={p.id} style={{ fontSize: 10, color: "#fff", marginBottom: 4 }}>{p.name} — <span style={{ color: "#fa0" }}>{p.stock} units remaining</span></div>
+          ))}
+        </div>
+      )}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }} className="admin-4col">
         <StatCard label="Total Revenue" value={`$${totalRevenue.toLocaleString()}`} sub={`${orders.length} total orders`} color={S} />
         <StatCard label="Pending Orders" value={pending} sub="Awaiting processing" color="#fa0" />
         <StatCard label="Shipped" value={shipped} sub="In transit" color="#6af" />
         <StatCard label="Delivered" value={delivered} sub="Completed" color="#0c6" />
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }} className="admin-4col">
+        <StatCard label="Avg Order Value" value={`$${avgOrder}`} sub="Per transaction" color={S} />
+        <StatCard label="Products" value={products.length} sub={`${products.filter(p=>p.inStock!==false).length} in stock`} color="#6af" />
       </div>
 
       {/* Revenue Chart */}

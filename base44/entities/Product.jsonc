@@ -71,6 +71,14 @@
     "inStock": {
       "type": "boolean",
       "description": "Whether product is available"
+    },
+    "sku": {
+      "type": "string",
+      "description": "Stock keeping unit identifier"
+    },
+    "weight": {
+      "type": "number",
+      "description": "Product weight in oz for shipping calc"
     }
   },
   "required": [

@@ -11,7 +11,7 @@ const G3 = "var(--vt-border)";
 const SD = "var(--vt-sub)";
 const TODAY = new Date();
 
-const DAYS = ["S","M","T","W","T","F","S"];
+const DAYS = ["Su","Mo","Tu","We","Th","Fr","Sa"];
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 function isSameDay(a, b) {

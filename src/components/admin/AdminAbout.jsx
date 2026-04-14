@@ -15,6 +15,13 @@ const DEFAULT_SETTINGS = [
   { key: "kpi_community", value: "12K+", section: "about" },
   { key: "kpi_rating", value: "4.9★", section: "about" },
   { key: "kpi_founded", value: "2024", section: "about" },
+  { key: "kpi_street_ready", value: "100%", section: "about" },
+  { key: "kpi_boroughs", value: "5", section: "about" },
+  { key: "hero_product_name", value: "Chrome V Tee — SS25", section: "hero" },
+  { key: "hero_product_units", value: "100 Units", section: "hero" },
+  { key: "crew_line_1", value: "Manhattan — Design & Creative", section: "about" },
+  { key: "crew_line_2", value: "Brooklyn — Photography & Lookbook", section: "about" },
+  { key: "crew_line_3", value: "Queens — Operations & Drops", section: "about" },
   { key: "hero_headline_1", value: "STREETS", section: "hero" },
   { key: "hero_headline_2", value: "OF NYC", section: "hero" },
   { key: "hero_sub", value: "Born in New York City. Built from concrete and culture.", section: "hero" },
@@ -114,7 +121,18 @@ export default function AdminAbout() {
               <Field label="Community Size" value={settings.kpi_community} onChange={v => set("kpi_community", v)} />
               <Field label="Avg. Rating" value={settings.kpi_rating} onChange={v => set("kpi_rating", v)} />
               <Field label="Founded Year" value={settings.kpi_founded} onChange={v => set("kpi_founded", v)} />
+              <Field label="Street Ready %" value={settings.kpi_street_ready} onChange={v => set("kpi_street_ready", v)} />
+              <Field label="Boroughs" value={settings.kpi_boroughs} onChange={v => set("kpi_boroughs", v)} />
             </div>
+          </Section>
+          <Section title="Hero Product Fallback">
+            <Field label="Hero Product Name" value={settings.hero_product_name} onChange={v => set("hero_product_name", v)} />
+            <Field label="Hero Product Units" value={settings.hero_product_units} onChange={v => set("hero_product_units", v)} />
+          </Section>
+          <Section title="Crew / Team Lines">
+            <Field label="Line 1 (Borough — Role)" value={settings.crew_line_1} onChange={v => set("crew_line_1", v)} />
+            <Field label="Line 2 (Borough — Role)" value={settings.crew_line_2} onChange={v => set("crew_line_2", v)} />
+            <Field label="Line 3 (Borough — Role)" value={settings.crew_line_3} onChange={v => set("crew_line_3", v)} />
           </Section>
           <Section title="Global Settings">
             <TextArea label="Ticker Text (separate items with ✦)" value={settings.ticker_text} onChange={v => set("ticker_text", v)} rows={3} />
@@ -148,8 +166,8 @@ export default function AdminAbout() {
             </div>
             <div style={{ padding: 16, background: G1, border: `0.5px solid ${G3}` }}>
               <div style={{ fontSize: 8, letterSpacing: 2, color: SD, marginBottom: 8, textTransform: "uppercase" }}>KPIs</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
-                {[[settings.kpi_pieces, "Pieces"], [settings.kpi_community, "Community"], [settings.kpi_rating, "Rating"]].map(([v, l]) => (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                {[[settings.kpi_pieces, "Pieces"], [settings.kpi_community, "Community"], [settings.kpi_street_ready, "Street Ready"], [settings.kpi_rating, "Rating"]].map(([v, l]) => (
                   <div key={l} style={{ textAlign: "center" }}>
                     <div style={{ fontSize: 14, fontWeight: 900, color: S }}>{v}</div>
                     <div style={{ fontSize: 7, color: SD, textTransform: "uppercase", letterSpacing: 1 }}>{l}</div>

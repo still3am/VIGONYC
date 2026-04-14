@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -66,6 +66,7 @@ export default function VigoHome() {
   const [productsLoading, setProductsLoading] = useState(true);
   const [nextDrop, setNextDrop] = useState(null);
   const [recentProducts, setRecentProducts] = useState([]);
+  const [homeReviews, setHomeReviews] = useState([]);
 
   useEffect(() => {
     const ids = JSON.parse(localStorage.getItem("vigo_recent") || "[]");
@@ -74,7 +75,9 @@ export default function VigoHome() {
       .then(results => setRecentProducts(results.filter(Boolean)));
   }, []);
 
+  useEffect(() => { document.title = "VIGONYC — NYC Streetwear"; }, []);
   useEffect(() => { const t = setTimeout(() => setHeroLoaded(true), 80); return () => clearTimeout(t); }, []);
+  useEffect(() => { base44.entities.Review.list("-created_date", 6).then(data => setHomeReviews(data || [])).catch(() => {}); }, []);
 
   useEffect(() => {
     base44.entities.Drop.list("-date", 50).then(drops => {
@@ -140,7 +143,7 @@ export default function VigoHome() {
 
           {/* KPIs */}
           <div className="vigo-kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 0, marginTop: 56, borderTop: `.5px solid ${G3}` }}>
-            {[[settings.kpi_pieces, "Pieces Dropped"], [settings.kpi_community, "NYC Community"], [settings.kpi_rating, "Avg. Rating"]].map(([n, l], i, arr) =>
+            {[[settings.kpi_pieces, "Pieces Dropped"], [settings.kpi_community, "NYC Community"], [settings.kpi_street_ready || "100%", "Street Ready"], [settings.kpi_rating, "Avg. Rating"]].map(([n, l], i, arr) =>
             <div key={l} style={{ padding: "20px 0 0", paddingRight: i < arr.length - 1 ? 16 : 0, borderRight: i < arr.length - 1 ? `.5px solid ${G3}` : "none", paddingLeft: i > 0 ? 16 : 0, textAlign: "center" }}>
                 <div style={{ fontSize: 22, fontWeight: 900, color: "var(--vt-text)", letterSpacing: -1 }}>{n}</div>
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 4 }}>{l}</div>
@@ -190,27 +193,27 @@ export default function VigoHome() {
         </div>
       </div>
 
-      <SectionDivider label="SS25 Spotlight" />
+      <SectionDivider label={nextDrop?.series ? `${nextDrop.series} Spotlight` : "SS25 Spotlight"} />
 
-      {/* ── CHROME SERIES BANNER ── */}
+      {/* ── DROP BANNER ── */}
       <div className="vigo-2col" style={{ margin: "0 32px", background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, display: "grid", gridTemplateColumns: "1fr 1fr", overflow: "hidden" }}>
         <div style={{ padding: "52px 48px", borderRight: `.5px solid ${G3}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
           <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ Limited Edition ✦</div>
           <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: -2, lineHeight: .92, marginBottom: 14, textAlign: "center" }}>
-            SS25<br /><span style={{ color: S }}>Chrome</span><br />Series
+            {nextDrop?.name || "Drop 02"}<br /><span style={{ color: S }}>{nextDrop?.series || "Chrome Series"}</span>
           </div>
           <div style={{ fontSize: 12, color: SD, lineHeight: 1.9, marginBottom: 32 }}>
-            Hand-finished chrome hardware. NYC exclusive.<br />Only 100 units. No restocks, no exceptions.
+            {nextDrop?.description || "Hand-finished chrome hardware. NYC exclusive. Only 100 units. No restocks, no exceptions."}
           </div>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
-            <button onClick={() => navigate("/shop")} style={btnP}>Shop Chrome Series</button>
+            <button onClick={() => navigate("/shop")} style={btnP}>Shop the Drop</button>
             <button onClick={() => navigate("/drops")} style={btnO}>Drop Calendar →</button>
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 48, position: "relative" }}>
           <div style={{ position: "absolute", top: 0, right: 0, width: 60, height: 60, borderTop: `2px solid ${S}`, borderRight: `2px solid ${S}` }} />
           <div style={{ position: "absolute", bottom: 0, left: 0, width: 40, height: 40, borderBottom: `1px solid ${S}`, borderLeft: `1px solid ${S}` }} />
-          <img src={productImg} style={{ width: 260, height: 260, objectFit: "contain", filter: "drop-shadow(0 0 40px rgba(192,192,192,.15))" }} alt="" />
+          <img src={nextDrop?.image || productImg} style={{ width: 260, height: 260, objectFit: "contain", filter: "drop-shadow(0 0 40px rgba(192,192,192,.15))" }} alt="" />
         </div>
       </div>
 
@@ -237,20 +240,27 @@ export default function VigoHome() {
       {/* ── REVIEWS ── */}
       <div style={{ padding: "32px 32px 52px" }}>
         <div className="vigo-3col" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
-          {REVIEWS.map((r, i) =>
-          <div key={i} style={{ background: G1, border: `.5px solid ${G3}`, padding: "28px", position: "relative" }}>
-              <div style={{ position: "absolute", top: -1, left: 0, right: 0, height: 1, background: `linear-gradient(90deg, transparent, ${S}, transparent)` }} />
-              <div style={{ color: S, fontSize: 14, marginBottom: 14 }}>{"★".repeat(r.rating)}</div>
-              <p style={{ fontSize: 13, lineHeight: 1.8, color: SD, marginBottom: 20 }}>"{r.text}"</p>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-                <div>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "var(--vt-text)" }}>{r.name}</div>
-                  <div style={{ fontSize: 8, color: SD, marginTop: 2 }}>{r.loc}</div>
+          {(homeReviews.length > 0 ? homeReviews : REVIEWS).map((r, i) => {
+            const isDB = homeReviews.length > 0;
+            const rating = isDB ? (r.rating || 5) : r.rating;
+            const text = isDB ? (r.body || "") : r.text;
+            const name = isDB ? (r.reviewerName || "Anonymous") : r.name;
+            const loc = isDB ? (r.created_date ? new Date(r.created_date).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "Verified Purchase") : r.loc;
+            return (
+              <div key={i} style={{ background: G1, border: `.5px solid ${G3}`, padding: "28px", position: "relative" }}>
+                <div style={{ position: "absolute", top: -1, left: 0, right: 0, height: 1, background: `linear-gradient(90deg, transparent, ${S}, transparent)` }} />
+                <div style={{ color: S, fontSize: 14, marginBottom: 14 }}>{"★".repeat(Math.round(rating))}</div>
+                <p style={{ fontSize: 13, lineHeight: 1.8, color: SD, marginBottom: 20 }}>"{text}"</p>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: "var(--vt-text)" }}>{name}</div>
+                    <div style={{ fontSize: 8, color: SD, marginTop: 2 }}>{loc}</div>
+                  </div>
+                  <div style={{ fontSize: 8, color: S, letterSpacing: 2 }}>VERIFIED</div>
                 </div>
-                <div style={{ fontSize: 8, color: S, letterSpacing: 2 }}>VERIFIED</div>
               </div>
-            </div>
-          )}
+            );
+          })}
         </div>
       </div>
 
@@ -268,7 +278,7 @@ export default function VigoHome() {
             <button onClick={() => navigate("/about")} style={btnO}>Our Story →</button>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderRight: "none" }}>
-            {[[settings.kpi_pieces, "Pieces Dropped"], [settings.kpi_community, "Community"], [settings.kpi_rating, "Avg Rating"]].map(([n, l], i) =>
+            {[[settings.kpi_pieces, "Pieces Dropped"], [settings.kpi_community, "Community"], [settings.kpi_rating, "Avg Rating"], [settings.kpi_street_ready || "100%", "Street Ready"]].map(([n, l], i) =>
             <div key={l} style={{ padding: "36px 28px", borderRight: i % 2 === 0 ? `.5px solid ${G3}` : "none", borderBottom: i < 2 ? `.5px solid ${G3}` : "none", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 <div style={{ fontSize: 32, fontWeight: 900, color: S, letterSpacing: -1 }}>{n}</div>
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 8 }}>{l}</div>

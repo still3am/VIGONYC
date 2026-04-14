@@ -529,7 +529,7 @@ export default function VigoAccount() {
 
         {/* Sign Out */}
         <div style={{ marginTop: 32, paddingTop: 24, borderTop: `.5px solid ${G3}`, width: "100%", display: "flex", justifyContent: "center" }}>
-          <button onClick={() => base44.auth.logout()} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "12px 24px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>
+          <button onClick={async () => { await base44.auth.logout().catch(() => {}); navigate("/"); }} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "12px 24px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>
             Sign Out
           </button>
         </div>

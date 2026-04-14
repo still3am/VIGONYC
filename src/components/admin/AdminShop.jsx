@@ -384,8 +384,10 @@ export default function AdminShop() {
                 <span style={{ fontSize: 8, color: statusColor, letterSpacing: 1, textTransform: "uppercase" }}>{statusLabel}</span>
               </div>
               <div style={{ fontSize: 14, fontWeight: 700, color: S }}>${p.price}</div>
-              <div style={{ display: "flex", gap: 6 }} onClick={e => e.stopPropagation()}>
-                <button onClick={() => setModal(p)} style={{ background: "none", border: `0.5px solid ${G3}`, color: SD, padding: "5px 10px", fontSize: 9, cursor: "pointer", fontFamily: "inherit" }}>Edit</button>
+              <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }} onClick={e => e.stopPropagation()}>
+                <button onClick={() => setModal(p)} style={{ background: "none", border: `0.5px solid ${G3}`, color: SD, padding: "5px 8px", fontSize: 9, cursor: "pointer", fontFamily: "inherit" }}>Edit</button>
+                <button onClick={async (e) => { e.stopPropagation(); const newP = { ...p }; delete newP.id; delete newP.created_date; delete newP.created_by; newP.name = `${p.name} (Copy)`; await base44.entities.Product.create(newP); load(); }} style={{ background: "none", border: `0.5px solid ${G3}`, color: SD, padding: "5px 8px", fontSize: 9, cursor: "pointer", fontFamily: "inherit" }}>Dupe</button>
+                <a href={`/product/${p.id}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 8, letterSpacing: 1, color: SD, textDecoration: "none", padding: "5px 8px", border: `0.5px solid ${G3}`, textTransform: "uppercase" }}>↗</a>
                 <button onClick={() => handleDelete(p.id)} disabled={deleting === p.id} style={{ background: "none", border: `0.5px solid #e03`, color: "#e03", padding: "5px 8px", fontSize: 9, cursor: "pointer", fontFamily: "inherit" }}>Del</button>
               </div>
             </div>

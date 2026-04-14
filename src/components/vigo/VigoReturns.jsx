@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
@@ -11,6 +11,10 @@ const REASONS = ["Wrong size", "Defective item", "Changed my mind", "Arrived dam
 export default function VigoReturns() {
   const [orderId, setOrderId] = useState("");
   const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    base44.auth.me().then(user => { if (user) setEmail(user.email || ""); }).catch(() => {});
+  }, []);
   const [reason, setReason] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);

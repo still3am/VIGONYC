@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 
 const S = "#C0C0C0";
@@ -49,19 +49,39 @@ function FaqItem({ q, a }) {
 
 export default function VigoFAQ() {
   const [activeSection, setActiveSection] = useState("Orders");
+  const [faqSearch, setFaqSearch] = useState("");
+
+  useEffect(() => {
+    document.title = "FAQ — VIGONYC";
+    return () => { document.title = "VIGONYC — NYC Streetwear"; };
+  }, []);
+
+  const searchResults = useMemo(() => {
+    if (!faqSearch.trim()) return null;
+    const q = faqSearch.toLowerCase();
+    return Object.values(faqs).flat().filter(item => item.q.toLowerCase().includes(q) || item.a.toLowerCase().includes(q));
+  }, [faqSearch]);
+
   return (
     <div style={{ padding: "64px 32px", maxWidth: 860, margin: "0 auto" }}>
       <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ Help Center</div>
-      <h1 style={{ fontSize: 48, fontWeight: 900, letterSpacing: -2, marginBottom: 40 }}>FAQ</h1>
-      <div style={{ display: "flex", gap: 2, marginBottom: 40 }}>
-        {Object.keys(faqs).map(section => (
-          <button key={section} onClick={() => setActiveSection(section)} style={{ padding: "10px 24px", background: activeSection === section ? S : G1, color: activeSection === section ? "#000" : SD, border: `.5px solid ${activeSection === section ? S : G3}`, fontSize: 9, letterSpacing: 3, textTransform: "uppercase", cursor: "pointer", fontWeight: activeSection === section ? 900 : 400, fontFamily: "inherit" }}>
-            {section}
-          </button>
-        ))}
-      </div>
+      <h1 style={{ fontSize: 48, fontWeight: 900, letterSpacing: -2, marginBottom: 24 }}>FAQ</h1>
+      <input value={faqSearch} onChange={e => setFaqSearch(e.target.value)} placeholder="Search FAQ..." style={{ width: "100%", background: "var(--vt-card)", border: `.5px solid ${G3}`, color: "var(--vt-text)", padding: "12px 18px", fontSize: 12, outline: "none", fontFamily: "inherit", marginBottom: 24, boxSizing: "border-box" }} />
+      {!searchResults && (
+        <div style={{ display: "flex", gap: 2, marginBottom: 40 }}>
+          {Object.keys(faqs).map(section => (
+            <button key={section} onClick={() => setActiveSection(section)} style={{ padding: "10px 24px", background: activeSection === section ? S : G1, color: activeSection === section ? "#000" : SD, border: `.5px solid ${activeSection === section ? S : G3}`, fontSize: 9, letterSpacing: 3, textTransform: "uppercase", cursor: "pointer", fontWeight: activeSection === section ? 900 : 400, fontFamily: "inherit" }}>
+              {section}
+            </button>
+          ))}
+        </div>
+      )}
       <div style={{ borderTop: `.5px solid ${G3}` }}>
-        {faqs[activeSection].map(item => <FaqItem key={item.q} {...item} />)}
+        {searchResults
+          ? searchResults.length > 0
+            ? searchResults.map(item => <FaqItem key={item.q} {...item} />)
+            : <div style={{ padding: "32px 0", color: SD, fontSize: 13 }}>No results for "{faqSearch}"</div>
+          : faqs[activeSection].map(item => <FaqItem key={item.q} {...item} />)}
       </div>
       <div style={{ marginTop: 48, background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "32px", textAlign: "center" }}>
         <div style={{ fontSize: 9, letterSpacing: 3, color: SD, textTransform: "uppercase", marginBottom: 10 }}>Still have questions?</div>

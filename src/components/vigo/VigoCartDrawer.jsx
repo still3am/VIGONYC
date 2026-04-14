@@ -13,6 +13,7 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
   const { settings } = useSiteSettings();
 
   useEffect(() => {
@@ -35,6 +36,16 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
     };
     fetchCart();
   }, [open]);
+
+  useEffect(() => {
+    if (items.length > 0 && suggestions.length === 0) {
+      base44.entities.Product.filter({ featured: true }, "-created_date", 4)
+        .then(data => {
+          const filtered = (data || []).filter(p => !items.find(i => i.productId === p.id)).slice(0, 2);
+          setSuggestions(filtered);
+        }).catch(() => {});
+    }
+  }, [items.length]);
 
   const freeShippingThreshold = parseInt(settings.free_shipping_threshold || "150");
   const subtotal = items.reduce((sum, item) => sum + (item.price * item.qty), 0);
@@ -89,6 +100,7 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
             </div>
           )}
           {!loading && items.length > 0 && items.map(item => (
+
             <div key={item.id} style={{ background: G2, border: `.5px solid ${G3}`, padding: "clamp(12px,2vw,16px)", marginBottom: 12, display: "flex", gap: 12 }}>
               <div style={{ width: 60, height: 60, background: G1, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: `.5px solid ${G3}` }}>
                 {item.productImage ? <img src={item.productImage} alt={item.productName} style={{ width: 50, objectFit: "contain" }} /> : <div style={{ fontSize: 10, color: SD }}>No image</div>}
@@ -114,6 +126,23 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
               </div>
             </div>
           ))}
+          {!loading && suggestions.length > 0 && (
+            <div style={{ borderTop: `.5px solid ${G3}`, paddingTop: 16, marginTop: 8 }}>
+              <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 10 }}>You Might Also Like</div>
+              {suggestions.map(p => (
+                <div key={p.id} style={{ display: "flex", gap: 10, marginBottom: 12, alignItems: "center" }}>
+                  <div style={{ width: 48, height: 48, background: G2, flexShrink: 0, border: `.5px solid ${G3}`, overflow: "hidden" }}>
+                    {p.images?.[0] && <img src={p.images[0]} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--vt-text)" }}>{p.name}</div>
+                    <div style={{ fontSize: 11, color: S, fontWeight: 900 }}>${p.price}</div>
+                  </div>
+                  <button onClick={() => { onClose(); window.location.href = `/product/${p.id}`; }} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "5px 10px", fontSize: 8, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>View</button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Footer */}

@@ -85,7 +85,7 @@ export default function VigoShop() {
   useEffect(() => {
     setActiveCat(searchParams.get("cat") || "All");
     setSearchQuery(searchParams.get("q") || "");
-  }, [searchParams]);
+  }, [searchParams.get("cat"), searchParams.get("q")]);
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
@@ -116,7 +116,7 @@ export default function VigoShop() {
     if (selectedSizes.length) p = p.filter(x => x.sizes && x.sizes.some(s => selectedSizes.includes(s)));
     if (selectedColors.length) p = p.filter(x => x.colors && x.colors.some(c => selectedColors.includes(c)));
     if (activeCollection !== "All Collections") p = p.filter(x => x.collection === activeCollection);
-    if (sort === "featured") p = p.filter(x => x.featured).concat(p.filter(x => !x.featured));
+    if (sort === "featured" || sort === "reviews") p = p.filter(x => x.featured).concat(p.filter(x => !x.featured));
     p = p.filter(x => typeof x.price === "number" && x.price <= priceRange);
     if (sort === "price-asc") p.sort((a,b) => a.price - b.price);
     if (sort === "price-desc") p.sort((a,b) => b.price - a.price);
@@ -185,6 +185,7 @@ export default function VigoShop() {
               <option value="price-asc">Price ↑</option>
               <option value="price-desc">Price ↓</option>
               <option value="new">Newest</option>
+              <option value="reviews">Best Sellers</option>
             </select>
             <button className="vigo-filter-btn" onClick={() => setDrawerOpen(true)} style={{ background: "none", border: `.5px solid ${G3}`, color: activeFiltersCount > 0 ? S : SD, padding: "8px 16px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", display: "none", gap: 6, alignItems: "center" }}>
               Filters {activeFiltersCount > 0 && <span style={{ background: S, color: "#000", borderRadius: "50%", width: 16, height: 16, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 900 }}>{activeFiltersCount}</span>}

@@ -1,6 +1,7 @@
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const S = "#C0C0C0";
+const G1 = "var(--vt-bg)";
 const G3 = "var(--vt-border)";
 const SD = "var(--vt-sub)";
 
@@ -21,16 +22,27 @@ export default function VigoPrivacy() {
       <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ Legal</div>
       <h1 style={{ fontSize: 48, fontWeight: 900, letterSpacing: -2, marginBottom: 12 }}>Privacy Policy</h1>
       <div style={{ fontSize: 10, color: SD, marginBottom: 36 }}>Last Updated: April 2026</div>
+
+      {/* Table of Contents */}
+      <div style={{ background: G1, border: `.5px solid ${G3}`, padding: "20px 24px", marginBottom: 40 }}>
+        <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 12 }}>Contents</div>
+        {SECTIONS.map((s, i) => (
+          <a key={i} href={`#section-${i}`} style={{ display: "block", fontSize: 11, color: SD, textDecoration: "none", padding: "5px 0", borderBottom: i < SECTIONS.length - 1 ? `.5px solid ${G3}` : "none" }}>
+            {i + 1}. {s.title}
+          </a>
+        ))}
+      </div>
+
       <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
         {SECTIONS.map((s, i) => (
-          <div key={i} style={{ borderTop: `.5px solid ${G3}`, padding: "28px 0" }}>
+          <div key={i} id={`section-${i}`} style={{ borderTop: `.5px solid ${G3}`, padding: "28px 0" }}>
             <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 12 }}>{String(i + 1).padStart(2, "0")} — {s.title}</div>
             <p style={{ fontSize: 13, color: SD, lineHeight: 1.9 }}>{s.body}</p>
           </div>
         ))}
       </div>
       <div style={{ borderTop: `.5px solid ${G3}`, paddingTop: 24, marginTop: 16 }}>
-        <div style={{ fontSize: 10, color: SD }}>© 2025 VIGONYC / BYSMITH LLC. All rights reserved.</div>
+        <div style={{ fontSize: 10, color: SD }}>© 2026 VIGONYC / BYSMITH LLC. All rights reserved.</div>
       </div>
     </div>
   );

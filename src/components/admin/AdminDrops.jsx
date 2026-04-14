@@ -191,7 +191,10 @@ export default function AdminDrops() {
                   </div>
                   {d.description && <div style={{ fontSize: 11, color: SD, marginTop: 4 }}>{d.description.slice(0, 80)}{d.description.length > 80 ? "..." : ""}</div>}
                 </div>
-                <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                <div style={{ display: "flex", gap: 6, flexShrink: 0, flexWrap: "wrap", alignItems: "center" }}>
+                  {["upcoming","live","soldout"].map(s => (
+                    <button key={s} onClick={async (e) => { e.stopPropagation(); await base44.entities.Drop.update(d.id, { status: s }); setDrops(prev => prev.map(x => x.id === d.id ? { ...x, status: s } : x)); }} style={{ padding: "4px 8px", fontSize: 7, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", background: d.status === s ? statusColor(s) : "transparent", color: d.status === s ? "#000" : SD, border: `0.5px solid ${d.status === s ? statusColor(s) : G3}` }}>{s}</button>
+                  ))}
                   <button onClick={() => setModal(d)} style={{ background: "none", border: `0.5px solid ${G3}`, color: SD, padding: "8px 14px", fontSize: 9, cursor: "pointer", fontFamily: "inherit", letterSpacing: 1, textTransform: "uppercase" }}>Edit</button>
                   <button onClick={() => handleDelete(d.id)} style={{ background: "none", border: `0.5px solid #e03`, color: "#e03", padding: "8px 14px", fontSize: 9, cursor: "pointer", fontFamily: "inherit", letterSpacing: 1, textTransform: "uppercase" }}>Delete</button>
                 </div>

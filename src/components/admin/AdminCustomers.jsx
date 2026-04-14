@@ -53,19 +53,20 @@ export default function AdminCustomers() {
 
       {/* Desktop table */}
       <div className="admin-cust-desktop" style={{ background: G1, border: `0.5px solid ${G3}` }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 70px 110px", padding: "10px 20px", borderBottom: `0.5px solid ${G3}`, fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>
-          <span>Name</span><span>Email</span><span>Orders</span><span>Joined</span>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 70px 110px 80px", padding: "10px 20px", borderBottom: `0.5px solid ${G3}`, fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>
+          <span>Name</span><span>Email</span><span>Orders</span><span>Joined</span><span></span>
         </div>
         {loading && <div style={{ padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>Loading customers...</div>}
         {!loading && filtered.length === 0 && <div style={{ padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>No customers found</div>}
         {!loading && filtered.map(u => (
-          <div key={u.id} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 70px 110px", padding: "12px 20px", borderBottom: `0.5px solid ${G3}`, alignItems: "center" }}
+          <div key={u.id} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 70px 110px 80px", padding: "12px 20px", borderBottom: `0.5px solid ${G3}`, alignItems: "center" }}
             onMouseEnter={e => e.currentTarget.style.background = G2}
             onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
             <div style={{ fontSize: 12, color: "#fff" }}>{u.full_name || "—"}</div>
             <div style={{ fontSize: 11, color: SD, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{u.email}</div>
             <div style={{ fontSize: 12, fontWeight: 700, color: orderCountFor(u.email) > 0 ? S : SD }}>{orderCountFor(u.email)}</div>
             <div style={{ fontSize: 9, color: SD }}>{u.created_date ? new Date(u.created_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}</div>
+            <a href={`mailto:${u.email}`} style={{ background:"none", border:`0.5px solid ${G3}`, color:SD, padding:"4px 10px", fontSize:8, letterSpacing:1, textTransform:"uppercase", cursor:"pointer", textDecoration:"none", fontFamily:"inherit" }}>Email</a>
           </div>
         ))}
       </div>

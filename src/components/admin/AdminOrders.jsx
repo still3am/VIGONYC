@@ -16,6 +16,7 @@ export default function AdminOrders() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [trackingEdits, setTrackingEdits] = useState({});
+  const [expanded, setExpanded] = useState(null);
 
   useEffect(() => {
     base44.entities.Order.list("-created_date", 200).catch(() => []).then(data => {
@@ -64,6 +65,14 @@ export default function AdminOrders() {
           {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
         <div style={{ fontSize: 10, color: SD, alignSelf: "center" }}>{filtered.length} orders</div>
+        <button onClick={() => {
+          const headers = ["Order ID","Items","Total","Status","Tracking","Date","Email"];
+          const rows = filtered.map(o => [o.orderId,`"${o.items||""}"`,o.total,o.status,o.trackingNumber||"",o.created_date?new Date(o.created_date).toLocaleDateString():"",o.userEmail||o.created_by||""]);
+          const csv = [headers,...rows].map(r=>r.join(",")).join("\n");
+          const blob = new Blob([csv],{type:"text/csv"});
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a"); a.href=url; a.download=`vigonyc-orders-${Date.now()}.csv`; a.click(); URL.revokeObjectURL(url);
+        }} style={{ background:"none", border:`0.5px solid ${G3}`, color:SD, padding:"10px 16px", fontSize:9, letterSpacing:2, textTransform:"uppercase", cursor:"pointer", fontFamily:"inherit" }}>Export CSV</button>
       </div>
 
       {loading && <div style={{ padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>Loading orders...</div>}
@@ -77,7 +86,9 @@ export default function AdminOrders() {
         {!loading && filtered.map(o => {
           const col = STATUS_COLORS[o.status] || SD;
           return (
-            <div key={o.id} style={{ display: "grid", gridTemplateColumns: "130px 1fr 90px 140px 160px 130px", padding: "14px 20px", borderBottom: `0.5px solid ${G3}`, alignItems: "center", gap: 4 }}
+            <div key={o.id}>
+            <div style={{ display: "grid", gridTemplateColumns: "130px 1fr 90px 140px 160px 130px", padding: "14px 20px", borderBottom: `0.5px solid ${G3}`, alignItems: "center", gap: 4, cursor: "pointer" }}
+              onClick={() => setExpanded(expanded === o.id ? null : o.id)}
               onMouseEnter={e => e.currentTarget.style.background = G2}
               onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
               <div style={{ fontSize: 11, fontWeight: 900, color: S }}>{o.orderId}</div>
@@ -94,6 +105,27 @@ export default function AdminOrders() {
                 style={{ background: G2, border: `0.5px solid ${G3}`, color: "#fff", padding: "5px 8px", fontSize: 10, outline: "none", fontFamily: "inherit", width: "100%" }}
               />
               <div style={{ fontSize: 9, color: SD }}>{o.created_date ? new Date(o.created_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}</div>
+            </div>
+            {expanded === o.id && (
+              <div style={{ padding: "12px 20px", background: G2, borderBottom: `0.5px solid ${G3}` }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+                  <div>
+                    <div style={{ fontSize: 8, color: SD, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>Items</div>
+                    {(o.items||"").split(", ").map((item,i) => <div key={i} style={{ fontSize: 10, color: "#fff" }}>· {item}</div>)}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 8, color: SD, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>Shipping To</div>
+                    <div style={{ fontSize: 10, color: "#fff" }}>{o.shippingAddress || "—"}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 8, color: SD, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>Customer</div>
+                    <div style={{ fontSize: 10, color: "#fff" }}>{o.userEmail||o.created_by||"—"}</div>
+                    {o.isGift && <div style={{ fontSize: 9, color: S, marginTop: 4 }}>🎁 Gift order</div>}
+                    {o.giftMessage && <div style={{ fontSize: 9, color: SD, marginTop: 2, fontStyle: "italic" }}>"{o.giftMessage}"</div>}
+                  </div>
+                </div>
+              </div>
+            )}
             </div>
           );
         })}

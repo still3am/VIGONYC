@@ -56,6 +56,16 @@ export default function VigoContact() {
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   useEffect(() => { document.title = "Contact — VIGONYC"; return () => { document.title = "VIGONYC — NYC Streetwear"; }; }, []);
+  useEffect(() => {
+    base44.auth.me().then(user => {
+      if (user) {
+        const parts = (user.full_name || "").split(" ");
+        setFirstName(parts[0] || "");
+        setLastName(parts.slice(1).join(" ") || "");
+        setEmail(user.email || "");
+      }
+    }).catch(() => {});
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

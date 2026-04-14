@@ -30,6 +30,8 @@ export default function VigoProduct() {
   const [added, setAdded] = useState(false);
   const [copied, setCopied] = useState(false);
   const [reviews, setReviews] = useState([]);
+  const [notifyEmail, setNotifyEmail] = useState("");
+  const [notifySubmitted, setNotifySubmitted] = useState(false);
   const [reviewForm, setReviewForm] = useState({ rating: 0, title: "", body: "", reviewerName: "" });
   const [submittingReview, setSubmittingReview] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
@@ -137,6 +139,13 @@ export default function VigoProduct() {
 
   return (
     <div style={{ minHeight: "100vh", background: G1 }}>
+      {/* Back button (mobile) */}
+      <div className="vigo-product-back" style={{ display: "none", padding: "10px clamp(16px,4vw,32px)", borderBottom: `.5px solid ${G3}` }}>
+        <button onClick={() => navigate("/shop")} style={{ background: "none", border: "none", color: SD, cursor: "pointer", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6 }}>
+          ← Back to Shop
+        </button>
+      </div>
+
       {/* Breadcrumb */}
       <div style={{ padding: "12px clamp(20px,4vw,32px)", borderBottom: `.5px solid ${G3}`, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
         {[["Home", "/"], ["Shop", "/shop"], [product.cat, `/shop?cat=${product.cat}`]].map(([label, to], i) => (
@@ -227,7 +236,13 @@ export default function VigoProduct() {
                 </button>
               </div>
 
-              <p style={{ fontSize: 12, color: SD, lineHeight: 1.8, marginBottom: 28 }}>{product.description || "Premium streetwear from New York City."}</p>
+              <p style={{ fontSize: 12, color: SD, lineHeight: 1.8, marginBottom: product.stock > 0 && product.stock <= 10 ? 12 : 28 }}>{product.description || "Premium streetwear from New York City."}</p>
+              {product.stock > 0 && product.stock <= 10 && (
+                <div style={{ fontSize: 9, letterSpacing: 2, color: "#fa0", textTransform: "uppercase", marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
+                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#fa0", animation: "vigo-pulse 1.5s infinite" }} />
+                  Only {product.stock} left in stock
+                </div>
+              )}
 
               {/* Color */}
               <div style={{ marginBottom: 28 }}>
@@ -253,6 +268,22 @@ export default function VigoProduct() {
                 </div>
               </div>
 
+              {soldOut && (
+                <div style={{ marginBottom: 16 }}>
+                  {notifySubmitted ? (
+                    <div style={{ fontSize: 10, color: "#0c6", padding: "10px 0" }}>✓ We'll notify you when this restocks.</div>
+                  ) : (
+                    <div style={{ display: "flex" }}>
+                      <input value={notifyEmail} onChange={e => setNotifyEmail(e.target.value)} placeholder="your@email.com" style={{ flex: 1, background: "var(--vt-card)", border: `.5px solid ${G3}`, borderRight: "none", color: "var(--vt-text)", padding: "10px 14px", fontSize: 11, outline: "none", fontFamily: "inherit" }} />
+                      <button onClick={async () => {
+                        if (!notifyEmail.trim() || !/\S+@\S+\.\S+/.test(notifyEmail)) return;
+                        await base44.auth.me().then(u => { if (u) base44.auth.updateMe({ restockNotifyEmail: notifyEmail, restockProductId: product.id }).catch(() => {}); }).catch(() => {});
+                        setNotifySubmitted(true);
+                      }} style={{ background: S, color: "#000", border: "none", padding: "10px 16px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Notify Me</button>
+                    </div>
+                  )}
+                </div>
+              )}
               <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
                 <div style={{ display: "flex", alignItems: "center", border: `.5px solid ${G3}` }}>
                   <button onClick={() => setQty((q) => Math.max(1, q - 1))} style={{ width: 40, height: 48, background: "none", border: "none", color: SD, fontSize: 18, cursor: "pointer", fontFamily: "inherit" }}>−</button>
@@ -359,10 +390,12 @@ export default function VigoProduct() {
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes vigo-pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.8)} }
         @media (max-width: 900px) {
           .product-grid { grid-template-columns: 1fr !important; }
           .related-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .mobile-cta { display: flex !important; flex-direction: column; }
+          .vigo-product-back { display: block !important; }
         }
         @media (max-width: 480px) {
           .related-grid { grid-template-columns: 1fr !important; }

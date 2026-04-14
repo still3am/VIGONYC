@@ -40,6 +40,18 @@
     "userEmail": {
       "type": "string",
       "description": "Email of the customer who placed the order"
+    },
+    "isGift": {
+      "type": "boolean",
+      "description": "Whether this is a gift order"
+    },
+    "giftMessage": {
+      "type": "string",
+      "description": "Gift message from buyer"
+    },
+    "shippingMethod": {
+      "type": "string",
+      "description": "Selected shipping method (standard, express, overnight)"
     }
   },
   "required": [
