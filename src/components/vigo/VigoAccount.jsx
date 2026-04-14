@@ -324,12 +324,10 @@ export default function VigoAccount() {
               <h1 style={{ fontSize: "clamp(24px,4vw,40px)", fontWeight: 900, letterSpacing: -1.5, lineHeight: 1, marginBottom: 6 }}>{profile.firstName} {profile.lastName}</h1>
               <div style={{ fontSize: 11, color: SD, marginBottom: 10 }}>{profile.email}</div>
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
-                {[['Orders', orders.length.toString()], ['Addresses', addresses.length.toString()]].map(([k, v]) =>
-                <div key={k} style={{ background: G2, border: `.5px solid ${G3}`, padding: "6px 16px" }}>
-                    <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>{k}</div>
-                    <div style={{ fontSize: 13, fontWeight: 900, color: S }}>{v}</div>
-                  </div>
-                )}
+                <div style={{ background: G2, border: `.5px solid ${G3}`, padding: "6px 16px" }}>
+                  <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Orders</div>
+                  <div style={{ fontSize: 13, fontWeight: 900, color: S }}>{orders.length}</div>
+                </div>
               </div>
             </div>
           </div>
