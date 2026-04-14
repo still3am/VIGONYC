@@ -43,8 +43,8 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
   };
 
   const removeFromCart = async (id) => {
-    await base44.entities.CartItem.delete(id);
-    setItems(items.filter(i => i.id !== id));
+    setItems(prev => prev.filter(i => i.id !== id));
+    await base44.entities.CartItem.delete(id).catch(() => {});
   };
 
   const handleCheckout = () => {
