@@ -145,7 +145,7 @@ export default function VigoDrops() {
           <div className="vigo-corner bl" style={{ position: "absolute", bottom: 20, left: 20, width: 24, height: 24, borderBottom: "1.5px solid rgba(192,192,192,.25)", borderLeft: "1.5px solid rgba(192,192,192,.25)" }} />
           <div className="vigo-corner br" style={{ position: "absolute", bottom: 20, right: 20, width: 24, height: 24, borderBottom: "1.5px solid rgba(192,192,192,.25)", borderRight: "1.5px solid rgba(192,192,192,.25)" }} />
 
-          <div style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(32px,6vw,72px) 20px" }}>
+          <div className="vigo-hero-drop-inner" style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(32px,6vw,72px) 20px" }}>
             <div className="vigo-hero-drop" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(24px,4vw,56px)", alignItems: "center" }}>
               <div>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(192,192,192,.06)", border: ".5px solid rgba(192,192,192,.15)", padding: "6px 14px", marginBottom: 20 }}>
@@ -382,6 +382,7 @@ export default function VigoDrops() {
           .vigo-hero-drop { grid-template-columns: 1fr !important; }
           .vigo-4col { grid-template-columns: repeat(2,1fr) !important; }
           .vigo-corner { display: none !important; }
+          .vigo-hero-drop-inner { display: none !important; }
         }
         @media(max-width:480px){
           .vigo-4col { grid-template-columns: 1fr 1fr !important; }
