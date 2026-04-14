@@ -431,6 +431,7 @@ export default function VigoAccount() {
                         </div>
                       </div>
                       </div>
+                      </div>
                       )}
                       {expandedOrderId === order.id && (
                       <div style={{ background: "var(--vt-bg)", border: `.5px solid ${G3}`, borderTop: "none", padding: "16px 20px", marginBottom: 8 }}>
@@ -464,12 +465,11 @@ export default function VigoAccount() {
                           </div>
                         )}
                       </div>
-                    )}
-                  </div>
-                );
-            })}
-            
-                <div style={{ textAlign: "center", padding: "20px 0", fontSize: 10, color: SD }}>
+                      )}
+                      </div>
+                      );
+                      })}
+                      <div style={{ textAlign: "center", padding: "20px 0", fontSize: 10, color: SD }}>
                   {orders.length} {orders.length === 1 ? 'order' : 'orders'} total
                 </div>
               </div>

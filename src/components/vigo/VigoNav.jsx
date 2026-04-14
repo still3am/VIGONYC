@@ -144,20 +144,20 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
 
         {/* Mobile menu */}
         {mobileOpen && (
-        <div style={{ background: "var(--vt-bg)", borderTop: `.5px solid ${G3}`, padding: "20px 24px", display: "flex", flexDirection: "column", gap: 18 }}>
+          <div style={{ background: "var(--vt-bg)", borderTop: `.5px solid ${G3}`, padding: "20px 24px", display: "flex", flexDirection: "column", gap: 18 }}>
             {links.map((l) => (
-          <NavLink key={l.to} to={l.to} onClick={() => setMobileOpen(false)} style={({ isActive }) => ({ textDecoration: "none", fontSize: 10, letterSpacing: 4, textTransform: "uppercase", color: isActive ? "var(--vt-text)" : SD })}>{l.label}</NavLink>
+              <NavLink key={l.to} to={l.to} onClick={() => setMobileOpen(false)} style={({ isActive }) => ({ textDecoration: "none", fontSize: 10, letterSpacing: 4, textTransform: "uppercase", color: isActive ? "var(--vt-text)" : SD })}>{l.label}</NavLink>
             ))}
           </div>
         )}
-      </nav>
+        </nav>
 
-      <style>{`
+        <style>{`
         @media (min-width: 900px) { .vigo-mobile-menu-btn { display: none !important; } }
         @media (max-width: 899px) { .vigo-desktop-nav { display: none !important; } .vigo-icon-desktop { display: none !important; } }
         @media (max-width: 899px) { .vigo-nav-logo { position: absolute; left: 50%; transform: translateX(-50%); } .vigo-nav-logo-img { width: 60px !important; height: 60px !important; } }
-      `}</style>
-    </>);
+        `}</style>
+        </>);
 }
 
 const iconBtn = { background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 4, position: "relative" };
