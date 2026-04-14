@@ -149,8 +149,8 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
             )}
             </div>
             )}
-            </div>
-            </nav>
+          </div>
+        </nav>
 
       <style>{`
         @media (min-width: 900px) { .vigo-mobile-menu-btn { display: none !important; } }
