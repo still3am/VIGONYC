@@ -27,8 +27,6 @@ export default function VigoCheckout() {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderId, setOrderId] = useState("");
   const [contact, setContact] = useState({ firstName: "", lastName: "", email: "", phone: "", address: "", city: "", state: "", zip: "" });
-  const [isGift, setIsGift] = useState(false);
-  const [giftMessage, setGiftMessage] = useState("");
 
   useEffect(() => {
     const load = async () => {
@@ -82,18 +80,15 @@ export default function VigoCheckout() {
     setPlacing(true);
     try {
       const genId = "VIGO-" + Math.floor(Math.random() * 90000 + 10000);
-       await base44.entities.Order.create({
-         orderId: genId,
-         items: cartItems.map(i => `${i.productName} x${i.qty}`).join(", "),
-         total: total,
-         pieces: cartItems.reduce((s, i) => s + i.qty, 0),
-         status: "Pending",
-         shippingAddress: `${contact.address}, ${contact.city}, ${contact.state} ${contact.zip}`,
-         userEmail: contact.email,
-         shippingMethod,
-         isGift,
-         giftMessage: isGift ? giftMessage : "",
-       });
+      await base44.entities.Order.create({
+        orderId: genId,
+        items: cartItems.map(i => `${i.productName} x${i.qty}`).join(", "),
+        total: total,
+        pieces: cartItems.reduce((s, i) => s + i.qty, 0),
+        status: "Pending",
+        shippingAddress: `${contact.address}, ${contact.city}, ${contact.state} ${contact.zip}`,
+        userEmail: contact.email,
+      });
       // Update stock
       for (const item of cartItems) {
         const prod = await base44.entities.Product.get(item.productId).catch(() => null);
@@ -180,26 +175,6 @@ export default function VigoCheckout() {
                 <Field label="City" value={contact.city} onChange={v => setField("city", v)} />
                 <Field label="State" value={contact.state} onChange={v => setField("state", v)} />
                 <Field label="ZIP" value={contact.zip} onChange={v => setField("zip", v)} />
-              </div>
-              <div style={{ borderTop: `.5px solid ${G3}`, paddingTop: 16, marginTop: 8 }}>
-                <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", marginBottom: 12 }}>
-                  <input type="checkbox" checked={isGift} onChange={e => setIsGift(e.target.checked)} style={{ accentColor: S, width: 16, height: 16 }} />
-                  <span style={{ fontSize: 12, color: "var(--vt-text)" }}>🎁 This is a gift</span>
-                </label>
-                {isGift && (
-                  <div>
-                    <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Gift Message (optional, max 200 chars)</div>
-                    <textarea
-                      value={giftMessage}
-                      onChange={e => setGiftMessage(e.target.value)}
-                      rows={3}
-                      maxLength={200}
-                      placeholder="Write a personal message for the recipient..."
-                      style={{ width: "100%", background: "var(--vt-card)", border: `.5px solid ${G3}`, color: "var(--vt-text)", padding: "12px 16px", fontSize: 12, outline: "none", resize: "vertical", boxSizing: "border-box", fontFamily: "inherit" }}
-                    />
-                    <div style={{ fontSize: 9, color: SD, textAlign: "right", marginTop: 4 }}>{giftMessage.length}/200</div>
-                  </div>
-                )}
               </div>
               <button onClick={() => {
                 if (!contact.firstName.trim() || !contact.lastName.trim()) return alert("Please enter your full name.");

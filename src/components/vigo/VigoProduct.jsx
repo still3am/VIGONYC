@@ -103,24 +103,21 @@ export default function VigoProduct() {
   ];
 
   const handleAdd = () => {
-    if (!selectedSize && !soldOut) {
+    if (!selectedSize) {
       toast.error("Please select a size");
       return;
     }
-    if (soldOut) return;
-    for (let i = 0; i < qty; i++) {
-      addToCart({
-        id: product.id,
-        productId: product.id,
-        name: product.name,
-        productName: product.name,
-        size: selectedSize,
-        color: selectedColor || "Black",
-        meta: `Size: ${selectedSize} · Color: ${selectedColor || "Black"}`,
-        price: product.price,
-        productImage: images[0],
-      });
-    }
+    addToCart({
+      id: product.id,
+      productId: product.id,
+      name: product.name,
+      productName: product.name,
+      size: selectedSize,
+      color: selectedColor,
+      meta: `Size: ${selectedSize} · Color: ${selectedColor}`,
+      price: product.price,
+      productImage: images[0],
+    });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };

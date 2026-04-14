@@ -25,38 +25,35 @@ function FilterSection({ title, children }) {
   );
 }
 
-function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories, collections, inStockOnly, setInStockOnly, setSizeGuideOpen }) {
-   return (
-     <div>
-       <div style={{ fontSize: 10, letterSpacing: 3, textTransform: "uppercase", color: "var(--vt-text)", fontWeight: 700, marginBottom: 24, paddingBottom: 16, borderBottom: `.5px solid ${G3}` }}>Filters</div>
-       <div style={{ paddingBottom: 16, marginBottom: 16, borderBottom: `.5px solid ${G3}` }}>
-         <button onClick={() => setInStockOnly(!inStockOnly)} style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "inherit" }}>
-           <div style={{ width: 18, height: 18, border: `.5px solid ${inStockOnly ? S : G3}`, background: inStockOnly ? S : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-             {inStockOnly && <span style={{ color: "#000", fontSize: 12, fontWeight: 900 }}>✓</span>}
-           </div>
-           <span style={{ fontSize: 11, color: inStockOnly ? "var(--vt-text)" : SD }}>In Stock Only</span>
-         </button>
-       </div>
-       <FilterSection title="Category">
-         {categories.map(c => (
-           <button key={c} onClick={() => setActiveCat(c)} style={{ display: "block", background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "6px 0", fontSize: 11, color: activeCat === c ? "var(--vt-text)" : SD, fontWeight: activeCat === c ? 700 : 400, fontFamily: "inherit", width: "100%" }}>{c}</button>
-         ))}
-       </FilterSection>
-       <FilterSection title="Collection">
-         {collections.map(c => (
-           <button key={c} onClick={() => setActiveCollection(c)} style={{ display: "block", background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "6px 0", fontSize: 11, color: activeCollection === c ? "var(--vt-text)" : SD, fontWeight: activeCollection === c ? 700 : 400, fontFamily: "inherit", width: "100%" }}>{c}</button>
-         ))}
-       </FilterSection>
-       <FilterSection title="Size">
-         <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
-           {SIZES.map(s => (
-             <button key={s} onClick={() => toggleArr(selectedSizes, setSelectedSizes, s)} style={{ padding: "6px 10px", border: `.5px solid ${selectedSizes.includes(s) ? S : G3}`, background: selectedSizes.includes(s) ? S : "none", color: selectedSizes.includes(s) ? "#000" : SD, fontSize: 9, cursor: "pointer", fontFamily: "inherit" }}>{s}</button>
-           ))}
-         </div>
-         <button onClick={() => setSizeGuideOpen(true)} style={{ fontSize: 9, letterSpacing: 2, color: S, textTransform: "uppercase", background: "none", border: "none", cursor: "pointer", padding: "8px 0", fontFamily: "inherit", display: "block", marginTop: 8 }}>
-           Size Guide →
-         </button>
-       </FilterSection>
+function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories, collections, inStockOnly, setInStockOnly }) {
+  return (
+    <div>
+      <div style={{ fontSize: 10, letterSpacing: 3, textTransform: "uppercase", color: "var(--vt-text)", fontWeight: 700, marginBottom: 24, paddingBottom: 16, borderBottom: `.5px solid ${G3}` }}>Filters</div>
+      <div style={{ paddingBottom: 16, marginBottom: 16, borderBottom: `.5px solid ${G3}` }}>
+        <button onClick={() => setInStockOnly(!inStockOnly)} style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "inherit" }}>
+          <div style={{ width: 18, height: 18, border: `.5px solid ${inStockOnly ? S : G3}`, background: inStockOnly ? S : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            {inStockOnly && <span style={{ color: "#000", fontSize: 12, fontWeight: 900 }}>✓</span>}
+          </div>
+          <span style={{ fontSize: 11, color: inStockOnly ? "var(--vt-text)" : SD }}>In Stock Only</span>
+        </button>
+      </div>
+      <FilterSection title="Category">
+        {categories.map(c => (
+          <button key={c} onClick={() => setActiveCat(c)} style={{ display: "block", background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "6px 0", fontSize: 11, color: activeCat === c ? "var(--vt-text)" : SD, fontWeight: activeCat === c ? 700 : 400, fontFamily: "inherit", width: "100%" }}>{c}</button>
+        ))}
+      </FilterSection>
+      <FilterSection title="Collection">
+        {collections.map(c => (
+          <button key={c} onClick={() => setActiveCollection(c)} style={{ display: "block", background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "6px 0", fontSize: 11, color: activeCollection === c ? "var(--vt-text)" : SD, fontWeight: activeCollection === c ? 700 : 400, fontFamily: "inherit", width: "100%" }}>{c}</button>
+        ))}
+      </FilterSection>
+      <FilterSection title="Size">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+          {SIZES.map(s => (
+            <button key={s} onClick={() => toggleArr(selectedSizes, setSelectedSizes, s)} style={{ padding: "6px 10px", border: `.5px solid ${selectedSizes.includes(s) ? S : G3}`, background: selectedSizes.includes(s) ? S : "none", color: selectedSizes.includes(s) ? "#000" : SD, fontSize: 9, cursor: "pointer", fontFamily: "inherit" }}>{s}</button>
+          ))}
+        </div>
+      </FilterSection>
       <FilterSection title="Color">
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {COLORS.map(c => {
@@ -78,7 +75,7 @@ function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes,
 }
 
 export default function VigoShop() {
-   const { productImg, wishlist, toggleWishlist, addToCart, setSizeGuideOpen } = useOutletContext();
+  const { productImg, wishlist, toggleWishlist, addToCart } = useOutletContext();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const initCat = searchParams.get("cat") || "All";
@@ -132,7 +129,7 @@ export default function VigoShop() {
     base44.entities.Product.list("-created_date", 200).then(data => { setAllProducts(data || []); res(); }).catch(() => res());
   }), []);
 
-  const filterProps = { activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories: CATEGORIES, collections: COLLECTIONS, inStockOnly, setInStockOnly, setSizeGuideOpen };
+  const filterProps = { activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories: CATEGORIES, collections: COLLECTIONS, inStockOnly, setInStockOnly };
 
   useEffect(() => {
     document.title = "Shop All — VIGONYC";
@@ -222,13 +219,7 @@ export default function VigoShop() {
                 <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
                   wishlisted={wishlist.includes(p.id)}
                   onWishlist={() => toggleWishlist(p.id)}
-                  onAdd={() => {
-                    if (p.sizes && p.sizes.length > 1) {
-                      navigate(`/product/${p.id}`);
-                    } else {
-                      addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: p.sizes?.[0] || null, color: p.colors?.[0] || "Black", productImage: p.images?.[0] || productImg, price: p.price });
-                    }
-                  }}
+                  onAdd={() => addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: "M", color: "Black", productImage: p.images?.[0] || productImg, price: p.price })}
                   onClick={() => navigate(`/product/${p.id}`)} />
               ))}
             </div>
