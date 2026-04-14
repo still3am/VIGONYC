@@ -119,7 +119,7 @@ export default function VIGONYCFlagship() {
       <SizeGuideModal open={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} />
       <VigoCartDrawer open={cartOpen} onClose={handleCartClose} onCheckout={() => { navigate("/checkout"); handleCartClose(); }} />
       <VigoNav cartCount={cartCount} onCartOpen={() => setCartOpen(true)} logo={LOGO} />
-      <Outlet context={ctx} />
+      <Outlet key={location.pathname} context={ctx} />
       <VigoFooter logo={LOGO} />
       <VigoBottomNav />
       {showBackToTop && (
