@@ -62,7 +62,7 @@ export default function VigoFooter({ logo }) {
           </a>
         </div>
         {/* Copyright */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", flexWrap: "wrap", gap: 8 }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", width: "100%", flexWrap: "wrap", gap: 8 }}>
           <div style={{ fontSize: 9, color: SD }}>© 2026 VIGONYC. All rights reserved.</div>
           <div style={{ fontSize: 9, color: SD, letterSpacing: 2 }}>POWERED BY BYSMITH LLC</div>
         </div>
