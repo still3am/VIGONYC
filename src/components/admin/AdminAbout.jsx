@@ -14,9 +14,7 @@ const DEFAULT_SETTINGS = [
   { key: "kpi_pieces", value: "500+", section: "about" },
   { key: "kpi_community", value: "12K+", section: "about" },
   { key: "kpi_rating", value: "4.9★", section: "about" },
-  { key: "kpi_street_ready", value: "100%", section: "about" },
   { key: "kpi_founded", value: "2024", section: "about" },
-  { key: "kpi_boroughs", value: "5", section: "about" },
   { key: "hero_headline_1", value: "STREETS", section: "hero" },
   { key: "hero_headline_2", value: "OF NYC", section: "hero" },
   { key: "hero_sub", value: "Born in New York City. Built from concrete and culture.", section: "hero" },
@@ -115,9 +113,7 @@ export default function AdminAbout() {
               <Field label="Pieces Dropped" value={settings.kpi_pieces} onChange={v => set("kpi_pieces", v)} />
               <Field label="Community Size" value={settings.kpi_community} onChange={v => set("kpi_community", v)} />
               <Field label="Avg. Rating" value={settings.kpi_rating} onChange={v => set("kpi_rating", v)} />
-              <Field label="Street Ready %" value={settings.kpi_street_ready} onChange={v => set("kpi_street_ready", v)} />
               <Field label="Founded Year" value={settings.kpi_founded} onChange={v => set("kpi_founded", v)} />
-              <Field label="Boroughs Count" value={settings.kpi_boroughs} onChange={v => set("kpi_boroughs", v)} />
             </div>
           </Section>
           <Section title="Global Settings">

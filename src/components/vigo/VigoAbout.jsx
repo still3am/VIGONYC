@@ -54,7 +54,7 @@ export default function VigoAbout() {
       {/* Stats */}
       <div style={{ background: G1, borderTop: `.5px solid ${G3}`, borderBottom: `.5px solid ${G3}` }}>
         <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)" }}>
-          {[[settings.kpi_founded || "2024","Founded"],[settings.kpi_pieces,"Pieces Dropped"],[settings.kpi_community,"Community"],[settings.kpi_boroughs || "5","Boroughs"]].map(([n,l],i,arr) => (
+          {[[settings.kpi_founded || "2024","Founded"],[settings.kpi_pieces,"Pieces Dropped"],[settings.kpi_community,"Community"],[settings.kpi_rating,"Avg Rating"]].map(([n,l],i,arr) => (
             <div key={l} style={{ textAlign: "center", padding: "40px 16px", borderRight: i < arr.length-1 ? `.5px solid ${G3}` : "none" }}>
               <div style={{ fontSize: 40, fontWeight: 900, color: S }}>{n}</div>
               <div style={{ fontSize: 9, letterSpacing: 3, color: SD, textTransform: "uppercase", marginTop: 8 }}>{l}</div>
