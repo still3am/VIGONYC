@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import SelectDrawer from "./SelectDrawer";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -153,16 +154,15 @@ export default function VigoCheckout() {
           {step === 1 && (
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               {savedAddresses.length > 0 && (
-                <div>
-                  <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Use a Saved Address</div>
-                  <select onChange={e => {
-                    const sel = savedAddresses[parseInt(e.target.value)];
+                <SelectDrawer 
+                  label="Use a Saved Address"
+                  value=""
+                  options={[{ value: "", label: "Select a saved address" }, ...savedAddresses.map((a, i) => ({ value: String(i), label: `${a.label}: ${a.street}, ${a.city}` }))]}
+                  onChange={(v) => {
+                    const sel = savedAddresses[parseInt(v)];
                     if (sel) setContact(prev => ({ ...prev, address: sel.street, city: sel.city, state: sel.state, zip: sel.zip }));
-                  }} style={{ width: "100%", background: "var(--vt-card)", border: `.5px solid ${G3}`, color: "var(--vt-text)", padding: "12px 16px", fontSize: 12, outline: "none", fontFamily: "inherit" }}>
-                    <option value="">— Select a saved address —</option>
-                    {savedAddresses.map((a, i) => <option key={a.id} value={i}>{a.label}: {a.street}, {a.city}</option>)}
-                  </select>
-                </div>
+                  }}
+                />
               )}
               <div className="vigo-2col-sm" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                 <Field label="First Name" value={contact.firstName} onChange={v => setField("firstName", v)} />

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import SelectDrawer from "./SelectDrawer";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -54,13 +55,13 @@ export default function VigoReturns() {
             <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Email Address</div>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Order confirmation email" style={{ width: "100%", background: "var(--vt-card)", border: `.5px solid ${G3}`, color: "var(--vt-text)", padding: "12px 16px", fontSize: 12, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
           </div>
-          <div>
-            <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Reason *</div>
-            <select required value={reason} onChange={e => setReason(e.target.value)} style={{ width: "100%", background: "var(--vt-card)", border: `.5px solid ${G3}`, color: reason ? "var(--vt-text)" : SD, padding: "12px 16px", fontSize: 12, outline: "none", fontFamily: "inherit" }}>
-              <option value="">Select a reason...</option>
-              {REASONS.map(r => <option key={r} value={r}>{r}</option>)}
-            </select>
-          </div>
+          <SelectDrawer 
+           label="Reason"
+           value={reason}
+           options={REASONS.map(r => ({ value: r, label: r }))}
+           onChange={setReason}
+           required
+          />
           <div>
             <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Additional Details</div>
             <textarea value={message} onChange={e => setMessage(e.target.value)} rows={4} placeholder="Describe the issue..." style={{ width: "100%", background: "var(--vt-card)", border: `.5px solid ${G3}`, color: "var(--vt-text)", padding: "12px 16px", fontSize: 12, outline: "none", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }} />

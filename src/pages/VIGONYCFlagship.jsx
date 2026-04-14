@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import VigoNav from "../components/vigo/VigoNav";
 import VigoCartDrawer from "../components/vigo/VigoCartDrawer";
@@ -63,6 +64,10 @@ export default function VIGONYCFlagship() {
     try {
       const user = await base44.auth.me();
       if (user) {
+        // Optimistic update
+        setCartCount(prev => prev + 1);
+        setCartOpen(true);
+
         const productId = item.productId || item.id;
         const existing = await base44.entities.CartItem.filter({ created_by: user.email, productId }, '-created_date', 10);
         const match = existing.find(i => i.size === item.size && i.color === item.color);
@@ -81,19 +86,27 @@ export default function VIGONYCFlagship() {
         }
         await refreshCartCount();
       }
-    } catch (err) {}
-    setCartOpen(true);
+    } catch (err) {
+      setCartCount(prev => Math.max(0, prev - 1));
+    }
   };
 
   const toggleWishlist = async (id, productData) => {
     if (wishlist.includes(id)) {
+      // Optimistic removal
+      setWishlist(prev => prev.filter(x => x !== id));
       const record = wishlistItems.find(i => i.productId === id);
       if (record) {
-        await base44.entities.WishlistItem.delete(record.id).catch(() => {});
-        setWishlistItems(prev => prev.filter(i => i.productId !== id));
+        try {
+          await base44.entities.WishlistItem.delete(record.id);
+          setWishlistItems(prev => prev.filter(i => i.productId !== id));
+        } catch {
+          setWishlist(prev => [...prev, id]);
+        }
       }
-      setWishlist(prev => prev.filter(x => x !== id));
     } else {
+      // Optimistic addition
+      setWishlist(prev => [...prev, id]);
       try {
         const created = await base44.entities.WishlistItem.create({
           productId: id,
@@ -102,8 +115,9 @@ export default function VIGONYCFlagship() {
           price: productData?.price || 0,
         });
         setWishlistItems(prev => [...prev, created]);
-      } catch (e) {}
-      setWishlist(prev => [...prev, id]);
+      } catch (e) {
+        setWishlist(prev => prev.filter(x => x !== id));
+      }
     }
   };
 
@@ -119,7 +133,11 @@ export default function VIGONYCFlagship() {
       <SizeGuideModal open={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} />
       <VigoCartDrawer open={cartOpen} onClose={handleCartClose} onCheckout={() => { navigate("/checkout"); handleCartClose(); }} />
       <VigoNav cartCount={cartCount} onCartOpen={() => setCartOpen(true)} logo={LOGO} />
-      <Outlet key={location.pathname} context={ctx} />
+      <AnimatePresence mode="wait">
+        <motion.div key={location.pathname} initial={{ opacity: 0, x: 100 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -100 }} transition={{ duration: 0.3 }}>
+          <Outlet context={ctx} />
+        </motion.div>
+      </AnimatePresence>
       <VigoFooter logo={LOGO} />
       <VigoBottomNav cartCount={cartCount} onCartOpen={() => setCartOpen(true)} />
       {showBackToTop && (
