@@ -156,8 +156,8 @@ export default function VigoProduct() {
               {images.length > 1 && (
                 <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
                   {images.map((img, i) => (
-                    <button key={i} onClick={() => setActiveThumb(i)} style={{ flexShrink: 0, width: 60, height: 60, background: G2, border: `.5px solid ${activeThumb === i ? S : G3}`, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .2s" }}>
-                      <img src={img} alt="" style={{ width: 48, height: 48, objectFit: "contain" }} />
+                    <button key={i} onClick={() => setActiveThumb(i)} style={{ flexShrink: 0, width: 60, height: 60, background: G2, border: `.5px solid ${activeThumb === i ? S : G3}`, cursor: "pointer", overflow: "hidden", transition: "all .2s", padding: 0 }}>
+                      <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     </button>
                   ))}
                 </div>
