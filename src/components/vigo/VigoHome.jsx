@@ -110,8 +110,8 @@ export default function VigoHome() {
       onMouseEnter={(e) => e.currentTarget.style.borderColor = S}
       onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--vt-border)"} className="my-3 py-3">
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 1.5s infinite" }} />
-          <span style={{ fontSize: 9, letterSpacing: 4, color: SD, textTransform: "uppercase" }}>{nextDrop ? `${nextDrop.name} — ${nextDrop.series}` : "Drop 02 — Mirror Series"}</span>
+        {settings.banner_dot !== "off" && <div style={{ width: 6, height: 6, borderRadius: "50%", background: settings.banner_dot === "red" ? "#e03" : "#0c6", animation: "vigo-pulse 1.5s infinite" }} />}
+        <span style={{ fontSize: 9, letterSpacing: 4, color: SD, textTransform: "uppercase" }}>{nextDrop ? `${nextDrop.name} — ${nextDrop.series}` : "Drop 02 — Mirror Series"}</span>
         </div>
         {nextDrop && <MiniCountdown target={new Date(nextDrop.date + (nextDrop.time ? ` ${nextDrop.time}` : ""))} />}
         <span style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase" }}>Get Notified →</span>
@@ -121,7 +121,7 @@ export default function VigoHome() {
       <div className="vigo-hero-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "88vh", borderBottom: `.5px solid ${G3}`, opacity: heroLoaded ? 1 : 0, transform: heroLoaded ? "none" : "translateY(12px)", transition: "opacity .5s, transform .5s" }}>
         <div style={{ padding: "72px 48px 72px 32px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
           <div className="vigo-hero-badge" style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 28, background: "rgba(192,192,192,.06)", border: `.5px solid rgba(192,192,192,.15)`, padding: "8px 16px", alignSelf: "center" }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 2s infinite" }} />
+            {settings.banner_dot !== "off" && <div style={{ width: 6, height: 6, borderRadius: "50%", background: settings.banner_dot === "red" ? "#e03" : "#0c6", animation: "vigo-pulse 2s infinite" }} />}
             <span style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase" }}>{settings.banner_text}</span>
           </div>
           <h1 style={{ fontSize: "clamp(56px,7vw,104px)", fontWeight: 900, letterSpacing: -4, lineHeight: .86, marginBottom: 28 }} className="text-center">
