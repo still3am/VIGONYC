@@ -7,7 +7,7 @@ const G2 = "#161616";
 const G3 = "#222222";
 const SD = "#666666";
 
-const EMPTY = { name: "", price: "", cat: "", collection: "", tag: "", sizes: [], colors: [], featured: false, images: [], videos: [], description: "", stock: 0, inStock: true };
+const EMPTY = { name: "", price: "", cat: "", collection: "", tag: "", sizes: [], colors: [], featured: false, images: [], videos: [], description: "", sku: "", stock: 0, inStock: true };
 const CATS = ["Tops", "Bottoms", "Outerwear", "Accessories", "Footwear"];
 const TAGS = ["new", "drop", "ltd", "hot"];
 const ALL_SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
@@ -93,9 +93,12 @@ function ProductModal({ product, onSave, onClose }) {
                 <SelectField label="Category *" value={form.cat} options={CATS} onChange={v => set("cat", v)} />
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <Field label="Collection" value={form.collection} onChange={v => set("collection", v)} />
-                <SelectField label="Tag" value={form.tag} options={TAGS} onChange={v => set("tag", v)} />
-              </div>
+                 <Field label="Collection" value={form.collection} onChange={v => set("collection", v)} />
+                 <Field label="SKU" value={form.sku} onChange={v => set("sku", v)} />
+               </div>
+               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                 <SelectField label="Tag" value={form.tag} options={TAGS} onChange={v => set("tag", v)} />
+               </div>
               <div>
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 6 }}>Description</div>
                 <textarea value={form.description ?? ""} onChange={e => set("description", e.target.value)} rows={3}

@@ -52,6 +52,14 @@ export default function AdminDashboard({ onNavigate }) {
   const delivered = orders.filter(o => o.status === "Delivered").length;
   const avgOrder = orders.length ? (totalRevenue / orders.length).toFixed(2) : 0;
   const lowStock = products.filter(p => typeof p.stock === "number" && p.stock <= 5 && p.inStock !== false);
+  const customerRevenue = (() => {
+    const map = {};
+    orders.forEach(o => {
+      const email = o.userEmail || o.created_by;
+      if (email) map[email] = (map[email] || 0) + (o.total || 0);
+    });
+    return Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  })();
 
   // Build chart data from orders grouped by day
   const chartData = (() => {
@@ -118,10 +126,25 @@ export default function AdminDashboard({ onNavigate }) {
         )}
       </div>
 
+      {/* Top Customers */}
+       {customerRevenue.length > 0 && (
+         <div style={{ background: G1, border: `0.5px solid ${G3}`, borderTop: `2px solid ${S}` }}>
+           <div style={{ padding: "16px 20px", borderBottom: `0.5px solid ${G3}`, fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase" }}>Top Customers</div>
+           {customerRevenue.map(([email, revenue], i) => (
+             <div key={email} style={{ padding: "12px 20px", borderBottom: `0.5px solid ${G3}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+               <div>
+                 <div style={{ fontSize: 11, color: "#fff", marginBottom: 2 }}>{i + 1}. {email}</div>
+               </div>
+               <span style={{ fontSize: 13, fontWeight: 900, color: S }}>${revenue.toFixed(2)}</span>
+             </div>
+           ))}
+         </div>
+       )}
+
       {/* Orders + Products */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="admin-2col">
-        {/* Recent Orders */}
-        <div style={{ background: G1, border: `0.5px solid ${G3}` }}>
+       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="admin-2col">
+         {/* Recent Orders */}
+         <div style={{ background: G1, border: `0.5px solid ${G3}` }}>
           <div style={{ padding: "16px 20px", borderBottom: `0.5px solid ${G3}`, fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase" }}>Recent Orders</div>
           {recentOrders.length === 0 ? (
             <div style={{ padding: 32, textAlign: "center", color: SD, fontSize: 11 }}>No orders yet</div>

@@ -25,6 +25,7 @@ export default function AdminCustomers() {
   }, []);
 
   const orderCountFor = (email) => orders.filter(o => o.created_by === email || o.userEmail === email).length;
+  const revenueFor = (email) => orders.filter(o => o.created_by === email || o.userEmail === email).reduce((s, o) => s + (o.total || 0), 0);
 
   const filtered = users.filter(u => !search ||
     u.email?.toLowerCase().includes(search.toLowerCase()) ||
@@ -32,6 +33,7 @@ export default function AdminCustomers() {
   );
 
   const withOrders = users.filter(u => orderCountFor(u.email) > 0).length;
+  const totalRevenue = users.reduce((s, u) => s + revenueFor(u.email), 0);
 
   return (
     <div>
@@ -41,30 +43,31 @@ export default function AdminCustomers() {
       </div>
 
       <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
-        {[["Total Customers", users.length], ["With Orders", withOrders]].map(([l, v]) => (
-          <div key={l} style={{ background: G1, border: `0.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "14px 20px", flex: 1, minWidth: 120 }}>
-            <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>{l}</div>
-            <div style={{ fontSize: 22, fontWeight: 900, color: S }}>{v}</div>
-          </div>
-        ))}
-      </div>
+         {[["Total Customers", users.length], ["With Orders", withOrders], ["Total Revenue", `$${totalRevenue.toFixed(2)}`]].map(([l, v]) => (
+           <div key={l} style={{ background: G1, border: `0.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "14px 20px", flex: 1, minWidth: 120 }}>
+             <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>{l}</div>
+             <div style={{ fontSize: 22, fontWeight: 900, color: S }}>{v}</div>
+           </div>
+         ))}
+       </div>
 
       <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by email or name..." style={{ background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 14px", fontSize: 12, outline: "none", fontFamily: "inherit", width: "100%", marginBottom: 16, boxSizing: "border-box" }} />
 
       {/* Desktop table */}
       <div className="admin-cust-desktop" style={{ background: G1, border: `0.5px solid ${G3}` }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 70px 110px 80px", padding: "10px 20px", borderBottom: `0.5px solid ${G3}`, fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>
-          <span>Name</span><span>Email</span><span>Orders</span><span>Joined</span><span></span>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 70px 100px 100px 80px", padding: "10px 20px", borderBottom: `0.5px solid ${G3}`, fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>
+          <span>Name</span><span>Email</span><span>Orders</span><span>Revenue</span><span>Joined</span><span></span>
         </div>
         {loading && <div style={{ padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>Loading customers...</div>}
         {!loading && filtered.length === 0 && <div style={{ padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>No customers found</div>}
         {!loading && filtered.map(u => (
-          <div key={u.id} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 70px 110px 80px", padding: "12px 20px", borderBottom: `0.5px solid ${G3}`, alignItems: "center" }}
+          <div key={u.id} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 70px 100px 100px 80px", padding: "12px 20px", borderBottom: `0.5px solid ${G3}`, alignItems: "center" }}
             onMouseEnter={e => e.currentTarget.style.background = G2}
             onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
             <div style={{ fontSize: 12, color: "#fff" }}>{u.full_name || "—"}</div>
             <div style={{ fontSize: 11, color: SD, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{u.email}</div>
             <div style={{ fontSize: 12, fontWeight: 700, color: orderCountFor(u.email) > 0 ? S : SD }}>{orderCountFor(u.email)}</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: revenueFor(u.email) > 0 ? S : SD }}>${revenueFor(u.email).toFixed(2)}</div>
             <div style={{ fontSize: 9, color: SD }}>{u.created_date ? new Date(u.created_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}</div>
             <a href={`mailto:${u.email}`} style={{ background:"none", border:`0.5px solid ${G3}`, color:SD, padding:"4px 10px", fontSize:8, letterSpacing:1, textTransform:"uppercase", cursor:"pointer", textDecoration:"none", fontFamily:"inherit" }}>Email</a>
           </div>
