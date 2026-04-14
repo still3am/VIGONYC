@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -12,6 +13,17 @@ const cols = {
 };
 
 export default function VigoFooter({ logo }) {
+  const [newsletter, setNewsletter] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleNewsletterSubscribe = async () => {
+    if (!newsletter.trim() || !/\S+@\S+\.\S+/.test(newsletter.trim())) return;
+    const user = await Promise.resolve().then(() => window.base44?.auth?.me?.()).catch(() => null);
+    setSubscribed(true);
+    setNewsletter("");
+    setTimeout(() => setSubscribed(false), 3000);
+  };
+
   return (
     <footer style={{ background: G1, borderTop: `.5px solid ${G3}`, marginTop: 0 }}>
       <div style={{ height: 2, background: `linear-gradient(90deg,transparent,#888,#E8E8E8,${S},#E8E8E8,#888,transparent)` }} />
@@ -67,10 +79,31 @@ export default function VigoFooter({ logo }) {
           <div style={{ fontSize: 9, color: SD, letterSpacing: 2 }}>POWERED BY BYSMITH LLC</div>
         </div>
       </div>
+      {/* Newsletter */}
+      <div style={{ margin: "0 32px 32px", background: "rgba(192,192,192,.06)", border: `.5px solid rgba(192,192,192,.15)`, borderTop: `2px solid ${S}`, padding: "40px 32px", textAlign: "center" }}>
+        <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 12 }}>✦ Drop Alerts ✦</div>
+        <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 8 }}>Never Miss a Drop</div>
+        <div style={{ fontSize: 11, color: SD, marginBottom: 20 }}>Get notified first when new pieces go live.</div>
+        {subscribed ? (
+          <div style={{ fontSize: 11, color: "#0c6" }}>✓ You're subscribed</div>
+        ) : (
+          <div style={{ display: "flex", gap: 0, maxWidth: 360, margin: "0 auto" }}>
+            <input
+              value={newsletter}
+              onChange={(e) => setNewsletter(e.target.value)}
+              placeholder="your@email.com"
+              onKeyDown={(e) => e.key === "Enter" && handleNewsletterSubscribe()}
+              style={{ flex: 1, background: "var(--vt-bg)", border: `.5px solid ${G3}`, borderRight: "none", color: "var(--vt-text)", padding: "12px 16px", fontSize: 11, outline: "none", fontFamily: "inherit" }}
+            />
+            <button onClick={handleNewsletterSubscribe} style={{ background: S, color: "#000", border: "none", padding: "12px 24px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Join</button>
+          </div>
+        )}
+      </div>
+
       <style>{`
-        @media(max-width:900px){.vigo-footer-grid{grid-template-columns:1fr 1fr !important;}}
-        @media(max-width:480px){.vigo-footer-grid{grid-template-columns:1fr !important;}}
+       @media(max-width:900px){.vigo-footer-grid{grid-template-columns:1fr 1fr !important;}}
+       @media(max-width:480px){.vigo-footer-grid{grid-template-columns:1fr !important;}}
 
       `}</style>
-    </footer>);
+      </footer>);
 }

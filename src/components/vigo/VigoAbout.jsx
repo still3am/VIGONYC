@@ -77,11 +77,14 @@ export default function VigoAbout() {
         </div>
       </div>
 
-      <div style={{ textAlign: "center", padding: "0 32px 64px" }}>
-        <button onClick={() => navigate("/shop")} style={{ background: S, color: "#000", border: "none", padding: "18px 56px", fontSize: 10, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
-          Shop the Collection
-        </button>
-      </div>
+      <div style={{ textAlign: "center", padding: "0 32px 64px", display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+         <button onClick={() => navigate("/shop")} style={{ background: S, color: "#000", border: "none", padding: "14px 32px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
+           Shop Now
+         </button>
+         <button onClick={() => navigate("/contact")} style={{ background: "none", border: `.5px solid ${S}`, color: S, padding: "14px 32px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+           Get in Touch →
+         </button>
+       </div>
 
       <style>{`@media(max-width:900px){.vigo-2col,.vigo-3col,.vigo-4col{grid-template-columns:1fr !important;}}`}</style>
     </div>

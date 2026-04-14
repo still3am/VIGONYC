@@ -161,7 +161,7 @@ export default function VigoHome() {
           <div style={{ position: "absolute", bottom: 72, left: 24, width: 32, height: 32, borderBottom: `2px solid ${S}`, borderLeft: `2px solid ${S}`, zIndex: 2 }} />
           <div style={{ position: "absolute", bottom: 72, right: 24, width: 32, height: 32, borderBottom: `2px solid ${S}`, borderRight: `2px solid ${S}`, zIndex: 2 }} />
           <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at center, rgba(192,192,192,.06) 0%, transparent 65%)`, pointerEvents: "none" }} />
-          <img src={heroProduct?.images?.[0] || productImg} alt={heroProduct?.name || "VIGONYC SS25"} style={{ width: "68%", maxWidth: 380, objectFit: "contain", filter: "drop-shadow(0 0 80px rgba(192,192,192,.2))", zIndex: 1 }} />
+          <img src={heroProduct?.images?.[0] || productImg} alt={heroProduct?.name || "VIGONYC SS25"} loading="lazy" style={{ width: "68%", maxWidth: 380, objectFit: "contain", filter: "drop-shadow(0 0 80px rgba(192,192,192,.2))", zIndex: 1 }} />
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "rgba(0,0,0,.85)", borderTop: `.5px solid rgba(255,255,255,.1)`, padding: "14px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 2 }}>
             <div>
               <div style={{ fontSize: 11, color: "#fff" }}>{heroProduct?.name || settings.hero_product_name || "Chrome V Tee — SS25"}</div>
@@ -184,7 +184,7 @@ export default function VigoHome() {
               <div key={i} style={{ background: "var(--vt-card)", border: ".5px solid var(--vt-border)", aspectRatio: "3/4", animation: "vigo-pulse 1.5s infinite" }} />
             ))
           ) : products.length === 0 && <div style={{ gridColumn: "1/-1", padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>No featured products yet — add some in the admin panel.</div>}
-          {!productsLoading &&
+          {!productsLoading && products.length > 0 &&
           products.map((p) =>
           <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
           wishlisted={wishlist.includes(p.id)}
