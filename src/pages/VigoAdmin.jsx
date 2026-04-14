@@ -145,7 +145,6 @@ export default function VigoAdmin() {
             <nav style={{ flex: 1, padding: "12px 0" }}>
               {NAV.map(n => (
                 <button key={n.id} onClick={() => { setSection(n.id); setSidebarOpen(false); }} style={{ width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", background: section === n.id ? "rgba(192,192,192,.06)" : "none", border: "none", borderLeft: `2px solid ${section === n.id ? S : "transparent"}`, color: section === n.id ? "#fff" : SD, cursor: "pointer", fontFamily: "inherit", fontSize: 10, letterSpacing: 2, textTransform: "uppercase", textAlign: "left" }}>
-                  <span style={{ fontSize: 12, color: section === n.id ? S : SD }}>{n.icon}</span>
                   {n.label}
                 </button>
               ))}
