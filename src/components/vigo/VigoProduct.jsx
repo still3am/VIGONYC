@@ -151,7 +151,7 @@ export default function VigoProduct() {
             {/* Images */}
             <div style={{ display: "flex", flexDirection: "column", gap: "clamp(12px,2vw,16px)" }}>
               <div style={{ background: G2, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, aspectRatio: "3/4", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
-                <img src={images[activeThumb] || productImg} alt={product.name} style={{ width: "75%", objectFit: "contain", filter: "drop-shadow(0 0 40px rgba(192,192,192,.1))" }} />
+                <img src={images[activeThumb] || productImg} alt={product.name} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
               </div>
               {images.length > 1 && (
                 <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
