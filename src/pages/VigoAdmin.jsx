@@ -9,6 +9,7 @@ import AdminAbout from "@/components/admin/AdminAbout";
 import AdminOrders from "@/components/admin/AdminOrders";
 import AdminCustomers from "@/components/admin/AdminCustomers";
 import AdminReturns from "@/components/admin/AdminReturns";
+import AdminPromoCodes from "@/components/admin/AdminPromoCodes";
 
 const S = "#C0C0C0";
 const G1 = "#0d0d0d";
@@ -24,6 +25,7 @@ const NAV = [
   { id: "shop", label: "Shop", icon: "◻" },
   { id: "drops", label: "Drops", icon: "◆" },
   { id: "lookbook", label: "Lookbook", icon: "◉" },
+  { id: "promos", label: "Promos", icon: "%" },
   { id: "about", label: "Content", icon: "✦" },
 ];
 
@@ -35,6 +37,7 @@ const SECTION_MAP = {
   shop: AdminShop,
   drops: AdminDrops,
   lookbook: AdminLookbook,
+  promos: AdminPromoCodes,
   about: AdminAbout,
 };
 

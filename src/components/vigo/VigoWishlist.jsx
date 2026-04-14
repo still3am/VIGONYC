@@ -38,9 +38,9 @@ export default function VigoWishlist() {
   const totalValue = savedItems.reduce((s, p) => s + (p.price || 0), 0);
 
   const handleAdd = (p) => {
-    addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: selectedSizes[p.id] || "M", color: "Black", productImage: p.images?.[0] || productImg, price: p.price });
-    setAddedIds(prev => [...prev, p.id]);
-    setTimeout(() => setAddedIds(prev => prev.filter(id => id !== p.id)), 2000);
+    addToCart({ id: p.productId, productId: p.productId, name: p.productName, productName: p.productName, size: selectedSizes[p.productId] || "M", color: "Black", productImage: p.productImage || productImg, price: p.price });
+    setAddedIds(prev => [...prev, p.productId]);
+    setTimeout(() => setAddedIds(prev => prev.filter(id => id !== p.productId)), 2000);
   };
 
   const handleAddAll = () => {
@@ -107,7 +107,8 @@ export default function VigoWishlist() {
         ) : (
           <div className="vigo-wish-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "clamp(10px,3vw,20px)" }}>
             {savedItems.map(p => {
-              const isAdded = addedIds.includes(p.id);
+              const pid = p.productId;
+              const isAdded = addedIds.includes(pid);
               const isHovered = hoveredId === p.id;
               return (
                 <div
@@ -118,49 +119,25 @@ export default function VigoWishlist() {
                 >
                   <div
                     style={{ position: "relative", paddingBottom: "90%", background: G2, cursor: "pointer", overflow: "hidden", flexShrink: 0 }}
-                    onClick={() => navigate(`/product/${p.id}`)}
+                    onClick={() => navigate(`/product/${pid}`)}
                   >
                     <img
-                      src={p.images?.[0] || productImg}
-                      alt={p.name}
+                      src={p.productImage || productImg}
+                      alt={p.productName}
                       style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", padding: 16, transition: "transform .5s", transform: isHovered ? "scale(1.06)" : "scale(1)" }}
                     />
 
-                    {p.tag && (
-                      <div style={{ position: "absolute", top: 10, left: 10, padding: "3px 9px", fontSize: 7, fontWeight: 900, letterSpacing: 2, textTransform: "uppercase", ...TAG_STYLES[p.tag] }}>
-                        {TAG_LABELS[p.tag]}
-                      </div>
-                    )}
-
                     <button
-                      onClick={e => { e.stopPropagation(); toggleWishlist(p.id); }}
+                      onClick={e => { e.stopPropagation(); toggleWishlist(pid); }}
                       title="Remove"
-                      style={{ position: "absolute", top: 10, right: 10, background: "rgba(0,0,0,.55)", border: `.5px solid rgba(192,192,192,.3)`, color: S, fontSize: 16, width: 36, height: 36, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(6px)", transition: "background .2s" }}
+                      style={{ position: "absolute", top: 10, right: 10, background: "rgba(0,0,0,.55)", border: `.5px solid rgba(192,192,192,.3)`, color: S, fontSize: 16, width: 36, height: 36, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(6px)" }}
                     >♥</button>
-
-                    <div style={{ position: "absolute", bottom: 10, left: 10, fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase", background: "rgba(0,0,0,.5)", padding: "3px 8px", backdropFilter: "blur(4px)" }}>
-                      {p.collection}
-                    </div>
                   </div>
 
                   <div style={{ padding: "clamp(10px,2vw,16px)", display: "flex", flexDirection: "column", flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>{p.name}</div>
-                    <div style={{ fontSize: 8, color: SD, textTransform: "uppercase", letterSpacing: 2, marginBottom: 14 }}>{p.cat}</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>{p.productName}</div>
 
-                    <div style={{ marginBottom: 14 }}>
-                      <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 6 }}>Size</div>
-                      <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-                        {p.sizes && p.sizes.map(sz => (
-                          <button
-                            key={sz}
-                            onClick={() => setSelectedSizes(prev => ({ ...prev, [p.id]: sz }))}
-                            style={{ padding: "4px 8px", border: `.5px solid ${selectedSizes[p.id] === sz ? S : G3}`, background: selectedSizes[p.id] === sz ? S : "transparent", color: selectedSizes[p.id] === sz ? "#000" : SD, fontSize: 8, cursor: "pointer", fontFamily: "inherit", transition: "all .15s" }}
-                          >{sz}</button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto", paddingTop: 12 }}>
                       <span style={{ fontSize: 20, fontWeight: 900, color: S }}>${p.price}</span>
                       <button
                         onClick={() => handleAdd(p)}
