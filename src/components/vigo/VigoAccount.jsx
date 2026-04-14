@@ -336,19 +336,19 @@ export default function VigoAccount() {
       </div>
 
       {/* Tabs */}
-      <div style={{ borderBottom: `.5px solid ${G3}`, background: G1, position: "sticky", top: 60, zIndex: 10, overflowX: "auto" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 clamp(16px,4vw,24px)", display: "flex", justifyContent: "center" }}>
-          {TABS.map((t) =>
-          <button key={t.id} onClick={() => setTab(t.id)} style={{
-            padding: "14px clamp(12px,2.5vw,20px)", background: "none", border: "none",
-            borderBottom: tab === t.id ? `2px solid ${S}` : "2px solid transparent",
-            color: tab === t.id ? "var(--vt-text)" : SD, fontSize: 9, letterSpacing: 2,
-            textTransform: "uppercase", cursor: "pointer", fontWeight: tab === t.id ? 700 : 400,
-            fontFamily: "inherit", whiteSpace: "nowrap", transition: "color .2s"
-          }}>{t.label}</button>
-          )}
-        </div>
-      </div>
+       <div style={{ borderBottom: `.5px solid ${G3}`, background: G1, position: "sticky", top: 60, zIndex: 10, overflowX: "auto" }}>
+         <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 clamp(12px,3vw,24px)", display: "flex", justifyContent: "center", gap: "clamp(4px, 2vw, 12px)" }}>
+           {TABS.map((t) =>
+           <button key={t.id} onClick={() => setTab(t.id)} style={{
+             padding: "12px clamp(8px,2vw,16px)", background: "none", border: "none",
+             borderBottom: tab === t.id ? `2px solid ${S}` : "2px solid transparent",
+             color: tab === t.id ? "var(--vt-text)" : SD, fontSize: "clamp(7px, 2vw, 9px)", letterSpacing: 1,
+             textTransform: "uppercase", cursor: "pointer", fontWeight: tab === t.id ? 700 : 400,
+             fontFamily: "inherit", whiteSpace: "nowrap", transition: "color .2s"
+           }}>{t.label}</button>
+           )}
+         </div>
+       </div>
 
       {/* Content */}
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "clamp(24px,4vw,40px) clamp(16px,4vw,24px)", display: "flex", flexDirection: "column", alignItems: "center" }}>
