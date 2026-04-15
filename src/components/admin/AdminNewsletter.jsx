@@ -117,30 +117,32 @@ export default function AdminNewsletter() {
 
       {/* Table */}
       {!loading && filtered.length > 0 && (
-        <div style={{ background: G1, border: `0.5px solid ${G3}` }}>
-          <div style={{ display: "grid", gridTemplateColumns: "2fr 100px 100px 120px 80px", padding: "10px 16px", borderBottom: `0.5px solid ${G3}`, fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>
-            <span>Email</span><span>Source</span><span>Status</span><span>Joined</span><span></span>
+        <div style={{ background: G1, border: `0.5px solid ${G3}`, overflowX: "auto" }}>
+          <div style={{ minWidth: 500 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 80px 80px 100px 70px", padding: "10px 16px", borderBottom: `0.5px solid ${G3}`, fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>
+              <span>Email</span><span>Source</span><span>Status</span><span>Joined</span><span></span>
+            </div>
+            {filtered.map(sub => {
+              const isActive = sub.active !== false;
+              return (
+                <div key={sub.id} style={{ display: "grid", gridTemplateColumns: "1fr 80px 80px 100px 70px", padding: "12px 16px", borderBottom: `0.5px solid ${G3}`, alignItems: "center" }}
+                  onMouseEnter={e => e.currentTarget.style.background = G2}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                  <div style={{ fontSize: 11, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sub.email}</div>
+                  <div style={{ fontSize: 9, color: SD, textTransform: "uppercase", letterSpacing: 1 }}>{sub.source || "—"}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: isActive ? "#0c6" : G3, flexShrink: 0 }} />
+                    <span style={{ fontSize: 8, color: isActive ? "#0c6" : SD, letterSpacing: 1, textTransform: "uppercase" }}>{isActive ? "Active" : "Off"}</span>
+                  </div>
+                  <div style={{ fontSize: 9, color: SD }}>{sub.created_date ? new Date(sub.created_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}</div>
+                  <div style={{ display: "flex", gap: 4 }}>
+                    {!sub._fromUser && <button onClick={() => handleToggle(sub)} style={{ background: "none", border: `0.5px solid ${G3}`, color: SD, padding: "4px 6px", fontSize: 8, cursor: "pointer", fontFamily: "inherit" }}>{isActive ? "Off" : "On"}</button>}
+                    <button onClick={() => handleDelete(sub)} style={{ background: "none", border: `0.5px solid #e03`, color: "#e03", padding: "4px 6px", fontSize: 8, cursor: "pointer", fontFamily: "inherit" }}>Del</button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          {filtered.map(sub => {
-            const isActive = sub.active !== false;
-            return (
-              <div key={sub.id} style={{ display: "grid", gridTemplateColumns: "2fr 100px 100px 120px 80px", padding: "12px 16px", borderBottom: `0.5px solid ${G3}`, alignItems: "center" }}
-                onMouseEnter={e => e.currentTarget.style.background = G2}
-                onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-                <div style={{ fontSize: 12, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sub.email}</div>
-                <div style={{ fontSize: 9, color: SD, textTransform: "uppercase", letterSpacing: 1 }}>{sub.source || "—"}</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: isActive ? "#0c6" : G3 }} />
-                  <span style={{ fontSize: 8, color: isActive ? "#0c6" : SD, letterSpacing: 1, textTransform: "uppercase" }}>{isActive ? "Active" : "Off"}</span>
-                </div>
-                <div style={{ fontSize: 9, color: SD }}>{sub.created_date ? new Date(sub.created_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}</div>
-                <div style={{ display: "flex", gap: 4 }}>
-                  {!sub._fromUser && <button onClick={() => handleToggle(sub)} style={{ background: "none", border: `0.5px solid ${G3}`, color: SD, padding: "4px 8px", fontSize: 8, cursor: "pointer", fontFamily: "inherit" }}>{isActive ? "Off" : "On"}</button>}
-                  <button onClick={() => handleDelete(sub)} style={{ background: "none", border: `0.5px solid #e03`, color: "#e03", padding: "4px 8px", fontSize: 8, cursor: "pointer", fontFamily: "inherit" }}>Del</button>
-                </div>
-              </div>
-            );
-          })}
         </div>
       )}
     </div>
