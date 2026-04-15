@@ -200,12 +200,9 @@ export default function VigoReferral() {
           </div>
         )}
 
-        {/* BRAND QR CODE */}
+        {/* ADVOCATE (REFER) */}
         {activeTab === "refer" && (
-          <>
-          {/* Split layout: referral on left, brand QR on right */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, alignItems: "start" }}>
-            <div>
+          <div>
             <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ Advocate</div>
             <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: -1, marginBottom: 8 }}>Refer & Earn</h2>
             <p style={{ fontSize: 12, color: SD, marginBottom: 32, maxWidth: 480 }}>
@@ -227,13 +224,11 @@ export default function VigoReferral() {
                 {loyalty?.referralCode && (
                   <div style={{ textAlign: "center", padding: "20px 0" }}>
                     <div style={{ fontSize: 9, color: SD, marginBottom: 12, letterSpacing: 2, textTransform: "uppercase" }}>Your Referral QR</div>
-                    <div style={{ display: "flex", justifyContent: "center" }}>
-                      <img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(referralLink)}&bgcolor=0a0a0a&color=C0C0C0&qzone=1`}
-                        alt="Referral QR"
-                        style={{ width: 160, height: 160, imageRendering: "pixelated", border: `0.5px solid ${G3}` }}
-                      />
-                    </div>
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(referralLink)}&bgcolor=0a0a0a&color=C0C0C0&qzone=1`}
+                      alt="Referral QR"
+                      style={{ width: 160, height: 160, imageRendering: "pixelated", border: `0.5px solid ${G3}` }}
+                    />
                     <div style={{ fontSize: 8, color: SD, marginTop: 10, letterSpacing: 2 }}>Code: {loyalty.referralCode}</div>
                   </div>
                 )}
@@ -259,40 +254,7 @@ export default function VigoReferral() {
                 </div>
               </div>
             </div>
-            </div>
-
-            {/* Brand QR Code Generator */}
-            <div>
-              <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ Vigonyc QR Code</div>
-              <h3 style={{ fontSize: 18, fontWeight: 900, letterSpacing: -1, marginBottom: 8 }}>Share VIGONYC</h3>
-              <p style={{ fontSize: 12, color: SD, marginBottom: 24, lineHeight: 1.7 }}>
-                Official VIGONYC QR code. Direct anyone scanning to the flagship store.
-              </p>
-              <div style={{ background: G2, border: `0.5px solid ${G3}`, padding: 24, textAlign: "center", marginBottom: 16 }}>
-                <div style={{ fontSize: 9, color: SD, marginBottom: 12, letterSpacing: 2, textTransform: "uppercase" }}>Platform QR Code</div>
-                <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
-                  <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(window.location.origin)}&bgcolor=0a0a0a&color=C0C0C0&qzone=1`}
-                    alt="VIGONYC QR"
-                    style={{ width: 180, height: 180, imageRendering: "pixelated", border: `0.5px solid ${G3}` }}
-                  />
-                </div>
-                <button onClick={() => {
-                  const url = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(window.location.origin)}&bgcolor=0a0a0a&color=C0C0C0&qzone=1`;
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = "vigonyc-qr-code.png";
-                  a.click();
-                }} style={{ background: S, color: "#000", border: "none", padding: "10px 20px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>
-                  Download QR Code
-                </button>
-              </div>
-              <div style={{ fontSize: 9, color: SD, letterSpacing: 1, lineHeight: 1.8 }}>
-                ✦ Post to social media<br />✦ Print on merch & materials<br />✦ Share in communities<br />✦ Scan directs to VIGONYC
-              </div>
-            </div>
           </div>
-          </>
         )}
 
         {/* ASCEND (TIERS) */}
@@ -345,7 +307,6 @@ export default function VigoReferral() {
           .ref-stat-grid { grid-template-columns: 1fr 1fr !important; }
           .ref-refer-grid { grid-template-columns: 1fr !important; }
           .ref-tier-grid { grid-template-columns: 1fr !important; }
-          [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>
