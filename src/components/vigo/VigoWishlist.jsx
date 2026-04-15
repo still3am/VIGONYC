@@ -145,7 +145,7 @@ export default function VigoWishlist() {
                   onMouseLeave={() => setHoveredId(null)}
                 >
                   <div
-                    style={{ position: "relative", paddingBottom: "90%", background: G2, cursor: "pointer", overflow: "hidden", flexShrink: 0 }}
+                    style={{ position: "relative", paddingBottom: "115%", background: "var(--vt-card)", cursor: "pointer", overflow: "hidden", flexShrink: 0 }}
                     onClick={() => navigate(`/product/${pid}`)}
                   >
                     <img
