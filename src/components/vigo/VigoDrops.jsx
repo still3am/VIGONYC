@@ -199,22 +199,7 @@ export default function VigoDrops() {
         </div>
       )}
 
-      {dropProducts.length > 0 && (
-        <div style={{ padding: "clamp(24px,4vw,40px) 20px", background: G1, borderTop: `.5px solid ${G3}` }}>
-          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-            <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 20 }}>✦ Drop Products</div>
-            <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
-              {dropProducts.map(p => (
-                <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
-                  wishlisted={wishlist.includes(p.id)}
-                  onWishlist={() => toggleWishlist(p.id, p)}
-                  onAdd={() => addToCart({ id: p.id, productId: p.id, productName: p.name, name: p.name, size: "M", color: p.colors?.[0] || "Black", price: p.price, productImage: p.images?.[0] || productImg })}
-                  onClick={() => navigate(`/product/${p.id}`)} />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+
 
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(28px,5vw,52px) 20px" }}>
         <div style={{ marginBottom: 28 }}>
