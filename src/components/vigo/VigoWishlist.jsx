@@ -161,7 +161,7 @@ export default function VigoWishlist() {
                     >♥</button>
                   </div>
 
-                  <div style={{ padding: "clamp(10px,2vw,16px)", display: "flex", flexDirection: "column", flex: 1 }}>
+                  <div style={{ padding: "14px 14px 0", display: "flex", flexDirection: "column", flex: 1 }}>
                     <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>{p.productName}</div>
 
                     <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: "auto", paddingTop: 12 }}>
