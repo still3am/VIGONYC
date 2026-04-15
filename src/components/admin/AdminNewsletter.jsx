@@ -89,27 +89,27 @@ export default function AdminNewsletter() {
       </div>
 
       {/* Stats */}
-      <div style={{ display: "flex", gap: 2, marginBottom: 20 }}>
+      <div style={{ display: "flex", gap: 2, marginBottom: 16 }}>
         {[[subscribers.length, "Total", S], [active, "Active", "#0c6"], [subscribers.length - active, "Inactive", SD]].map(([n, l, c]) => (
-          <div key={l} style={{ flex: 1, background: G1, border: `0.5px solid ${G3}`, padding: "12px 16px" }}>
-            <div style={{ fontSize: 22, fontWeight: 900, color: c }}>{n}</div>
+          <div key={l} style={{ flex: 1, background: G1, border: `0.5px solid ${G3}`, padding: "10px 12px" }}>
+            <div style={{ fontSize: 18, fontWeight: 900, color: c }}>{n}</div>
             <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 2 }}>{l}</div>
           </div>
         ))}
       </div>
 
       {/* Filters */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search email..." style={{ flex: 1, minWidth: 160, background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 14px", fontSize: 12, outline: "none", fontFamily: "inherit", boxSizing: "border-box" }} />
-        <select value={filterSource} onChange={e => setFilterSource(e.target.value)} style={{ background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 12px", fontSize: 11, outline: "none", fontFamily: "inherit" }}>
+      <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
+        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search email..." style={{ flex: 1, minWidth: 120, background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "8px 10px", fontSize: 11, outline: "none", fontFamily: "inherit", boxSizing: "border-box" }} />
+        <select value={filterSource} onChange={e => setFilterSource(e.target.value)} style={{ background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "8px 8px", fontSize: 10, outline: "none", fontFamily: "inherit" }}>
           {sources.map(s => <option key={s} value={s}>{s === "All" ? "All Sources" : s}</option>)}
         </select>
-        <select value={filterActive} onChange={e => setFilterActive(e.target.value)} style={{ background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 12px", fontSize: 11, outline: "none", fontFamily: "inherit" }}>
+        <select value={filterActive} onChange={e => setFilterActive(e.target.value)} style={{ background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "8px 8px", fontSize: 10, outline: "none", fontFamily: "inherit" }}>
           <option value="All">All Status</option>
           <option value="Active">Active</option>
           <option value="Inactive">Inactive</option>
         </select>
-        <div style={{ fontSize: 10, color: SD, alignSelf: "center" }}>{filtered.length} results</div>
+        <div style={{ fontSize: 9, color: SD, alignSelf: "center" }}>{filtered.length} results</div>
       </div>
 
       {loading && <div style={{ padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>Loading subscribers...</div>}
