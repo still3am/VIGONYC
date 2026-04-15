@@ -105,28 +105,24 @@ export default function VigoReferral() {
       <div style={{ position: "relative", overflow: "hidden", borderBottom: `0.5px solid ${G3}`, background: G1 }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(192,192,192,0.03) 1px, transparent 1px)", backgroundSize: "28px 28px", pointerEvents: "none" }} />
 
-        <div className="ref-hero-grid" style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(40px,7vw,80px) clamp(20px,4vw,40px)", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, alignItems: "center" }}>
-          <div>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(192,192,192,0.05)", border: "0.5px solid rgba(192,192,192,0.15)", padding: "6px 14px", marginBottom: 20 }}>
-              <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 1.5s infinite" }} />
-              <span style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase" }}>Inner Circle Active</span>
-            </div>
-            <h1 style={{ fontSize: "clamp(36px,6vw,72px)", fontWeight: 900, letterSpacing: -3, lineHeight: 0.9, marginBottom: 20 }}>
-              ACCESS:<br /><span style={{ background: "linear-gradient(135deg, #888, #C0C0C0, #E8E8E8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>THE EXCHANGE</span>
-            </h1>
-            <p style={{ fontSize: 13, color: SD, lineHeight: 1.9, marginBottom: 32, maxWidth: 380 }}>
-              A modular loyalty system for the inner circle. Earn, advocate, and ascend.
-            </p>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {["dashboard", "scan", "refer", "ascend"].map(tab => (
-                <button key={tab} onClick={() => setActiveTab(tab)} style={{ background: activeTab === tab ? S : "transparent", color: activeTab === tab ? "#000" : SD, border: `0.5px solid ${activeTab === tab ? S : G3}`, padding: "8px 18px", fontSize: 8, letterSpacing: 3, textTransform: "uppercase", fontWeight: activeTab === tab ? 900 : 400, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s" }}>
-                  {tab === "dashboard" ? "Overview" : tab === "scan" ? "Scan Gear" : tab === "refer" ? "Advocate" : "Ascend"}
-                </button>
-              ))}
-            </div>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(40px,7vw,80px) clamp(20px,4vw,40px)", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(192,192,192,0.05)", border: "0.5px solid rgba(192,192,192,0.15)", padding: "6px 14px", marginBottom: 20 }}>
+            <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 1.5s infinite" }} />
+            <span style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase" }}>Inner Circle Active</span>
           </div>
-
-
+          <h1 style={{ fontSize: "clamp(36px,6vw,72px)", fontWeight: 900, letterSpacing: -3, lineHeight: 0.9, marginBottom: 20 }}>
+            ACCESS:<br /><span style={{ background: "linear-gradient(135deg, #888, #C0C0C0, #E8E8E8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>THE EXCHANGE</span>
+          </h1>
+          <p style={{ fontSize: 13, color: SD, lineHeight: 1.9, marginBottom: 32, maxWidth: 480 }}>
+            A modular loyalty system for the inner circle. Earn, advocate, and ascend.
+          </p>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
+            {["dashboard", "scan", "refer", "ascend"].map(tab => (
+              <button key={tab} onClick={() => setActiveTab(tab)} style={{ background: activeTab === tab ? S : "transparent", color: activeTab === tab ? "#000" : SD, border: `0.5px solid ${activeTab === tab ? S : G3}`, padding: "8px 18px", fontSize: 8, letterSpacing: 3, textTransform: "uppercase", fontWeight: activeTab === tab ? 900 : 400, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s" }}>
+                {tab === "dashboard" ? "Overview" : tab === "scan" ? "Scan Gear" : tab === "refer" ? "Advocate" : "Ascend"}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
