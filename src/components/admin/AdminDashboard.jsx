@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from "recharts";
 
 const S = "#C0C0C0";
 const G1 = "#111111";
@@ -30,28 +30,37 @@ const CustomTooltip = ({ active, payload, label }) => {
   return null;
 };
 
+const STATUS_COLORS_MAP = { Pending: "#fa0", Processing: "#6af", Shipped: S, Delivered: "#0c6", Cancelled: "#e03", Refunded: "#f7f" };
+
 export default function AdminDashboard({ onNavigate }) {
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
+  const [returns, setReturns] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [chartRange, setChartRange] = useState(30);
 
   useEffect(() => {
     Promise.all([
-      base44.entities.Order.list("-created_date", 100).catch(() => []),
-      base44.entities.Product.list("-created_date", 100).catch(() => []),
-    ]).then(([o, p]) => {
+      base44.entities.Order.list("-created_date", 500).catch(() => []),
+      base44.entities.Product.list("-created_date", 200).catch(() => []),
+      base44.entities.ReturnRequest.list("-created_date", 50).catch(() => []),
+    ]).then(([o, p, r]) => {
       setOrders(o);
       setProducts(p);
+      setReturns(r);
       setLoading(false);
     });
   }, []);
 
+  const today = new Date(); today.setHours(0, 0, 0, 0);
   const totalRevenue = orders.reduce((s, o) => s + (o.total || 0), 0);
+  const todayRevenue = orders.filter(o => o.created_date && new Date(o.created_date) >= today).reduce((s, o) => s + (o.total || 0), 0);
   const pending = orders.filter(o => o.status === "Pending").length;
   const shipped = orders.filter(o => o.status === "Shipped").length;
   const delivered = orders.filter(o => o.status === "Delivered").length;
   const avgOrder = orders.length ? (totalRevenue / orders.length).toFixed(2) : 0;
   const lowStock = products.filter(p => typeof p.stock === "number" && p.stock <= 5 && p.inStock !== false);
+  const pendingReturns = returns.filter(r => r.status === "Pending").length;
   const customerRevenue = (() => {
     const map = {};
     orders.forEach(o => {
@@ -61,16 +70,24 @@ export default function AdminDashboard({ onNavigate }) {
     return Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 5);
   })();
 
-  // Build chart data from orders grouped by day
-  const chartData = (() => {
+  const chartData = useMemo(() => {
+    const cutoff = new Date();
+    if (chartRange !== 9999) cutoff.setDate(cutoff.getDate() - chartRange);
+    else cutoff.setFullYear(2000);
     const map = {};
-    orders.forEach(o => {
+    orders.filter(o => o.created_date && new Date(o.created_date) >= cutoff).forEach(o => {
       const d = new Date(o.created_date);
       const key = `${d.getMonth() + 1}/${d.getDate()}`;
       map[key] = (map[key] || 0) + (o.total || 0);
     });
-    return Object.entries(map).slice(-14).map(([date, revenue]) => ({ date, revenue }));
-  })();
+    return Object.entries(map).map(([date, revenue]) => ({ date, revenue }));
+  }, [orders, chartRange]);
+
+  const statusChartData = useMemo(() => {
+    const counts = {};
+    orders.forEach(o => { if (o.status) counts[o.status] = (counts[o.status] || 0) + 1; });
+    return Object.entries(counts).map(([status, count]) => ({ status, count }));
+  }, [orders]);
 
   const recentOrders = orders.slice(0, 8);
 
@@ -94,18 +111,27 @@ export default function AdminDashboard({ onNavigate }) {
       )}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }} className="admin-4col">
         <StatCard label="Total Revenue" value={`$${totalRevenue.toLocaleString()}`} sub={`${orders.length} total orders`} color={S} />
+        <StatCard label="Today's Revenue" value={`$${todayRevenue.toFixed(2)}`} sub="Orders placed today" color="#0c6" />
         <StatCard label="Pending Orders" value={pending} sub="Awaiting processing" color="#fa0" />
+        <StatCard label="Avg Order Value" value={`$${avgOrder}`} sub="Per transaction" color={S} />
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }} className="admin-4col">
         <StatCard label="Shipped" value={shipped} sub="In transit" color="#6af" />
         <StatCard label="Delivered" value={delivered} sub="Completed" color="#0c6" />
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }} className="admin-4col">
-        <StatCard label="Avg Order Value" value={`$${avgOrder}`} sub="Per transaction" color={S} />
-        <StatCard label="Products" value={products.length} sub={`${products.filter(p=>p.inStock!==false).length} in stock`} color="#6af" />
+        <StatCard label="Low Stock" value={lowStock.length} sub="≤5 units remaining" color={lowStock.length > 0 ? "#fa0" : SD} />
+        <StatCard label="Pending Returns" value={pendingReturns} sub="Awaiting review" color={pendingReturns > 0 ? "#fa0" : SD} />
       </div>
 
       {/* Revenue Chart */}
       <div style={{ background: G1, border: `0.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "24px" }}>
-        <div style={{ fontSize: 9, letterSpacing: 3, color: SD, textTransform: "uppercase", marginBottom: 20 }}>Revenue — Last 14 Days</div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
+          <div style={{ fontSize: 9, letterSpacing: 3, color: SD, textTransform: "uppercase" }}>Revenue — Last {chartRange === 9999 ? "All Time" : `${chartRange} Days`}</div>
+          <div style={{ display: "flex", gap: 4 }}>
+            {[[7, "7D"], [14, "14D"], [30, "30D"], [9999, "All"]].map(([n, l]) => (
+              <button key={n} onClick={() => setChartRange(n)} style={{ background: chartRange === n ? S : "transparent", color: chartRange === n ? "#000" : SD, border: `0.5px solid ${chartRange === n ? S : G3}`, padding: "4px 10px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>{l}</button>
+            ))}
+          </div>
+        </div>
         {chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={chartData}>
@@ -125,6 +151,30 @@ export default function AdminDashboard({ onNavigate }) {
           <div style={{ height: 200, display: "flex", alignItems: "center", justifyContent: "center", color: SD, fontSize: 12 }}>No revenue data yet</div>
         )}
       </div>
+
+      {/* Orders by Status */}
+      {statusChartData.length > 0 && (
+        <div style={{ background: G1, border: `0.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "24px" }}>
+          <div style={{ fontSize: 9, letterSpacing: 3, color: SD, textTransform: "uppercase", marginBottom: 20 }}>Orders by Status</div>
+          <ResponsiveContainer width="100%" height={160}>
+            <BarChart data={statusChartData} barSize={32}>
+              <XAxis dataKey="status" tick={{ fontSize: 9, fill: SD }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 9, fill: SD }} axisLine={false} tickLine={false} />
+              <Tooltip content={({ active, payload, label }) => active && payload?.length ? (
+                <div style={{ background: "#0a0a0a", border: `0.5px solid ${G3}`, padding: "10px 14px" }}>
+                  <div style={{ fontSize: 9, color: SD, marginBottom: 4 }}>{label}</div>
+                  <div style={{ fontSize: 14, fontWeight: 900, color: STATUS_COLORS_MAP[label] || S }}>{payload[0].value} orders</div>
+                </div>
+              ) : null} />
+              <Bar dataKey="count" radius={0}>
+                {statusChartData.map((entry) => (
+                  <Cell key={entry.status} fill={STATUS_COLORS_MAP[entry.status] || S} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       {/* Top Customers */}
        {customerRevenue.length > 0 && (

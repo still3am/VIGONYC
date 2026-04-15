@@ -1,0 +1,21 @@
+{
+  "name": "NewsletterSubscriber",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "Subscriber email address"
+    },
+    "source": {
+      "type": "string",
+      "description": "Signup source (footer, popup, drop, checkout)"
+    },
+    "active": {
+      "type": "boolean",
+      "description": "Whether subscriber is active"
+    }
+  },
+  "required": [
+    "email"
+  ]
+}

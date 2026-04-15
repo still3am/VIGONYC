@@ -21,6 +21,31 @@
     "reviewerName": {
       "type": "string",
       "description": "Reviewer display name"
+    },
+    "approved": {
+      "type": "boolean",
+      "description": "Must be true to show on storefront"
+    },
+    "verified": {
+      "type": "boolean",
+      "description": "Verified purchase"
+    },
+    "size": {
+      "type": "string",
+      "description": "Size purchased"
+    },
+    "fit": {
+      "type": "string",
+      "enum": [
+        "runs_small",
+        "true_to_size",
+        "runs_large"
+      ],
+      "description": "Fit feedback"
+    },
+    "helpfulCount": {
+      "type": "number",
+      "description": "Helpful votes"
     }
   },
   "required": [

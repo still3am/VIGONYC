@@ -8,6 +8,9 @@
     "lastName": {
       "type": "string"
     },
+    "name": {
+      "type": "string"
+    },
     "email": {
       "type": "string"
     },
@@ -16,6 +19,19 @@
     },
     "message": {
       "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "New",
+        "Read",
+        "Replied"
+      ],
+      "default": "New"
+    },
+    "adminReply": {
+      "type": "string",
+      "description": "Admin reply text"
     }
   },
   "required": [
