@@ -126,12 +126,7 @@ export default function VigoReferral() {
             </div>
           </div>
 
-          {/* 3D Chrome Sphere */}
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <div style={{ width: "clamp(200px,30vw,300px)", height: "clamp(200px,30vw,300px)" }}>
-              <ChromeSphere />
-            </div>
-          </div>
+
         </div>
       </div>
 
