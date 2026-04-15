@@ -147,6 +147,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
              {links.map((l) =>
            <NavLink key={l.to} to={l.to} onClick={() => setMobileOpen(false)} style={({ isActive }) => ({ textDecoration: "none", fontSize: 10, letterSpacing: 4, textTransform: "uppercase", color: isActive ? "var(--vt-text)" : SD })}>{l.label}</NavLink>
            )}
+           <NavLink to="/wishlist" onClick={() => setMobileOpen(false)} style={({ isActive }) => ({ textDecoration: "none", fontSize: 10, letterSpacing: 4, textTransform: "uppercase", color: isActive ? "var(--vt-text)" : SD })}>Wishlist</NavLink>
            </div>
       </nav>
 
