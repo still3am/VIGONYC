@@ -7,10 +7,7 @@ const SD = "var(--vt-sub)";
 const G3 = "var(--vt-border)";
 
 const links = [
-{ label: "Home", to: "/" },
 { label: "New", to: "/new" },
-{ label: "Shop", to: "/shop" },
-{ label: "Drops", to: "/drops" },
 { label: "Lookbook", to: "/lookbook" },
 { label: "About", to: "/about" }];
 
