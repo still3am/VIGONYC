@@ -7,10 +7,10 @@ import NeuralScanner from "@/components/referral/NeuralScanner";
 import { toast } from "sonner";
 
 const S = "#C0C0C0";
-const G1 = "#0a0a0a";
-const G2 = "#111111";
-const G3 = "#1a1a1a";
-const SD = "#666666";
+const G1 = "var(--vt-bg)";
+const G2 = "var(--vt-card)";
+const G3 = "var(--vt-border)";
+const SD = "var(--vt-sub)";
 
 const TIERS = [
   {
@@ -89,7 +89,7 @@ export default function VigoReferral() {
     return (
       <div style={{ minHeight: "80vh", background: G1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 20 }}>
         <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase" }}>✦ The Exchange</div>
-        <h1 style={{ fontSize: 36, fontWeight: 900, color: "#fff", letterSpacing: -2, textAlign: "center" }}>Sign in to Access<br /><span style={{ color: S }}>The Exchange</span></h1>
+        <h1 style={{ fontSize: 36, fontWeight: 900, color: "var(--vt-text)", letterSpacing: -2, textAlign: "center" }}>Sign in to Access<br /><span style={{ color: S }}>The Exchange</span></h1>
         <p style={{ fontSize: 12, color: SD, textAlign: "center", maxWidth: 320 }}>Join the inner circle. Earn points, authenticate gear, and unlock exclusive drops.</p>
         <button onClick={() => base44.auth.redirectToLogin()} style={chromeBtnFull}>Sign In</button>
       </div>
@@ -97,12 +97,12 @@ export default function VigoReferral() {
   }
 
   return (
-    <div style={{ background: G1, minHeight: "100vh", color: "#fff", fontFamily: "'Helvetica Neue', Arial, sans-serif" }}>
+    <div style={{ background: G1, minHeight: "100vh", color: "var(--vt-text)", fontFamily: "'Helvetica Neue', Arial, sans-serif" }}>
       {/* Top silver accent */}
       <div style={{ height: 2, background: "linear-gradient(90deg, transparent, #888, #E8E8E8, #C0C0C0, #E8E8E8, #888, transparent)" }} />
 
       {/* HERO */}
-      <div style={{ position: "relative", overflow: "hidden", borderBottom: `0.5px solid ${G3}`, background: "linear-gradient(180deg, #0d0d0d 0%, #0a0a0a 100%)" }}>
+      <div style={{ position: "relative", overflow: "hidden", borderBottom: `0.5px solid ${G3}`, background: G1 }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(192,192,192,0.03) 1px, transparent 1px)", backgroundSize: "28px 28px", pointerEvents: "none" }} />
 
         <div className="ref-hero-grid" style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(40px,7vw,80px) clamp(20px,4vw,40px)", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, alignItems: "center" }}>
@@ -180,7 +180,7 @@ export default function VigoReferral() {
                   <div style={{ background: "rgba(192,192,192,0.04)", border: "0.5px solid rgba(192,192,192,0.1)", padding: "14px 18px", display: "flex", alignItems: "center", gap: 12 }}>
                     <div style={{ fontSize: 20, color: S }}>$</div>
                     <div>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: "#fff" }}>$1 spent = 5 Points</div>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "var(--vt-text)" }}>$1 spent = 5 Points</div>
                       <div style={{ fontSize: 9, color: SD }}>Points auto-applied on every purchase</div>
                     </div>
                   </div>
@@ -218,7 +218,7 @@ export default function VigoReferral() {
               <div style={{ background: G2, border: `0.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: 24 }}>
                 <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 16 }}>Your Referral Link</div>
                 <div style={{ display: "flex", marginBottom: 14 }}>
-                  <input readOnly value={referralLink} style={{ flex: 1, background: "#0a0a0a", border: "0.5px solid #222", borderRight: "none", color: S, padding: "12px 14px", fontSize: 10, outline: "none", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis" }} />
+                  <input readOnly value={referralLink} style={{ flex: 1, background: G1, border: `0.5px solid ${G3}`, borderRight: "none", color: S, padding: "12px 14px", fontSize: 10, outline: "none", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis" }} />
                   <button onClick={copyReferral} style={{ background: copied ? "#0c6" : S, color: "#000", border: "none", padding: "12px 20px", fontSize: 8, letterSpacing: 2, fontWeight: 900, cursor: "pointer", fontFamily: "inherit", textTransform: "uppercase", transition: "background 0.3s", whiteSpace: "nowrap" }}>
                     {copied ? "✓ Copied" : "Copy Link"}
                   </button>
@@ -233,7 +233,7 @@ export default function VigoReferral() {
                       alt="Referral QR"
                       style={{ width: 160, height: 160, imageRendering: "pixelated", border: `0.5px solid ${G3}` }}
                     />
-                    <div style={{ fontSize: 8, color: "#444", marginTop: 10, letterSpacing: 2 }}>Code: {loyalty.referralCode}</div>
+                    <div style={{ fontSize: 8, color: SD, marginTop: 10, letterSpacing: 2 }}>Code: {loyalty.referralCode}</div>
                   </div>
                 )}
               </div>
@@ -286,7 +286,7 @@ export default function VigoReferral() {
                       {tier.perks.map(p => (
                         <div key={p} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                           <span style={{ color: tier.color, fontSize: 10, flexShrink: 0, marginTop: 1 }}>✦</span>
-                          <span style={{ fontSize: 11, color: "#ccc", lineHeight: 1.5 }}>{p}</span>
+                          <span style={{ fontSize: 11, color: "var(--vt-text)", lineHeight: 1.5 }}>{p}</span>
                         </div>
                       ))}
                     </div>
