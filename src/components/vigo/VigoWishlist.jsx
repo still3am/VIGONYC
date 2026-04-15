@@ -161,27 +161,23 @@ export default function VigoWishlist() {
                     >♥</button>
                   </div>
 
-                  <div style={{ padding: "14px 14px 0", display: "flex", flexDirection: "column", flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>{p.productName}</div>
-
-                    <div style={{ padding: "12px 14px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span style={{ fontSize: 20, fontWeight: 900, color: S }}>${p.price}</span>
-                        <button
-                          onClick={() => handleAdd(p)}
-                          style={{ background: isAdded ? "#0c6" : S, color: "#000", border: "none", padding: "10px 18px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", transition: "background .3s", display: "flex", alignItems: "center", gap: 6 }}
-                        >
-                          {isAdded ? (
-                            <><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg> Added!</>
-                          ) : (
-                            <><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> Add to Bag</>
-                          )}
-                        </button>
-                      </div>
-                      <button onClick={() => navigate(`/product/${pid}`)} style={{ background: "none", border: "none", color: SD, fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", padding: "4px 0", textDecoration: "underline" }}>
-                        View Product →
-                      </button>
+                  <div style={{ padding: "14px 14px 0", flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "var(--vt-text)", lineHeight: 1.3 }}>{p.productName}</div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
+                      <span style={{ fontSize: 16, fontWeight: 900, color: S }}>${p.price}</span>
                     </div>
+                  </div>
+                  <div style={{ padding: "12px 14px 14px" }}>
+                    <button
+                      onClick={() => handleAdd(p)}
+                      style={{ width: "100%", background: isAdded ? "#0c6" : S, color: "#000", border: "none", padding: "11px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", transition: "background .3s", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                    >
+                      {isAdded ? (
+                        <><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg> Added!</>
+                      ) : (
+                        <><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> Add to Bag</>
+                      )}
+                    </button>
                   </div>
                 </div>
               );
