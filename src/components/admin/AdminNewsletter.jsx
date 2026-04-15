@@ -89,27 +89,27 @@ export default function AdminNewsletter() {
       </div>
 
       {/* Stats */}
-      <div style={{ display: "flex", gap: 2, marginBottom: 16 }}>
+      <div style={{ display: "flex", gap: 2, marginBottom: 20 }}>
         {[[subscribers.length, "Total", S], [active, "Active", "#0c6"], [subscribers.length - active, "Inactive", SD]].map(([n, l, c]) => (
-          <div key={l} style={{ flex: 1, background: G1, border: `0.5px solid ${G3}`, padding: "10px 12px" }}>
-            <div style={{ fontSize: 18, fontWeight: 900, color: c }}>{n}</div>
+          <div key={l} style={{ flex: 1, background: G1, border: `0.5px solid ${G3}`, padding: "12px 16px" }}>
+            <div style={{ fontSize: 22, fontWeight: 900, color: c }}>{n}</div>
             <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 2 }}>{l}</div>
           </div>
         ))}
       </div>
 
       {/* Filters */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
-        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search email..." style={{ flex: 1, minWidth: 120, background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "8px 10px", fontSize: 11, outline: "none", fontFamily: "inherit", boxSizing: "border-box" }} />
-        <select value={filterSource} onChange={e => setFilterSource(e.target.value)} style={{ background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "8px 8px", fontSize: 10, outline: "none", fontFamily: "inherit" }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search email..." style={{ flex: 1, minWidth: 160, background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 14px", fontSize: 12, outline: "none", fontFamily: "inherit", boxSizing: "border-box" }} />
+        <select value={filterSource} onChange={e => setFilterSource(e.target.value)} style={{ background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 12px", fontSize: 11, outline: "none", fontFamily: "inherit" }}>
           {sources.map(s => <option key={s} value={s}>{s === "All" ? "All Sources" : s}</option>)}
         </select>
-        <select value={filterActive} onChange={e => setFilterActive(e.target.value)} style={{ background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "8px 8px", fontSize: 10, outline: "none", fontFamily: "inherit" }}>
+        <select value={filterActive} onChange={e => setFilterActive(e.target.value)} style={{ background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "10px 12px", fontSize: 11, outline: "none", fontFamily: "inherit" }}>
           <option value="All">All Status</option>
           <option value="Active">Active</option>
           <option value="Inactive">Inactive</option>
         </select>
-        <div style={{ fontSize: 9, color: SD, alignSelf: "center" }}>{filtered.length} results</div>
+        <div style={{ fontSize: 10, color: SD, alignSelf: "center" }}>{filtered.length} results</div>
       </div>
 
       {loading && <div style={{ padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>Loading subscribers...</div>}
@@ -117,32 +117,30 @@ export default function AdminNewsletter() {
 
       {/* Table */}
       {!loading && filtered.length > 0 && (
-        <div style={{ background: G1, border: `0.5px solid ${G3}`, overflowX: "auto" }}>
-          <div style={{ minWidth: 500 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 80px 80px 100px 70px", padding: "10px 16px", borderBottom: `0.5px solid ${G3}`, fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>
-              <span>Email</span><span>Source</span><span>Status</span><span>Joined</span><span></span>
-            </div>
-            {filtered.map(sub => {
-              const isActive = sub.active !== false;
-              return (
-                <div key={sub.id} style={{ display: "grid", gridTemplateColumns: "1fr 80px 80px 100px 70px", padding: "12px 16px", borderBottom: `0.5px solid ${G3}`, alignItems: "center" }}
-                  onMouseEnter={e => e.currentTarget.style.background = G2}
-                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-                  <div style={{ fontSize: 11, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sub.email}</div>
-                  <div style={{ fontSize: 9, color: SD, textTransform: "uppercase", letterSpacing: 1 }}>{sub.source || "—"}</div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: isActive ? "#0c6" : G3, flexShrink: 0 }} />
-                    <span style={{ fontSize: 8, color: isActive ? "#0c6" : SD, letterSpacing: 1, textTransform: "uppercase" }}>{isActive ? "Active" : "Off"}</span>
-                  </div>
-                  <div style={{ fontSize: 9, color: SD }}>{sub.created_date ? new Date(sub.created_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}</div>
-                  <div style={{ display: "flex", gap: 4 }}>
-                    {!sub._fromUser && <button onClick={() => handleToggle(sub)} style={{ background: "none", border: `0.5px solid ${G3}`, color: SD, padding: "4px 6px", fontSize: 8, cursor: "pointer", fontFamily: "inherit" }}>{isActive ? "Off" : "On"}</button>}
-                    <button onClick={() => handleDelete(sub)} style={{ background: "none", border: `0.5px solid #e03`, color: "#e03", padding: "4px 6px", fontSize: 8, cursor: "pointer", fontFamily: "inherit" }}>Del</button>
-                  </div>
-                </div>
-              );
-            })}
+        <div style={{ background: G1, border: `0.5px solid ${G3}` }}>
+          <div style={{ display: "grid", gridTemplateColumns: "2fr 100px 100px 120px 80px", padding: "10px 16px", borderBottom: `0.5px solid ${G3}`, fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>
+            <span>Email</span><span>Source</span><span>Status</span><span>Joined</span><span></span>
           </div>
+          {filtered.map(sub => {
+            const isActive = sub.active !== false;
+            return (
+              <div key={sub.id} style={{ display: "grid", gridTemplateColumns: "2fr 100px 100px 120px 80px", padding: "12px 16px", borderBottom: `0.5px solid ${G3}`, alignItems: "center" }}
+                onMouseEnter={e => e.currentTarget.style.background = G2}
+                onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                <div style={{ fontSize: 12, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sub.email}</div>
+                <div style={{ fontSize: 9, color: SD, textTransform: "uppercase", letterSpacing: 1 }}>{sub.source || "—"}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: isActive ? "#0c6" : G3 }} />
+                  <span style={{ fontSize: 8, color: isActive ? "#0c6" : SD, letterSpacing: 1, textTransform: "uppercase" }}>{isActive ? "Active" : "Off"}</span>
+                </div>
+                <div style={{ fontSize: 9, color: SD }}>{sub.created_date ? new Date(sub.created_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}</div>
+                <div style={{ display: "flex", gap: 4 }}>
+                  {!sub._fromUser && <button onClick={() => handleToggle(sub)} style={{ background: "none", border: `0.5px solid ${G3}`, color: SD, padding: "4px 8px", fontSize: 8, cursor: "pointer", fontFamily: "inherit" }}>{isActive ? "Off" : "On"}</button>}
+                  <button onClick={() => handleDelete(sub)} style={{ background: "none", border: `0.5px solid #e03`, color: "#e03", padding: "4px 8px", fontSize: 8, cursor: "pointer", fontFamily: "inherit" }}>Del</button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
