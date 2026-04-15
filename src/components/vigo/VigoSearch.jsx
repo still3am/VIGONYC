@@ -84,7 +84,7 @@ export default function VigoSearch() {
           {(displayResults.length > 0 || !query ? displayResults : suggestions).map(p => (
             <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
               wishlisted={wishlist.includes(p.id)}
-              onWishlist={() => toggleWishlist(p.id)}
+              onWishlist={() => toggleWishlist(p.id, p)}
               onAdd={() => {
                 if (p.sizes && p.sizes.length > 1) {
                   navigate(`/product/${p.id}`);

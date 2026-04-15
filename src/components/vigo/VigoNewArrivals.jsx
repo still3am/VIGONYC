@@ -53,7 +53,7 @@ export default function VigoNewArrivals() {
           {products.map(p => (
             <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
               wishlisted={wishlist.includes(p.id)}
-              onWishlist={() => toggleWishlist(p.id)}
+              onWishlist={() => toggleWishlist(p.id, p)}
               onAdd={() => addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: "M", color: "Black", productImage: p.images?.[0] || productImg, price: p.price })}
               onClick={() => navigate(`/product/${p.id}`)} />
           ))}

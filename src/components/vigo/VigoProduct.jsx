@@ -253,7 +253,7 @@ export default function VigoProduct() {
                   <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>Price</div>
                   <div style={{ fontSize: 36, fontWeight: 900, color: S }}>${product.price}</div>
                 </div>
-                <button onClick={() => toggleWishlist(id)} style={{ background: wishlisted ? `rgba(192,192,192,.1)` : "transparent", border: `.5px solid ${wishlisted ? S : G3}`, color: wishlisted ? S : SD, width: 44, height: 44, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontFamily: "inherit", transition: "all .2s", marginTop: 12 }}>
+                <button onClick={() => toggleWishlist(id, product)} style={{ background: wishlisted ? `rgba(192,192,192,.1)` : "transparent", border: `.5px solid ${wishlisted ? S : G3}`, color: wishlisted ? S : SD, width: 44, height: 44, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontFamily: "inherit", transition: "all .2s", marginTop: 12 }}>
                   {wishlisted ? "♥" : "♡"}
                 </button>
               </div>
@@ -400,7 +400,7 @@ export default function VigoProduct() {
               {related.map((p) => (
                 <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
                   wishlisted={wishlist.includes(p.id)}
-                  onWishlist={() => toggleWishlist(p.id)}
+                  onWishlist={() => toggleWishlist(p.id, p)}
                   onAdd={() => addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, meta: "Size: M · Color: Black", price: p.price, productImage: p.images?.[0] || productImg })}
                   onClick={() => navigate(`/product/${p.id}`)} />
               ))}
