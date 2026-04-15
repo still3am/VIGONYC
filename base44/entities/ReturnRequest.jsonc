@@ -31,6 +31,14 @@
     "adminNote": {
       "type": "string",
       "description": "Internal admin note about this return"
+    },
+    "refundAmount": {
+      "type": "number",
+      "description": "Refund amount in USD"
+    },
+    "refundMethod": {
+      "type": "string",
+      "description": "original_payment | store_credit"
     }
   },
   "required": [

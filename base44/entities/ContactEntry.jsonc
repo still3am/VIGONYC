@@ -2,23 +2,21 @@
   "name": "ContactEntry",
   "type": "object",
   "properties": {
-    "firstName": {
-      "type": "string"
-    },
-    "lastName": {
-      "type": "string"
-    },
     "name": {
-      "type": "string"
+      "type": "string",
+      "description": "Contact full name"
     },
     "email": {
-      "type": "string"
+      "type": "string",
+      "description": "Contact email"
     },
-    "topic": {
-      "type": "string"
+    "subject": {
+      "type": "string",
+      "description": "Message subject / topic"
     },
     "message": {
-      "type": "string"
+      "type": "string",
+      "description": "Message body"
     },
     "status": {
       "type": "string",
@@ -27,7 +25,8 @@
         "Read",
         "Replied"
       ],
-      "default": "New"
+      "default": "New",
+      "description": "Message status"
     },
     "adminReply": {
       "type": "string",

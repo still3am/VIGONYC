@@ -10,9 +10,13 @@
       "type": "number",
       "description": "Price in USD"
     },
+    "compareAtPrice": {
+      "type": "number",
+      "description": "Struck-through sale price"
+    },
     "cat": {
       "type": "string",
-      "description": "Category"
+      "description": "Category: Tops | Bottoms | Outerwear | Accessories | Footwear"
     },
     "collection": {
       "type": "string",
@@ -24,7 +28,8 @@
         "new",
         "drop",
         "ltd",
-        "hot"
+        "hot",
+        "sale"
       ],
       "description": "Product tag"
     },
@@ -64,6 +69,14 @@
       "type": "string",
       "description": "Product description"
     },
+    "material": {
+      "type": "string",
+      "description": "Material composition"
+    },
+    "care": {
+      "type": "string",
+      "description": "Care instructions"
+    },
     "stock": {
       "type": "number",
       "description": "Units in stock"
@@ -79,6 +92,21 @@
     "weight": {
       "type": "number",
       "description": "Product weight in oz for shipping calc"
+    },
+    "soldCount": {
+      "type": "number",
+      "description": "Total units sold",
+      "default": 0
+    },
+    "reviewCount": {
+      "type": "number",
+      "description": "Number of approved reviews",
+      "default": 0
+    },
+    "avgRating": {
+      "type": "number",
+      "description": "Average star rating",
+      "default": 0
     }
   },
   "required": [

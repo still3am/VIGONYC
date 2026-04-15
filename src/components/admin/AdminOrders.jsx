@@ -7,7 +7,8 @@ const G2 = "#161616";
 const G3 = "#222222";
 const SD = "#666666";
 
-const STATUSES = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"];
+const STATUSES = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Refunded"];
+const CARRIERS = ["USPS", "UPS", "FedEx", "DHL"];
 const STATUS_COLORS = { Pending: "#fa0", Processing: "#6af", Shipped: "#C0C0C0", Delivered: "#0c6", Cancelled: "#e03" };
 
 export default function AdminOrders() {
@@ -88,14 +89,14 @@ export default function AdminOrders() {
 
       {/* Desktop table */}
       <div className="admin-orders-desktop" style={{ background: G1, border: `0.5px solid ${G3}` }}>
-        <div style={{ display: "grid", gridTemplateColumns: "130px 1fr 90px 140px 160px 130px", padding: "10px 20px", borderBottom: `0.5px solid ${G3}`, fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "130px 1fr 90px 140px 1fr 130px", padding: "10px 20px", borderBottom: `0.5px solid ${G3}`, fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>
           <span>Order ID</span><span>Items</span><span>Total</span><span>Status</span><span>Tracking</span><span>Date</span>
         </div>
         {!loading && filtered.map(o => {
           const col = STATUS_COLORS[o.status] || SD;
           return (
             <div key={o.id}>
-            <div style={{ display: "grid", gridTemplateColumns: "130px 1fr 90px 140px 160px 130px", padding: "14px 20px", borderBottom: `0.5px solid ${G3}`, alignItems: "center", gap: 4, cursor: "pointer" }}
+            <div style={{ display: "grid", gridTemplateColumns: "130px 1fr 90px 140px 1fr 130px", padding: "14px 20px", borderBottom: `0.5px solid ${G3}`, alignItems: "center", gap: 4, cursor: "pointer" }}
               onClick={() => setExpanded(expanded === o.id ? null : o.id)}
               onMouseEnter={e => e.currentTarget.style.background = G2}
               onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
@@ -105,25 +106,49 @@ export default function AdminOrders() {
               <select value={o.status} onChange={e => handleStatusChange(o, e.target.value)} style={{ background: G2, border: `0.5px solid ${col}`, color: col, padding: "5px 8px", fontSize: 9, outline: "none", fontFamily: "inherit", cursor: "pointer" }}>
                 {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
-              <input
-                defaultValue={o.trackingNumber || ""}
-                onChange={e => setTrackingEdits(p => ({ ...p, [o.id]: e.target.value }))}
-                onBlur={() => handleTrackingBlur(o)}
-                placeholder="Add tracking..."
-                style={{ background: G2, border: `0.5px solid ${G3}`, color: "#fff", padding: "5px 8px", fontSize: 10, outline: "none", fontFamily: "inherit", width: "100%" }}
-              />
+              <div style={{ display: "flex", gap: 4 }}>
+                <select defaultValue={o.trackingCarrier || ""} onBlur={async e => { if (e.target.value !== (o.trackingCarrier || "")) await base44.entities.Order.update(o.id, { trackingCarrier: e.target.value }); }} style={{ background: G2, border: `0.5px solid ${G3}`, color: "#fff", padding: "5px 6px", fontSize: 9, outline: "none", fontFamily: "inherit", width: 64 }}>
+                  <option value="">—</option>
+                  {CARRIERS.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+                <input
+                  defaultValue={o.trackingNumber || ""}
+                  onChange={e => setTrackingEdits(p => ({ ...p, [o.id]: e.target.value }))}
+                  onBlur={() => handleTrackingBlur(o)}
+                  placeholder="Tracking #..."
+                  style={{ background: G2, border: `0.5px solid ${G3}`, color: "#fff", padding: "5px 8px", fontSize: 10, outline: "none", fontFamily: "inherit", flex: 1, minWidth: 0 }}
+                />
+              </div>
               <div style={{ fontSize: 9, color: SD }}>{o.created_date ? new Date(o.created_date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}</div>
             </div>
             {expanded === o.id && (
-              <div style={{ padding: "12px 20px", background: G2, borderBottom: `0.5px solid ${G3}` }}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+              <div style={{ padding: "16px 20px", background: G2, borderBottom: `0.5px solid ${G3}` }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, marginBottom: 14 }}>
                   <div>
-                    <div style={{ fontSize: 8, color: SD, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>Items</div>
-                    {(o.items||"").split(", ").map((item,i) => <div key={i} style={{ fontSize: 10, color: "#fff" }}>· {item}</div>)}
+                    <div style={{ fontSize: 8, color: SD, letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>Items</div>
+                    {(() => {
+                      try {
+                        const parsed = o.itemsJson ? JSON.parse(o.itemsJson) : null;
+                        if (parsed && parsed.length) return parsed.map((it, i) => (
+                          <div key={i} style={{ fontSize: 10, color: "#fff", marginBottom: 3 }}>
+                            · {it.name}{it.size ? ` (${it.size})` : ""}{it.color ? ` — ${it.color}` : ""} × {it.qty} · <span style={{ color: SD }}>${it.price}</span>
+                          </div>
+                        ));
+                      } catch {}
+                      return (o.items||"").split(", ").map((item,i) => <div key={i} style={{ fontSize: 10, color: "#fff", marginBottom: 2 }}>· {item}</div>);
+                    })()}
+                    {o.promoCode && <div style={{ fontSize: 9, color: "#0c6", marginTop: 6 }}>Promo: {o.promoCode} · -${o.discount||0}</div>}
+                    {o.loyaltyPointsEarned > 0 && <div style={{ fontSize: 9, color: S, marginTop: 4 }}>✦ +{o.loyaltyPointsEarned} pts earned</div>}
                   </div>
                   <div>
                     <div style={{ fontSize: 8, color: SD, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>Shipping To</div>
-                    <div style={{ fontSize: 10, color: "#fff" }}>{o.shippingAddress || "—"}</div>
+                    <div style={{ fontSize: 10, color: "#fff", lineHeight: 1.6 }}>{o.shippingAddress || "—"}</div>
+                    {o.shippingMethod && <div style={{ fontSize: 9, color: SD, marginTop: 4, textTransform: "capitalize" }}>Method: {o.shippingMethod}</div>}
+                    {o.trackingNumber && (
+                      <a href={`https://track.aftership.com/${o.trackingNumber}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 9, color: S, marginTop: 4, display: "block" }}>
+                        Track: {o.trackingCarrier && `${o.trackingCarrier} · `}{o.trackingNumber} ↗
+                      </a>
+                    )}
                   </div>
                   <div>
                     <div style={{ fontSize: 8, color: SD, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>Customer</div>
@@ -131,6 +156,17 @@ export default function AdminOrders() {
                     {o.isGift && <div style={{ fontSize: 9, color: S, marginTop: 4 }}>🎁 Gift order</div>}
                     {o.giftMessage && <div style={{ fontSize: 9, color: SD, marginTop: 2, fontStyle: "italic" }}>"{o.giftMessage}"</div>}
                   </div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 8, color: SD, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>Internal Notes</div>
+                  <textarea
+                    key={o.id}
+                    defaultValue={o.notes || ""}
+                    rows={2}
+                    placeholder="Add internal notes..."
+                    onBlur={async e => { if (e.target.value !== (o.notes || "")) await base44.entities.Order.update(o.id, { notes: e.target.value }); }}
+                    style={{ width: "100%", background: G1, border: `0.5px solid ${G3}`, color: "#fff", padding: "8px 12px", fontSize: 11, outline: "none", fontFamily: "inherit", resize: "vertical", boxSizing: "border-box" }}
+                  />
                 </div>
               </div>
             )}

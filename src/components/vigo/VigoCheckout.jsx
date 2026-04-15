@@ -61,10 +61,10 @@ export default function VigoCheckout() {
 
   const freeShippingThreshold = parseInt(settings.free_shipping_threshold || "150");
   const subtotal = cartItems.reduce((s, i) => s + (i.price * i.qty), 0);
-  const shipping = shippingMethod === "overnight" ? 28 : shippingMethod === "express" ? 12 : (subtotal >= freeShippingThreshold ? 0 : 12);
-  const tax = Math.round(subtotal * 0.0887);
+  const shippingCost = shippingMethod === "overnight" ? 28 : shippingMethod === "express" ? 12 : (subtotal >= freeShippingThreshold ? 0 : 8);
+  const tax = parseFloat((subtotal * 0.0887).toFixed(2));
   const discount = promoApplied ? Math.round(subtotal * promoDiscount / 100) : 0;
-  const total = subtotal + shipping + tax - discount;
+  const total = parseFloat((subtotal + shippingCost + tax - discount).toFixed(2));
 
   const applyPromo = async () => {
     if (!promoCode.trim()) return;
@@ -100,30 +100,49 @@ export default function VigoCheckout() {
     setPlacing(true);
     const safeContact = sanitizeObject(contact);
     try {
-      const genId = "VIGO-" + Math.floor(Math.random() * 90000 + 10000);
+      const suffix = Math.random().toString(36).slice(2, 6).toUpperCase();
+      const genId = "VGO-" + suffix + String(Date.now()).slice(-4);
+      const itemsJson = JSON.stringify(cartItems.map(i => ({ productId: i.productId, name: i.productName, size: i.size, color: i.color, qty: i.qty, price: i.price, image: i.productImage })));
+      const loyaltyPts = Math.floor(total * 5);
       await base44.entities.Order.create({
         orderId: genId,
-        items: cartItems.map(i => `${sanitize(i.productName)} x${i.qty}`).join(", "),
-        total: total,
+        items: cartItems.map(i => `${sanitize(i.productName)}${i.size ? ` (${i.size})` : ""} x${i.qty}`).join(", "),
+        itemsJson,
+        total,
+        subtotal: parseFloat(subtotal.toFixed(2)),
+        shippingCost,
+        tax,
+        discount,
         pieces: cartItems.reduce((s, i) => s + i.qty, 0),
         status: "Pending",
         shippingAddress: `${safeContact.address}, ${safeContact.city}, ${safeContact.state} ${safeContact.zip}`,
         userEmail: safeContact.email,
         shippingMethod,
+        promoCode: promoApplied ? promoCode.toUpperCase() : "",
         isGift,
         giftMessage: isGift ? sanitize(giftMessage) : "",
+        loyaltyPointsEarned: loyaltyPts,
       });
-      // Update stock
+      // Update stock + soldCount
       for (const item of cartItems) {
         const prod = await base44.entities.Product.get(item.productId).catch(() => null);
-        if (prod && typeof prod.stock === "number" && prod.stock > 0) {
-          const newStock = Math.max(0, prod.stock - item.qty);
-          await base44.entities.Product.update(item.productId, { stock: newStock, inStock: newStock > 0 }).catch(() => {});
+        if (prod) {
+          const updates = {};
+          if (typeof prod.stock === "number" && prod.stock > 0) {
+            const newStock = Math.max(0, prod.stock - item.qty);
+            updates.stock = newStock;
+            updates.inStock = newStock > 0;
+          }
+          updates.soldCount = (prod.soldCount || 0) + item.qty;
+          await base44.entities.Product.update(item.productId, updates).catch(() => {});
         }
       }
       await Promise.all(cartItems.map(i => base44.entities.CartItem.delete(i.id)));
+      // Award loyalty points
+      base44.functions.invoke("loyaltyPoints", { action: "addPoints", data: { points: loyaltyPts, reason: `Order ${genId}` } }).catch(() => {});
       setOrderId(genId);
       setOrderPlaced(true);
+      window.dispatchEvent(new CustomEvent("vigo:cart-update", { detail: { delta: -cartItems.reduce((s, i) => s + i.qty, 0) } }));
     } catch (e) {
       alert("Failed to place order. Please try again.");
     } finally {
@@ -169,9 +188,16 @@ export default function VigoCheckout() {
           </div>
           {isGift && <div style={{ fontSize: 10, color: "#fa0", marginTop: 8 }}>🎁 Gift order</div>}
         </div>
+        <div style={{ background: "rgba(0,204,102,0.06)", border: "0.5px solid rgba(0,204,102,0.2)", padding: "14px 20px", margin: "0 auto 20px", maxWidth: 480, display: "flex", alignItems: "center", gap: 12 }}>
+          <span style={{ fontSize: 20 }}>✦</span>
+          <div>
+            <div style={{ fontSize: 11, color: "#0c6", fontWeight: 700 }}>+{Math.floor(total * 5).toLocaleString()} points earned</div>
+            <div style={{ fontSize: 9, color: "var(--vt-sub)", letterSpacing: 1 }}>Added to your Exchange balance</div>
+          </div>
+        </div>
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
           <button onClick={() => navigate("/")} style={btnP}>Continue Shopping</button>
-          <button onClick={() => navigate("/track-order")} style={btnGhost}>Track Order →</button>
+          <button onClick={() => navigate(`/track-order?order=${orderId}`)} style={btnGhost}>Track Order →</button>
         </div>
       </div>
     );
@@ -338,10 +364,10 @@ export default function VigoCheckout() {
             {promoError && <div style={{ fontSize: 10, color: "#e03", marginBottom: 12 }}>Invalid or expired promo code.</div>}
 
             <div style={{ borderTop: `.5px solid ${G3}`, paddingTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
-              {[["Subtotal", `$${subtotal.toFixed(2)}`],["Shipping", shipping === 0 ? "Free" : `$${shipping}`],["NYC Tax (8.875%)", `$${tax}`],promoApplied ? [`Promo (${promoCode.toUpperCase()})`, `-$${discount}`] : null].filter(Boolean).map(([l,v]) => (
+              {[["Subtotal", `$${subtotal.toFixed(2)}`],["Shipping", shippingCost === 0 ? "Free" : `$${shippingCost}`],["NYC Tax (8.875%)", `$${tax}`],promoApplied ? [`Promo (${promoCode.toUpperCase()})`, `-$${discount}`] : null].filter(Boolean).map(([l,v]) => (
                 <div key={l} style={{ display: "flex", justifyContent: "space-between" }}>
                   <span style={{ fontSize: 10, color: SD }}>{l}</span>
-                  <span style={{ fontSize: 11, color: l.startsWith("Promo") ? "#0c6" : l === "Shipping" && shipping === 0 ? "#0c6" : "var(--vt-text)" }}>{v}</span>
+                  <span style={{ fontSize: 11, color: l.startsWith("Promo") ? "#0c6" : l === "Shipping" && shippingCost === 0 ? "#0c6" : "var(--vt-text)" }}>{v}</span>
                 </div>
               ))}
               <div style={{ display: "flex", justifyContent: "space-between", borderTop: `.5px solid ${G3}`, paddingTop: 12, marginTop: 4 }}>

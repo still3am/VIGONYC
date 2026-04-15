@@ -8,7 +8,7 @@
     },
     "discountPercent": {
       "type": "number",
-      "description": "Discount percentage (e.g. 10 for 10%)"
+      "description": "Discount percentage e.g. 10 for 10%"
     },
     "active": {
       "type": "boolean",
@@ -16,7 +16,24 @@
     },
     "expiresAt": {
       "type": "string",
-      "description": "Expiry date ISO string, optional"
+      "description": "Expiry date ISO string"
+    },
+    "usageLimit": {
+      "type": "number",
+      "description": "Max number of uses"
+    },
+    "usageCount": {
+      "type": "number",
+      "description": "Times used so far",
+      "default": 0
+    },
+    "minimumOrder": {
+      "type": "number",
+      "description": "Minimum order value to apply code"
+    },
+    "appliesTo": {
+      "type": "string",
+      "description": "all | new_customers | returning"
     }
   },
   "required": [

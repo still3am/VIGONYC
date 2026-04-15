@@ -4,7 +4,7 @@
   "properties": {
     "label": {
       "type": "string",
-      "description": "Address label (e.g. Default Shipping, Billing)"
+      "description": "Address label e.g. Home, Work"
     },
     "fullName": {
       "type": "string",
@@ -13,6 +13,10 @@
     "street": {
       "type": "string",
       "description": "Street address"
+    },
+    "apt": {
+      "type": "string",
+      "description": "Apartment, suite, unit"
     },
     "city": {
       "type": "string",
@@ -28,7 +32,12 @@
     },
     "country": {
       "type": "string",
-      "description": "Country"
+      "description": "Country",
+      "default": "US"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Phone number"
     },
     "isDefault": {
       "type": "boolean",

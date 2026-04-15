@@ -121,9 +121,8 @@ export default function VigoProduct() {
 
   const accordionData = [
     { title: "Description", content: product.description || "Premium quality streetwear from New York City. Built for the borough." },
-    { title: "Sizing & Fit", content: "This piece runs true to size. We recommend sizing up for an oversized fit. See the size guide for measurements." },
+    ...(product.material || product.care ? [{ title: "Material & Care", content: [product.material && `Material: ${product.material}`, product.care && `Care: ${product.care}`].filter(Boolean).join("\n") }] : [{ title: "Sizing & Fit", content: "This piece runs true to size. We recommend sizing up for an oversized fit." }]),
     { title: "Shipping & Returns", content: "Free shipping on orders over $150. Standard shipping 5–7 business days. Returns accepted within 14 days for unworn items." },
-    { title: "Care Instructions", content: "Machine wash cold with like colors. Tumble dry low. Do not bleach. Do not iron on print." },
   ];
 
   const handleAdd = () => {
@@ -262,7 +261,15 @@ export default function VigoProduct() {
               <div style={{ display: "flex", alignItems: "flex-start", gap: 24, marginBottom: 24 }}>
                 <div>
                   <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>Price</div>
-                  <div style={{ fontSize: 36, fontWeight: 900, color: S }}>${product.price}</div>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
+                    <div style={{ fontSize: 36, fontWeight: 900, color: S }}>${product.price}</div>
+                    {product.compareAtPrice && product.compareAtPrice > product.price && (
+                      <>
+                        <div style={{ fontSize: 20, fontWeight: 400, color: SD, textDecoration: "line-through" }}>${product.compareAtPrice}</div>
+                        <div style={{ fontSize: 8, letterSpacing: 2, color: "#fff", background: "#e03", padding: "3px 8px", fontWeight: 900 }}>SALE</div>
+                      </>
+                    )}
+                  </div>
                 </div>
                 <button onClick={() => toggleWishlist(id, product)} style={{ background: wishlisted ? `rgba(192,192,192,.1)` : "transparent", border: `.5px solid ${wishlisted ? S : G3}`, color: wishlisted ? S : SD, width: 44, height: 44, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontFamily: "inherit", transition: "all .2s", marginTop: 12 }}>
                   {wishlisted ? "♥" : "♡"}

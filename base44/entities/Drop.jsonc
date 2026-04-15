@@ -4,11 +4,11 @@
   "properties": {
     "name": {
       "type": "string",
-      "description": "Drop name (e.g. Drop 02)"
+      "description": "Drop name e.g. Drop 03"
     },
     "series": {
       "type": "string",
-      "description": "Series name (e.g. Mirror Series)"
+      "description": "Series name e.g. Mirror Series"
     },
     "description": {
       "type": "string",
@@ -20,15 +20,20 @@
     },
     "time": {
       "type": "string",
-      "description": "Drop time (e.g. 12:00 PM EST)"
+      "description": "Drop time e.g. 12:00 PM EST"
     },
     "pieces": {
       "type": "number",
       "description": "Number of units"
     },
+    "soldCount": {
+      "type": "number",
+      "description": "Units sold",
+      "default": 0
+    },
     "price": {
       "type": "string",
-      "description": "Price display (e.g. From $68)"
+      "description": "Price display e.g. From $68"
     },
     "status": {
       "type": "string",
@@ -51,12 +56,23 @@
       "type": "string",
       "description": "Drop cover image URL"
     },
+    "videoUrl": {
+      "type": "string",
+      "description": "Drop video URL"
+    },
     "productIds": {
       "type": "array",
       "items": {
         "type": "string"
       },
       "description": "IDs of products in this drop"
+    },
+    "notifyEmails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Emails subscribed to drop notifications"
     }
   },
   "required": [

@@ -8,11 +8,31 @@
     },
     "items": {
       "type": "string",
-      "description": "Comma-separated list of items"
+      "description": "Display string e.g. Chrome V Tee (M), Cargo Pant (L)"
+    },
+    "itemsJson": {
+      "type": "string",
+      "description": "JSON array of order items with productId, name, size, color, qty, price, image"
     },
     "total": {
       "type": "number",
       "description": "Total order amount"
+    },
+    "subtotal": {
+      "type": "number",
+      "description": "Subtotal before shipping/tax"
+    },
+    "shippingCost": {
+      "type": "number",
+      "description": "Shipping cost"
+    },
+    "tax": {
+      "type": "number",
+      "description": "Tax amount"
+    },
+    "discount": {
+      "type": "number",
+      "description": "Discount amount applied"
     },
     "pieces": {
       "type": "number",
@@ -25,7 +45,8 @@
         "Processing",
         "Shipped",
         "Delivered",
-        "Cancelled"
+        "Cancelled",
+        "Refunded"
       ],
       "description": "Order status"
     },
@@ -36,6 +57,16 @@
     "trackingNumber": {
       "type": "string",
       "description": "Shipping tracking number"
+    },
+    "trackingCarrier": {
+      "type": "string",
+      "enum": [
+        "USPS",
+        "UPS",
+        "FedEx",
+        "DHL"
+      ],
+      "description": "Shipping carrier"
     },
     "userEmail": {
       "type": "string",
@@ -51,7 +82,19 @@
     },
     "shippingMethod": {
       "type": "string",
-      "description": "Selected shipping method (standard, express, overnight)"
+      "description": "Selected shipping method: standard | express | overnight"
+    },
+    "promoCode": {
+      "type": "string",
+      "description": "Promo code applied"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Admin internal notes"
+    },
+    "loyaltyPointsEarned": {
+      "type": "number",
+      "description": "Loyalty points awarded for this order"
     }
   },
   "required": [
