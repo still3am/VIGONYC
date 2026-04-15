@@ -8,8 +8,8 @@ export default function ChromeSphere() {
     const mount = mountRef.current;
     if (!mount) return;
 
-    const w = mount.clientWidth || 300;
-    const h = mount.clientHeight || 300;
+    const w = mount.clientWidth || 280;
+    const h = w; // always square
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
@@ -80,12 +80,29 @@ export default function ChromeSphere() {
     };
     animate();
 
+    const handleResize = () => {
+      const nw = mount.clientWidth || 280;
+      renderer.setSize(nw, nw);
+      camera.aspect = 1;
+      camera.updateProjectionMatrix();
+    };
+    window.addEventListener("resize", handleResize);
+
     return () => {
       cancelAnimationFrame(frame);
+      window.removeEventListener("resize", handleResize);
       renderer.dispose();
       if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
     };
   }, []);
 
-  return <div ref={mountRef} style={{ width: "100%", height: "100%", minHeight: 280 }} />;
+  return (
+    <div ref={mountRef} style={{
+      width: "100%",
+      aspectRatio: "1 / 1",
+      maxWidth: 320,
+      margin: "0 auto",
+      display: "block",
+    }} />
+  );
 }
