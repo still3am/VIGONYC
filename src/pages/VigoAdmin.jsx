@@ -159,8 +159,11 @@ export default function VigoAdmin() {
 
       {/* Mobile top bar */}
       <div className="admin-mobile-bar" style={{ display: "none", position: "fixed", top: 0, left: 0, right: 0, zIndex: 300, background: "#080808", borderBottom: `0.5px solid ${G3}`, padding: "14px 20px", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase" }}>VIGONYC Admin</div>
-        <button onClick={() => setSidebarOpen(o => !o)} style={{ background: "none", border: `0.5px solid ${G3}`, color: SD, padding: "6px 12px", fontSize: 10, cursor: "pointer", fontFamily: "inherit" }}>☰</button>
+        <div>
+          <div style={{ fontSize: 7, letterSpacing: 3, color: SD, textTransform: "uppercase" }}>VIGONYC Admin</div>
+          <div style={{ fontSize: 10, letterSpacing: 1, color: S, textTransform: "uppercase", marginTop: 2 }}>{NAV.find(n => n.id === section)?.icon} {NAV.find(n => n.id === section)?.label}</div>
+        </div>
+        <button onClick={() => setSidebarOpen(o => !o)} style={{ background: "none", border: `0.5px solid ${G3}`, color: S, padding: "8px 14px", fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>☰</button>
       </div>
 
       {/* Mobile sidebar overlay */}
@@ -194,8 +197,8 @@ export default function VigoAdmin() {
 
       {/* Main content */}
       <div style={{ flex: 1, marginLeft: 220, minHeight: "100vh" }} className="admin-main">
-        {/* Top bar */}
-        <div style={{ padding: "0 32px", height: 60, borderBottom: `0.5px solid ${G3}`, display: "flex", alignItems: "center", justifyContent: "space-between", background: G2, position: "sticky", top: 0, zIndex: 10 }}>
+        {/* Top bar — desktop only */}
+        <div className="admin-topbar" style={{ padding: "0 32px", height: 60, borderBottom: `0.5px solid ${G3}`, display: "flex", alignItems: "center", justifyContent: "space-between", background: G2, position: "sticky", top: 0, zIndex: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <div style={{ width: 5, height: 5, background: "#0c6", borderRadius: "50%" }} />
             <span style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Live — SS25</span>
@@ -207,7 +210,7 @@ export default function VigoAdmin() {
         </div>
 
         {/* Section content */}
-        <div style={{ padding: "clamp(24px,4vw,40px) clamp(20px,4vw,36px)" }}>
+        <div style={{ padding: "clamp(16px,4vw,40px) clamp(12px,4vw,36px)" }}>
           <ActiveSection onNavigate={setSection} />
         </div>
       </div>
@@ -216,7 +219,8 @@ export default function VigoAdmin() {
         @media(max-width:768px){
           .admin-sidebar { display: none !important; }
           .admin-mobile-bar { display: flex !important; }
-          .admin-main { margin-left: 0 !important; padding-top: 56px; }
+          .admin-main { margin-left: 0 !important; padding-top: 52px; }
+          .admin-topbar { display: none !important; }
         }
       `}</style>
     </div>
