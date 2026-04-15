@@ -27,10 +27,32 @@ export default function VigoWishlist() {
   const [selectedSizes, setSelectedSizes] = useState({});
 
   useEffect(() => {
-    base44.auth.me().then(user => {
-      if (user) {
-        base44.entities.WishlistItem.filter({ created_by: user.email }, "-created_date", 200).then(setWishlistItems).catch(() => setWishlistItems([]));
-      }
+    base44.auth.me().then(async user => {
+      if (!user) return;
+      const items = await base44.entities.WishlistItem.filter({ created_by: user.email }, "-created_date", 200).catch(() => []);
+      // For items missing productImage or price, fetch from Product entity to backfill
+      const enriched = await Promise.all(items.map(async item => {
+        if (item.productImage && item.price) return item;
+        try {
+          const product = await base44.entities.Product.get(item.productId);
+          const updated = {
+            ...item,
+            productName: item.productName || product.name,
+            productImage: item.productImage || product.images?.[0] || "",
+            price: item.price || product.price || 0,
+          };
+          // Patch the DB record so it's fixed for next time
+          await base44.entities.WishlistItem.update(item.id, {
+            productName: updated.productName,
+            productImage: updated.productImage,
+            price: updated.price,
+          }).catch(() => {});
+          return updated;
+        } catch {
+          return item;
+        }
+      }));
+      setWishlistItems(enriched);
     }).catch(() => {});
   }, []);
 
