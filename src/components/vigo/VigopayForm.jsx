@@ -115,7 +115,6 @@ export default function VigopayForm({ amount, orderId, userEmail, onSuccess, onE
   const brand = detectBrand(cardNumber);
   const brandColor = brand !== "Unknown" ? S : SD;
 
-  const brand = detectBrand(cardNumber);
   const isCardValid = cardNumber.replace(/\s/g, "").length >= 13 && validateLuhn(cardNumber.replace(/\s/g, ""));
   const isFormValid = isCardValid && expiry.length === 5 && cvv.length >= 3 && name.trim() && zip.length >= 5;
 
@@ -141,8 +140,8 @@ export default function VigopayForm({ amount, orderId, userEmail, onSuccess, onE
             <div style={{ fontSize: 11, color: SD }}>Enter card details</div>
           )}
         </div>
-        {brand !== "Unknown" && (
-          <div style={{ fontSize: 28, color: S, fontWeight: 900 }}>{BRAND_ICONS[brand]}</div>
+        {detectBrand(cardNumber) !== "Unknown" && (
+          <div style={{ fontSize: 28, color: S, fontWeight: 900 }}>{BRAND_ICONS[detectBrand(cardNumber)]}</div>
         )}
       </div>
 
