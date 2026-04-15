@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import ChromeSphere from "@/components/referral/ChromeSphere";
 import PointTracker from "@/components/referral/PointTracker";
 import NeuralScanner from "@/components/referral/NeuralScanner";
 import { toast } from "sonner";
@@ -104,7 +103,7 @@ export default function VigoReferral() {
       <div style={{ position: "relative", overflow: "hidden", borderBottom: `0.5px solid ${G3}`, background: "linear-gradient(180deg, #0d0d0d 0%, #0a0a0a 100%)" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(192,192,192,0.03) 1px, transparent 1px)", backgroundSize: "28px 28px", pointerEvents: "none" }} />
 
-        <div className="ref-hero-grid" style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(40px,7vw,80px) clamp(20px,4vw,40px)", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, alignItems: "center" }}>
+        <div className="ref-hero-grid" style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(40px,7vw,80px) clamp(20px,4vw,40px)" }}>
           <div>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(192,192,192,0.05)", border: "0.5px solid rgba(192,192,192,0.15)", padding: "6px 14px", marginBottom: 20 }}>
               <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 1.5s infinite" }} />
@@ -125,12 +124,7 @@ export default function VigoReferral() {
             </div>
           </div>
 
-          {/* 3D Chrome Sphere */}
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <div style={{ width: "clamp(200px,30vw,300px)", height: "clamp(200px,30vw,300px)" }}>
-              <ChromeSphere />
-            </div>
-          </div>
+
         </div>
       </div>
 
