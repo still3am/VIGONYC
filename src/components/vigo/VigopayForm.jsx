@@ -23,6 +23,7 @@ export default function VigopayForm({ amount, orderId, userEmail, onSuccess, onE
   const [zip, setZip] = useState("");
   const [processing, setProcessing] = useState(false);
   const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
 
   const detectBrand = (num) => {
     const clean = num.replace(/\s/g, "");
@@ -114,12 +115,35 @@ export default function VigopayForm({ amount, orderId, userEmail, onSuccess, onE
   const brand = detectBrand(cardNumber);
   const brandColor = brand !== "Unknown" ? S : SD;
 
+  const brand = detectBrand(cardNumber);
+  const isCardValid = cardNumber.replace(/\s/g, "").length >= 13 && validateLuhn(cardNumber.replace(/\s/g, ""));
+  const isFormValid = isCardValid && expiry.length === 5 && cvv.length >= 3 && name.trim() && zip.length >= 5;
+
   return (
     <div style={{ background: G2, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: 24 }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24, paddingBottom: 16, borderBottom: `.5px solid ${G3}` }}>
         <div style={{ fontSize: 18, color: S }}>🔒</div>
         <div style={{ fontSize: 10, letterSpacing: 3, color: S, textTransform: "uppercase", fontWeight: 700 }}>VIGOPAY</div>
+      </div>
+
+      {/* Live card preview */}
+      <div style={{ background: G1, border: `.5px solid ${G3}`, borderRadius: 8, padding: "16px 20px", marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "center", minHeight: 60 }}>
+        <div>
+          {cardNumber ? (
+            <>
+              <div style={{ fontSize: 10, color: SD, letterSpacing: 1, marginBottom: 4 }}>Card Number</div>
+              <div style={{ fontSize: 14, fontFamily: "monospace", fontWeight: 700, color: "var(--vt-text)", letterSpacing: 2 }}>
+                {cardNumber.slice(-4).padStart(cardNumber.length, "•")}
+              </div>
+            </>
+          ) : (
+            <div style={{ fontSize: 11, color: SD }}>Enter card details</div>
+          )}
+        </div>
+        {brand !== "Unknown" && (
+          <div style={{ fontSize: 28, color: S, fontWeight: 900 }}>{BRAND_ICONS[brand]}</div>
+        )}
       </div>
 
       {/* Brand icons row */}
@@ -137,19 +161,22 @@ export default function VigopayForm({ amount, orderId, userEmail, onSuccess, onE
         <input
           value={cardNumber}
           onChange={handleCardChange}
+          onBlur={() => setTouched(prev => ({ ...prev, cardNumber: true }))}
           placeholder="4111 1111 1111 1111"
           style={{
             width: "100%",
             background: G1,
-            border: `.5px solid ${errors.cardNumber ? "#e03" : G3}`,
+            border: `.5px solid ${touched.cardNumber && cardNumber && !isCardValid ? "#e03" : cardNumber && isCardValid ? "#0c6" : G3}`,
             color: "var(--vt-text)",
             padding: "12px 14px",
             fontSize: 13,
             fontFamily: "monospace",
             outline: "none",
-            boxSizing: "border-box"
+            boxSizing: "border-box",
+            transition: "border-color 0.2s"
           }}
         />
+        {touched.cardNumber && cardNumber && isCardValid && <div style={{ fontSize: 9, color: "#0c6", marginTop: 4 }}>✓ Valid card</div>}
         {errors.cardNumber && <div style={{ fontSize: 9, color: "#e03", marginTop: 4 }}>{errors.cardNumber}</div>}
       </div>
 
@@ -160,18 +187,21 @@ export default function VigopayForm({ amount, orderId, userEmail, onSuccess, onE
           <input
             value={expiry}
             onChange={handleExpiryChange}
+            onBlur={() => setTouched(prev => ({ ...prev, expiry: true }))}
             placeholder="MM / YY"
             style={{
               width: "100%",
               background: G1,
-              border: `.5px solid ${errors.expiry ? "#e03" : G3}`,
+              border: `.5px solid ${touched.expiry && expiry && expiry.length < 5 ? "#e03" : expiry.length === 5 ? "#0c6" : G3}`,
               color: "var(--vt-text)",
               padding: "12px 14px",
               fontSize: 12,
               outline: "none",
-              boxSizing: "border-box"
+              boxSizing: "border-box",
+              transition: "border-color 0.2s"
             }}
           />
+          {touched.expiry && expiry.length === 5 && <div style={{ fontSize: 9, color: "#0c6", marginTop: 4 }}>✓</div>}
           {errors.expiry && <div style={{ fontSize: 9, color: "#e03", marginTop: 4 }}>{errors.expiry}</div>}
         </div>
         <div>
@@ -179,19 +209,22 @@ export default function VigopayForm({ amount, orderId, userEmail, onSuccess, onE
           <input
             value={cvv}
             onChange={handleCvvChange}
+            onBlur={() => setTouched(prev => ({ ...prev, cvv: true }))}
             placeholder="•••"
             type="password"
             style={{
               width: "100%",
               background: G1,
-              border: `.5px solid ${errors.cvv ? "#e03" : G3}`,
+              border: `.5px solid ${touched.cvv && cvv && cvv.length < 3 ? "#e03" : cvv.length >= 3 ? "#0c6" : G3}`,
               color: "var(--vt-text)",
               padding: "12px 14px",
               fontSize: 12,
               outline: "none",
-              boxSizing: "border-box"
+              boxSizing: "border-box",
+              transition: "border-color 0.2s"
             }}
           />
+          {touched.cvv && cvv.length >= 3 && <div style={{ fontSize: 9, color: "#0c6", marginTop: 4 }}>✓</div>}
           {errors.cvv && <div style={{ fontSize: 9, color: "#e03", marginTop: 4 }}>{errors.cvv}</div>}
         </div>
       </div>
@@ -202,18 +235,21 @@ export default function VigopayForm({ amount, orderId, userEmail, onSuccess, onE
         <input
           value={name}
           onChange={e => { setName(e.target.value); setErrors(prev => ({ ...prev, name: "" })); }}
+          onBlur={() => setTouched(prev => ({ ...prev, name: true }))}
           placeholder="John Doe"
           style={{
             width: "100%",
             background: G1,
-            border: `.5px solid ${errors.name ? "#e03" : G3}`,
+            border: `.5px solid ${touched.name && !name.trim() ? "#e03" : name.trim() ? "#0c6" : G3}`,
             color: "var(--vt-text)",
             padding: "12px 14px",
             fontSize: 12,
             outline: "none",
-            boxSizing: "border-box"
+            boxSizing: "border-box",
+            transition: "border-color 0.2s"
           }}
         />
+        {touched.name && name.trim() && <div style={{ fontSize: 9, color: "#0c6", marginTop: 4 }}>✓</div>}
         {errors.name && <div style={{ fontSize: 9, color: "#e03", marginTop: 4 }}>{errors.name}</div>}
       </div>
 
@@ -223,18 +259,21 @@ export default function VigopayForm({ amount, orderId, userEmail, onSuccess, onE
         <input
           value={zip}
           onChange={e => { setZip(e.target.value.slice(0, 5)); setErrors(prev => ({ ...prev, zip: "" })); }}
+          onBlur={() => setTouched(prev => ({ ...prev, zip: true }))}
           placeholder="10001"
           style={{
             width: "100%",
             background: G1,
-            border: `.5px solid ${errors.zip ? "#e03" : G3}`,
+            border: `.5px solid ${touched.zip && zip && zip.length < 5 ? "#e03" : zip.length >= 5 ? "#0c6" : G3}`,
             color: "var(--vt-text)",
             padding: "12px 14px",
             fontSize: 12,
             outline: "none",
-            boxSizing: "border-box"
+            boxSizing: "border-box",
+            transition: "border-color 0.2s"
           }}
         />
+        {touched.zip && zip.length >= 5 && <div style={{ fontSize: 9, color: "#0c6", marginTop: 4 }}>✓</div>}
         {errors.zip && <div style={{ fontSize: 9, color: "#e03", marginTop: 4 }}>{errors.zip}</div>}
       </div>
 
@@ -244,10 +283,10 @@ export default function VigopayForm({ amount, orderId, userEmail, onSuccess, onE
       {/* Pay button */}
       <button
         onClick={handleSubmit}
-        disabled={processing}
+        disabled={processing || !isFormValid}
         style={{
           width: "100%",
-          background: processing ? G1 : "linear-gradient(135deg, #888, #C0C0C0, #E8E8E8, #C0C0C0)",
+          background: !isFormValid ? G1 : processing ? G1 : "linear-gradient(135deg, #888, #C0C0C0, #E8E8E8, #C0C0C0)",
           color: "#000",
           border: "none",
           padding: "15px",
@@ -255,13 +294,14 @@ export default function VigopayForm({ amount, orderId, userEmail, onSuccess, onE
           letterSpacing: 3,
           textTransform: "uppercase",
           fontWeight: 900,
-          cursor: processing ? "not-allowed" : "pointer",
+          cursor: !isFormValid || processing ? "not-allowed" : "pointer",
           fontFamily: "inherit",
-          opacity: processing ? 0.6 : 1,
-          marginBottom: 12
+          opacity: !isFormValid || processing ? 0.5 : 1,
+          transition: "all 0.2s",
+          boxShadow: isFormValid && !processing ? "0 4px 12px rgba(192,192,192,0.2)" : "none"
         }}
       >
-        {processing ? "Processing..." : `Pay $${amount.toFixed(2)}`}
+        {processing ? "Processing..." : !isFormValid ? "Complete all fields" : `Pay $${amount.toFixed(2)}`}
       </button>
 
       {/* Footer */}
