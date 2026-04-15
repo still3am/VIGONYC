@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import ErrorBoundary from './components/ErrorBoundary';
 // Add page imports here
 import VigoAdmin from './pages/VigoAdmin';
 import VIGONYCFlagship from './pages/VIGONYCFlagship';
@@ -52,30 +53,32 @@ const AuthenticatedApp = () => {
 
   // Render the main app
   return (
+    <ErrorBoundary>
     <Routes>
       {/* Add your page Route elements here */}
       <Route path="/" element={<VIGONYCFlagship />}>
-        <Route index element={<VigoHome />} />
-        <Route path="shop" element={<VigoShop />} />
-        <Route path="product/:id" element={<VigoProduct />} />
-        <Route path="lookbook" element={<VigoLookbook />} />
-        <Route path="about" element={<VigoAbout />} />
-        <Route path="faq" element={<VigoFAQ />} />
-        <Route path="contact" element={<VigoContact />} />
-        <Route path="wishlist" element={<VigoWishlist />} />
-        <Route path="track-order" element={<VigoTrackOrder />} />
-        <Route path="account" element={<VigoAccount />} />
-        <Route path="checkout" element={<VigoCheckout />} />
-        <Route path="drops" element={<VigoDrops />} />
-        <Route path="search" element={<VigoSearch />} />
-        <Route path="new" element={<VigoNewArrivals />} />
-        <Route path="terms" element={<VigoTerms />} />
-        <Route path="privacy" element={<VigoPrivacy />} />
-        <Route path="returns" element={<VigoReturns />} />
+        <Route index element={<ErrorBoundary><VigoHome /></ErrorBoundary>} />
+        <Route path="shop" element={<ErrorBoundary><VigoShop /></ErrorBoundary>} />
+        <Route path="product/:id" element={<ErrorBoundary><VigoProduct /></ErrorBoundary>} />
+        <Route path="lookbook" element={<ErrorBoundary><VigoLookbook /></ErrorBoundary>} />
+        <Route path="about" element={<ErrorBoundary><VigoAbout /></ErrorBoundary>} />
+        <Route path="faq" element={<ErrorBoundary><VigoFAQ /></ErrorBoundary>} />
+        <Route path="contact" element={<ErrorBoundary><VigoContact /></ErrorBoundary>} />
+        <Route path="wishlist" element={<ErrorBoundary><VigoWishlist /></ErrorBoundary>} />
+        <Route path="track-order" element={<ErrorBoundary><VigoTrackOrder /></ErrorBoundary>} />
+        <Route path="account" element={<ErrorBoundary><VigoAccount /></ErrorBoundary>} />
+        <Route path="checkout" element={<ErrorBoundary><VigoCheckout /></ErrorBoundary>} />
+        <Route path="drops" element={<ErrorBoundary><VigoDrops /></ErrorBoundary>} />
+        <Route path="search" element={<ErrorBoundary><VigoSearch /></ErrorBoundary>} />
+        <Route path="new" element={<ErrorBoundary><VigoNewArrivals /></ErrorBoundary>} />
+        <Route path="terms" element={<ErrorBoundary><VigoTerms /></ErrorBoundary>} />
+        <Route path="privacy" element={<ErrorBoundary><VigoPrivacy /></ErrorBoundary>} />
+        <Route path="returns" element={<ErrorBoundary><VigoReturns /></ErrorBoundary>} />
       </Route>
       <Route path="/admin" element={<VigoAdmin />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
+    </ErrorBoundary>
   );
 };
 

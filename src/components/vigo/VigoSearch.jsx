@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, useNavigate, useOutletContext } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import ProductCard from "./ProductCard";
+import { useDebounce } from "@/lib/useDebounce";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -14,6 +15,7 @@ export default function VigoSearch() {
   const navigate = useNavigate();
   const query = searchParams.get("q") || "";
   const [inputVal, setInputVal] = useState(query);
+  const debouncedInput = useDebounce(inputVal, 350);
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterCat, setFilterCat] = useState("All");
@@ -27,6 +29,13 @@ export default function VigoSearch() {
   useEffect(() => {
     base44.entities.Product.list("-created_date", 200).then(data => { setAllProducts(data || []); setLoading(false); }).catch(() => setLoading(false));
   }, []);
+
+  // Navigate on debounce when user types (auto-search)
+  useEffect(() => {
+    if (debouncedInput.trim() && debouncedInput !== query) {
+      navigate(`/search?q=${encodeURIComponent(debouncedInput.trim())}`, { replace: true });
+    }
+  }, [debouncedInput]);
 
   const results = useMemo(() => {
     if (!query.trim()) return allProducts;

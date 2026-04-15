@@ -53,10 +53,17 @@ export default function VIGONYCFlagship() {
       const user = await base44.auth.me();
       if (user) {
         const items = await base44.entities.CartItem.filter({ created_by: user.email }, '-created_date', 100);
-        setCartCount(items.length);
+        setCartCount(items.reduce((s, i) => s + (i.qty || 1), 0));
       }
     } catch (err) {}
   };
+
+  // Listen for optimistic cart updates from addToCart to avoid full refetches
+  useEffect(() => {
+    const handler = (e) => setCartCount(c => c + (e.detail?.delta || 1));
+    window.addEventListener("vigo:cart-update", handler);
+    return () => window.removeEventListener("vigo:cart-update", handler);
+  }, []);
 
   useEffect(() => { refreshCartCount(); refreshWishlist(); }, []);
 
@@ -80,7 +87,8 @@ export default function VIGONYCFlagship() {
             productImage: item.productImage || null,
           });
         }
-        await refreshCartCount();
+        // Optimistic update — no full refetch needed
+        window.dispatchEvent(new CustomEvent("vigo:cart-update", { detail: { delta: 1 } }));
       }
     } catch (err) {}
     setCartOpen(true);
@@ -110,6 +118,7 @@ export default function VIGONYCFlagship() {
 
   const handleCartClose = () => {
     setCartOpen(false);
+    // Refresh exact count from DB after cart interactions (qty changes/removes)
     refreshCartCount();
   };
 

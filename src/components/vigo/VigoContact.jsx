@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { base44 } from "@/api/base44Client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { sanitize } from "@/lib/sanitize";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -74,7 +75,13 @@ export default function VigoContact() {
     if (!topic) return alert("Please select a topic.");
     if (!message.trim() || message.trim().length < 10) return alert("Please enter a message (at least 10 characters).");
     setSending(true);
-    await base44.entities.ContactEntry.create({ firstName, lastName, email, topic, message }).catch(() => {});
+    await base44.entities.ContactEntry.create({
+      firstName: sanitize(firstName),
+      lastName: sanitize(lastName),
+      email: sanitize(email),
+      topic: sanitize(topic),
+      message: sanitize(message),
+    }).catch(() => {});
     setSending(false);
     setSubmitted(true);
   };

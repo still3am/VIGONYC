@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { sanitize, sanitizeObject } from "@/lib/sanitize";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -29,6 +30,8 @@ export default function VigoCheckout() {
   const [isGift, setIsGift] = useState(false);
   const [giftMessage, setGiftMessage] = useState("");
   const [contact, setContact] = useState({ firstName: "", lastName: "", email: "", phone: "", address: "", city: "", state: "", zip: "" });
+  const promoAttemptsRef = useRef(0);
+  const promoLockedUntilRef = useRef(null);
 
   useEffect(() => {
     const load = async () => {
@@ -65,14 +68,29 @@ export default function VigoCheckout() {
 
   const applyPromo = async () => {
     if (!promoCode.trim()) return;
+    // Rate limiting: max 5 attempts, then 60s cooldown
+    if (promoLockedUntilRef.current && Date.now() < promoLockedUntilRef.current) {
+      const secs = Math.ceil((promoLockedUntilRef.current - Date.now()) / 1000);
+      setPromoError(true);
+      return;
+    }
+    promoAttemptsRef.current += 1;
+    if (promoAttemptsRef.current > 5) {
+      promoLockedUntilRef.current = Date.now() + 60000;
+      promoAttemptsRef.current = 0;
+      setPromoError(true);
+      return;
+    }
     try {
-      const results = await base44.entities.PromoCode.filter({ code: promoCode.trim().toUpperCase() }, "-created_date", 1);
+      const code = sanitize(promoCode.trim().toUpperCase());
+      const results = await base44.entities.PromoCode.filter({ code }, "-created_date", 1);
       const promo = results?.[0];
       if (!promo || promo.active === false) { setPromoError(true); setPromoApplied(false); return; }
       if (promo.expiresAt && new Date(promo.expiresAt) < new Date()) { setPromoError(true); setPromoApplied(false); return; }
       setPromoDiscount(promo.discountPercent);
       setPromoApplied(true);
       setPromoError(false);
+      promoAttemptsRef.current = 0;
     } catch { setPromoError(true); }
   };
 
@@ -80,19 +98,20 @@ export default function VigoCheckout() {
 
   const handlePlaceOrder = async () => {
     setPlacing(true);
+    const safeContact = sanitizeObject(contact);
     try {
       const genId = "VIGO-" + Math.floor(Math.random() * 90000 + 10000);
       await base44.entities.Order.create({
         orderId: genId,
-        items: cartItems.map(i => `${i.productName} x${i.qty}`).join(", "),
+        items: cartItems.map(i => `${sanitize(i.productName)} x${i.qty}`).join(", "),
         total: total,
         pieces: cartItems.reduce((s, i) => s + i.qty, 0),
         status: "Pending",
-        shippingAddress: `${contact.address}, ${contact.city}, ${contact.state} ${contact.zip}`,
-        userEmail: contact.email,
+        shippingAddress: `${safeContact.address}, ${safeContact.city}, ${safeContact.state} ${safeContact.zip}`,
+        userEmail: safeContact.email,
         shippingMethod,
         isGift,
-        giftMessage: isGift ? giftMessage : "",
+        giftMessage: isGift ? sanitize(giftMessage) : "",
       });
       // Update stock
       for (const item of cartItems) {
@@ -159,9 +178,9 @@ export default function VigoCheckout() {
   }
 
   return (
-    <div style={{ padding: "48px 32px", maxWidth: 1100, margin: "0 auto" }}>
-      <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 12 }}>✦ Secure Checkout</div>
-      <h1 style={{ fontSize: 40, fontWeight: 900, letterSpacing: -2, marginBottom: 36 }}>Checkout</h1>
+    <div style={{ padding: "clamp(24px,5vw,48px) clamp(16px,4vw,32px)", maxWidth: 1100, margin: "0 auto" }}>
+    <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 12 }}>✦ Secure Checkout</div>
+    <h1 style={{ fontSize: "clamp(28px,5vw,40px)", fontWeight: 900, letterSpacing: -2, marginBottom: 36 }}>Checkout</h1>
 
       <div style={{ display: "flex", gap: 0, marginBottom: 40, borderBottom: `.5px solid ${G3}`, paddingBottom: 24 }}>
        {[["1","Contact & Shipping"],["2","Shipping Method"],["3","Payment"]].map(([n,l]) => (
@@ -174,7 +193,7 @@ export default function VigoCheckout() {
         ))}
       </div>
 
-      <div className="vigo-checkout-grid" style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 48 }}>
+      <div className="vigo-checkout-grid" style={{ display: "grid", gridTemplateColumns: "1fr clamp(300px,35%,400px)", gap: "clamp(24px,4vw,48px)" }}>
         <div>
           {step === 1 && (
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -334,7 +353,11 @@ export default function VigoCheckout() {
         </div>
       </div>
       <style>{`
-        @media(max-width:900px){.vigo-checkout-grid{grid-template-columns:1fr !important;} .vigo-2col-sm,.vigo-3col-sm{grid-template-columns:1fr !important;}}
+        @media(max-width:900px){
+          .vigo-checkout-grid{grid-template-columns:1fr !important;}
+          .vigo-checkout-grid > div:last-child { order: -1; }
+          .vigo-2col-sm,.vigo-3col-sm{grid-template-columns:1fr !important;}
+        }
       `}</style>
     </div>
   );

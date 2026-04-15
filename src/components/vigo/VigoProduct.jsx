@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { sanitizeObject } from "@/lib/sanitize";
 import { useNavigate, useOutletContext, useParams, Link } from "react-router-dom";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Package, RotateCcw, Zap } from "lucide-react";
@@ -84,9 +85,19 @@ export default function VigoProduct() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: 32, height: 32, border: `2px solid ${G3}`, borderTop: `2px solid ${S}`, borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      <div style={{ padding: "clamp(20px,4vw,32px)", maxWidth: 1200, margin: "0 auto" }}>
+        <div className="product-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(24px,5vw,48px)" }}>
+          <div style={{ background: G2, border: `.5px solid ${G3}`, aspectRatio: "3/4", animation: "vigo-skeleton 1.4s ease-in-out infinite" }} />
+          <div style={{ display: "flex", flexDirection: "column", gap: 20, paddingTop: 16 }}>
+            {[80, 200, 60, 120, 100, 48].map((w, i) => (
+              <div key={i} style={{ height: i === 0 ? 14 : i === 1 ? 56 : i === 5 ? 48 : 18, width: `${w}%`, background: G2, animation: "vigo-skeleton 1.4s ease-in-out infinite", animationDelay: `${i * 0.08}s` }} />
+            ))}
+          </div>
+        </div>
+        <style>{`
+          @keyframes vigo-skeleton { 0%,100%{opacity:.6} 50%{opacity:.25} }
+          @media(max-width:900px){.product-grid{grid-template-columns:1fr !important;}}
+        `}</style>
       </div>
     );
   }
@@ -145,7 +156,7 @@ export default function VigoProduct() {
     e.preventDefault();
     if (!reviewForm.rating) return toast.error("Please select a star rating");
     setSubmittingReview(true);
-    await base44.entities.Review.create({ productId: id, ...reviewForm });
+    await base44.entities.Review.create({ productId: id, ...sanitizeObject(reviewForm) });
     const updated = await base44.entities.Review.filter({ productId: id }, "-created_date", 50).catch(() => reviews);
     setReviews(updated);
     setReviewForm({ rating: 0, title: "", body: "", reviewerName: reviewForm.reviewerName });
