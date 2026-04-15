@@ -82,7 +82,8 @@ export default function VigoReferral() {
     toast.success("Referral link copied!");
   };
 
-  const currentTier = TIERS.find(t => loyalty?.tier === t.name) || TIERS[0];
+  const totalEarned = loyalty?.totalEarned || 0;
+  const currentTier = TIERS.find(t => t.max === null || totalEarned < t.max) || TIERS[TIERS.length - 1];
 
   if (!user && !loading) {
     return (

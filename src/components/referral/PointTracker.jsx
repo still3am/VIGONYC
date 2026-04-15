@@ -3,14 +3,14 @@ import { useEffect, useRef } from "react";
 const TIERS = [
   { name: "Silver", min: 0, max: 3000, color: "#C0C0C0" },
   { name: "Chrome", min: 3000, max: 10000, color: "#E8E8E8" },
-  { name: "Obsidian", min: 10000, max: 25000, color: "#9CA3AF" },
+  { name: "Obsidian", min: 10000, max: null, color: "#9CA3AF" },
 ];
 
 export default function PointTracker({ points = 0, totalEarned = 0 }) {
   const canvasRef = useRef(null);
 
-  const tier = TIERS.find(t => totalEarned < t.max) || TIERS[TIERS.length - 1];
-  const progress = Math.min((totalEarned - tier.min) / (tier.max - tier.min), 1);
+  const tier = TIERS.find(t => t.max === null || totalEarned < t.max) || TIERS[TIERS.length - 1];
+  const progress = tier.max ? Math.min((totalEarned - tier.min) / (tier.max - tier.min), 1) : 1;
 
   useEffect(() => {
     const canvas = canvasRef.current;
