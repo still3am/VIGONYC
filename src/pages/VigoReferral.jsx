@@ -227,7 +227,7 @@ export default function VigoReferral() {
                     <img
                       src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(referralLink)}&bgcolor=0a0a0a&color=C0C0C0&qzone=1`}
                       alt="Referral QR"
-                      style={{ width: 160, height: 160, imageRendering: "pixelated", border: `0.5px solid ${G3}` }}
+                      style={{ width: 160, height: 160, imageRendering: "pixelated", border: `0.5px solid ${G3}`, display: "block", margin: "0 auto" }}
                     />
                     <div style={{ fontSize: 8, color: SD, marginTop: 10, letterSpacing: 2 }}>Code: {loyalty.referralCode}</div>
                   </div>
