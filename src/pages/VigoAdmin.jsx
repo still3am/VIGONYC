@@ -13,6 +13,7 @@ import AdminPromoCodes from "@/components/admin/AdminPromoCodes";
 import AdminReviews from "@/components/admin/AdminReviews";
 import AdminNewsletter from "@/components/admin/AdminNewsletter";
 import AdminContacts from "@/components/admin/AdminContacts";
+import AdminPayments from "@/components/admin/AdminPayments";
 
 const S = "#C0C0C0";
 const G1 = "#0d0d0d";
@@ -25,6 +26,7 @@ const NAV = [
   { id: "orders", label: "Orders", icon: "◇", badgeKey: "pendingOrders" },
   { id: "customers", label: "Customers", icon: "◯" },
   { id: "returns", label: "Returns", icon: "↩", badgeKey: "pendingReturns" },
+  { id: "payments", label: "Payments", icon: "₿" },
   { id: "shop", label: "Shop", icon: "◻" },
   { id: "drops", label: "Drops", icon: "◆" },
   { id: "lookbook", label: "Lookbook", icon: "◉" },
@@ -40,6 +42,7 @@ const SECTION_MAP = {
   orders: AdminOrders,
   customers: AdminCustomers,
   returns: AdminReturns,
+  payments: AdminPayments,
   shop: AdminShop,
   drops: AdminDrops,
   lookbook: AdminLookbook,

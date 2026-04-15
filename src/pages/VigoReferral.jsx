@@ -45,6 +45,7 @@ export default function VigoReferral() {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [user, setUser] = useState(null);
+  const [activities, setActivities] = useState([]);
 
   useEffect(() => {
     document.title = "The Exchange — VIGONYC";
@@ -58,6 +59,20 @@ export default function VigoReferral() {
         base44.functions.invoke("loyaltyPoints", { action: "get" })
           .then(res => { setLoyalty(res.data.loyalty); setLoading(false); })
           .catch(() => setLoading(false));
+        // Load recent activities
+        Promise.all([
+          base44.entities.Order.filter({ userEmail: u.email }, "-created_date", 5).catch(() => []),
+          base44.entities.ProductAuthenticity.filter({ authenticatedBy: u.email }, "-created_date", 5).catch(() => [])
+        ]).then(([orders, scans]) => {
+          const acts = [];
+          (orders || []).forEach(o => {
+            if (o.loyaltyPointsEarned) acts.push({ type: "order", order: o, points: o.loyaltyPointsEarned, date: o.created_date });
+          });
+          (scans || []).forEach(s => {
+            acts.push({ type: "scan", scan: s, points: s.pointsAwarded || 100, date: s.created_date });
+          });
+          setActivities(acts.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5));
+        });
       } else {
         setLoading(false);
       }
@@ -180,6 +195,28 @@ export default function VigoReferral() {
                       <div style={{ fontSize: 9, color: SD }}>Points auto-applied on every purchase</div>
                     </div>
                   </div>
+
+                  {/* Recent Activity */}
+                  {activities.length > 0 && (
+                    <div style={{ borderTop: `.5px solid ${G3}`, paddingTop: 16 }}>
+                      <div style={{ fontSize: 9, letterSpacing: 2, color: S, textTransform: "uppercase", marginBottom: 12, fontWeight: 700 }}>Recent Activity</div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                        {activities.map((act, i) => (
+                          <div key={i} style={{ background: G2, border: `.5px solid ${G3}`, padding: "10px 12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div>
+                              <div style={{ fontSize: 10, color: "var(--vt-text)", marginBottom: 2 }}>
+                                {act.type === "order" ? `Order ${act.order.orderId}` : `Authenticated ${act.scan.productName}`}
+                              </div>
+                              <div style={{ fontSize: 8, color: SD }}>
+                                {act.date ? new Date(act.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}
+                              </div>
+                            </div>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: "#0c6" }}>+{act.points}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

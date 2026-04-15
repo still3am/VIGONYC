@@ -3,6 +3,7 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { sanitize, sanitizeObject } from "@/lib/sanitize";
+import VigopayForm from "./VigopayForm";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -96,7 +97,7 @@ export default function VigoCheckout() {
 
   const setField = (k, v) => setContact(p => ({ ...p, [k]: v }));
 
-  const handlePlaceOrder = async () => {
+  const handlePlaceOrder = async (txnId, cardLast4, cardBrand) => {
     setPlacing(true);
     const safeContact = sanitizeObject(contact);
     try {
@@ -104,6 +105,8 @@ export default function VigoCheckout() {
       const genId = "VGO-" + suffix + String(Date.now()).slice(-4);
       const itemsJson = JSON.stringify(cartItems.map(i => ({ productId: i.productId, name: i.productName, size: i.size, color: i.color, qty: i.qty, price: i.price, image: i.productImage })));
       const loyaltyPts = Math.floor(total * 5);
+      
+      // Create order with payment details
       await base44.entities.Order.create({
         orderId: genId,
         items: cartItems.map(i => `${sanitize(i.productName)}${i.size ? ` (${i.size})` : ""} x${i.qty}`).join(", "),
@@ -122,7 +125,16 @@ export default function VigoCheckout() {
         isGift,
         giftMessage: isGift ? sanitize(giftMessage) : "",
         loyaltyPointsEarned: loyaltyPts,
+        paymentMethod: "card",
+        paymentStatus: "captured",
+        paymentRef: txnId,
+        cardLast4,
+        cardBrand
       });
+
+      // Capture payment
+      await base44.functions.invoke("capturePayment", { txnId });
+
       // Update stock + soldCount
       for (const item of cartItems) {
         const prod = await base44.entities.Product.get(item.productId).catch(() => null);
@@ -138,8 +150,10 @@ export default function VigoCheckout() {
         }
       }
       await Promise.all(cartItems.map(i => base44.entities.CartItem.delete(i.id)));
+      
       // Award loyalty points
       base44.functions.invoke("loyaltyPoints", { action: "addPoints", data: { points: loyaltyPts, reason: `Order ${genId}` } }).catch(() => {});
+      
       setOrderId(genId);
       setOrderPlaced(true);
       window.dispatchEvent(new CustomEvent("vigo:cart-update", { detail: { delta: -cartItems.reduce((s, i) => s + i.qty, 0) } }));
@@ -301,37 +315,33 @@ export default function VigoCheckout() {
                 ))}
               </div>
               {payMethod === "card" && (
-                <>
-                  <Field label="Card Number" placeholder="1234 5678 9012 3456" />
-                  <div className="vigo-2col-sm" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                    <Field label="Expiry" placeholder="MM / YY" />
-                    <Field label="CVV" placeholder="•••" />
-                  </div>
-                  <Field label="Name on Card" />
-                </>
+                <VigopayForm 
+                  amount={total} 
+                  orderId={Math.random().toString(36).slice(2, 6).toUpperCase() + String(Date.now()).slice(-4)} 
+                  userEmail={contact.email}
+                  onSuccess={(data) => handlePlaceOrder(data.txnId, data.cardLast4, data.cardBrand)}
+                  onError={() => {}}
+                />
               )}
               {payMethod === "applepay" && (
                 <div style={{ background: G1, border: `.5px solid ${G3}`, padding: 24, textAlign: "center" }}>
                   <div style={{ fontSize: 32, marginBottom: 8 }}>🍎</div>
                   <div style={{ fontSize: 12, color: SD }}>Tap Pay to complete with Apple Pay.</div>
+                  <button onClick={() => handlePlaceOrder("APL-" + Date.now(), "****", "Apple Pay")} style={{ ...btnP, marginTop: 16, width: 200, margin: "16px auto 0" }}>Complete with Apple Pay</button>
                 </div>
               )}
               {payMethod === "klarna" && (
                 <div style={{ background: G1, border: `.5px solid ${G3}`, padding: 24, textAlign: "center" }}>
                   <div style={{ fontSize: 24, marginBottom: 8 }}>🟡 Klarna</div>
-                  <div style={{ fontSize: 12, color: SD }}>Pay in 4 installments of <strong style={{ color: "var(--vt-text)" }}>${Math.round(total / 4)}</strong>. No interest.</div>
+                  <div style={{ fontSize: 12, color: SD, marginBottom: 16 }}>Pay in 4 installments of <strong style={{ color: "var(--vt-text)" }}>${Math.round(total / 4)}</strong>. No interest.</div>
+                  <button onClick={() => handlePlaceOrder("KLN-" + Date.now(), "****", "Klarna")} style={{ ...btnP, width: 200, margin: "0 auto" }}>Complete with Klarna</button>
                 </div>
               )}
-              <div style={{ display: "flex", gap: 12 }}>
-                <button onClick={() => setStep(2)} style={btnGhost}>← Back</button>
-                <button
-                  onClick={handlePlaceOrder}
-                  disabled={placing || cartItems.length === 0}
-                  style={{ ...btnP, flex: 1, opacity: (placing || cartItems.length === 0) ? 0.6 : 1, cursor: (placing || cartItems.length === 0) ? "not-allowed" : "pointer" }}
-                >
-                  {placing ? "Placing Order..." : `Place Order — $${total}`}
-                </button>
-              </div>
+              {payMethod === "card" && (
+                <div style={{ display: "flex", gap: 12 }}>
+                  <button onClick={() => setStep(2)} style={btnGhost}>← Back</button>
+                </div>
+              )}
             </div>
           )}
         </div>

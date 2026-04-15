@@ -1,0 +1,154 @@
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
+
+// Luhn algorithm validation
+function validateLuhn(num) {
+  let sum = 0, isEven = false;
+  for (let i = num.length - 1; i >= 0; i--) {
+    let digit = parseInt(num[i], 10);
+    if (isEven) digit *= 2;
+    if (digit > 9) digit -= 9;
+    sum += digit;
+    isEven = !isEven;
+  }
+  return sum % 10 === 0;
+}
+
+// Detect card brand from BIN
+function detectBrand(cardNumber) {
+  const num = cardNumber.replace(/\s/g, '');
+  if (/^4[0-9]{12}(?:[0-9]{3})?$/.test(num)) return 'Visa';
+  if (/^5[1-5][0-9]{14}$/.test(num)) return 'Mastercard';
+  if (/^3[47][0-9]{13}$/.test(num)) return 'Amex';
+  if (/^6(?:011|5[0-9]{2})[0-9]{12}$/.test(num)) return 'Discover';
+  return 'Unknown';
+}
+
+// Simple fraud scoring
+function calculateRiskScore(data) {
+  let score = 0;
+  const riskFlags = [];
+
+  // High amount risk
+  if (data.amount > 500) { score += 15; riskFlags.push('high_amount'); }
+
+  // New device/user heuristic (check if first order)
+  if (data.firstOrder) { score += 20; riskFlags.push('new_device'); }
+
+  // Velocity check (mock — would check DB for user history)
+  if (data.multipleOrders) { score += 25; riskFlags.push('velocity_flag'); }
+
+  // ZIP mismatch (mock)
+  if (data.billingZip && data.billingZip.length < 5) { score += 10; }
+
+  return { score: Math.min(100, score), flags: riskFlags };
+}
+
+Deno.serve(async (req) => {
+  try {
+    const base44 = createClientFromRequest(req);
+    const user = await base44.auth.me();
+    
+    if (!user) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { amount, method, cardData, billingZip, orderId, userEmail } = await req.json();
+
+    // Validate inputs
+    if (!amount || !method || !orderId) {
+      return Response.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    if (method === 'card') {
+      if (!cardData || !cardData.number || !cardData.expiry || !cardData.cvv || !cardData.name) {
+        return Response.json({ error: 'Invalid card data' }, { status: 400 });
+      }
+
+      // Validate card number with Luhn
+      const cardNum = cardData.number.replace(/\s/g, '');
+      if (!validateLuhn(cardNum)) {
+        return Response.json({ error: 'Invalid card number' }, { status: 400 });
+      }
+
+      // Check expiry not past
+      const [expMonth, expYear] = cardData.expiry.split('/');
+      const now = new Date();
+      const expDate = new Date(parseInt('20' + expYear), parseInt(expMonth) - 1);
+      if (expDate < now) {
+        return Response.json({ error: 'Card expired' }, { status: 400 });
+      }
+
+      // Detect brand
+      const brand = detectBrand(cardNum);
+      const last4 = cardNum.slice(-4);
+
+      // Check user is not admin accessing this
+      if (user.role === 'admin') {
+        return Response.json({ error: 'Admins cannot checkout' }, { status: 403 });
+      }
+
+      // Calculate fraud risk
+      const riskData = calculateRiskScore({
+        amount,
+        billingZip,
+        firstOrder: true, // In prod, check Order.filter({created_by: userEmail}).length
+        multipleOrders: false
+      });
+
+      // Generate txnId
+      const txnId = 'VPY-' + Math.random().toString(36).slice(2, 8).toUpperCase() + String(Date.now()).slice(-4);
+
+      // Create PaymentTransaction with status="authorized"
+      const txn = await base44.asServiceRole.entities.PaymentTransaction.create({
+        txnId,
+        orderId,
+        userEmail: userEmail || user.email,
+        amount,
+        currency: 'USD',
+        method: 'card',
+        status: 'authorized',
+        cardLast4: last4,
+        cardBrand: brand,
+        cardExpiry: cardData.expiry,
+        cardholderName: cardData.name,
+        billingZip: billingZip || '',
+        riskScore: riskData.score,
+        riskFlags: riskData.flags,
+        metadata: JSON.stringify({ ipAddress: 'client-side', userAgent: 'checkout' })
+      });
+
+      return Response.json({
+        success: true,
+        txnId,
+        cardLast4: last4,
+        cardBrand: brand,
+        riskScore: riskData.score,
+        riskFlags: riskData.flags
+      });
+    }
+
+    // Other payment methods (Apple Pay, Klarna, Points) — simplified for now
+    if (method === 'applepay' || method === 'klarna' || method === 'points') {
+      const txnId = 'VPY-' + Math.random().toString(36).slice(2, 8).toUpperCase() + String(Date.now()).slice(-4);
+      await base44.asServiceRole.entities.PaymentTransaction.create({
+        txnId,
+        orderId,
+        userEmail: userEmail || user.email,
+        amount,
+        currency: 'USD',
+        method,
+        status: 'authorized',
+        riskScore: 5,
+        riskFlags: [],
+        metadata: JSON.stringify({})
+      });
+      return Response.json({ success: true, txnId });
+    }
+
+    return Response.json({ error: 'Unsupported payment method' }, { status: 400 });
+
+  } catch (error) {
+    console.error('Payment processing error:', error);
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+});

@@ -1,0 +1,113 @@
+{
+  "name": "PaymentTransaction",
+  "type": "object",
+  "properties": {
+    "txnId": {
+      "type": "string",
+      "description": "Unique transaction ID e.g. VPY-XXXX-TIMESTAMP"
+    },
+    "orderId": {
+      "type": "string",
+      "description": "Linked order ID"
+    },
+    "userEmail": {
+      "type": "string",
+      "description": "Customer email"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Charged amount in USD"
+    },
+    "currency": {
+      "type": "string",
+      "default": "USD",
+      "description": "Currency code"
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "card",
+        "applepay",
+        "klarna",
+        "points"
+      ],
+      "description": "Payment method"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "authorized",
+        "captured",
+        "failed",
+        "refunded",
+        "partially_refunded"
+      ],
+      "description": "Transaction status"
+    },
+    "cardLast4": {
+      "type": "string",
+      "description": "Last 4 digits of card"
+    },
+    "cardBrand": {
+      "type": "string",
+      "enum": [
+        "Visa",
+        "Mastercard",
+        "Amex",
+        "Discover"
+      ],
+      "description": "Card brand"
+    },
+    "cardExpiry": {
+      "type": "string",
+      "description": "Card expiry MM/YY"
+    },
+    "cardholderName": {
+      "type": "string",
+      "description": "Cardholder name"
+    },
+    "billingZip": {
+      "type": "string",
+      "description": "Billing ZIP code"
+    },
+    "riskScore": {
+      "type": "number",
+      "description": "Fraud risk score 0-100"
+    },
+    "riskFlags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Risk flags e.g. new_device, velocity_flag"
+    },
+    "refundAmount": {
+      "type": "number",
+      "description": "Amount refunded"
+    },
+    "refundReason": {
+      "type": "string",
+      "description": "Refund reason"
+    },
+    "refundedAt": {
+      "type": "string",
+      "description": "ISO date refunded"
+    },
+    "capturedAt": {
+      "type": "string",
+      "description": "ISO date captured"
+    },
+    "metadata": {
+      "type": "string",
+      "description": "JSON extra data"
+    }
+  },
+  "required": [
+    "txnId",
+    "orderId",
+    "amount",
+    "method",
+    "status"
+  ]
+}
