@@ -151,7 +151,7 @@ export default function VigoWishlist() {
                     <img
                       src={p.productImage || productImg}
                       alt={p.productName}
-                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", padding: 16, transition: "transform .5s", transform: isHovered ? "scale(1.06)" : "scale(1)" }}
+                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", transition: "transform .5s", transform: isHovered ? "scale(1.06)" : "scale(1)" }}
                     />
 
                     <button
