@@ -27,6 +27,7 @@ import VigoNewArrivals from './components/vigo/VigoNewArrivals';
 import VigoTerms from './components/vigo/VigoTerms';
 import VigoPrivacy from './components/vigo/VigoPrivacy';
 import VigoReturns from './components/vigo/VigoReturns';
+import VigoReferral from './pages/VigoReferral';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -74,6 +75,7 @@ const AuthenticatedApp = () => {
         <Route path="terms" element={<ErrorBoundary><VigoTerms /></ErrorBoundary>} />
         <Route path="privacy" element={<ErrorBoundary><VigoPrivacy /></ErrorBoundary>} />
         <Route path="returns" element={<ErrorBoundary><VigoReturns /></ErrorBoundary>} />
+        <Route path="referral" element={<ErrorBoundary><VigoReferral /></ErrorBoundary>} />
       </Route>
       <Route path="/admin" element={<VigoAdmin />} />
       <Route path="*" element={<PageNotFound />} />

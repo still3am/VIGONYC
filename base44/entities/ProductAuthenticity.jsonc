@@ -1,0 +1,37 @@
+{
+  "name": "ProductAuthenticity",
+  "type": "object",
+  "properties": {
+    "qrCodeId": {
+      "type": "string",
+      "description": "Unique QR code identifier on the garment tag"
+    },
+    "productId": {
+      "type": "string",
+      "description": "Linked product ID"
+    },
+    "productName": {
+      "type": "string",
+      "description": "Product name"
+    },
+    "authenticated": {
+      "type": "boolean",
+      "description": "Whether this item has been authenticated",
+      "default": false
+    },
+    "authenticatedBy": {
+      "type": "string",
+      "description": "Email of user who authenticated"
+    },
+    "pointsAwarded": {
+      "type": "number",
+      "description": "Points awarded for authentication",
+      "default": 100
+    }
+  },
+  "required": [
+    "qrCodeId",
+    "productId",
+    "productName"
+  ]
+}

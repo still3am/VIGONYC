@@ -1,0 +1,54 @@
+{
+  "name": "UserLoyalty",
+  "type": "object",
+  "properties": {
+    "userEmail": {
+      "type": "string",
+      "description": "User email linked to this loyalty account"
+    },
+    "points": {
+      "type": "number",
+      "description": "Current loyalty point balance",
+      "default": 0
+    },
+    "totalEarned": {
+      "type": "number",
+      "description": "Lifetime points earned",
+      "default": 0
+    },
+    "referralCode": {
+      "type": "string",
+      "description": "Unique referral code for this user"
+    },
+    "referredBy": {
+      "type": "string",
+      "description": "Referral code of who referred this user"
+    },
+    "totalReferrals": {
+      "type": "number",
+      "description": "Number of successful referrals",
+      "default": 0
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "Silver",
+        "Chrome",
+        "Obsidian"
+      ],
+      "default": "Silver",
+      "description": "Current loyalty tier"
+    },
+    "scannedProducts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of authenticated product QR code IDs"
+    }
+  },
+  "required": [
+    "userEmail",
+    "referralCode"
+  ]
+}
