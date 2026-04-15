@@ -1,7 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import jsQR from "jsqr";
 
-const S = "#C0C0C0";
+const S = "var(--vt-card)";
+const G1 = "var(--vt-bg)";
+const G2 = "var(--vt-card)";
+const G3 = "var(--vt-border)";
+const SD = "var(--vt-sub)";
 
 export default function NeuralScanner({ onScanResult }) {
   const [active, setActive] = useState(false);
@@ -49,8 +54,21 @@ export default function NeuralScanner({ onScanResult }) {
   };
 
   const captureAndScan = async () => {
-    // In a real implementation this would decode the QR from the video frame.
-    // Here we simulate by showing a manual input fallback after 6s
+    if (!videoRef.current || !canvasRef.current) return;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    ctx.drawImage(videoRef.current, 0, 0);
+    
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, canvas.width, canvas.height);
+    
+    if (code) {
+      setScanning(false);
+      stopCamera();
+      handleManualCode(code.data);
+    }
   };
 
   const handleManualCode = async (code) => {
@@ -81,7 +99,7 @@ export default function NeuralScanner({ onScanResult }) {
   const [showManual, setShowManual] = useState(false);
 
   return (
-    <div style={{ background: "#0a0a0a", border: "1px solid #222", padding: 24, position: "relative", overflow: "hidden" }}>
+    <div style={{ background: G1, border: `0.5px solid ${G3}`, padding: 24, position: "relative", overflow: "hidden" }}>
       {/* Pulsing corner brackets */}
       <div style={{ position: "absolute", top: 12, left: 12, width: 20, height: 20, borderTop: `2px solid ${S}`, borderLeft: `2px solid ${S}`, animation: "chrome-pulse 2s infinite" }} />
       <div style={{ position: "absolute", top: 12, right: 12, width: 20, height: 20, borderTop: `2px solid ${S}`, borderRight: `2px solid ${S}`, animation: "chrome-pulse 2s infinite" }} />
@@ -114,17 +132,17 @@ export default function NeuralScanner({ onScanResult }) {
       {!result && (
         <>
           {/* Camera viewfinder */}
-          <div style={{ position: "relative", aspectRatio: "1", background: "#0a0a0a", border: `1px solid #1a1a1a`, marginBottom: 16, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ position: "relative", aspectRatio: "1", background: G1, border: `0.5px solid ${G3}`, marginBottom: 16, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
             {active ? (
               <video ref={videoRef} style={{ width: "100%", height: "100%", objectFit: "cover" }} muted playsInline />
             ) : (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="1">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1">
                   <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                  <rect x="5" y="5" width="3" height="3" fill="#333"/><rect x="16" y="5" width="3" height="3" fill="#333"/><rect x="5" y="16" width="3" height="3" fill="#333"/>
+                  <rect x="5" y="5" width="3" height="3" fill={SD}/><rect x="16" y="5" width="3" height="3" fill={SD}/><rect x="5" y="16" width="3" height="3" fill={SD}/>
                   <path d="M14 14h3v3M14 17v3h3"/>
                 </svg>
-                <div style={{ fontSize: 9, color: "#444", letterSpacing: 2, textTransform: "uppercase" }}>Ready to Scan</div>
+                <div style={{ fontSize: 9, color: SD, letterSpacing: 2, textTransform: "uppercase" }}>Ready to Scan</div>
               </div>
             )}
             {scanning && (
@@ -143,16 +161,16 @@ export default function NeuralScanner({ onScanResult }) {
                 Scan Gear
               </button>
             ) : (
-              <button onClick={stopCamera} style={{ ...chromeBtn, background: "transparent", border: "1px solid #333", color: "#666" }}>Stop Camera</button>
+              <button onClick={stopCamera} style={{ ...chromeBtn, background: "transparent", border: `0.5px solid ${G3}`, color: SD }}>Stop Camera</button>
             )}
 
-            <button onClick={() => setShowManual(!showManual)} style={{ background: "none", border: "none", fontSize: 8, letterSpacing: 2, color: "#444", cursor: "pointer", textTransform: "uppercase", fontFamily: "inherit" }}>
+            <button onClick={() => setShowManual(!showManual)} style={{ background: "none", border: "none", fontSize: 8, letterSpacing: 2, color: SD, cursor: "pointer", textTransform: "uppercase", fontFamily: "inherit" }}>
               {showManual ? "Hide" : "Enter Code Manually"}
             </button>
 
             {showManual && (
               <div style={{ display: "flex", gap: 0 }}>
-                <input value={manualCode} onChange={e => setManualCode(e.target.value)} placeholder="Enter QR code / referral code" style={{ flex: 1, background: "#111", border: "1px solid #222", borderRight: "none", color: "#fff", padding: "10px 14px", fontSize: 11, outline: "none", fontFamily: "inherit" }} onKeyDown={e => e.key === "Enter" && handleManualCode(manualCode)} />
+                <input value={manualCode} onChange={e => setManualCode(e.target.value)} placeholder="Enter QR code / referral code" style={{ flex: 1, background: G2, border: `0.5px solid ${G3}`, borderRight: "none", color: "var(--vt-text)", padding: "10px 14px", fontSize: 11, outline: "none", fontFamily: "inherit" }} onKeyDown={e => e.key === "Enter" && handleManualCode(manualCode)} />
                 <button onClick={() => handleManualCode(manualCode)} style={{ background: S, color: "#000", border: "none", padding: "10px 16px", fontSize: 9, letterSpacing: 1, fontWeight: 900, cursor: "pointer", fontFamily: "inherit", textTransform: "uppercase" }}>Submit</button>
               </div>
             )}
