@@ -177,7 +177,6 @@ export default function VigoAdmin() {
                 const badgeCount = n.badgeKey ? badges[n.badgeKey] : 0;
                 return (
                   <button key={n.id} onClick={() => { setSection(n.id); setSidebarOpen(false); }} style={{ width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", background: section === n.id ? "rgba(192,192,192,.06)" : "none", border: "none", borderLeft: `2px solid ${section === n.id ? S : "transparent"}`, color: section === n.id ? "#fff" : SD, cursor: "pointer", fontFamily: "inherit", fontSize: 10, letterSpacing: 2, textTransform: "uppercase", textAlign: "left" }}>
-                    <span style={{ fontSize: 11, flexShrink: 0 }}>{n.icon}</span>
                     <span style={{ flex: 1 }}>{n.label}</span>
                     {badgeCount > 0 && <span style={{ background: "#fa0", color: "#000", fontSize: 7, fontWeight: 900, padding: "2px 6px", borderRadius: 2, minWidth: 16, textAlign: "center" }}>{badgeCount}</span>}
                   </button>
@@ -201,7 +200,7 @@ export default function VigoAdmin() {
             <span style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Live — SS25</span>
           </div>
           <div style={{ fontSize: 10, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>
-            {NAV.find(n => n.id === section)?.icon} {NAV.find(n => n.id === section)?.label}
+            {NAV.find(n => n.id === section)?.label}
           </div>
           <div style={{ fontSize: 10, color: SD }}>{user.full_name || user.email}</div>
         </div>
