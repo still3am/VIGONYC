@@ -148,6 +148,9 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
            <NavLink key={l.to} to={l.to} onClick={() => setMobileOpen(false)} style={({ isActive }) => ({ textDecoration: "none", fontSize: 10, letterSpacing: 4, textTransform: "uppercase", color: isActive ? "var(--vt-text)" : SD })}>{l.label}</NavLink>
            )}
            <NavLink to="/wishlist" onClick={() => setMobileOpen(false)} style={({ isActive }) => ({ textDecoration: "none", fontSize: 10, letterSpacing: 4, textTransform: "uppercase", color: isActive ? "var(--vt-text)" : SD })}>Wishlist</NavLink>
+           <button onClick={() => { setMobileOpen(false); onCartOpen(); }} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 10, letterSpacing: 4, textTransform: "uppercase", color: SD, textAlign: "left", padding: 0, display: "flex", alignItems: "center", gap: 8 }}>
+             Cart {cartCount > 0 && <span style={{ background: S, color: "#000", fontSize: 8, fontWeight: 900, borderRadius: "50%", width: 15, height: 15, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
+           </button>
            </div>
       </nav>
 
