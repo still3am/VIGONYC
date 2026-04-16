@@ -187,7 +187,7 @@ export default function VigoAdmin() {
                 );
               })}
             </nav>
-            <div style={{ padding: "16px 20px", borderTop: `0.5px solid ${G3}`, display: "flex", flexDirection: "column", gap: 8 }}>
+            <div style={{ padding: "16px 20px", borderTop: `0.5px solid ${G3}`, display: "flex", flexDirection: "column", gap: 8 }} className="admin-mobile-footer">
               <button onClick={() => { navigate("/"); setSidebarOpen(false); }} style={{ width: "100%", background: "none", border: `0.5px solid ${G3}`, color: SD, padding: "10px 0", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>← View Store</button>
               <button onClick={async () => { await base44.auth.logout(); navigate("/"); }} style={{ width: "100%", background: "none", border: `0.5px solid #e03`, color: "#e03", padding: "10px 0", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>Sign Out</button>
             </div>
@@ -220,6 +220,8 @@ export default function VigoAdmin() {
           .admin-sidebar { display: none !important; }
           .admin-mobile-bar { display: flex !important; }
           .admin-main { margin-left: 0 !important; padding-top: 56px; }
+          .admin-mobile-footer { padding: 12px 16px !important; }
+          .admin-mobile-footer button { padding: 10px 0 !important; font-size: 7px !important; }
         }
       `}</style>
     </div>
