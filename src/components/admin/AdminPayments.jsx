@@ -12,6 +12,7 @@ const BRAND_COLORS = { Visa: "#1A1F71", Mastercard: "#EB001B", Amex: "#006FCF", 
 
 export default function AdminPayments() {
   const [transactions, setTransactions] = useState([]);
+  const [vigoSplitOrders, setVigoSplitOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -20,10 +21,21 @@ export default function AdminPayments() {
   const [refundInputs, setRefundInputs] = useState({});
 
   useEffect(() => {
-    base44.entities.PaymentTransaction.list("-created_date", 500)
-      .then(data => { setTransactions(data || []); setLoading(false); })
-      .catch(() => setLoading(false));
+    Promise.all([
+      base44.entities.PaymentTransaction.list("-created_date", 500),
+      base44.entities.Order.filter({ paymentMethod: "vigosplit" }, "-created_date", 500).catch(() => [])
+    ]).then(([txns, vigoSplitOrders]) => {
+      setTransactions(txns || []);
+      setVigoSplitOrders(vigoSplitOrders || []);
+      setLoading(false);
+    }).catch(() => setLoading(false));
   }, []);
+
+  const vigoSplitStats = {
+    totalActive: vigoSplitOrders.filter(o => o.paymentStatus === "pending").length,
+    missedPayments: vigoSplitOrders.filter(o => o.paymentStatus === "pending" && o.created_date && new Date(o.created_date) < new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)).length,
+    remindersDue: vigoSplitOrders.filter(o => o.paymentStatus === "pending" && o.created_date && new Date(o.created_date).getTime() < Date.now() - 10 * 24 * 60 * 60 * 1000 && new Date(o.created_date).getTime() > Date.now() - 14 * 24 * 60 * 60 * 1000).length
+  };
 
   const stats = {
     totalProcessed: transactions.filter(t => t.status === "captured").reduce((s, t) => s + (t.amount || 0), 0),
@@ -64,13 +76,16 @@ export default function AdminPayments() {
       </div>
 
       {/* Stats row */}
-      <div className="admin-payment-stats" style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12, marginBottom: 24 }}>
+      <div className="admin-payment-stats" style={{ display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gap: 12, marginBottom: 24 }}>
         {[
           { label: "Total Processed", value: `$${stats.totalProcessed.toFixed(2)}`, color: S },
           { label: "Today's Volume", value: `$${stats.todayVolume.toFixed(2)}`, color: "#0c6" },
           { label: "Failed Txns", value: stats.failedCount, color: "#e03" },
           { label: "Refunded Txns", value: stats.refundedCount, color: SD },
-          { label: "Refund Rate", value: `${stats.refundRate}%`, color: S }
+          { label: "Refund Rate", value: `${stats.refundRate}%`, color: S },
+          { label: "VIGOSPLIT Active", value: vigoSplitStats.totalActive, color: "#C0C0C0" },
+          { label: "Missed Payments", value: vigoSplitStats.missedPayments, color: "#e03" },
+          { label: "Reminders Due", value: vigoSplitStats.remindersDue, color: "#fa0" }
         ].map((stat, i) => (
           <div key={i} style={{ background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${stat.color}`, padding: "16px 12px" }}>
             <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 6 }}>{stat.label}</div>
@@ -95,6 +110,7 @@ export default function AdminPayments() {
           <option value="All">All Methods</option>
           <option value="card">Card</option>
           <option value="applepay">Apple Pay</option>
+          <option value="vigosplit">VIGOSPLIT</option>
           <option value="klarna">Klarna</option>
           <option value="points">Points</option>
         </select>
@@ -190,6 +206,9 @@ export default function AdminPayments() {
       )}
 
       <style>{`
+        @media(max-width:1200px){
+          .admin-payment-stats { grid-template-columns: repeat(4, 1fr) !important; }
+        }
         @media(max-width:900px){
           .admin-payment-stats { grid-template-columns: repeat(2, 1fr) !important; }
         }
