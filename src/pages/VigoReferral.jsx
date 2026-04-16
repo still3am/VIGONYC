@@ -142,7 +142,7 @@ export default function VigoReferral() {
       </div>
 
       {/* CONTENT PANELS */}
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(20px,4vw,52px) clamp(16px,4vw,40px)" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(32px,5vw,52px) clamp(20px,4vw,40px)" }}>
 
         {/* DASHBOARD */}
         {activeTab === "dashboard" && (
