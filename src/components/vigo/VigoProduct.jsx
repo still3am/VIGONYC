@@ -224,29 +224,19 @@ export default function VigoProduct() {
 
         {/* CENTER — Large image, full-bleed */}
         <div
-          style={{ position: "sticky", top: 0, height: "100vh", background: G2, overflow: "hidden", minHeight: "80vh" }}
-          onTouchStart={e => { e.currentTarget._touchX = e.touches[0].clientX; e.currentTarget._touchY = e.touches[0].clientY; }}
+          style={{ position: "relative", background: G2, overflow: "hidden", minHeight: "80vh" }}
+          onTouchStart={e => { e.currentTarget._touchX = e.touches[0].clientX; }}
           onTouchEnd={e => {
             const dx = e.changedTouches[0].clientX - e.currentTarget._touchX;
-            const dy = e.changedTouches[0].clientY - e.currentTarget._touchY;
-            if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 40) {
-              if (dy < 0) setActiveThumb(t => Math.min(t + 1, allMedia.length - 1));
-              else setActiveThumb(t => Math.max(t - 1, 0));
-            } else if (Math.abs(dx) > 40) {
-              if (dx < 0) setActiveThumb(t => Math.min(t + 1, allMedia.length - 1));
-              else setActiveThumb(t => Math.max(t - 1, 0));
-            }
-          }}
-          onWheel={e => {
-            e.preventDefault();
-            if (e.deltaY > 30) setActiveThumb(t => Math.min(t + 1, allMedia.length - 1));
-            else if (e.deltaY < -30) setActiveThumb(t => Math.max(t - 1, 0));
+            if (Math.abs(dx) < 40) return;
+            if (dx < 0) setActiveThumb(t => Math.min(t + 1, allMedia.length - 1));
+            else setActiveThumb(t => Math.max(t - 1, 0));
           }}
         >
           {allMedia[activeThumb]?.type === "video" ? (
             <video key={allMedia[activeThumb].url} src={allMedia[activeThumb].url} controls autoPlay muted playsInline loop style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
           ) : (
-            <img key={activeThumb} src={allMedia[activeThumb]?.url || productImg} alt={product.name} onClick={() => setZoomed(true)} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", cursor: "zoom-in", animation: "vigo-fade-img 0.35s ease" }} />
+            <img src={allMedia[activeThumb]?.url || productImg} alt={product.name} onClick={() => setZoomed(true)} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", cursor: "zoom-in" }} />
           )}
 
           {/* Stock badge */}
@@ -458,7 +448,6 @@ export default function VigoProduct() {
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes vigo-fade-img { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes vigo-pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.8)} }
         @media (max-width: 1024px) {
           .product-editorial { grid-template-columns: 1fr 1fr !important; }
