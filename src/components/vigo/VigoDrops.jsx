@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import PullToRefresh from "./PullToRefresh";
+import ProductCard from "./ProductCard";
 import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
@@ -115,7 +116,7 @@ export default function VigoDrops() {
   for (let i = 0; i < firstDay; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
 
-  const dropOnDay = day => day ? ALL_DROPS.find(dr => dr.date && isSameDay(dr.date, day)) : null;
+  const dropOnDay = day => day ? ALL_DROPS.find(dr => isSameDay(dr.date, day)) : null;
   const handleNotify = async (id) => {
     if (!email.trim()) return;
     const user = await base44.auth.me().catch(() => null);
@@ -224,25 +225,27 @@ export default function VigoDrops() {
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)" }}>
               {cells.map((day, i) => {
-                if (!day) return <div key={`empty-${i}`} style={{ minHeight: "clamp(52px,8vw,72px)", borderRight: (i + 1) % 7 !== 0 ? `.5px solid ${G3}` : "none", borderBottom: `.5px solid ${G3}` }} />;
                 const drop = dropOnDay(day);
-                const isToday = isSameDay(day, TODAY);
+                const isToday = day && isSameDay(day, TODAY);
                 const isSelected = selectedDrop && drop && selectedDrop.id === drop.id;
-                const isPast = day < TODAY && !isToday;
-                const tagColor = drop?.tagColor || S;
+                const isPast = day && day < TODAY && !isToday;
                 return (
                   <div
-                    key={`day-${i}`}
-                    onClick={() => { if (drop) setSelectedDrop(prev => prev?.id === drop.id ? null : drop); }}
+                    key={i}
+                    onClick={() => { if (drop) { setSelectedDrop(prev => prev?.id === drop.id ? null : drop); setViewDate(new Date(drop.date.getFullYear(), drop.date.getMonth(), 1)); } }}
                     style={{ minHeight: "clamp(52px,8vw,72px)", padding: "8px 6px 6px", borderRight: (i + 1) % 7 !== 0 ? `.5px solid ${G3}` : "none", borderBottom: `.5px solid ${G3}`, cursor: drop ? "pointer" : "default", background: isSelected ? "rgba(192,192,192,.08)" : "transparent", transition: "background .15s", position: "relative" }}
                     onMouseEnter={e => { if (drop && !isSelected) e.currentTarget.style.background = "rgba(192,192,192,.04)"; }}
                     onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
                   >
-                    <div style={{ fontSize: 10, fontWeight: isToday ? 900 : 400, color: isToday ? "#000" : isPast ? SD : drop ? "var(--vt-text)" : SD, width: 20, height: 20, background: isToday ? S : "transparent", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>{day.getDate()}</div>
-                    {drop && (
-                      <div style={{ background: `${tagColor}18`, borderLeft: `2px solid ${tagColor}`, padding: "2px 4px", fontSize: 6, letterSpacing: .5, color: tagColor, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-                        {drop.series || drop.name}
-                      </div>
+                    {day && (
+                      <>
+                        <div style={{ fontSize: 10, fontWeight: isToday ? 900 : 400, color: isToday ? "#000" : isPast ? SD : drop ? "var(--vt-text)" : SD, width: 20, height: 20, background: isToday ? S : "transparent", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>{day.getDate()}</div>
+                        {drop && (
+                          <div style={{ background: `${drop.tagColor}18`, borderLeft: `2px solid ${drop.tagColor}`, padding: "2px 4px", fontSize: 6, letterSpacing: .5, color: drop.tagColor, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+                            {drop.series}
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 );
@@ -261,10 +264,10 @@ export default function VigoDrops() {
 
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {selectedDrop ? (
-              <div style={{ background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${selectedDrop.tagColor || S}` }}>
+              <div style={{ background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${selectedDrop.tagColor}` }}>
                 <div style={{ padding: "20px", borderBottom: `.5px solid ${G3}` }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-                    <div style={{ fontSize: 7, letterSpacing: 3, color: selectedDrop.tagColor || S, textTransform: "uppercase", border: `.5px solid ${selectedDrop.tagColor || S}`, padding: "3px 8px" }}>{selectedDrop.tag || selectedDrop.status}</div>
+                    <div style={{ fontSize: 7, letterSpacing: 3, color: selectedDrop.tagColor, textTransform: "uppercase", border: `.5px solid ${selectedDrop.tagColor}`, padding: "3px 8px" }}>{selectedDrop.tag}</div>
                     <div style={{ fontSize: 9, color: SD }}>{selectedDrop.price}</div>
                   </div>
                   <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>{selectedDrop.name}</div>
@@ -331,25 +334,16 @@ export default function VigoDrops() {
             </div>
             <div style={{ flex: 1, height: .5, background: G3 }} />
           </div>
-          {PAST_DROPS.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "40px 0", color: SD, fontSize: 12 }}>No past drops yet.</div>
-          ) : (
-            <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
-              {PAST_DROPS.map(p => (
-                <div key={p.id} style={{ background: G2, border: `.5px solid ${G3}`, position: "relative" }}>
-                  <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.55)", zIndex: 3, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
-                    <span style={{ fontSize: 8, letterSpacing: 3, color: SD, textTransform: "uppercase", border: `.5px solid ${G3}`, padding: "5px 12px" }}>Sold Out</span>
-                  </div>
-                  {p.image && <img src={p.image} alt={p.name} style={{ width: "100%", aspectRatio: "4/5", objectFit: "cover", display: "block" }} />}
-                  <div style={{ padding: "12px 14px" }}>
-                    <div style={{ fontSize: 9, color: SD, letterSpacing: 1, marginBottom: 4 }}>{p.series}</div>
-                    <div style={{ fontSize: 13, fontWeight: 900, letterSpacing: -0.5 }}>{p.name}</div>
-                    {p.date && <div style={{ fontSize: 9, color: SD, marginTop: 4 }}>{p.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</div>}
-                  </div>
+          <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
+            {PAST_DROPS.map(p => (
+              <div key={p.id} style={{ position: "relative" }}>
+                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.55)", zIndex: 3, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
+                  <span style={{ fontSize: 8, letterSpacing: 3, color: SD, textTransform: "uppercase", border: `.5px solid ${G3}`, padding: "5px 12px" }}>Sold Out</span>
                 </div>
-              ))}
-            </div>
-          )}
+                <ProductCard product={p} img={p.images?.[0] || productImg} wishlisted={wishlist.includes(p.id)} onWishlist={() => {}} onAdd={() => {}} onClick={() => navigate(`/product/${p.id}`)} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -360,6 +354,7 @@ export default function VigoDrops() {
           .vigo-hero-drop { grid-template-columns: 1fr !important; }
           .vigo-4col { grid-template-columns: repeat(2,1fr) !important; }
           .vigo-corner { display: none !important; }
+          .vigo-hero-drop-inner { display: none !important; }
         }
         @media(max-width:480px){
           .vigo-4col { grid-template-columns: 1fr 1fr !important; }
