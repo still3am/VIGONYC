@@ -116,7 +116,7 @@ export default function VigoDrops() {
   for (let i = 0; i < firstDay; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
 
-  const dropOnDay = day => day ? ALL_DROPS.find(dr => isSameDay(dr.date, day)) : null;
+  const dropOnDay = day => day ? ALL_DROPS.find(dr => dr.date && isSameDay(dr.date, day)) : null;
   const handleNotify = async (id) => {
     if (!email.trim()) return;
     const user = await base44.auth.me().catch(() => null);
