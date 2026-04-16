@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
     }
 
     if (method === 'card') {
-      if (!cardData || !cardData.paymentMethodId) {
+      if (!cardData || !cardData.number || !cardData.expiry || !cardData.cvv || !cardData.name) {
         return Response.json({ error: 'Invalid card data' }, { status: 400 });
       }
 
@@ -71,6 +71,11 @@ Deno.serve(async (req) => {
       if (user.role === 'admin') {
         return Response.json({ error: 'Admins cannot checkout' }, { status: 403 });
       }
+
+      const cardNum = cardData.number.replace(/\s/g, '');
+      const [expMonth, expYear] = cardData.expiry.split('/');
+      const brand = detectBrand(cardNum);
+      const last4 = cardNum.slice(-4);
 
       // Calculate fraud risk
       const riskData = calculateRiskScore({
@@ -81,17 +86,28 @@ Deno.serve(async (req) => {
       });
 
       try {
-        // Create Stripe payment intent
-        const paymentIntent = await stripe.paymentIntents.create({
-          amount: Math.round(amount * 100), // Stripe uses cents
-          currency: 'usd',
-          payment_method: cardData.paymentMethodId,
-          confirm: true,
-          off_session: false,
-          metadata: {
-            orderId,
-            userEmail: userEmail || user.email
+        // Create Stripe payment method from card
+        const paymentMethod = await stripe.paymentMethods.create({
+          type: 'card',
+          card: {
+            number: cardNum,
+            exp_month: parseInt(expMonth),
+            exp_year: parseInt('20' + expYear),
+            cvc: cardData.cvv
+          },
+          billing_details: {
+            name: cardData.name,
+            address: { postal_code: billingZip || '' }
           }
+        });
+
+        // Create and confirm payment intent
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: Math.round(amount * 100),
+          currency: 'usd',
+          payment_method: paymentMethod.id,
+          confirm: true,
+          metadata: { orderId, userEmail: userEmail || user.email }
         });
 
         if (paymentIntent.status !== 'succeeded') {
@@ -103,8 +119,6 @@ Deno.serve(async (req) => {
 
         // Generate txnId
         const txnId = 'VPY-' + paymentIntent.id.slice(-12).toUpperCase();
-        const last4 = paymentIntent.payment_method_details?.card?.last4 || 'xxxx';
-        const brand = paymentIntent.payment_method_details?.card?.brand || 'Unknown';
 
         // Create PaymentTransaction
         await base44.asServiceRole.entities.PaymentTransaction.create({
