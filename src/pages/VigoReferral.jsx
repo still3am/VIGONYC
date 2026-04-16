@@ -131,10 +131,10 @@ export default function VigoReferral() {
           <p style={{ fontSize: 13, color: SD, lineHeight: 1.9, marginBottom: 32, maxWidth: 480 }}>
             A modular loyalty system for the inner circle. Earn, advocate, and ascend.
           </p>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
+          <div className="ref-tab-bar" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6, width: "100%", maxWidth: 480 }}>
             {["dashboard", "scan", "refer", "ascend"].map(tab => (
-              <button key={tab} onClick={() => setActiveTab(tab)} style={{ background: activeTab === tab ? S : "transparent", color: activeTab === tab ? "#000" : SD, border: `0.5px solid ${activeTab === tab ? S : G3}`, padding: "8px 18px", fontSize: 8, letterSpacing: 3, textTransform: "uppercase", fontWeight: activeTab === tab ? 900 : 400, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s" }}>
-                {tab === "dashboard" ? "Overview" : tab === "scan" ? "Scan Gear" : tab === "refer" ? "Advocate" : "Ascend"}
+              <button key={tab} onClick={() => setActiveTab(tab)} style={{ background: activeTab === tab ? S : "transparent", color: activeTab === tab ? "#000" : SD, border: `0.5px solid ${activeTab === tab ? S : G3}`, padding: "10px 4px", fontSize: 7, letterSpacing: 2, textTransform: "uppercase", fontWeight: activeTab === tab ? 900 : 400, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s", textAlign: "center" }}>
+                {tab === "dashboard" ? "Overview" : tab === "scan" ? "Scan" : tab === "refer" ? "Refer" : "Ascend"}
               </button>
             ))}
           </div>
