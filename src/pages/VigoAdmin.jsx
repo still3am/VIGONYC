@@ -14,7 +14,7 @@ import AdminReviews from "@/components/admin/AdminReviews";
 import AdminNewsletter from "@/components/admin/AdminNewsletter";
 import AdminContacts from "@/components/admin/AdminContacts";
 import AdminPayments from "@/components/admin/AdminPayments";
-import AdminVigoSplit from "@/components/admin/AdminVigoSplit";
+
 
 const S = "#C0C0C0";
 const G1 = "#0d0d0d";
@@ -36,7 +36,6 @@ const NAV = [
   { id: "newsletter", label: "Newsletter", icon: "✉" },
   { id: "contacts", label: "Contacts", icon: "◎", badgeKey: "newContacts" },
   { id: "about", label: "Content", icon: "✦" },
-  { id: "vigosplit", label: "VigoSplit", icon: "◈" },
 ];
 
 const SECTION_MAP = {
@@ -53,7 +52,6 @@ const SECTION_MAP = {
   newsletter: AdminNewsletter,
   contacts: AdminContacts,
   about: AdminAbout,
-  vigosplit: AdminVigoSplit,
 };
 
 export default function VigoAdmin() {
