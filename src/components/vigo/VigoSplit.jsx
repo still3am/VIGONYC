@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -20,12 +21,20 @@ export default function VigoSplit({ total, onSuccess }) {
   const p2 = parseFloat((total * 0.5).toFixed(2));
   const dueDate = addDays(new Date(), 14);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setPlacing(true);
-    setTimeout(() => {
+    try {
+      const res = await base44.functions.invoke("processPayment", { amount: total, method: "vigosplit", orderId: "temp", userEmail: "" });
+      if (res.data.success) {
+        onSuccess({ txnId: res.data.txnId, cardLast4: res.data.cardLast4, cardBrand: res.data.cardBrand });
+      } else {
+        alert("VIGOSPLIT payment failed: " + res.data.error);
+        setPlacing(false);
+      }
+    } catch (e) {
+      alert("Payment error: " + e.message);
       setPlacing(false);
-      onSuccess({ txnId: "VSP-" + Date.now(), cardLast4: "SPLT", cardBrand: "VIGOSPLIT" });
-    }, 1400);
+    }
   };
 
   if (step === "overview") {

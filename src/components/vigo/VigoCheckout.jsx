@@ -137,6 +137,11 @@ export default function VigoCheckout() {
   };
 
   const handlePlaceOrder = async (txnId, cardLast4, cardBrand) => {
+    // Only proceed if txnId exists (payment succeeded)
+    if (!txnId) {
+      alert("Payment failed. Please try again.");
+      return;
+    }
     setPlacing(true);
     const safeContact = sanitizeObject(contact);
     try {
@@ -398,14 +403,24 @@ export default function VigoCheckout() {
                   orderId={Math.random().toString(36).slice(2, 6).toUpperCase() + String(Date.now()).slice(-4)}
                   userEmail={contact.email}
                   onSuccess={(data) => handlePlaceOrder(data.txnId, data.cardLast4, data.cardBrand)}
-                  onError={() => {}}
+                  onError={(err) => alert("Card payment failed: " + err)}
                 />
               )}
               {payMethod === "applepay" && (
-                <div style={{ background: G1, border: `.5px solid ${G3}`, padding: 24, textAlign: "center" }}>
-                  <div style={{ fontSize: 32, marginBottom: 8 }}>🍎</div>
-                  <div style={{ fontSize: 12, color: SD }}>Tap Pay to complete with Apple Pay.</div>
-                  <button onClick={() => handlePlaceOrder("APL-" + Date.now(), "****", "Apple Pay")} style={{ ...btnP, marginTop: 16, width: 200, margin: "16px auto 0", display: "block" }}>Complete with Apple Pay</button>
+                <div style={{ background: G1, border: `.5px solid ${G3}`, padding: 24 }}>
+                  <div style={{ textAlign: "center", marginBottom: 20 }}>
+                    <div style={{ fontSize: 32, marginBottom: 8 }}>🍎</div>
+                    <div style={{ fontSize: 12, color: SD }}>Complete payment with Apple Pay</div>
+                  </div>
+                  <button 
+                    onClick={async () => {
+                      const res = await base44.functions.invoke("processPayment", { amount: total, method: "applepay", orderId: "temp", userEmail: contact.email });
+                      if (res.data.success) handlePlaceOrder(res.data.txnId, res.data.cardLast4, res.data.cardBrand);
+                      else alert("Apple Pay failed: " + res.data.error);
+                    }}
+                    style={{ ...btnP, width: "100%" }}>
+                    Pay ${total.toFixed(2)} with Apple Pay
+                  </button>
                 </div>
               )}
               {payMethod === "vigosplit" && total >= 150 && (

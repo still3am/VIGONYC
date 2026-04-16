@@ -98,7 +98,7 @@ Deno.serve(async (req) => {
       // Generate txnId
       const txnId = 'VPY-' + Math.random().toString(36).slice(2, 8).toUpperCase() + String(Date.now()).slice(-4);
 
-      // Create PaymentTransaction with status="authorized"
+      // Create PaymentTransaction with status="captured" (charge immediately for card)
       const txn = await base44.asServiceRole.entities.PaymentTransaction.create({
         txnId,
         orderId,
@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
         amount,
         currency: 'USD',
         method: 'card',
-        status: 'authorized',
+        status: 'captured',
         cardLast4: last4,
         cardBrand: brand,
         cardExpiry: cardData.expiry,
@@ -114,6 +114,7 @@ Deno.serve(async (req) => {
         billingZip: billingZip || '',
         riskScore: riskData.score,
         riskFlags: riskData.flags,
+        capturedAt: new Date().toISOString(),
         metadata: JSON.stringify({ ipAddress: 'client-side', userAgent: 'checkout' })
       });
 
@@ -127,8 +128,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Other payment methods (Apple Pay, Klarna, Points) — simplified for now
-    if (method === 'applepay' || method === 'klarna' || method === 'points') {
+    // Apple Pay — charge immediately
+    if (method === 'applepay') {
       const txnId = 'VPY-' + Math.random().toString(36).slice(2, 8).toUpperCase() + String(Date.now()).slice(-4);
       await base44.asServiceRole.entities.PaymentTransaction.create({
         txnId,
@@ -136,13 +137,52 @@ Deno.serve(async (req) => {
         userEmail: userEmail || user.email,
         amount,
         currency: 'USD',
-        method,
-        status: 'authorized',
+        method: 'applepay',
+        status: 'captured',
         riskScore: 5,
         riskFlags: [],
+        capturedAt: new Date().toISOString(),
         metadata: JSON.stringify({})
       });
-      return Response.json({ success: true, txnId });
+      return Response.json({ success: true, txnId, cardLast4: 'APP', cardBrand: 'Apple Pay' });
+    }
+
+    // VIGOSPLIT — charge first payment immediately
+    if (method === 'vigosplit') {
+      const txnId = 'VSP-' + Math.random().toString(36).slice(2, 8).toUpperCase() + String(Date.now()).slice(-4);
+      await base44.asServiceRole.entities.PaymentTransaction.create({
+        txnId,
+        orderId,
+        userEmail: userEmail || user.email,
+        amount: amount * 0.5, // First 50%
+        currency: 'USD',
+        method: 'vigosplit',
+        status: 'captured',
+        riskScore: 10,
+        riskFlags: [],
+        capturedAt: new Date().toISOString(),
+        metadata: JSON.stringify({ splitPayment: true, dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString() })
+      });
+      return Response.json({ success: true, txnId, cardLast4: 'SPLT', cardBrand: 'VIGOSPLIT' });
+    }
+
+    // Points — deduct immediately
+    if (method === 'points') {
+      const txnId = 'VPY-' + Math.random().toString(36).slice(2, 8).toUpperCase() + String(Date.now()).slice(-4);
+      await base44.asServiceRole.entities.PaymentTransaction.create({
+        txnId,
+        orderId,
+        userEmail: userEmail || user.email,
+        amount,
+        currency: 'USD',
+        method: 'points',
+        status: 'captured',
+        riskScore: 0,
+        riskFlags: [],
+        capturedAt: new Date().toISOString(),
+        metadata: JSON.stringify({})
+      });
+      return Response.json({ success: true, txnId, cardLast4: 'PTS', cardBrand: 'Loyalty Points' });
     }
 
     return Response.json({ error: 'Unsupported payment method' }, { status: 400 });
