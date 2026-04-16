@@ -264,7 +264,7 @@ export default function VigoReferral() {
               </p>
             </div>
 
-            <div className="ref-refer-grid" style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: 32, alignItems: "start" }}>
+            <div className="ref-refer-grid" style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: 32, alignItems: "start", justifyItems: "center" }}>
 
               {/* QR Card */}
               {loyalty?.referralCode && (
