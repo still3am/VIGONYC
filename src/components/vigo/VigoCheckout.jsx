@@ -393,7 +393,7 @@ export default function VigoCheckout() {
               )}
 
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {[["card","💳 Card"],["applepay","🍎 Apple Pay"],["vigosplit","◈ VIGOSPLIT"]].map(([v,l]) => (
+                {[["card","Stripe"],["applepay","Apple Pay"],["vigosplit","VIGOSPLIT"]].map(([v,l]) => (
                   <button key={v} onClick={() => setPayMethod(v)} style={{ padding: "10px 20px", background: payMethod === v ? S : G1, color: payMethod === v ? "#000" : SD, border: `.5px solid ${payMethod === v ? S : G3}`, fontSize: 10, cursor: "pointer", fontWeight: payMethod === v ? 900 : 400, fontFamily: "inherit", letterSpacing: 1 }}>{l}</button>
                 ))}
               </div>
@@ -407,11 +407,10 @@ export default function VigoCheckout() {
                 />
               )}
               {payMethod === "applepay" && (
-                <div style={{ background: G1, border: `.5px solid ${G3}`, padding: 24 }}>
-                  <div style={{ textAlign: "center", marginBottom: 20 }}>
-                    <div style={{ fontSize: 32, marginBottom: 8 }}>🍎</div>
-                    <div style={{ fontSize: 12, color: SD }}>Complete payment with Apple Pay</div>
-                  </div>
+               <div style={{ background: G1, border: `.5px solid ${G3}`, padding: 24 }}>
+                 <div style={{ textAlign: "center", marginBottom: 20 }}>
+                   <div style={{ fontSize: 12, color: SD }}>Complete payment with Apple Pay</div>
+                 </div>
                   <button 
                     onClick={async () => {
                       const res = await base44.functions.invoke("processPayment", { amount: total, method: "applepay", orderId: "temp", userEmail: contact.email });
