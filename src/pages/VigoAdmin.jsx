@@ -135,12 +135,12 @@ export default function VigoAdmin() {
         </div>
 
         {/* Nav links */}
-        <nav style={{ flex: 1, padding: "16px 0" }}>
+        <nav style={{ flex: 1, padding: "8px 0", overflowY: "auto" }}>
           {NAV.map(n => {
             const badgeCount = n.badgeKey ? badges[n.badgeKey] : 0;
             return (
               <button key={n.id} onClick={() => setSection(n.id)} style={{
-                width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "12px 20px",
+                width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "9px 20px",
                 background: section === n.id ? `rgba(192,192,192,.06)` : "none",
                 border: "none", borderLeft: `2px solid ${section === n.id ? S : "transparent"}`,
                 color: section === n.id ? "#fff" : SD, cursor: "pointer", fontFamily: "inherit",
