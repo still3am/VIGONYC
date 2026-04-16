@@ -265,8 +265,8 @@ export default function VigoReferral() {
                       />
                     </div>
                     {/* Center logo overlay */}
-                    <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 52, height: 52, background: "#0a0a0a", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", border: `2px solid ${S}` }}>
-                      <span style={{ fontSize: 9, fontWeight: 900, color: S, letterSpacing: 1, textTransform: "uppercase", textAlign: "center", lineHeight: 1.2 }}>VGO</span>
+                    <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 56, height: 56, background: "#fff", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", border: `2px solid #e0e0e0` }}>
+                      <img src="https://media.base44.com/images/public/69d978a3dcb07c4d96ef01e2/d1ce08d38_IMG_8246-removebg-preview.png" alt="VIGONYC" style={{ width: 48, height: 48, objectFit: "contain" }} />
                     </div>
                   </div>
 
