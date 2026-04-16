@@ -1,4 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
+import Stripe from 'npm:stripe@14.0.0';
+
+const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY'));
 
 // Luhn algorithm validation
 function validateLuhn(num) {
@@ -60,27 +63,9 @@ Deno.serve(async (req) => {
     }
 
     if (method === 'card') {
-      if (!cardData || !cardData.number || !cardData.expiry || !cardData.cvv || !cardData.name) {
+      if (!cardData || !cardData.paymentMethodId) {
         return Response.json({ error: 'Invalid card data' }, { status: 400 });
       }
-
-      // Validate card number with Luhn
-      const cardNum = cardData.number.replace(/\s/g, '');
-      if (!validateLuhn(cardNum)) {
-        return Response.json({ error: 'Invalid card number' }, { status: 400 });
-      }
-
-      // Check expiry not past
-      const [expMonth, expYear] = cardData.expiry.split('/');
-      const now = new Date();
-      const expDate = new Date(parseInt('20' + expYear), parseInt(expMonth) - 1);
-      if (expDate < now) {
-        return Response.json({ error: 'Card expired' }, { status: 400 });
-      }
-
-      // Detect brand
-      const brand = detectBrand(cardNum);
-      const last4 = cardNum.slice(-4);
 
       // Check user is not admin accessing this
       if (user.role === 'admin') {
@@ -89,43 +74,70 @@ Deno.serve(async (req) => {
 
       // Calculate fraud risk
       const riskData = calculateRiskScore({
-        amount,
+        amount: Math.round(amount * 100),
         billingZip,
-        firstOrder: true, // In prod, check Order.filter({created_by: userEmail}).length
+        firstOrder: true,
         multipleOrders: false
       });
 
-      // Generate txnId
-      const txnId = 'VPY-' + Math.random().toString(36).slice(2, 8).toUpperCase() + String(Date.now()).slice(-4);
+      try {
+        // Create Stripe payment intent
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: Math.round(amount * 100), // Stripe uses cents
+          currency: 'usd',
+          payment_method: cardData.paymentMethodId,
+          confirm: true,
+          off_session: false,
+          metadata: {
+            orderId,
+            userEmail: userEmail || user.email
+          }
+        });
 
-      // Create PaymentTransaction with status="captured" (charge immediately for card)
-      const txn = await base44.asServiceRole.entities.PaymentTransaction.create({
-        txnId,
-        orderId,
-        userEmail: userEmail || user.email,
-        amount,
-        currency: 'USD',
-        method: 'card',
-        status: 'captured',
-        cardLast4: last4,
-        cardBrand: brand,
-        cardExpiry: cardData.expiry,
-        cardholderName: cardData.name,
-        billingZip: billingZip || '',
-        riskScore: riskData.score,
-        riskFlags: riskData.flags,
-        capturedAt: new Date().toISOString(),
-        metadata: JSON.stringify({ ipAddress: 'client-side', userAgent: 'checkout' })
-      });
+        if (paymentIntent.status !== 'succeeded') {
+          return Response.json({ 
+            success: false, 
+            error: `Payment ${paymentIntent.status}. Please try again.` 
+          }, { status: 400 });
+        }
 
-      return Response.json({
-        success: true,
-        txnId,
-        cardLast4: last4,
-        cardBrand: brand,
-        riskScore: riskData.score,
-        riskFlags: riskData.flags
-      });
+        // Generate txnId
+        const txnId = 'VPY-' + paymentIntent.id.slice(-12).toUpperCase();
+        const last4 = paymentIntent.payment_method_details?.card?.last4 || 'xxxx';
+        const brand = paymentIntent.payment_method_details?.card?.brand || 'Unknown';
+
+        // Create PaymentTransaction
+        await base44.asServiceRole.entities.PaymentTransaction.create({
+          txnId,
+          orderId,
+          userEmail: userEmail || user.email,
+          amount,
+          currency: 'USD',
+          method: 'card',
+          status: 'captured',
+          cardLast4: last4,
+          cardBrand: brand,
+          billingZip: billingZip || '',
+          riskScore: riskData.score,
+          riskFlags: riskData.flags,
+          capturedAt: new Date().toISOString(),
+          metadata: JSON.stringify({ stripePaymentIntentId: paymentIntent.id })
+        });
+
+        return Response.json({
+          success: true,
+          txnId,
+          cardLast4: last4,
+          cardBrand: brand,
+          riskScore: riskData.score,
+          riskFlags: riskData.flags
+        });
+      } catch (stripeError) {
+        return Response.json({ 
+          success: false, 
+          error: stripeError.message || 'Card declined or payment failed' 
+        }, { status: 400 });
+      }
     }
 
     // Apple Pay — charge immediately
