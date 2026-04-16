@@ -224,10 +224,10 @@ export default function VigoHome() {
             <button onClick={() => navigate("/drops")} style={btnO}>Drop Calendar →</button>
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 48, position: "relative" }}>
-          <div style={{ position: "absolute", top: 0, right: 0, width: 60, height: 60, borderTop: `2px solid ${S}`, borderRight: `2px solid ${S}` }} />
-          <div style={{ position: "absolute", bottom: 0, left: 0, width: 40, height: 40, borderBottom: `1px solid ${S}`, borderLeft: `1px solid ${S}` }} />
-          <img src={nextDrop?.image || productImg} style={{ width: 260, height: 260, objectFit: "contain", filter: "drop-shadow(0 0 40px rgba(192,192,192,.15))" }} alt="" />
+        <div style={{ position: "relative", overflow: "hidden", minHeight: 360 }}>
+          <div style={{ position: "absolute", top: 0, right: 0, width: 60, height: 60, borderTop: `2px solid ${S}`, borderRight: `2px solid ${S}`, zIndex: 1 }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, width: 40, height: 40, borderBottom: `1px solid ${S}`, borderLeft: `1px solid ${S}`, zIndex: 1 }} />
+          <img src={nextDrop?.image || productImg} style={{ width: "100%", height: "100%", objectFit: "cover", position: "absolute", inset: 0 }} alt="" />
         </div>
       </div>
 
