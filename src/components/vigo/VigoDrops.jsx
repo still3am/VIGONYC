@@ -335,12 +335,19 @@ export default function VigoDrops() {
             <div style={{ flex: 1, height: .5, background: G3 }} />
           </div>
           <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
-            {PAST_DROPS.map(p => (
-              <div key={p.id} style={{ position: "relative" }}>
+            {PAST_DROPS.filter(p => p && p.id).map(p => (
+              <div key={p.id} onClick={() => navigate("/shop")} style={{ position: "relative", cursor: "pointer", background: G1, border: `.5px solid ${G3}`, overflow: "hidden" }}>
                 <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.55)", zIndex: 3, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
                   <span style={{ fontSize: 8, letterSpacing: 3, color: SD, textTransform: "uppercase", border: `.5px solid ${G3}`, padding: "5px 12px" }}>Sold Out</span>
                 </div>
-                <ProductCard product={p} img={p.images?.[0] || productImg} wishlisted={wishlist.includes(p.id)} onWishlist={() => {}} onAdd={() => {}} onClick={() => navigate(`/product/${p.id}`)} />
+                <div style={{ paddingBottom: "115%", position: "relative", background: G2 }}>
+                  <img src={p.image || productImg} alt={p.name} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.5 }} />
+                </div>
+                <div style={{ padding: "14px" }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "var(--vt-text)" }}>{p.name}</div>
+                  <div style={{ fontSize: 9, color: SD, letterSpacing: 2, marginTop: 4, textTransform: "uppercase" }}>{p.series}</div>
+                  <div style={{ fontSize: 12, fontWeight: 900, color: S, marginTop: 8 }}>{p.price || "Sold Out"}</div>
+                </div>
               </div>
             ))}
           </div>
