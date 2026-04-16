@@ -142,79 +142,95 @@ export default function VigoReferral() {
       </div>
 
       {/* CONTENT PANELS */}
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(32px,5vw,52px) clamp(20px,4vw,40px)" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(28px,5vw,52px) clamp(16px,4vw,40px)" }}>
 
         {/* DASHBOARD */}
         {activeTab === "dashboard" && (
           <div>
-            <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 24 }}>✦ Your Profile</div>
             {loading ? (
-              <div style={{ height: 200, display: "flex", alignItems: "center", justifyContent: "center", color: SD }}>Loading...</div>
+              <div style={{ height: 200, display: "flex", alignItems: "center", justifyContent: "center", color: SD, fontSize: 11, letterSpacing: 2 }}>Loading...</div>
             ) : (
-              <div className="ref-dash-grid" style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: 32, alignItems: "start" }}>
-                <PointTracker points={loyalty?.points || 0} totalEarned={loyalty?.totalEarned || 0} />
+              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                  {/* Stats */}
-                  <div className="ref-stat-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
-                    {[
-                      { label: "Referrals", value: loyalty?.totalReferrals || 0, color: "#0c6" },
-                    ].map(stat => (
-                      <div key={stat.label} style={{ background: G2, border: `0.5px solid ${G3}`, borderTop: `2px solid ${stat.color}`, padding: "20px 16px" }}>
-                        <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>{stat.label}</div>
-                        <div style={{ fontSize: 28, fontWeight: 900, color: stat.color, letterSpacing: -1 }}>{stat.value}</div>
-                      </div>
-                    ))}
+                {/* Top stats row */}
+                <div className="ref-stat-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+                  <div style={{ background: G2, border: `0.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "clamp(16px,3vw,24px) clamp(14px,2.5vw,20px)" }}>
+                    <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Balance</div>
+                    <div style={{ fontSize: "clamp(24px,4vw,36px)", fontWeight: 900, color: S, letterSpacing: -2, lineHeight: 1 }}>{(loyalty?.points || 0).toLocaleString()}</div>
+                    <div style={{ fontSize: 8, color: SD, marginTop: 4 }}>pts available</div>
                   </div>
-
-                  {/* Current tier */}
-                  <div style={{ background: G2, border: `0.5px solid ${G3}`, borderLeft: `3px solid ${currentTier.color}`, padding: "20px 20px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                      <span style={{ fontSize: 20, color: currentTier.color }}>{currentTier.icon}</span>
-                      <div>
-                        <div style={{ fontSize: 14, fontWeight: 900, color: currentTier.color }}>{currentTier.name} Tier</div>
-                        <div style={{ fontSize: 9, color: SD, letterSpacing: 1 }}>
-                          {currentTier.max ? `${(currentTier.max - (loyalty?.totalEarned || 0)).toLocaleString()} pts to next tier` : "Maximum tier"}
-                        </div>
-                      </div>
+                  <div style={{ background: G2, border: `0.5px solid ${G3}`, borderTop: `2px solid #0c6`, padding: "clamp(16px,3vw,24px) clamp(14px,2.5vw,20px)" }}>
+                    <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Referrals</div>
+                    <div style={{ fontSize: "clamp(24px,4vw,36px)", fontWeight: 900, color: "#0c6", letterSpacing: -2, lineHeight: 1 }}>{loyalty?.totalReferrals || 0}</div>
+                    <div style={{ fontSize: 8, color: SD, marginTop: 4 }}>successful</div>
+                  </div>
+                  <div style={{ background: G2, border: `0.5px solid ${G3}`, borderTop: `2px solid ${currentTier.color}`, padding: "clamp(16px,3vw,24px) clamp(14px,2.5vw,20px)" }}>
+                    <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Tier</div>
+                    <div style={{ fontSize: "clamp(16px,3vw,22px)", fontWeight: 900, color: currentTier.color, letterSpacing: -1, lineHeight: 1 }}>{currentTier.icon} {currentTier.name}</div>
+                    <div style={{ fontSize: 8, color: SD, marginTop: 4 }}>
+                      {currentTier.max ? `${(currentTier.max - (loyalty?.totalEarned || 0)).toLocaleString()} to next` : "Max tier"}
                     </div>
-                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  </div>
+                </div>
+
+                {/* Progress bar */}
+                {currentTier.max && (
+                  <div style={{ background: G2, border: `0.5px solid ${G3}`, padding: "20px 24px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                      <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Progress to {TIERS[TIERS.indexOf(currentTier) + 1]?.name}</div>
+                      <div style={{ fontSize: 9, color: S }}>{(loyalty?.totalEarned || 0).toLocaleString()} / {currentTier.max.toLocaleString()} pts</div>
+                    </div>
+                    <div style={{ height: 4, background: G3, borderRadius: 2, overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${Math.min(100, ((loyalty?.totalEarned || 0) / currentTier.max) * 100)}%`, background: `linear-gradient(90deg, #888, ${S})`, transition: "width 0.8s ease", borderRadius: 2 }} />
+                    </div>
+                  </div>
+                )}
+
+                <div className="ref-dash-lower" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  {/* Current tier perks */}
+                  <div style={{ background: G2, border: `0.5px solid ${G3}`, borderLeft: `3px solid ${currentTier.color}`, padding: "20px 20px" }}>
+                    <div style={{ fontSize: 9, letterSpacing: 2, color: currentTier.color, textTransform: "uppercase", marginBottom: 14, fontWeight: 700 }}>{currentTier.name} Perks</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                       {currentTier.perks.map(p => (
-                        <span key={p} style={{ fontSize: 8, color: currentTier.color, border: `0.5px solid ${currentTier.color}22`, background: `${currentTier.color}0a`, padding: "4px 10px", letterSpacing: 1 }}>{p}</span>
+                        <div key={p} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                          <span style={{ color: currentTier.color, fontSize: 9, flexShrink: 0, marginTop: 1 }}>✦</span>
+                          <span style={{ fontSize: 11, color: "var(--vt-text)", lineHeight: 1.5 }}>{p}</span>
+                        </div>
                       ))}
                     </div>
                   </div>
 
-                  {/* Earn rate */}
-                  <div style={{ background: "rgba(192,192,192,0.04)", border: "0.5px solid rgba(192,192,192,0.1)", padding: "14px 18px", display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{ fontSize: 20, color: S }}>$</div>
-                    <div>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: "var(--vt-text)" }}>$1 spent = 5 Points</div>
-                      <div style={{ fontSize: 9, color: SD }}>Points auto-applied on every purchase</div>
-                    </div>
-                  </div>
-
-                  {/* Recent Activity */}
-                  {activities.length > 0 && (
-                    <div style={{ borderTop: `.5px solid ${G3}`, paddingTop: 16 }}>
-                      <div style={{ fontSize: 9, letterSpacing: 2, color: S, textTransform: "uppercase", marginBottom: 12, fontWeight: 700 }}>Recent Activity</div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                        {activities.map((act, i) => (
-                          <div key={i} style={{ background: G2, border: `.5px solid ${G3}`, padding: "10px 12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <div>
-                              <div style={{ fontSize: 10, color: "var(--vt-text)", marginBottom: 2 }}>
-                                {act.type === "order" ? `Order ${act.order.orderId}` : `Authenticated ${act.scan.productName}`}
-                              </div>
-                              <div style={{ fontSize: 8, color: SD }}>
-                                {act.date ? new Date(act.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}
-                              </div>
-                            </div>
-                            <div style={{ fontSize: 11, fontWeight: 700, color: "#0c6" }}>+{act.points}</div>
-                          </div>
-                        ))}
+                  {/* Earn rate + activity */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    <div style={{ background: "rgba(192,192,192,0.04)", border: "0.5px solid rgba(192,192,192,0.12)", padding: "18px 20px", display: "flex", alignItems: "center", gap: 14 }}>
+                      <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(192,192,192,0.1)", border: "0.5px solid rgba(192,192,192,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 14, color: S }}>$</div>
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--vt-text)" }}>$1 = 5 Points</div>
+                        <div style={{ fontSize: 9, color: SD }}>Auto-applied on every purchase</div>
                       </div>
                     </div>
-                  )}
+
+                    {activities.length > 0 && (
+                      <div style={{ background: G2, border: `0.5px solid ${G3}`, padding: "16px 18px", flex: 1 }}>
+                        <div style={{ fontSize: 8, letterSpacing: 2, color: S, textTransform: "uppercase", marginBottom: 12, fontWeight: 700 }}>Recent Activity</div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                          {activities.slice(0, 4).map((act, i) => (
+                            <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: i < activities.length - 1 ? 8 : 0, borderBottom: i < activities.length - 1 ? `0.5px solid ${G3}` : "none" }}>
+                              <div>
+                                <div style={{ fontSize: 10, color: "var(--vt-text)" }}>
+                                  {act.type === "order" ? `Order ${act.order.orderId}` : `Scanned ${act.scan.productName}`}
+                                </div>
+                                <div style={{ fontSize: 8, color: SD, marginTop: 2 }}>
+                                  {act.date ? new Date(act.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}
+                                </div>
+                              </div>
+                              <div style={{ fontSize: 11, fontWeight: 700, color: "#0c6", flexShrink: 0 }}>+{act.points}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -223,13 +239,15 @@ export default function VigoReferral() {
 
         {/* SCANNER */}
         {activeTab === "scan" && (
-          <div>
-            <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ Neural Scanner</div>
-            <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: -1, marginBottom: 8 }}>Scan Gear</h2>
-            <p style={{ fontSize: 12, color: SD, marginBottom: 28, maxWidth: 480 }}>
-              Authenticate physical garments with their QR tag to earn points, or scan a friend's referral QR to apply their code.
-            </p>
-            <div style={{ maxWidth: 400 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+            <div>
+              <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ Neural Scanner</div>
+              <h2 style={{ fontSize: "clamp(22px,4vw,32px)", fontWeight: 900, letterSpacing: -1, marginBottom: 8 }}>Authenticate Gear</h2>
+              <p style={{ fontSize: 12, color: SD, lineHeight: 1.8, maxWidth: 480 }}>
+                Scan the QR tag on any VIGONYC garment to authenticate it and earn points, or scan a friend's referral QR.
+              </p>
+            </div>
+            <div style={{ maxWidth: 440, width: "100%" }}>
               <NeuralScanner onScanResult={handleScanResult} />
             </div>
           </div>
@@ -237,41 +255,39 @@ export default function VigoReferral() {
 
         {/* ADVOCATE (REFER) */}
         {activeTab === "refer" && (
-          <div>
-            <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ Advocate</div>
-            <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: -1, marginBottom: 8 }}>Refer & Earn</h2>
-            <p style={{ fontSize: 12, color: SD, marginBottom: 32, maxWidth: 480 }}>
-              Give your crew 20% off their first order. You earn 500 points per successful referral.
-            </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+            <div>
+              <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ Advocate</div>
+              <h2 style={{ fontSize: "clamp(22px,4vw,32px)", fontWeight: 900, letterSpacing: -1, marginBottom: 8 }}>Refer & Earn</h2>
+              <p style={{ fontSize: 12, color: SD, lineHeight: 1.8, maxWidth: 480 }}>
+                Give your crew 20% off their first order. You earn 500 points per successful referral.
+              </p>
+            </div>
 
-            <div className="ref-refer-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, alignItems: "start" }}>
+            <div className="ref-refer-grid" style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: 32, alignItems: "start" }}>
 
-              {/* QR Card — Cash App style */}
+              {/* QR Card */}
               {loyalty?.referralCode && (
-                <div style={{ background: "#0a0a0a", border: `0.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "36px 28px", display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
-                  {/* User name */}
-                  <div style={{ alignSelf: "flex-start", marginBottom: 24 }}>
-                    <div style={{ fontSize: "clamp(22px,4vw,32px)", fontWeight: 900, color: "#fff", letterSpacing: -1, lineHeight: 1.1 }}>{user?.full_name || "VIGO Member"}</div>
-                    <div style={{ fontSize: 11, color: S, marginTop: 6, letterSpacing: 2, fontFamily: "monospace" }}>#{loyalty.referralCode}</div>
+                <div style={{ background: "#0a0a0a", border: `0.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "32px 28px", display: "flex", flexDirection: "column", alignItems: "center", gap: 0, width: "clamp(280px, 40vw, 340px)" }}>
+                  <div style={{ alignSelf: "flex-start", marginBottom: 20, width: "100%" }}>
+                    <div style={{ fontSize: "clamp(18px,3vw,26px)", fontWeight: 900, color: "#fff", letterSpacing: -1, lineHeight: 1.1 }}>{user?.full_name || "VIGO Member"}</div>
+                    <div style={{ fontSize: 10, color: S, marginTop: 6, letterSpacing: 2, fontFamily: "monospace" }}>#{loyalty.referralCode}</div>
                   </div>
 
-                  {/* QR with VIGO logo overlay */}
-                  <div style={{ position: "relative", display: "inline-block", marginBottom: 28 }}>
+                  <div style={{ position: "relative", display: "inline-block", marginBottom: 24 }}>
                     <div style={{ background: "#fff", borderRadius: 16, padding: 12, display: "inline-block" }}>
                       <img
                         src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(referralLink)}&bgcolor=ffffff&color=0a0a0a&qzone=1&format=png`}
                         alt="Referral QR"
-                        style={{ width: 220, height: 220, display: "block", borderRadius: 4 }}
+                        style={{ width: 200, height: 200, display: "block", borderRadius: 4 }}
                       />
                     </div>
-                    {/* Center logo overlay */}
-                    <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 56, height: 56, background: "#fff", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: `2px solid #e0e0e0` }}>
-                      <img src="https://media.base44.com/images/public/69d978a3dcb07c4d96ef01e2/d1ce08d38_IMG_8246-removebg-preview.png" alt="VIGONYC" style={{ width: 48, height: 48, objectFit: "contain" }} />
+                    <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 52, height: 52, background: "#fff", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: `2px solid #e0e0e0` }}>
+                      <img src="https://media.base44.com/images/public/69d978a3dcb07c4d96ef01e2/d1ce08d38_IMG_8246-removebg-preview.png" alt="VIGONYC" style={{ width: 44, height: 44, objectFit: "contain" }} />
                     </div>
                   </div>
 
-                  {/* Action buttons */}
-                  <div style={{ display: "flex", gap: 10, width: "100%" }}>
+                  <div style={{ display: "flex", gap: 8, width: "100%" }}>
                     <button onClick={copyReferral} style={{ flex: 1, background: copied ? "#0c6" : S, color: "#000", border: "none", padding: "13px 0", fontSize: 8, letterSpacing: 3, fontWeight: 900, cursor: "pointer", fontFamily: "inherit", textTransform: "uppercase", transition: "background 0.3s" }}>
                       {copied ? "✓ Copied" : "Copy Link"}
                     </button>
@@ -279,9 +295,7 @@ export default function VigoReferral() {
                       onClick={async () => {
                         if (navigator.share) {
                           await navigator.share({ title: "VIGONYC Referral", text: `Use my code ${loyalty.referralCode} for 20% off your first VIGONYC order!`, url: referralLink });
-                        } else {
-                          copyReferral();
-                        }
+                        } else { copyReferral(); }
                       }}
                       style={{ flex: 1, background: "transparent", color: S, border: `0.5px solid ${S}`, padding: "13px 0", fontSize: 8, letterSpacing: 3, fontWeight: 900, cursor: "pointer", fontFamily: "inherit", textTransform: "uppercase" }}
                     >
@@ -291,23 +305,31 @@ export default function VigoReferral() {
                 </div>
               )}
 
-              {/* How it works */}
+              {/* How it works + stats */}
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>How It Works</div>
                 {[
-                  { step: "01", title: "Share Your Link", desc: "Send your unique referral link or QR code to a friend." },
-                  { step: "02", title: "They Get 20% Off", desc: "Their first order is automatically discounted." },
-                  { step: "03", title: "You Get 500 Points", desc: "Once they complete a purchase, 500 points hit your account." },
+                  { step: "01", title: "Share Your Link", desc: "Send your unique referral link or QR code to a friend.", color: S },
+                  { step: "02", title: "They Get 20% Off", desc: "Their first order is automatically discounted.", color: "#fa0" },
+                  { step: "03", title: "You Get 500 Points", desc: "Once they complete a purchase, 500 points hit your account.", color: "#0c6" },
                 ].map(s => (
-                  <div key={s.step} style={{ background: G2, border: `0.5px solid ${G3}`, padding: "20px", display: "flex", gap: 16, alignItems: "flex-start" }}>
-                    <div style={{ fontSize: 28, fontWeight: 900, color: G3, letterSpacing: -2, flexShrink: 0, lineHeight: 1 }}>{s.step}</div>
+                  <div key={s.step} style={{ background: G2, border: `0.5px solid ${G3}`, borderLeft: `3px solid ${s.color}`, padding: "18px 20px", display: "flex", gap: 16, alignItems: "flex-start" }}>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: s.color, letterSpacing: -2, flexShrink: 0, lineHeight: 1, opacity: 0.4 }}>{s.step}</div>
                     <div>
                       <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 4 }}>{s.title}</div>
                       <div style={{ fontSize: 11, color: SD, lineHeight: 1.7 }}>{s.desc}</div>
                     </div>
                   </div>
                 ))}
-                <div style={{ padding: "14px 18px", background: "rgba(0,204,102,0.06)", border: "0.5px solid rgba(0,204,102,0.15)", fontSize: 11, color: "#0c6" }}>
-                  Total referrals: <strong>{loyalty?.totalReferrals || 0}</strong> · Points from referrals: <strong>{(loyalty?.totalReferrals || 0) * 500}</strong>
+                <div style={{ padding: "16px 20px", background: "rgba(0,204,102,0.06)", border: "0.5px solid rgba(0,204,102,0.15)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                  <div>
+                    <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>Your Referrals</div>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: "#0c6" }}>{loyalty?.totalReferrals || 0}</div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>Points Earned</div>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: "#0c6" }}>{((loyalty?.totalReferrals || 0) * 500).toLocaleString()}</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -318,33 +340,45 @@ export default function VigoReferral() {
         {activeTab === "ascend" && (
           <div>
             <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ Ascend</div>
-            <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: -1, marginBottom: 8 }}>Loyalty Tiers</h2>
-            <p style={{ fontSize: 12, color: SD, marginBottom: 32, maxWidth: 480 }}>The more you engage, the deeper you go. Unlock exclusive perks at every level.</p>
+            <h2 style={{ fontSize: "clamp(22px,4vw,32px)", fontWeight: 900, letterSpacing: -1, marginBottom: 8 }}>Loyalty Tiers</h2>
+            <p style={{ fontSize: 12, color: SD, marginBottom: 28, maxWidth: 480, lineHeight: 1.8 }}>The more you engage, the deeper you go. Unlock exclusive perks at every level.</p>
 
             <div className="ref-tier-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-              {TIERS.map(tier => {
+              {TIERS.map((tier, idx) => {
                 const isActive = loyalty?.tier === tier.name;
                 const isPast = TIERS.indexOf(tier) < TIERS.findIndex(t => t.name === loyalty?.tier);
+                const progress = tier.max ? Math.min(100, ((loyalty?.totalEarned || 0) - tier.min) / (tier.max - tier.min) * 100) : 100;
                 return (
-                  <div key={tier.name} style={{ background: G2, border: `0.5px solid ${isActive ? tier.color : G3}`, borderTop: `3px solid ${tier.color}`, padding: "28px 24px", position: "relative", opacity: isPast ? 0.6 : 1 }}>
+                  <div key={tier.name} style={{ background: G2, border: `0.5px solid ${isActive ? tier.color : G3}`, borderTop: `3px solid ${tier.color}`, padding: "clamp(20px,3vw,28px) clamp(16px,2.5vw,24px)", position: "relative", opacity: isPast ? 0.55 : 1, transition: "opacity 0.2s" }}>
                     {isActive && (
-                      <div style={{ position: "absolute", top: 14, right: 14, fontSize: 7, letterSpacing: 2, color: tier.color, border: `0.5px solid ${tier.color}`, padding: "3px 8px", textTransform: "uppercase" }}>Active</div>
+                      <div style={{ position: "absolute", top: 14, right: 14, fontSize: 7, letterSpacing: 2, color: tier.color, border: `0.5px solid ${tier.color}`, padding: "3px 8px", textTransform: "uppercase", background: `${tier.color}10` }}>● Active</div>
                     )}
-                    <div style={{ fontSize: 28, marginBottom: 10, color: tier.color }}>{tier.icon}</div>
-                    <div style={{ fontSize: 18, fontWeight: 900, color: tier.color, letterSpacing: -0.5, marginBottom: 4 }}>{tier.name}</div>
-                    <div style={{ fontSize: 9, color: SD, marginBottom: 20, letterSpacing: 1 }}>
-                      {tier.min.toLocaleString()}+ pts {tier.max ? `· up to ${tier.max.toLocaleString()}` : "· Max tier"}
+                    <div style={{ fontSize: 32, marginBottom: 12, color: tier.color }}>{tier.icon}</div>
+                    <div style={{ fontSize: "clamp(16px,2.5vw,20px)", fontWeight: 900, color: tier.color, letterSpacing: -0.5, marginBottom: 4 }}>{tier.name}</div>
+                    <div style={{ fontSize: 9, color: SD, marginBottom: 16, letterSpacing: 1 }}>
+                      {tier.min.toLocaleString()}+ pts {tier.max ? `→ ${tier.max.toLocaleString()}` : "· Max tier"}
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+
+                    {/* Progress bar (only for current tier) */}
+                    {isActive && tier.max && (
+                      <div style={{ marginBottom: 16 }}>
+                        <div style={{ height: 3, background: G3, borderRadius: 2, overflow: "hidden" }}>
+                          <div style={{ height: "100%", width: `${Math.max(2, progress)}%`, background: tier.color, transition: "width 0.8s ease" }} />
+                        </div>
+                        <div style={{ fontSize: 8, color: SD, marginTop: 4 }}>{Math.round(progress)}% to {TIERS[idx + 1]?.name}</div>
+                      </div>
+                    )}
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                       {tier.perks.map(p => (
-                        <div key={p} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                          <span style={{ color: tier.color, fontSize: 10, flexShrink: 0, marginTop: 1 }}>✦</span>
+                        <div key={p} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                          <span style={{ color: tier.color, fontSize: 9, flexShrink: 0, marginTop: 2 }}>✦</span>
                           <span style={{ fontSize: 11, color: "var(--vt-text)", lineHeight: 1.5 }}>{p}</span>
                         </div>
                       ))}
                     </div>
                     {!isActive && !isPast && (
-                      <div style={{ marginTop: 20, fontSize: 9, color: SD, letterSpacing: 1 }}>
+                      <div style={{ marginTop: 18, padding: "8px 12px", background: `${tier.color}08`, border: `0.5px solid ${tier.color}22`, fontSize: 9, color: tier.color, letterSpacing: 1 }}>
                         {(tier.min - (loyalty?.totalEarned || 0)).toLocaleString()} pts away
                       </div>
                     )}
@@ -361,9 +395,14 @@ export default function VigoReferral() {
         @media (max-width: 900px) {
           .ref-hero-grid { grid-template-columns: 1fr !important; }
           .ref-dash-grid { grid-template-columns: 1fr !important; }
-          .ref-stat-grid { grid-template-columns: 1fr 1fr !important; }
+          .ref-stat-grid { grid-template-columns: repeat(3,1fr) !important; }
+          .ref-dash-lower { grid-template-columns: 1fr !important; }
           .ref-refer-grid { grid-template-columns: 1fr !important; }
           .ref-tier-grid { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 480px) {
+          .ref-stat-grid { grid-template-columns: 1fr 1fr !important; }
+          .ref-stat-grid > div:last-child { grid-column: span 2; }
         }
       `}</style>
     </div>
