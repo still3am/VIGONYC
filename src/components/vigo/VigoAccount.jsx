@@ -268,9 +268,11 @@ export default function VigoAccount() {
     refetchAddresses();
   };
 
+  const [deletingAddressId, setDeletingAddressId] = useState(null);
+
   const deleteAddress = async (id) => {
-    if (!confirm("Remove this address?")) return;
     await base44.entities.Address.delete(id);
+    setDeletingAddressId(null);
     refetchAddresses();
   };
 
@@ -437,9 +439,23 @@ export default function VigoAccount() {
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 12 }}>
                       <div>
                         <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 6 }}>Items</div>
-                        {(order.items || "").split(", ").map((item, idx) => (
-                          <div key={idx} style={{ fontSize: 11, color: "var(--vt-text)", marginBottom: 3 }}>· {item}</div>
-                        ))}
+                        {(() => {
+                          let itemsArr = [];
+                          try { itemsArr = JSON.parse(order.itemsJson || "[]"); } catch { itemsArr = []; }
+                          if (itemsArr.length > 0) {
+                            return itemsArr.map((item, idx) => (
+                              <div key={idx} style={{ fontSize: 11, color: "var(--vt-text)", marginBottom: 6 }}>
+                                · {item.name}{item.size ? ` (${item.size})` : ""} x{item.qty}
+                                {order.status === "Delivered" && item.productId && (
+                                  <a href={`/product/${item.productId}#reviews`} style={{ marginLeft: 8, fontSize: 8, color: S, letterSpacing: 1, textTransform: "uppercase", textDecoration: "none" }}>Leave a Review →</a>
+                                )}
+                              </div>
+                            ));
+                          }
+                          return (order.items || "").split(", ").map((item, idx) => (
+                            <div key={idx} style={{ fontSize: 11, color: "var(--vt-text)", marginBottom: 3 }}>· {item}</div>
+                          ));
+                        })()}
                       </div>
                       <div>
                         <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 6 }}>Shipping</div>
@@ -499,9 +515,17 @@ export default function VigoAccount() {
                     <div style={{ fontSize: 12, color: SD, lineHeight: 1.9, marginBottom: 20 }}>
                       {a.fullName}<br />{a.street}<br />{a.city}, {a.state} {a.zip}<br />{a.country}
                     </div>
-                    <div style={{ display: "flex", gap: 8 }}>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                       <button onClick={() => setAddressModal(a)} style={btnGhost}>Edit</button>
-                      <button onClick={() => deleteAddress(a.id)} style={{ ...btnGhost, color: "#e03", borderColor: "#e03" }}>Remove</button>
+                      {deletingAddressId === a.id ? (
+                        <>
+                          <span style={{ fontSize: 10, color: SD }}>Remove?</span>
+                          <button onClick={() => deleteAddress(a.id)} style={{ ...btnGhost, color: "#e03", borderColor: "#e03" }}>Yes</button>
+                          <button onClick={() => setDeletingAddressId(null)} style={btnGhost}>No</button>
+                        </>
+                      ) : (
+                        <button onClick={() => setDeletingAddressId(a.id)} style={{ ...btnGhost, color: "#e03", borderColor: "#e03" }}>Remove</button>
+                      )}
                     </div>
                   </div>
             )}

@@ -85,23 +85,24 @@ export default function VIGONYCFlagship() {
       const user = await base44.auth.me();
       if (user) {
         const productId = item.productId || item.id;
+        const itemQty = item.qty || 1;
         const existing = await base44.entities.CartItem.filter({ created_by: user.email, productId }, '-created_date', 10);
         const match = existing.find(i => i.size === item.size && i.color === item.color);
         if (match) {
-          await base44.entities.CartItem.update(match.id, { qty: match.qty + 1 });
+          await base44.entities.CartItem.update(match.id, { qty: match.qty + itemQty });
         } else {
           await base44.entities.CartItem.create({
             productId,
             productName: item.productName || item.name,
             price: item.price,
-            qty: 1,
+            qty: itemQty,
             size: item.size || null,
             color: item.color || null,
             productImage: item.productImage || null,
           });
         }
-        // Optimistic update — no full refetch needed
-        window.dispatchEvent(new CustomEvent("vigo:cart-update", { detail: { delta: 1 } }));
+        // Optimistic update
+        window.dispatchEvent(new CustomEvent("vigo:cart-update", { detail: { delta: itemQty } }));
       }
     } catch (err) {}
     setCartOpen(true);

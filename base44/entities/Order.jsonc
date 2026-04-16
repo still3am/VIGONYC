@@ -4,15 +4,15 @@
   "properties": {
     "orderId": {
       "type": "string",
-      "description": "Unique order identifier"
+      "description": "Unique order identifier VGO-XXXX1234"
     },
     "items": {
       "type": "string",
-      "description": "Display string e.g. Chrome V Tee (M), Cargo Pant (L)"
+      "description": "Display string e.g. Chrome V Tee (M) x1"
     },
     "itemsJson": {
       "type": "string",
-      "description": "JSON array of order items with productId, name, size, color, qty, price, image"
+      "description": "JSON array of order items"
     },
     "total": {
       "type": "number",
@@ -32,7 +32,15 @@
     },
     "discount": {
       "type": "number",
-      "description": "Discount amount applied"
+      "description": "Promo discount amount applied"
+    },
+    "pointsDiscount": {
+      "type": "number",
+      "description": "Dollar value of loyalty points redeemed"
+    },
+    "loyaltyPointsUsed": {
+      "type": "number",
+      "description": "Points redeemed count"
     },
     "pieces": {
       "type": "number",
@@ -54,6 +62,10 @@
       "type": "string",
       "description": "Shipping address"
     },
+    "shippingName": {
+      "type": "string",
+      "description": "Full name for shipping"
+    },
     "trackingNumber": {
       "type": "string",
       "description": "Shipping tracking number"
@@ -70,7 +82,7 @@
     },
     "userEmail": {
       "type": "string",
-      "description": "Email of the customer who placed the order"
+      "description": "Email of the customer"
     },
     "isGift": {
       "type": "boolean",
@@ -82,7 +94,7 @@
     },
     "shippingMethod": {
       "type": "string",
-      "description": "Selected shipping method: standard | express | overnight"
+      "description": "standard | express | overnight"
     },
     "promoCode": {
       "type": "string",
@@ -94,7 +106,27 @@
     },
     "loyaltyPointsEarned": {
       "type": "number",
-      "description": "Loyalty points awarded for this order"
+      "description": "Loyalty points awarded"
+    },
+    "paymentMethod": {
+      "type": "string",
+      "description": "card | applepay | klarna | points"
+    },
+    "paymentStatus": {
+      "type": "string",
+      "description": "pending | authorized | captured | failed | refunded"
+    },
+    "paymentRef": {
+      "type": "string",
+      "description": "VIGOPAY transaction ID"
+    },
+    "cardLast4": {
+      "type": "string",
+      "description": "Last 4 digits of card"
+    },
+    "cardBrand": {
+      "type": "string",
+      "description": "Visa | Mastercard | Amex | Discover"
     }
   },
   "required": [

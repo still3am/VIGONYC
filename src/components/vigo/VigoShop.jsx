@@ -10,7 +10,6 @@ const G3 = "var(--vt-border)";
 const SD = "var(--vt-sub)";
 
 const SIZES = ["XS","S","M","L","XL","XXL","One Size"];
-const COLORS = ["Black","White","Silver","Graphite"];
 
 function FilterSection({ title, children }) {
   const [open, setOpen] = useState(true);
@@ -25,7 +24,14 @@ function FilterSection({ title, children }) {
   );
 }
 
-function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories, collections, inStockOnly, setInStockOnly }) {
+function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories, collections, allColors, inStockOnly, setInStockOnly }) {
+  const COLOR_MAP = {
+    black: "#111", white: "#eee", silver: "#C0C0C0", chrome: "#C0C0C0", graphite: "#555",
+    grey: "#888", gray: "#888", navy: "#1a2a4a", red: "#cc2200", olive: "#6b7c3c",
+    cream: "#f5f0e8", blue: "#1a4a8a", green: "#2a6a3a", brown: "#6a3a1a", pink: "#e8a0a0"
+  };
+  const getSwatchColor = (colorName) => COLOR_MAP[colorName.toLowerCase()] || "#888";
+
   return (
     <div>
       <div style={{ fontSize: 10, letterSpacing: 3, textTransform: "uppercase", color: "var(--vt-text)", fontWeight: 700, marginBottom: 24, paddingBottom: 16, borderBottom: `.5px solid ${G3}` }}>Filters</div>
@@ -54,16 +60,15 @@ function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes,
           ))}
         </div>
       </FilterSection>
-      <FilterSection title="Color">
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {COLORS.map(c => {
-            const bg = c === "Black" ? "#111" : c === "White" ? "#eee" : c === "Silver" ? "#C0C0C0" : "#666";
-            return (
-              <button key={c} onClick={() => toggleArr(selectedColors, setSelectedColors, c)} title={c} style={{ width: 26, height: 26, background: bg, border: selectedColors.includes(c) ? `2px solid ${S}` : `.5px solid ${G3}`, cursor: "pointer", borderRadius: "50%", position: "relative" }} />
-            );
-          })}
-        </div>
-      </FilterSection>
+      {allColors.length > 0 && (
+        <FilterSection title="Color">
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {allColors.map(c => (
+              <button key={c} onClick={() => toggleArr(selectedColors, setSelectedColors, c)} title={c} style={{ width: 26, height: 26, background: getSwatchColor(c), border: selectedColors.includes(c) ? `2px solid ${S}` : `.5px solid ${G3}`, cursor: "pointer", borderRadius: "50%", position: "relative" }} />
+            ))}
+          </div>
+        </FilterSection>
+      )}
       <FilterSection title={`Price: Up to $${priceRange}`}>
         <input type="range" min={20} max={300} value={priceRange} onChange={e => setPriceRange(Number(e.target.value))} style={{ width: "100%", accentColor: S }} />
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, color: SD, marginTop: 6 }}>
@@ -103,6 +108,7 @@ export default function VigoShop() {
 
   const CATEGORIES = useMemo(() => ["All", ...new Set(allProducts.map(p => p.cat).filter(Boolean))], [allProducts]);
   const COLLECTIONS = useMemo(() => ["All Collections", ...new Set(allProducts.map(p => p.collection).filter(Boolean))], [allProducts]);
+  const ALL_COLORS = useMemo(() => [...new Set(allProducts.flatMap(p => p.colors || []).filter(Boolean))], [allProducts]);
 
   const toggleArr = (arr, setArr, val) => setArr(prev => prev.includes(val) ? prev.filter(x => x !== val) : [...prev, val]);
 
@@ -129,7 +135,7 @@ export default function VigoShop() {
     base44.entities.Product.list("-created_date", 200).then(data => { setAllProducts(data || []); res(); }).catch(() => res());
   }), []);
 
-  const filterProps = { activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories: CATEGORIES, collections: COLLECTIONS, inStockOnly, setInStockOnly };
+  const filterProps = { activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories: CATEGORIES, collections: COLLECTIONS, allColors: ALL_COLORS, inStockOnly, setInStockOnly };
 
   useEffect(() => {
     document.title = "Shop All — VIGONYC";

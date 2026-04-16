@@ -131,31 +131,31 @@ export default function VigoProduct() {
       return;
     }
     if (soldOut) return;
-    for (let i = 0; i < qty; i++) {
-      addToCart({
-        id: product.id,
-        productId: product.id,
-        name: product.name,
-        productName: product.name,
-        size: selectedSize,
-        color: selectedColor,
-        meta: `Size: ${selectedSize} · Color: ${selectedColor}`,
-        price: product.price,
-        productImage: images[0],
-      });
-    }
+    addToCart({
+      id: product.id,
+      productId: product.id,
+      name: product.name,
+      productName: product.name,
+      size: selectedSize,
+      color: selectedColor,
+      meta: `Size: ${selectedSize} · Color: ${selectedColor}`,
+      price: product.price,
+      productImage: images[0],
+      qty,
+    });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
 
   const soldOut = product.inStock === false || product.stock === 0;
-   const avgRating = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : null;
+   const approvedReviews = reviews.filter(r => r.approved === true);
+   const avgRating = approvedReviews.length ? (approvedReviews.reduce((s, r) => s + r.rating, 0) / approvedReviews.length).toFixed(1) : null;
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     if (!reviewForm.rating) return toast.error("Please select a star rating");
     setSubmittingReview(true);
-    await base44.entities.Review.create({ productId: id, ...sanitizeObject(reviewForm) });
+    await base44.entities.Review.create({ productId: id, approved: false, ...sanitizeObject(reviewForm) });
     const updated = await base44.entities.Review.filter({ productId: id }, "-created_date", 50).catch(() => reviews);
     setReviews(updated);
     setReviewForm({ rating: 0, title: "", body: "", reviewerName: reviewForm.reviewerName });
@@ -317,7 +317,7 @@ export default function VigoProduct() {
                       <input value={notifyEmail} onChange={e => setNotifyEmail(e.target.value)} placeholder="your@email.com" style={{ flex: 1, background: "var(--vt-card)", border: `.5px solid ${G3}`, borderRight: "none", color: "var(--vt-text)", padding: "10px 14px", fontSize: 11, outline: "none", fontFamily: "inherit" }} />
                       <button onClick={async () => {
                         if (!notifyEmail.trim() || !/\S+@\S+\.\S+/.test(notifyEmail)) return;
-                        await base44.auth.me().then(u => { if (u) base44.auth.updateMe({ restockNotifyEmail: notifyEmail, restockProductId: product.id }).catch(() => {}); }).catch(() => {});
+                        await base44.entities.ContactEntry.create({ email: notifyEmail, name: notifyEmail, subject: "Back-in-stock alert", message: product.name, status: "New" }).catch(() => {});
                         setNotifySubmitted(true);
                       }} style={{ background: S, color: "#000", border: "none", padding: "10px 16px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Notify Me</button>
                     </div>
@@ -364,9 +364,9 @@ export default function VigoProduct() {
 
           {/* Reviews */}
           <div style={{ background: G2, border: `.5px solid ${G3}`, padding: "clamp(16px,3vw,24px)", marginBottom: 16 }}>
-            <div style={{ fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: S, marginBottom: 20 }}>Reviews {reviews.length > 0 && `(${reviews.length})`}</div>
-            {reviews.length === 0 && <div style={{ fontSize: 12, color: SD, marginBottom: 20 }}>No reviews yet — be the first!</div>}
-            {reviews.map((r, i) => (
+            <div style={{ fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: S, marginBottom: 20 }}>Reviews {approvedReviews.length > 0 && `(${approvedReviews.length})`}</div>
+            {approvedReviews.length === 0 && <div style={{ fontSize: 12, color: SD, marginBottom: 20 }}>No reviews yet — be the first!</div>}
+            {approvedReviews.map((r, i) => (
               <div key={i} style={{ borderBottom: `.5px solid var(--vt-border)`, paddingBottom: 16, marginBottom: 16 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
                   <div style={{ color: S, fontSize: 12 }}>{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</div>
