@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import PullToRefresh from "./PullToRefresh";
-import ProductCard from "./ProductCard";
 import { base44 } from "@/api/base44Client";
 
 const S = "#C0C0C0";
@@ -116,7 +115,7 @@ export default function VigoDrops() {
   for (let i = 0; i < firstDay; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, month, d));
 
-  const dropOnDay = day => day ? ALL_DROPS.find(dr => isSameDay(dr.date, day)) : null;
+  const dropOnDay = day => day ? ALL_DROPS.find(dr => dr.date && isSameDay(dr.date, day)) : null;
   const handleNotify = async (id) => {
     if (!email.trim()) return;
     const user = await base44.auth.me().catch(() => null);
@@ -334,16 +333,25 @@ export default function VigoDrops() {
             </div>
             <div style={{ flex: 1, height: .5, background: G3 }} />
           </div>
-          <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
-            {PAST_DROPS.map(p => (
-              <div key={p.id} style={{ position: "relative" }}>
-                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.55)", zIndex: 3, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
-                  <span style={{ fontSize: 8, letterSpacing: 3, color: SD, textTransform: "uppercase", border: `.5px solid ${G3}`, padding: "5px 12px" }}>Sold Out</span>
+          {PAST_DROPS.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "40px 0", color: SD, fontSize: 12 }}>No past drops yet.</div>
+          ) : (
+            <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
+              {PAST_DROPS.map(p => (
+                <div key={p.id} style={{ background: G2, border: `.5px solid ${G3}`, position: "relative" }}>
+                  <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.55)", zIndex: 3, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
+                    <span style={{ fontSize: 8, letterSpacing: 3, color: SD, textTransform: "uppercase", border: `.5px solid ${G3}`, padding: "5px 12px" }}>Sold Out</span>
+                  </div>
+                  {p.image && <img src={p.image} alt={p.name} style={{ width: "100%", aspectRatio: "4/5", objectFit: "cover", display: "block" }} />}
+                  <div style={{ padding: "12px 14px" }}>
+                    <div style={{ fontSize: 9, color: SD, letterSpacing: 1, marginBottom: 4 }}>{p.series}</div>
+                    <div style={{ fontSize: 13, fontWeight: 900, letterSpacing: -0.5 }}>{p.name}</div>
+                    {p.date && <div style={{ fontSize: 9, color: SD, marginTop: 4 }}>{p.date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</div>}
+                  </div>
                 </div>
-                <ProductCard product={p} img={p.images?.[0] || productImg} wishlisted={wishlist.includes(p.id)} onWishlist={() => {}} onAdd={() => {}} onClick={() => navigate(`/product/${p.id}`)} />
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -354,7 +362,6 @@ export default function VigoDrops() {
           .vigo-hero-drop { grid-template-columns: 1fr !important; }
           .vigo-4col { grid-template-columns: repeat(2,1fr) !important; }
           .vigo-corner { display: none !important; }
-          .vigo-hero-drop-inner { display: none !important; }
         }
         @media(max-width:480px){
           .vigo-4col { grid-template-columns: 1fr 1fr !important; }
