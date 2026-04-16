@@ -156,9 +156,10 @@ export default function VigoReferral() {
 
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {/* Stats */}
-                  <div className="ref-stat-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
+                  <div className="ref-stat-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
                     {[
-                      { label: "Points Balance / Total Earned", value: `${(loyalty?.points || 0).toLocaleString()} / ${(loyalty?.totalEarned || 0).toLocaleString()}`, color: S },
+                      { label: "Points Balance", value: (loyalty?.points || 0).toLocaleString(), color: S },
+                      { label: "Total Earned", value: (loyalty?.totalEarned || 0).toLocaleString(), color: "#E8E8E8" },
                       { label: "Referrals", value: loyalty?.totalReferrals || 0, color: "#0c6" },
                     ].map(stat => (
                       <div key={stat.label} style={{ background: G2, border: `0.5px solid ${G3}`, borderTop: `2px solid ${stat.color}`, padding: "20px 16px" }}>
