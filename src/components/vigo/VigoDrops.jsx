@@ -224,27 +224,25 @@ export default function VigoDrops() {
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)" }}>
               {cells.map((day, i) => {
+                if (!day) return <div key={`empty-${i}`} style={{ minHeight: "clamp(52px,8vw,72px)", borderRight: (i + 1) % 7 !== 0 ? `.5px solid ${G3}` : "none", borderBottom: `.5px solid ${G3}` }} />;
                 const drop = dropOnDay(day);
-                const isToday = day && isSameDay(day, TODAY);
+                const isToday = isSameDay(day, TODAY);
                 const isSelected = selectedDrop && drop && selectedDrop.id === drop.id;
-                const isPast = day && day < TODAY && !isToday;
+                const isPast = day < TODAY && !isToday;
+                const tagColor = drop?.tagColor || S;
                 return (
                   <div
-                    key={i}
-                    onClick={() => { if (drop) { setSelectedDrop(prev => prev?.id === drop.id ? null : drop); if (drop.date) setViewDate(new Date(drop.date.getFullYear(), drop.date.getMonth(), 1)); } }}
+                    key={`day-${i}`}
+                    onClick={() => { if (drop) setSelectedDrop(prev => prev?.id === drop.id ? null : drop); }}
                     style={{ minHeight: "clamp(52px,8vw,72px)", padding: "8px 6px 6px", borderRight: (i + 1) % 7 !== 0 ? `.5px solid ${G3}` : "none", borderBottom: `.5px solid ${G3}`, cursor: drop ? "pointer" : "default", background: isSelected ? "rgba(192,192,192,.08)" : "transparent", transition: "background .15s", position: "relative" }}
                     onMouseEnter={e => { if (drop && !isSelected) e.currentTarget.style.background = "rgba(192,192,192,.04)"; }}
                     onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
                   >
-                    {day && (
-                      <>
-                        <div style={{ fontSize: 10, fontWeight: isToday ? 900 : 400, color: isToday ? "#000" : isPast ? SD : drop ? "var(--vt-text)" : SD, width: 20, height: 20, background: isToday ? S : "transparent", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>{day.getDate()}</div>
-                        {drop && (
-                         <div style={{ background: `${drop.tagColor || S}18`, borderLeft: `2px solid ${drop.tagColor || S}`, padding: "2px 4px", fontSize: 6, letterSpacing: .5, color: drop.tagColor || S, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-                           {drop.series || drop.name}
-                         </div>
-                        )}
-                      </>
+                    <div style={{ fontSize: 10, fontWeight: isToday ? 900 : 400, color: isToday ? "#000" : isPast ? SD : drop ? "var(--vt-text)" : SD, width: 20, height: 20, background: isToday ? S : "transparent", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>{day.getDate()}</div>
+                    {drop && (
+                      <div style={{ background: `${tagColor}18`, borderLeft: `2px solid ${tagColor}`, padding: "2px 4px", fontSize: 6, letterSpacing: .5, color: tagColor, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+                        {drop.series || drop.name}
+                      </div>
                     )}
                   </div>
                 );
