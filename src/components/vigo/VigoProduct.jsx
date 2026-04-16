@@ -165,12 +165,7 @@ export default function VigoProduct() {
 
   return (
     <div style={{ minHeight: "100vh", background: G1 }}>
-      {/* Back button (mobile) */}
-      <div className="vigo-product-back" style={{ display: "none", padding: "10px clamp(16px,4vw,32px)", borderBottom: `.5px solid ${G3}` }}>
-        <button onClick={() => navigate("/shop")} style={{ background: "none", border: "none", color: SD, cursor: "pointer", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6 }}>
-          ← Back to Shop
-        </button>
-      </div>
+
 
       {/* Breadcrumb */}
       <div style={{ padding: "12px clamp(20px,4vw,32px)", borderBottom: `.5px solid ${G3}`, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
