@@ -244,30 +244,52 @@ export default function VigoReferral() {
               Give your crew 20% off their first order. You earn 500 points per successful referral.
             </p>
 
-            <div className="ref-refer-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
-              {/* Link Generator */}
-              <div style={{ background: G2, border: `0.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: 24 }}>
-                <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 16 }}>Your Referral Link</div>
-                <div style={{ display: "flex", marginBottom: 14 }}>
-                  <input readOnly value={referralLink} style={{ flex: 1, background: G1, border: `0.5px solid ${G3}`, borderRight: "none", color: S, padding: "12px 14px", fontSize: 10, outline: "none", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis" }} />
-                  <button onClick={copyReferral} style={{ background: copied ? "#0c6" : S, color: "#000", border: "none", padding: "12px 20px", fontSize: 8, letterSpacing: 2, fontWeight: 900, cursor: "pointer", fontFamily: "inherit", textTransform: "uppercase", transition: "background 0.3s", whiteSpace: "nowrap" }}>
-                    {copied ? "✓ Copied" : "Copy Link"}
-                  </button>
-                </div>
+            <div className="ref-refer-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 32, alignItems: "start" }}>
 
-                {/* QR Code display */}
-                {loyalty?.referralCode && (
-                  <div style={{ textAlign: "center", padding: "20px 0" }}>
-                    <div style={{ fontSize: 9, color: SD, marginBottom: 12, letterSpacing: 2, textTransform: "uppercase" }}>Your Referral QR</div>
-                    <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(referralLink)}&bgcolor=0a0a0a&color=C0C0C0&qzone=1`}
-                      alt="Referral QR"
-                      style={{ width: 160, height: 160, imageRendering: "pixelated", border: `0.5px solid ${G3}`, display: "block", margin: "0 auto" }}
-                    />
-                    <div style={{ fontSize: 8, color: SD, marginTop: 10, letterSpacing: 2 }}>Code: {loyalty.referralCode}</div>
+              {/* QR Card — Cash App style */}
+              {loyalty?.referralCode && (
+                <div style={{ background: "#0a0a0a", border: `0.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "36px 28px", display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
+                  {/* User name */}
+                  <div style={{ alignSelf: "flex-start", marginBottom: 24 }}>
+                    <div style={{ fontSize: "clamp(22px,4vw,32px)", fontWeight: 900, color: "#fff", letterSpacing: -1, lineHeight: 1.1 }}>{user?.full_name || "VIGO Member"}</div>
+                    <div style={{ fontSize: 11, color: S, marginTop: 6, letterSpacing: 2, fontFamily: "monospace" }}>#{loyalty.referralCode}</div>
                   </div>
-                )}
-              </div>
+
+                  {/* QR with VIGO logo overlay */}
+                  <div style={{ position: "relative", display: "inline-block", marginBottom: 28 }}>
+                    <div style={{ background: "#fff", borderRadius: 16, padding: 12, display: "inline-block" }}>
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(referralLink)}&bgcolor=ffffff&color=0a0a0a&qzone=1&format=png`}
+                        alt="Referral QR"
+                        style={{ width: 220, height: 220, display: "block", borderRadius: 4 }}
+                      />
+                    </div>
+                    {/* Center logo overlay */}
+                    <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 52, height: 52, background: "#0a0a0a", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", border: `2px solid ${S}` }}>
+                      <span style={{ fontSize: 9, fontWeight: 900, color: S, letterSpacing: 1, textTransform: "uppercase", textAlign: "center", lineHeight: 1.2 }}>VGO</span>
+                    </div>
+                  </div>
+
+                  {/* Action buttons */}
+                  <div style={{ display: "flex", gap: 10, width: "100%" }}>
+                    <button onClick={copyReferral} style={{ flex: 1, background: copied ? "#0c6" : S, color: "#000", border: "none", padding: "13px 0", fontSize: 8, letterSpacing: 3, fontWeight: 900, cursor: "pointer", fontFamily: "inherit", textTransform: "uppercase", transition: "background 0.3s" }}>
+                      {copied ? "✓ Copied" : "Copy Link"}
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (navigator.share) {
+                          await navigator.share({ title: "VIGONYC Referral", text: `Use my code ${loyalty.referralCode} for 20% off your first VIGONYC order!`, url: referralLink });
+                        } else {
+                          copyReferral();
+                        }
+                      }}
+                      style={{ flex: 1, background: "transparent", color: S, border: `0.5px solid ${S}`, padding: "13px 0", fontSize: 8, letterSpacing: 3, fontWeight: 900, cursor: "pointer", fontFamily: "inherit", textTransform: "uppercase" }}
+                    >
+                      ↑ Share
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* How it works */}
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
