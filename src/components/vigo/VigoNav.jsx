@@ -97,10 +97,15 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
         ) : (
           <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 24px", height: 60, display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
             {!isRoot ?
-            <button onClick={() => navigate(-1)} className="vigo-back-btn" style={{ background: "none", border: "none", color: "var(--vt-text)", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontFamily: "inherit", padding: "4px 0" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <button onClick={() => navigate(-1)} className="vigo-back-btn" style={{ background: "none", border: "none", color: "var(--vt-text)", cursor: "pointer", display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontFamily: "inherit", padding: "4px 0" }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6" /></svg>
                 Back
-              </button> :
+              </button>
+              <button onClick={() => navigate("/")} style={{ background: "none", border: "none", color: SD, cursor: "pointer", display: "flex", alignItems: "center", fontSize: 13, fontFamily: "inherit", padding: "4px 0" }} title="Home">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </button>
+            </div> :
 
             <div className="vigo-nav-logo" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", cursor: "pointer" }} onClick={handleLogoClick}>
               <img src={logo} alt="VIGONYC" className="vigo-nav-logo-img" style={{ width: 40, height: 40, objectFit: "contain" }} />
