@@ -224,7 +224,7 @@ export default function VigoProduct() {
 
         {/* CENTER — Large image, full-bleed */}
         <div
-          style={{ position: "relative", background: G2, overflow: "hidden", minHeight: "80vh" }}
+          style={{ position: "sticky", top: 0, height: "100vh", background: G2, overflow: "hidden", minHeight: "80vh" }}
           onTouchStart={e => { e.currentTarget._touchX = e.touches[0].clientX; e.currentTarget._touchY = e.touches[0].clientY; }}
           onTouchEnd={e => {
             const dx = e.changedTouches[0].clientX - e.currentTarget._touchX;
