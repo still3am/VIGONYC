@@ -5,6 +5,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { sanitize, sanitizeObject } from "@/lib/sanitize";
 import VigopayForm from "./VigopayForm";
 import VigoSplit from "./VigoSplit";
+import StripeApplePay from "./StripeApplePay";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -74,7 +75,10 @@ export default function VigoCheckout() {
   const freeShippingThreshold = parseInt(settings.free_shipping_threshold || "150");
   const subtotal = cartItems.reduce((s, i) => s + (i.price * i.qty), 0);
   const shippingCost = shippingMethod === "overnight" ? 28 : shippingMethod === "express" ? 12 : (subtotal >= freeShippingThreshold ? 0 : 8);
-  const tax = parseFloat((subtotal * 0.0887).toFixed(2));
+  const [stripeTax, setStripeTax] = useState(null);
+  const [taxLoading, setTaxLoading] = useState(false);
+  // Use Stripe Tax if available, otherwise fallback to NYC tax
+  const tax = stripeTax !== null ? stripeTax : parseFloat((subtotal * 0.0887).toFixed(2));
   const discount = promoApplied ? Math.round(subtotal * promoDiscount / 100) : 0;
   // Points: 100 pts = $1
   const maxRedeemable = loyalty ? Math.min(loyalty.points, Math.floor((subtotal + shippingCost + tax - discount) * 100 / 100) * 100) : 0;
@@ -135,6 +139,47 @@ export default function VigoCheckout() {
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
+
+  // Calculate tax using Stripe Tax when address changes
+  const calculateStripeTax = async () => {
+    if (!contact.zip || !contact.state || cartItems.length === 0) return;
+    
+    setTaxLoading(true);
+    try {
+      const res = await base44.functions.invoke("calculateTax", {
+        lineItems: cartItems.map(item => ({
+          name: item.productName,
+          quantity: item.qty,
+          unitAmount: item.price,
+        })),
+        shippingAddress: {
+          address: contact.address,
+          city: contact.city,
+          state: contact.state,
+          zip: contact.zip,
+          country: "US",
+        },
+        shippingCost,
+      });
+      
+      if (res.data.success && res.data.taxAmount > 0) {
+        setStripeTax(res.data.taxAmount);
+      }
+      // If taxAmount is 0 or Stripe Tax not enabled, keep using fallback
+    } catch (e) {
+      console.error("Tax calculation error:", e);
+      // Keep using fallback tax
+    } finally {
+      setTaxLoading(false);
+    }
+  };
+
+  // Recalculate tax when shipping step is complete
+  useEffect(() => {
+    if (step === 3 && contact.zip && cartItems.length > 0) {
+      calculateStripeTax();
+    }
+  }, [step, contact.zip, contact.state, shippingCost]);
 
   const handlePlaceOrder = async (txnId, cardLast4, cardBrand) => {
     // Only proceed if txnId exists (payment succeeded)
@@ -407,20 +452,26 @@ export default function VigoCheckout() {
                 />
               )}
               {payMethod === "applepay" && (
-               <div style={{ background: G1, border: `.5px solid ${G3}`, padding: 24 }}>
-                 <div style={{ textAlign: "center", marginBottom: 20 }}>
-                   <div style={{ fontSize: 12, color: SD }}>Complete payment with Apple Pay</div>
-                 </div>
-                  <button 
-                    onClick={async () => {
-                      const res = await base44.functions.invoke("processPayment", { amount: total, method: "applepay", orderId: "temp", userEmail: contact.email });
-                      if (res.data.success) handlePlaceOrder(res.data.txnId, res.data.cardLast4, res.data.cardBrand);
-                      else alert("Apple Pay failed: " + res.data.error);
-                    }}
-                    style={{ ...btnP, width: "100%" }}>
-                    Pay ${total.toFixed(2)} with Apple Pay
-                  </button>
-                </div>
+                <StripeApplePay
+                  amount={total}
+                  orderId={Math.random().toString(36).slice(2, 6).toUpperCase() + String(Date.now()).slice(-4)}
+                  userEmail={contact.email}
+                  shippingAddress={{
+                    address: contact.address,
+                    city: contact.city,
+                    state: contact.state,
+                    zip: contact.zip,
+                    country: "US",
+                    shippingCost,
+                  }}
+                  lineItems={cartItems.map(item => ({
+                    name: item.productName,
+                    quantity: item.qty,
+                    unitAmount: item.price,
+                  }))}
+                  onSuccess={(data) => handlePlaceOrder(data.txnId, data.cardLast4, data.cardBrand)}
+                  onError={(err) => alert("Apple Pay failed: " + err)}
+                />
               )}
               {payMethod === "vigosplit" && total >= 150 && (
                 <VigoSplit
@@ -474,7 +525,7 @@ export default function VigoCheckout() {
               {[
                 ["Subtotal", `$${subtotal.toFixed(2)}`],
                 ["Shipping", shippingCost === 0 ? "Free" : `$${shippingCost}`],
-                ["NYC Tax (8.875%)", `$${tax}`],
+                [taxLoading ? "Calculating tax..." : (stripeTax !== null ? "Tax (Stripe)" : "Est. Tax"), taxLoading ? "..." : `$${tax.toFixed(2)}`],
                 promoApplied ? [`Promo (${promoCode.toUpperCase()})`, `-$${discount}`] : null,
                 usePoints && pointsToRedeem > 0 ? [`Points (${pointsToRedeem.toLocaleString()} pts)`, `-$${pointsDiscount.toFixed(2)}`] : null
               ].filter(Boolean).map(([l, v]) => (
