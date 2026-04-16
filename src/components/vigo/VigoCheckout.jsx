@@ -4,6 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { sanitize, sanitizeObject } from "@/lib/sanitize";
 import VigopayForm from "./VigopayForm";
+import VigoSplit from "./VigoSplit";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -387,7 +388,7 @@ export default function VigoCheckout() {
               )}
 
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {[["card","💳 Card"],["applepay","🍎 Apple Pay"],["klarna","🟡 Klarna"]].map(([v,l]) => (
+                {[["card","💳 Card"],["applepay","🍎 Apple Pay"],["vigosplit","◈ VIGOSPLIT"]].map(([v,l]) => (
                   <button key={v} onClick={() => setPayMethod(v)} style={{ padding: "10px 20px", background: payMethod === v ? S : G1, color: payMethod === v ? "#000" : SD, border: `.5px solid ${payMethod === v ? S : G3}`, fontSize: 10, cursor: "pointer", fontWeight: payMethod === v ? 900 : 400, fontFamily: "inherit", letterSpacing: 1 }}>{l}</button>
                 ))}
               </div>
@@ -407,11 +408,15 @@ export default function VigoCheckout() {
                   <button onClick={() => handlePlaceOrder("APL-" + Date.now(), "****", "Apple Pay")} style={{ ...btnP, marginTop: 16, width: 200, margin: "16px auto 0", display: "block" }}>Complete with Apple Pay</button>
                 </div>
               )}
-              {payMethod === "klarna" && (
-                <div style={{ background: G1, border: `.5px solid ${G3}`, padding: 24, textAlign: "center" }}>
-                  <div style={{ fontSize: 24, marginBottom: 8 }}>🟡 Klarna</div>
-                  <div style={{ fontSize: 12, color: SD, marginBottom: 16 }}>Pay in 4 installments of <strong style={{ color: "var(--vt-text)" }}>${Math.round(total / 4)}</strong>. No interest.</div>
-                  <button onClick={() => handlePlaceOrder("KLN-" + Date.now(), "****", "Klarna")} style={{ ...btnP, width: 200, margin: "0 auto", display: "block" }}>Complete with Klarna</button>
+              {payMethod === "vigosplit" && total >= 150 && (
+                <VigoSplit
+                  total={total}
+                  onSuccess={(data) => handlePlaceOrder(data.txnId, data.cardLast4, data.cardBrand)}
+                />
+              )}
+              {payMethod === "vigosplit" && total < 150 && (
+                <div style={{ background: G1, border: `.5px solid ${G3}`, padding: "20px 24px", fontSize: 12, color: SD }}>
+                  VIGOSPLIT requires a minimum order of <strong style={{ color: "var(--vt-text)" }}>$150</strong>. Your current total is <strong style={{ color: "var(--vt-text)" }}>${total.toFixed(2)}</strong>.
                 </div>
               )}
               {payMethod === "card" && (
