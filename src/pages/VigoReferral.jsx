@@ -256,10 +256,10 @@ export default function VigoReferral() {
         {/* ADVOCATE (REFER) */}
         {activeTab === "refer" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-            <div>
+            <div style={{ textAlign: "center" }}>
               <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ Advocate</div>
               <h2 style={{ fontSize: "clamp(22px,4vw,32px)", fontWeight: 900, letterSpacing: -1, marginBottom: 8 }}>Refer & Earn</h2>
-              <p style={{ fontSize: 12, color: SD, lineHeight: 1.8, maxWidth: 480 }}>
+              <p style={{ fontSize: 12, color: SD, lineHeight: 1.8, maxWidth: 480, margin: "0 auto" }}>
                 Give your crew 20% off their first order. You earn 500 points per successful referral.
               </p>
             </div>
