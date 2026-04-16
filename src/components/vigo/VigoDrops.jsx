@@ -232,7 +232,7 @@ export default function VigoDrops() {
                 return (
                   <div
                     key={i}
-                    onClick={() => { if (drop) { setSelectedDrop(prev => prev?.id === drop.id ? null : drop); setViewDate(new Date(drop.date.getFullYear(), drop.date.getMonth(), 1)); } }}
+                    onClick={() => { if (drop) { setSelectedDrop(prev => prev?.id === drop.id ? null : drop); if (drop.date) setViewDate(new Date(drop.date.getFullYear(), drop.date.getMonth(), 1)); } }}
                     style={{ minHeight: "clamp(52px,8vw,72px)", padding: "8px 6px 6px", borderRight: (i + 1) % 7 !== 0 ? `.5px solid ${G3}` : "none", borderBottom: `.5px solid ${G3}`, cursor: drop ? "pointer" : "default", background: isSelected ? "rgba(192,192,192,.08)" : "transparent", transition: "background .15s", position: "relative" }}
                     onMouseEnter={e => { if (drop && !isSelected) e.currentTarget.style.background = "rgba(192,192,192,.04)"; }}
                     onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
@@ -241,7 +241,7 @@ export default function VigoDrops() {
                       <>
                         <div style={{ fontSize: 10, fontWeight: isToday ? 900 : 400, color: isToday ? "#000" : isPast ? SD : drop ? "var(--vt-text)" : SD, width: 20, height: 20, background: isToday ? S : "transparent", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>{day.getDate()}</div>
                         {drop && (
-                          <div style={{ background: `${drop.tagColor}18`, borderLeft: `2px solid ${drop.tagColor}`, padding: "2px 4px", fontSize: 6, letterSpacing: .5, color: drop.tagColor, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+                          <div style={{ background: `${drop.tagColor || S}18`, borderLeft: `2px solid ${drop.tagColor || S}`, padding: "2px 4px", fontSize: 6, letterSpacing: .5, color: drop.tagColor || S, lineHeight: 1.4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
                             {drop.series}
                           </div>
                         )}
@@ -264,10 +264,10 @@ export default function VigoDrops() {
 
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {selectedDrop ? (
-              <div style={{ background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${selectedDrop.tagColor}` }}>
+              <div style={{ background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${selectedDrop.tagColor || S}` }}>
                 <div style={{ padding: "20px", borderBottom: `.5px solid ${G3}` }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-                    <div style={{ fontSize: 7, letterSpacing: 3, color: selectedDrop.tagColor, textTransform: "uppercase", border: `.5px solid ${selectedDrop.tagColor}`, padding: "3px 8px" }}>{selectedDrop.tag}</div>
+                    <div style={{ fontSize: 7, letterSpacing: 3, color: selectedDrop.tagColor || S, textTransform: "uppercase", border: `.5px solid ${selectedDrop.tagColor || S}`, padding: "3px 8px" }}>{selectedDrop.tag}</div>
                     <div style={{ fontSize: 9, color: SD }}>{selectedDrop.price}</div>
                   </div>
                   <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>{selectedDrop.name}</div>
