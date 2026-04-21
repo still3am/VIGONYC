@@ -80,7 +80,7 @@ export default function VigoBottomNav({ cartCount = 0, onCartOpen }) {
                 <div style={{ transform: isActive ? "scale(1.1)" : "scale(1)", transition: "transform .2s" }}>
                   {item.icon(isActive)}
                 </div>
-                <span className=" hidden">{item.label}</span>
+                
               </>
           }
           </NavLink>
