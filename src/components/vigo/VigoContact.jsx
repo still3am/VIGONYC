@@ -97,7 +97,7 @@ export default function VigoContact() {
             <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 20 }}>Reach Us</div>
             {[["📧", "Email", settings.contact_email], ["📸", "Instagram", settings.contact_instagram], ["📍", "Location", "New York City, NY"], ["⏰", "Response Time", settings.contact_response_time]].map(([ic, l, v]) =>
             <div key={l} style={{ display: "flex", gap: 16, alignItems: "flex-start", paddingBottom: 18, marginBottom: 18, borderBottom: `.5px solid ${G3}` }}>
-                <span style={{ fontSize: 18 }} className=" hidden">{ic}</span>
+                
                 <div>
                   <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>{l}</div>
                   <div style={{ fontSize: 12, color: "var(--vt-text)" }}>{v}</div>
