@@ -199,10 +199,10 @@ export default function VigoAdmin() {
       <div style={{ flex: 1, marginLeft: 220, minHeight: "100vh" }} className="admin-main">
         {/* Top bar */}
         <div style={{ padding: "0 32px", height: 60, borderBottom: `0.5px solid ${G3}`, display: "flex", alignItems: "center", justifyContent: "space-between", background: G2, position: "sticky", top: 0, zIndex: 10 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }} className="hidden">
-            <div style={{ width: 5, height: 5, background: "#0c6", borderRadius: "50%" }} />
-            <span style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Live — SS25</span>
-          </div>
+          
+
+
+          
           <div style={{ fontSize: 10, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>
             {NAV.find((n) => n.id === section)?.label}
           </div>
