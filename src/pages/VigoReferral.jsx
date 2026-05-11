@@ -48,7 +48,7 @@ export default function VigoReferral() {
   const [activities, setActivities] = useState([]);
 
   useEffect(() => {
-    document.title = "The Exchange — VIGONYC";
+    document.title = "The Vault — VIGONYC";
     return () => { document.title = "VIGONYC — NYC Streetwear"; };
   }, []);
 
@@ -103,8 +103,8 @@ export default function VigoReferral() {
   if (!user && !loading) {
     return (
       <div style={{ minHeight: "80vh", background: G1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 20 }}>
-        <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase" }}>✦ The Exchange</div>
-        <h1 style={{ fontSize: 36, fontWeight: 900, color: "var(--vt-text)", letterSpacing: -2, textAlign: "center" }}>Sign in to Access<br /><span style={{ color: S }}>The Exchange</span></h1>
+        <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase" }}>✦ The Vault</div>
+        <h1 style={{ fontSize: 36, fontWeight: 900, color: "var(--vt-text)", letterSpacing: -2, textAlign: "center" }}>Sign in to Access<br /><span style={{ color: S }}>The Vault</span></h1>
         <p style={{ fontSize: 12, color: SD, textAlign: "center", maxWidth: 320 }}>Join the inner circle. Earn points, authenticate gear, and unlock exclusive drops.</p>
         <button onClick={() => base44.auth.redirectToLogin()} style={chromeBtnFull}>Sign In</button>
       </div>
@@ -126,7 +126,7 @@ export default function VigoReferral() {
             <span style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase" }}>Inner Circle Active</span>
           </div>
           <h1 style={{ fontSize: "clamp(36px,6vw,72px)", fontWeight: 900, letterSpacing: -3, lineHeight: 0.9, marginBottom: 20 }}>
-            ACCESS:<br /><span style={{ background: "linear-gradient(135deg, #888, #C0C0C0, #E8E8E8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>THE EXCHANGE</span>
+            ACCESS:<br /><span style={{ background: "linear-gradient(135deg, #888, #C0C0C0, #E8E8E8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>THE VAULT</span>
           </h1>
           <p style={{ fontSize: 13, color: SD, lineHeight: 1.9, marginBottom: 32, maxWidth: 480 }}>
             A modular loyalty system for the inner circle. Earn, advocate, and ascend.
