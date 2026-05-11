@@ -41,16 +41,46 @@ export default function AdminAbout() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [comingSoon, setComingSoon] = useState(false);
+  const [comingSoonRecord, setComingSoonRecord] = useState(null);
+  const [togglingCS, setTogglingCS] = useState(false);
 
   useEffect(() => {
-    base44.entities.SiteSettings.list().catch(() => []).then(rows => {
+    Promise.all([
+      base44.entities.SiteSettings.list().catch(() => []),
+    ]).then(([rows]) => {
       const map = {};
       DEFAULT_SETTINGS.forEach(d => { map[d.key] = d.value; });
       rows.forEach(r => { map[r.key] = r.value; });
       setSettings(map);
+      // Find coming soon record
+      const csRow = rows.find(r => r.key === "coming_soon_active");
+      if (csRow) {
+        setComingSoonRecord(csRow);
+        setComingSoon(csRow.value === "true");
+      }
       setLoading(false);
     });
   }, []);
+
+  const handleToggleComingSoon = async () => {
+    setTogglingCS(true);
+    const newVal = !comingSoon;
+    try {
+      if (comingSoonRecord) {
+        await base44.entities.SiteSettings.update(comingSoonRecord.id, { value: String(newVal) });
+      } else {
+        const created = await base44.entities.SiteSettings.create({ key: "coming_soon_active", value: String(newVal), section: "global" });
+        setComingSoonRecord(created);
+      }
+      setComingSoon(newVal);
+      toast.success(newVal ? "Coming Soon page is now LIVE" : "Store is now LIVE — Coming Soon disabled");
+    } catch {
+      toast.error("Failed to update Coming Soon mode");
+    } finally {
+      setTogglingCS(false);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -84,6 +114,36 @@ export default function AdminAbout() {
       <div style={{ marginBottom: 28 }}>
         <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 6 }}>✦ Content</div>
         <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: -1, color: "#fff" }}>Site Content</h2>
+      </div>
+
+      {/* Coming Soon Toggle */}
+      <div style={{ background: comingSoon ? "rgba(224,48,0,0.06)" : "rgba(0,204,102,0.04)", border: `0.5px solid ${comingSoon ? "rgba(224,48,0,0.3)" : "rgba(0,204,102,0.2)"}`, borderLeft: `3px solid ${comingSoon ? "#e03" : "#0c6"}`, padding: "20px 24px", marginBottom: 24, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: comingSoon ? "#e03" : "#0c6", letterSpacing: 1, marginBottom: 4 }}>
+            {comingSoon ? "⚠ Coming Soon Mode — Store is hidden from visitors" : "✓ Store Live — Visible to all visitors"}
+          </div>
+          <div style={{ fontSize: 10, color: SD, lineHeight: 1.6 }}>
+            {comingSoon
+              ? "Non-admin visitors see the Coming Soon page. Admins can still access the store."
+              : "Toggle on to show a Coming Soon page to all non-admin visitors."}
+          </div>
+        </div>
+        <button
+          onClick={handleToggleComingSoon}
+          disabled={togglingCS}
+          style={{
+            display: "flex", alignItems: "center", gap: 10,
+            background: comingSoon ? "#e03" : "#0c6",
+            color: "#fff", border: "none",
+            padding: "11px 22px", fontSize: 8, letterSpacing: 3,
+            textTransform: "uppercase", fontWeight: 900,
+            cursor: togglingCS ? "not-allowed" : "pointer",
+            fontFamily: "inherit", opacity: togglingCS ? 0.6 : 1,
+            transition: "all .2s", whiteSpace: "nowrap",
+          }}
+        >
+          {togglingCS ? "Updating..." : comingSoon ? "Disable Coming Soon" : "Enable Coming Soon"}
+        </button>
       </div>
       <div className="admin-content-grid" style={{ display: "grid", gridTemplateColumns: "1fr min(360px,100%)", gap: 24, alignItems: "start" }}>
         <div>

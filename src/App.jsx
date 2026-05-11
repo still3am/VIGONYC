@@ -1,4 +1,6 @@
 import { Toaster } from "sonner"
+import { useState, useEffect } from 'react';
+import { base44 } from '@/api/base44Client';
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { ThemeProvider } from 'next-themes'
@@ -28,12 +30,24 @@ import VigoTerms from './components/vigo/VigoTerms';
 import VigoPrivacy from './components/vigo/VigoPrivacy';
 import VigoReturns from './components/vigo/VigoReturns';
 import VigoReferral from './pages/VigoReferral';
+import VigoComingSoon from './components/vigo/VigoComingSoon';
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin, user } = useAuth();
+  const [comingSoonActive, setComingSoonActive] = useState(false);
+  const [comingSoonChecked, setComingSoonChecked] = useState(false);
+
+  useEffect(() => {
+    base44.entities.SiteSettings.filter({ key: "coming_soon_active" }, "-created_date", 1)
+      .then(rows => {
+        if (rows?.[0]?.value === "true") setComingSoonActive(true);
+      })
+      .catch(() => {})
+      .finally(() => setComingSoonChecked(true));
+  }, []);
 
   // Show loading spinner while checking app public settings or auth
-  if (isLoadingPublicSettings || isLoadingAuth) {
+  if (isLoadingPublicSettings || isLoadingAuth || !comingSoonChecked) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
@@ -50,6 +64,11 @@ const AuthenticatedApp = () => {
       navigateToLogin();
       return null;
     }
+  }
+
+  // Show coming soon to non-admins if active
+  if (comingSoonActive && (!user || user.role !== "admin")) {
+    return <VigoComingSoon />;
   }
 
   // Render the main app
