@@ -141,7 +141,7 @@ export default function VigoBottomNav({ cartCount = 0, onCartOpen }) {
           WebkitTapHighlightColor: "transparent"
         }}>
           <MoreIcon />
-          <span>More</span>
+          <span className="hidden">More</span>
         </button>
       </nav>
 
