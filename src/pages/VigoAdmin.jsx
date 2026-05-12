@@ -39,7 +39,7 @@ const NAV = [
 { id: "about", label: "Content", icon: "✦", LIcon: FileText }];
 
 // Primary tabs shown in mobile bottom nav (5 max)
-const MOBILE_PRIMARY = ["dashboard", "orders", "shop", "customers", "payments"];
+const MOBILE_PRIMARY = ["dashboard", "orders", "shop", "drops", "payments"];
 const MOBILE_MORE = NAV.filter(n => !MOBILE_PRIMARY.includes(n.id));
 
 
