@@ -103,7 +103,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
               </button> :
 
           <div className="vigo-nav-logo" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", cursor: "pointer" }} onClick={handleLogoClick}>
-              <img src={logo} alt="VIGONYC" className="vigo-nav-logo-img" style={{ width: 40, height: 40, objectFit: "contain" }} />
+              <img src={logo} alt="VIGONYC" className="vigo-nav-logo-img my-1" style={{ width: 40, height: 40, objectFit: "contain" }} />
               <div style={{ lineHeight: 1 }}>
                 <style>{`.vigo-nav-wordmark { display: block; } @media(max-width:768px){ .vigo-nav-wordmark { display: none !important; } }`}</style>
                 <style>{`.vigo-nav-subtitle { display: block; } @media(max-width:768px){ .vigo-nav-subtitle { display: none !important; } }`}</style>
