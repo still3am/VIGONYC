@@ -423,31 +423,31 @@ export default function AdminAbout() {
 
                 {/* ── FOOTER ── */}
                 {previewTab === "footer" && (
-                  <div style={{ fontFamily: "Inter, sans-serif", background: "#080808", padding: "20px 16px" }}>
-                    <div style={{ height: 1, background: "linear-gradient(90deg,transparent,#555,transparent)", marginBottom: 20 }} />
-                    <div style={{ display: "grid", gridTemplateColumns: previewMode === "mobile" ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 20 }}>
+                  <div style={{ fontFamily: "Inter, sans-serif", background: "#080808", padding: previewMode === "mobile" ? "12px 10px" : "20px 16px" }}>
+                    <div style={{ height: 1, background: "linear-gradient(90deg,transparent,#555,transparent)", marginBottom: previewMode === "mobile" ? 10 : 20 }} />
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: previewMode === "mobile" ? 8 : 16, marginBottom: previewMode === "mobile" ? 10 : 20 }}>
                       <div>
-                        <div style={{ fontSize: 8, letterSpacing: 3, color: S, marginBottom: 6 }}>VIGONYC</div>
-                        <div style={{ fontSize: 8, color: SD, lineHeight: 1.8 }}>{settings.footer_tagline}</div>
+                        <div style={{ fontSize: previewMode === "mobile" ? 7 : 8, letterSpacing: 3, color: S, marginBottom: 4 }}>VIGONYC</div>
+                        <div style={{ fontSize: previewMode === "mobile" ? 7 : 8, color: SD, lineHeight: 1.6 }}>{settings.footer_tagline}</div>
                       </div>
                       <div>
-                        <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 6 }}>Follow</div>
+                        <div style={{ fontSize: previewMode === "mobile" ? 6 : 7, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>Follow</div>
                         {[settings.contact_instagram, settings.contact_tiktok, settings.contact_twitter].map((h, i) => (
-                          <div key={i} style={{ fontSize: 8, color: SD, marginBottom: 3 }}>{h}</div>
+                          <div key={i} style={{ fontSize: previewMode === "mobile" ? 7 : 8, color: SD, marginBottom: 2 }}>{h}</div>
                         ))}
                       </div>
                     </div>
-                    <div style={{ background: G1, padding: "5px 0", marginBottom: 14, overflow: "hidden" }}>
-                      <div style={{ display: "flex", gap: 16, animation: "ticker-prev 12s linear infinite", whiteSpace: "nowrap" }}>
+                    <div style={{ background: G1, padding: "4px 0", marginBottom: previewMode === "mobile" ? 8 : 14, overflow: "hidden" }}>
+                      <div style={{ display: "flex", gap: 12, animation: "ticker-prev 12s linear infinite", whiteSpace: "nowrap" }}>
                         {(settings.ticker_text || "").split("✦").map((t, i) => (
-                          <span key={i} style={{ fontSize: 7, color: SD, letterSpacing: 1, flexShrink: 0 }}>{t.trim()} <span style={{ color: S }}>✦</span></span>
+                          <span key={i} style={{ fontSize: 6, color: SD, letterSpacing: 1, flexShrink: 0 }}>{t.trim()} <span style={{ color: S }}>✦</span></span>
                         ))}
                       </div>
                     </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 6 }}>
-                      <div style={{ fontSize: 7, color: SD }}>{settings.footer_copyright}</div>
-                      <div style={{ display: "flex", gap: 10 }}>
-                        {["Terms","Privacy","Returns"].map(l => <span key={l} style={{ fontSize: 7, color: SD }}>{l}</span>)}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 4 }}>
+                      <div style={{ fontSize: previewMode === "mobile" ? 6 : 7, color: SD }}>{settings.footer_copyright}</div>
+                      <div style={{ display: "flex", gap: previewMode === "mobile" ? 6 : 10 }}>
+                        {["Terms","Privacy","Returns"].map(l => <span key={l} style={{ fontSize: previewMode === "mobile" ? 6 : 7, color: SD }}>{l}</span>)}
                       </div>
                     </div>
                   </div>
