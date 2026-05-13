@@ -283,7 +283,8 @@ export default function AdminAbout() {
                 overflow: "hidden",
                 maxHeight: 500,
                 overflowY: "auto",
-                /* Mobile adds a top notch indicator */
+                width: previewMode === "mobile" ? 280 : "100%",
+                margin: previewMode === "mobile" ? "0 auto" : "0",
               }}>
                 {previewMode === "mobile" && (
                   <div style={{ height: 12, background: "#0a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
