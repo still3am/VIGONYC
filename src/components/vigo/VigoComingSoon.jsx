@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
 
@@ -7,10 +7,30 @@ const G1 = "var(--vt-bg)";
 const G3 = "var(--vt-border)";
 const SD = "var(--vt-sub)";
 
+const DEFAULTS = {
+  coming_soon_headline: "COMING\nSOON",
+  coming_soon_badge: "Something New Is Coming",
+  coming_soon_body: "The next drop is loading. NYC streetwear, built different.\nBe first to know when we go live.",
+  coming_soon_footer_tag: "NYC — SS25 · Limited Units · No Restocks",
+};
+
 export default function VigoComingSoon() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [cs, setCs] = useState(DEFAULTS);
+
+  useEffect(() => {
+    const keys = Object.keys(DEFAULTS);
+    base44.entities.SiteSettings.list().catch(() => []).then(rows => {
+      const map = { ...DEFAULTS };
+      rows.forEach(r => { if (keys.includes(r.key)) map[r.key] = r.value; });
+      setCs(map);
+    });
+  }, []);
+
+  const headline = (cs.coming_soon_headline || "COMING\nSOON").replace(/\\n/g, "\n");
+  const body = (cs.coming_soon_body || "").replace(/\\n/g, "\n");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,93 +64,84 @@ export default function VigoComingSoon() {
       justifyContent: "center",
       fontFamily: "Inter, sans-serif",
       color: "var(--vt-text)",
-      padding: "clamp(24px,6vw,60px)",
+      padding: "clamp(20px,6vw,60px) clamp(16px,5vw,48px)",
       position: "relative",
       overflow: "hidden",
+      boxSizing: "border-box",
     }}>
       {/* Grid background */}
-      <div style={{
-        position: "absolute", inset: 0,
-        backgroundImage: "radial-gradient(rgba(192,192,192,0.04) 1px, transparent 1px)",
-        backgroundSize: "28px 28px",
-        pointerEvents: "none",
-      }} />
-
+      <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(192,192,192,0.04) 1px, transparent 1px)", backgroundSize: "28px 28px", pointerEvents: "none" }} />
       {/* Top chrome line */}
-      <div style={{
-        position: "absolute", top: 0, left: 0, right: 0,
-        height: 2,
-        background: "linear-gradient(90deg, transparent, #888, #E8E8E8, #C0C0C0, #E8E8E8, #888, transparent)",
-      }} />
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, transparent, #888, #E8E8E8, #C0C0C0, #E8E8E8, #888, transparent)" }} />
 
       {/* Logo */}
-      <div style={{ marginBottom: 48, textAlign: "center", position: "relative", zIndex: 1 }}>
+      <div style={{ marginBottom: 36, textAlign: "center", position: "relative", zIndex: 1 }}>
         <img
           src="https://media.base44.com/images/public/69d978a3dcb07c4d96ef01e2/d1ce08d38_IMG_8246-removebg-preview.png"
           alt="VIGONYC"
-          style={{ width: 64, height: 64, objectFit: "contain", marginBottom: 20, opacity: 0.9 }}
+          style={{ width: "clamp(48px,12vw,64px)", height: "clamp(48px,12vw,64px)", objectFit: "contain", marginBottom: 16, opacity: 0.9 }}
         />
         <div style={{ fontSize: 9, letterSpacing: 6, color: S, textTransform: "uppercase" }}>VIGONYC</div>
       </div>
 
       {/* Main content */}
-      <div style={{ maxWidth: 560, width: "100%", textAlign: "center", position: "relative", zIndex: 1 }}>
+      <div style={{ maxWidth: 520, width: "100%", textAlign: "center", position: "relative", zIndex: 1 }}>
+        {/* Badge */}
         <div style={{
           display: "inline-flex", alignItems: "center", gap: 8,
-          background: "rgba(192,192,192,0.05)",
-          border: "0.5px solid rgba(192,192,192,0.15)",
-          padding: "6px 16px",
-          marginBottom: 28,
+          background: "rgba(192,192,192,0.05)", border: "0.5px solid rgba(192,192,192,0.15)",
+          padding: "6px 14px", marginBottom: 24,
         }}>
-          <div style={{ width: 5, height: 5, borderRadius: "50%", background: S, animation: "cs-pulse 1.8s infinite" }} />
-          <span style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase" }}>Something New Is Coming</span>
+          <div style={{ width: 5, height: 5, borderRadius: "50%", background: S, animation: "cs-pulse 1.8s infinite", flexShrink: 0 }} />
+          <span style={{ fontSize: "clamp(7px,2vw,9px)", letterSpacing: 3, color: S, textTransform: "uppercase" }}>{cs.coming_soon_badge}</span>
         </div>
 
+        {/* Headline */}
         <h1 style={{
-          fontSize: "clamp(52px,10vw,96px)",
+          fontSize: "clamp(44px,12vw,96px)",
           fontWeight: 900,
-          letterSpacing: -4,
+          letterSpacing: -3,
           lineHeight: 0.9,
-          marginBottom: 24,
+          marginBottom: 20,
           background: "linear-gradient(135deg, #888 0%, #C0C0C0 40%, #E8E8E8 60%, #C0C0C0 100%)",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
+          whiteSpace: "pre-line",
+          wordBreak: "break-word",
         }}>
-          COMING<br />SOON
+          {headline}
         </h1>
 
-        <p style={{ fontSize: 13, color: SD, lineHeight: 1.9, marginBottom: 40, maxWidth: 400, margin: "0 auto 40px" }}>
-          The next drop is loading. NYC streetwear, built different.<br />
-          Be first to know when we go live.
+        {/* Body */}
+        <p style={{ fontSize: "clamp(11px,3vw,13px)", color: SD, lineHeight: 1.9, marginBottom: 36, whiteSpace: "pre-line" }}>
+          {body}
         </p>
 
+        {/* Email form */}
         {submitted ? (
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 10,
-            background: "rgba(0,204,102,0.06)",
-            border: "0.5px solid rgba(0,204,102,0.25)",
-            padding: "16px 28px",
+            background: "rgba(0,204,102,0.06)", border: "0.5px solid rgba(0,204,102,0.25)",
+            padding: "14px 24px",
           }}>
             <span style={{ fontSize: 16, color: "#0c6" }}>✓</span>
             <span style={{ fontSize: 11, color: "#0c6", letterSpacing: 2, textTransform: "uppercase" }}>You're on the list</span>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} style={{ display: "flex", gap: 0, maxWidth: 440, margin: "0 auto" }}>
+          <form onSubmit={handleSubmit} style={{ display: "flex", gap: 0, maxWidth: 420, margin: "0 auto" }}>
             <input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="your@email.com"
               style={{
-                flex: 1,
+                flex: 1, minWidth: 0,
                 background: "rgba(255,255,255,0.03)",
-                border: `0.5px solid ${G3}`,
-                borderRight: "none",
+                border: `0.5px solid ${G3}`, borderRight: "none",
                 color: "var(--vt-text)",
-                padding: "14px 18px",
-                fontSize: 12,
-                outline: "none",
-                fontFamily: "inherit",
+                padding: "13px 16px",
+                fontSize: "clamp(11px,3vw,13px)",
+                outline: "none", fontFamily: "inherit",
               }}
             />
             <button
@@ -138,17 +149,12 @@ export default function VigoComingSoon() {
               disabled={submitting}
               style={{
                 background: submitting ? G3 : "linear-gradient(135deg, #888, #C0C0C0, #E8E8E8, #C0C0C0)",
-                color: "#000",
-                border: "none",
-                padding: "14px 24px",
-                fontSize: 8,
-                letterSpacing: 3,
-                textTransform: "uppercase",
-                fontWeight: 900,
+                color: "#000", border: "none",
+                padding: "13px 20px",
+                fontSize: 8, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900,
                 cursor: submitting ? "not-allowed" : "pointer",
-                fontFamily: "inherit",
-                whiteSpace: "nowrap",
-                opacity: submitting ? 0.6 : 1,
+                fontFamily: "inherit", whiteSpace: "nowrap",
+                opacity: submitting ? 0.6 : 1, flexShrink: 0,
               }}
             >
               {submitting ? "..." : "Notify Me"}
@@ -156,24 +162,20 @@ export default function VigoComingSoon() {
           </form>
         )}
 
-        {/* Decorative dividers */}
-        <div style={{ display: "flex", alignItems: "center", gap: 16, margin: "48px auto 0", maxWidth: 320 }}>
+        {/* Divider */}
+        <div style={{ display: "flex", alignItems: "center", gap: 16, margin: "36px auto 0", maxWidth: 280 }}>
           <div style={{ flex: 1, height: "0.5px", background: G3 }} />
-          <span style={{ fontSize: 9, letterSpacing: 4, color: SD, textTransform: "uppercase" }}>VIGONYC</span>
+          <span style={{ fontSize: 8, letterSpacing: 4, color: SD, textTransform: "uppercase" }}>VIGONYC</span>
           <div style={{ flex: 1, height: "0.5px", background: G3 }} />
         </div>
 
-        <div style={{ marginTop: 24, fontSize: 9, color: SD, letterSpacing: 2 }}>
-          NYC — SS25 · Limited Units · No Restocks
+        <div style={{ marginTop: 20, fontSize: "clamp(8px,2vw,9px)", color: SD, letterSpacing: 2 }}>
+          {cs.coming_soon_footer_tag}
         </div>
       </div>
 
       {/* Bottom chrome line */}
-      <div style={{
-        position: "absolute", bottom: 0, left: 0, right: 0,
-        height: 1,
-        background: "linear-gradient(90deg, transparent, #555, transparent)",
-      }} />
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 1, background: "linear-gradient(90deg, transparent, #555, transparent)" }} />
 
       <style>{`
         @keyframes cs-pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.7)} }

@@ -98,13 +98,13 @@ export default function AdminAbout() {
   const hSize = previewMode === "mobile" ? 22 : 32;
 
   return (
-    <div style={{ maxWidth: "100%" }}>
+    <div className="admin-content-page" style={{ maxWidth: "100%" }}>
       <div style={{ marginBottom: 20 }}>
         <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 6 }}>✦ Content</div>
         <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: -1, color: "#fff" }}>Site Content</h2>
       </div>
 
-      <div className="admin-content-grid" style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 24, alignItems: "start" }}>
+      <div className="admin-content-grid" style={{ display: "grid", gridTemplateColumns: "1fr min(380px, 100%)", gap: 24, alignItems: "start" }}>
 
         {/* ── LEFT: editable sections ── */}
         <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
@@ -237,7 +237,7 @@ export default function AdminAbout() {
         </div>
 
         {/* ── RIGHT: Live Preview ── */}
-        <div style={{ position: "sticky", top: 20 }}>
+        <div className="admin-preview-sticky" style={{ position: "sticky", top: 20 }}>
           {/* Header row */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
             <div style={{ fontSize: 8, letterSpacing: 3, color: SD, textTransform: "uppercase" }}>Live Preview</div>
@@ -461,12 +461,14 @@ export default function AdminAbout() {
       </div>
 
       <style>{`
-        @media(max-width:1100px){
+        @media(max-width:900px){
           .admin-content-grid { grid-template-columns: 1fr !important; }
+          .admin-preview-sticky { position: static !important; }
         }
         @media(max-width:600px){
           .admin-2col { grid-template-columns: 1fr !important; }
           .admin-3col { grid-template-columns: 1fr 1fr !important; }
+          .admin-content-page h2 { font-size: 20px !important; }
         }
         @keyframes ticker-prev { from{transform:translateX(0)} to{transform:translateX(-50%)} }
       `}</style>
