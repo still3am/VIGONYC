@@ -34,7 +34,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
   }, []);
 
   useEffect(() => {
-    const handler = (e) => {if (e.key === "Escape") {setSearchOpen(false);setQuery("");}};
+    const handler = (e) => { if (e.key === "Escape") { setSearchOpen(false); setQuery(""); } };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, []);
@@ -134,10 +134,10 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>
               </button>
               <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="vigo-icon-desktop" style={iconBtn} title="Toggle theme">
-                {theme === 'dark' ?
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg> :
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
-              }
+                {theme === 'dark'
+                  ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                  : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                }
               </button>
               <Link to="/wishlist" className="vigo-icon-desktop" style={{ ...iconBtn, textDecoration: "none" }}>
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
@@ -145,10 +145,10 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
               <Link to="/account" className="vigo-icon-desktop" style={{ ...iconBtn, textDecoration: "none" }}>
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
               </Link>
-              
-
-
-            
+              <button style={{ ...iconBtn, position: "relative" }} onClick={onCartOpen} title="Cart">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
+                {cartCount > 0 && <span style={{ position: "absolute", top: -3, right: -3, background: S, color: "#000", fontSize: 8, fontWeight: 900, borderRadius: "50%", width: 15, height: 15, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
+              </button>
             </div>
           </div>
         }
