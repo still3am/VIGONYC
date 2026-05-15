@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
+import { toast } from "sonner";
 
 const S = "#C0C0C0";
 const G1 = "#111111";
@@ -53,13 +54,13 @@ function ProductModal({ product, onSave, onClose }) {
   };
 
   const handleSave = async () => {
-    if (!form.name || !form.price || !form.cat) return alert("Name, price, and category are required.");
+    if (!form.name || !form.price || !form.cat) { toast.error("Name, price, and category are required."); return; }
     setSaving(true);
     try {
       await onSave({ ...form, price: parseFloat(form.price) });
       onClose();
     } catch (err) {
-      alert("Failed to save product: " + (err.message || "Unknown error"));
+      toast.error("Failed to save product: " + (err.message || "Unknown error"));
     } finally {
       setSaving(false);
     }
@@ -204,8 +205,13 @@ function ProductModal({ product, onSave, onClose }) {
                       ? <div style={{ width: 20, height: 20, border: `2px solid ${G3}`, borderTop: `2px solid ${S}`, borderRadius: "50%", animation: "spin .7s linear infinite" }} />
                       : <><span style={{ fontSize: 22, color: SD, lineHeight: 1 }}>+</span><span style={{ fontSize: 7, color: SD, letterSpacing: 1 }}>IMAGE</span></>}
                     <input type="file" accept="image/*" multiple style={{ display: "none" }} onChange={async (e) => {
-                      setUploadingImg(true);
                       const files = Array.from(e.target.files);
+                      for (const file of files) {
+                        const allowed = ["image/jpeg", "image/png", "image/webp"];
+                        if (!allowed.includes(file.type)) { toast.error("Only JPG, PNG, or WebP images allowed."); return; }
+                        if (file.size > 10 * 1024 * 1024) { toast.error("Image must be under 10MB."); return; }
+                      }
+                      setUploadingImg(true);
                       const urls = await Promise.all(files.map(f => base44.integrations.Core.UploadFile({ file: f }).then(r => r.file_url)));
                       set("images", [...(form.images || []), ...urls]);
                       setUploadingImg(false);

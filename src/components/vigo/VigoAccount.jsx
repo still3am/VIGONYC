@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext, Link } from "react-router-dom";
+import { toast } from "sonner";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
 import { base44 } from "@/api/base44Client";
@@ -63,7 +64,7 @@ function AddressModal({ address, onSave, onClose }) {
 
   const handleSave = async () => {
     if (!form.label || !form.fullName || !form.street || !form.city || !form.state || !form.zip) {
-      alert("Please fill in all required fields");
+      toast.error("Please fill in all required fields");
       return;
     }
     setSaving(true);
@@ -90,7 +91,10 @@ function AddressModal({ address, onSave, onClose }) {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <Field label="ZIP Code" value={form.zip} onChange={(v) => set("zip", v)} />
-            <Field label="Country" value={form.country} onChange={(v) => set("country", v)} />
+            <div>
+              <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Country</div>
+              <div style={{ background: G1, border: `.5px solid ${G3}`, color: SD, padding: "13px 16px", fontSize: 12, opacity: 0.6 }}>United States (US only)</div>
+            </div>
           </div>
           <div style={{ display: "flex", gap: 12, paddingTop: 8 }}>
             <button onClick={handleSave} disabled={saving} style={{ ...btnPrimary, opacity: saving ? 0.7 : 1 }}>{saving ? "Saving..." : "Save Address"}</button>
@@ -225,7 +229,7 @@ export default function VigoAccount() {
       setProfileSaved(true);
       setTimeout(() => setProfileSaved(false), 2500);
     } catch {
-      alert("Failed to save profile. Please try again.");
+      toast.error("Failed to save profile. Please try again.");
     }
   };
 
@@ -241,21 +245,21 @@ export default function VigoAccount() {
       setNotifSaved(true);
       setTimeout(() => setNotifSaved(false), 2500);
     } catch {
-      alert("Failed to save notification preferences. Please try again.");
+      toast.error("Failed to save notification preferences. Please try again.");
     }
   };
 
   const savePassword = async () => {
-    if (!passwords.current || !passwords.newPass) {alert("Please fill in all password fields");return;}
-    if (passwords.newPass !== passwords.confirm) {alert("Passwords do not match");return;}
-    if (passwords.newPass.length < 8) {alert("Password must be at least 8 characters");return;}
+    if (!passwords.current || !passwords.newPass) { toast.error("Please fill in all password fields"); return; }
+    if (passwords.newPass !== passwords.confirm) { toast.error("Passwords do not match"); return; }
+    if (passwords.newPass.length < 8) { toast.error("Password must be at least 8 characters"); return; }
     try {
       await base44.functions.invoke('changePassword', { currentPassword: passwords.current, newPassword: passwords.newPass });
       setPasswords({ current: "", newPass: "", confirm: "" });
       setPwSaved(true);
       setTimeout(() => setPwSaved(false), 2500);
     } catch {
-      alert("Failed to update password. Please check your current password and try again.");
+      toast.error("Failed to update password. Please check your current password and try again.");
     }
   };
 
@@ -282,7 +286,7 @@ export default function VigoAccount() {
       await base44.functions.invoke('deleteAccount', {});
       base44.auth.logout();
     } catch {
-      alert("Failed to delete account. Please try again.");
+      toast.error("Failed to delete account. Please try again.");
       setDeleting(false);
     }
   };
@@ -331,6 +335,10 @@ export default function VigoAccount() {
                   <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Orders</div>
                   <div style={{ fontSize: 13, fontWeight: 900, color: S }}>{orders.length}</div>
                 </div>
+                <div style={{ background: G2, border: `.5px solid ${G3}`, padding: "6px 16px" }}>
+                  <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Wishlist</div>
+                  <div style={{ fontSize: 13, fontWeight: 900, color: S }}>{user?.wishlistCount ?? "—"}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -365,7 +373,7 @@ export default function VigoAccount() {
             </div>
             <Field label="Email Address" type="email" value={profile.email} disabled />
             <Field label="Phone" type="tel" value={profile.phone} onChange={(v) => setProfile((p) => ({ ...p, phone: v }))} placeholder="+1 (555) 000-0000" />
-            <Field label="Birthday" type="date" value={profile.birthday} onChange={(v) => setProfile((p) => ({ ...p, birthday: v }))} />
+            <Field label="Birthday (optional)" type="date" value={profile.birthday} onChange={(v) => setProfile((p) => ({ ...p, birthday: v }))} />
             <div style={{ paddingTop: 8 }}>
               <button onClick={saveProfile} style={{ background: profileSaved ? "#0c6" : S, color: "#000", border: "none", padding: "14px 32px", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", transition: "background .3s" }}>
                 {profileSaved ? "✓ Saved!" : "Save Profile"}
@@ -411,25 +419,17 @@ export default function VigoAccount() {
                               <li key={idx} style={{ fontSize: 10, color: SD, padding: "1px 0" }}>· {item}</li>
                             ))}
                           </ul>
-                          {order.trackingNumber && <div style={{ fontSize: 9, color: SD, marginTop: 4 }}>Tracking: {order.trackingNumber}</div>}
+                          {order.trackingNumber && <div style={{ fontSize: 9, color: SD, marginTop: 4 }}>Tracking: <span style={{ color: S }}>{order.trackingNumber}</span></div>}
                         </div>
                         <div className="vigo-order-amount" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
                           <div style={{ fontSize: 20, fontWeight: 900, color: S }}>${order.total}</div>
-                          <button onClick={() => navigate("/track-order")} style={btnGhost}>Track →</button>
-                          <button onClick={async () => {
-                            const itemStrings = (order.items || "").split(", ");
-                            for (const itemStr of itemStrings) {
-                              const match = itemStr.match(/^(.+) x(\d+)$/);
-                              if (!match) continue;
-                              const [, name, qty] = match;
-                              const results = await base44.entities.Product.filter({ name }, "-created_date", 1).catch(() => []);
-                              if (results?.[0]) {
-                                const p = results[0];
-                                for (let i = 0; i < parseInt(qty); i++) {
-                                  addToCart?.({ id: p.id, productId: p.id, productName: p.name, name: p.name, size: "M", color: p.colors?.[0] || "Black", price: p.price, productImage: p.images?.[0] || "" });
-                                }
-                              }
-                            }
+                          <button onClick={() => navigate(`/track-order?order=${order.orderId}`)} style={btnGhost}>Track →</button>
+                          <button onClick={() => {
+                            try {
+                              const items = JSON.parse(order.itemsJson || "[]");
+                              if (items[0]?.productId) navigate(`/product/${items[0].productId}`);
+                              else navigate("/shop");
+                            } catch { navigate("/shop"); }
                           }} style={btnGhost}>Reorder</button>
                         </div>
                       </div>
@@ -473,10 +473,10 @@ export default function VigoAccount() {
                       </div>
                       )}
                       {order.trackingNumber && (
-                      <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                         <div style={{ fontSize: 9, color: SD, textTransform: "uppercase", letterSpacing: 1 }}>Tracking:</div>
-                        <div style={{ fontSize: 11, color: S, fontWeight: 700 }}>{order.trackingNumber}</div>
-                        <button onClick={() => navigator.clipboard.writeText(order.trackingNumber)} style={{ fontSize: 8, letterSpacing: 1, color: SD, background: "none", border: `.5px solid ${G3}`, padding: "3px 8px", cursor: "pointer", fontFamily: "inherit" }}>Copy</button>
+                        <a href={`https://tools.usps.com/go/TrackConfirmAction?tLabels=${order.trackingNumber}`} target="_blank" rel="noopener noreferrer"
+                          style={{ fontSize: 11, color: S, fontWeight: 700, textDecoration: "none" }}>{order.trackingNumber} →</a>
                       </div>
                       )}
                       </div>
@@ -590,7 +590,11 @@ export default function VigoAccount() {
 
         {/* Sign Out */}
         <div style={{ marginTop: 32, paddingTop: 24, borderTop: `.5px solid ${G3}`, width: "100%", display: "flex", justifyContent: "center" }}>
-          <button onClick={async () => { await base44.auth.logout().catch(() => {}); navigate("/"); }} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "12px 24px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>
+          <button onClick={async () => {
+            window.dispatchEvent(new CustomEvent("vigo:cart-cleared"));
+            await base44.auth.logout().catch(() => {});
+            navigate("/");
+          }} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "12px 24px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>
             Sign Out
           </button>
         </div>

@@ -37,6 +37,8 @@ export default function VigoProduct() {
   const [reviewForm, setReviewForm] = useState({ rating: 0, title: "", body: "", reviewerName: "" });
   const [submittingReview, setSubmittingReview] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
+  const [attempted, setAttempted] = useState(false);
+  const [styleWith, setStyleWith] = useState([]);
 
   const mediaBound = (product?.images?.length || 0) + (product?.videos?.length || 0) || 1;
   useEffect(() => {
@@ -71,6 +73,9 @@ export default function VigoProduct() {
         else { base44.entities.Product.list("-created_date", 8).then(all => { setRelated(all.filter(x => x.id !== id).slice(0, 4)); }).catch(() => {}); }
       }).catch(() => {});
       base44.entities.Review.filter({ productId: id }, "-created_date", 50).then(setReviews).catch(() => {});
+      const crossCatMap = { Tops: "Bottoms", Bottoms: "Tops", Outerwear: "Accessories", Accessories: "Tops" };
+      const crossCat = crossCatMap[p.cat] || "Accessories";
+      base44.entities.Product.filter({ cat: crossCat }, "-created_date", 4).then(cross => setStyleWith((cross || []).filter(x => x.id !== id).slice(0, 2))).catch(() => {});
       base44.auth.me().then(u => {
         if (u) {
           setReviewForm(f => ({ ...f, reviewerName: u.full_name || "" }));
@@ -83,6 +88,14 @@ export default function VigoProduct() {
     });
     return () => { document.title = "VIGONYC — NYC Streetwear"; };
   }, [id]);
+
+  useEffect(() => {
+    if (window.location.hash === "#reviews" && !loading) {
+      setTimeout(() => {
+        document.querySelector("[data-reviews]")?.scrollIntoView({ behavior: "smooth" });
+      }, 300);
+    }
+  }, [loading]);
 
   if (loading) {
     return (
@@ -128,6 +141,7 @@ export default function VigoProduct() {
 
   const handleAdd = () => {
     if (!selectedSize) {
+      setAttempted(true);
       toast.error("Please select a size");
       return;
     }
@@ -176,7 +190,7 @@ export default function VigoProduct() {
             <span style={{ fontSize: 9, color: SD }}>›</span>
           </span>
         ))}
-        <span style={{ fontSize: 9, color: "var(--vt-text)", letterSpacing: 1, textTransform: "uppercase" }}>{product.name}</span>
+        <span style={{ fontSize: 9, color: "var(--vt-text)", letterSpacing: 1, textTransform: "uppercase", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "calc(100vw - 200px)" }}>{product.name}</span>
       </div>
       <div style={{ padding: "clamp(20px,4vw,32px)" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
@@ -359,7 +373,7 @@ export default function VigoProduct() {
           </div>
 
           {/* Reviews */}
-          <div style={{ background: G2, border: `.5px solid ${G3}`, padding: "clamp(16px,3vw,24px)", marginBottom: 16 }}>
+          <div data-reviews style={{ background: G2, border: `.5px solid ${G3}`, padding: "clamp(16px,3vw,24px)", marginBottom: 16 }}>
             <div style={{ fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: S, marginBottom: 20 }}>Reviews {approvedReviews.length > 0 && `(${approvedReviews.length})`}</div>
             {approvedReviews.length === 0 && <div style={{ fontSize: 12, color: SD, marginBottom: 20 }}>No reviews yet — be the first!</div>}
             {approvedReviews.map((r, i) => (
@@ -406,6 +420,23 @@ export default function VigoProduct() {
         </div>
       </div>
 
+      {styleWith.length > 0 && (
+        <>
+          <SectionDivider label="Style It With" />
+          <div style={{ padding: "clamp(24px,4vw,32px)", maxWidth: 1200, margin: "0 auto" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+              {styleWith.map((p) => (
+                <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
+                  wishlisted={wishlist.includes(p.id)}
+                  onWishlist={() => toggleWishlist(p.id, p)}
+                  onAdd={() => navigate(`/product/${p.id}`)}
+                  onClick={() => navigate(`/product/${p.id}`)} />
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
       {related.length > 0 && (
         <>
           <SectionDivider label="You May Also Like" />
@@ -424,7 +455,7 @@ export default function VigoProduct() {
       )}
 
       <div className="mobile-cta" style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "var(--vt-nav-scrolled)", borderTop: `.5px solid ${G3}`, padding: "12px clamp(12px,4vw,24px) env(safe-area-inset-bottom, 12px)", display: "none", gap: 8, zIndex: 150, backdropFilter: "blur(12px)" }}>
-        {!selectedSize && <div style={{ fontSize: 9, color: "#e03", textAlign: "center", letterSpacing: 1 }}>SELECT A SIZE</div>}
+        {attempted && !selectedSize && <div style={{ fontSize: 9, color: "#e03", textAlign: "center", letterSpacing: 1 }}>SELECT A SIZE</div>}
         <button onClick={handleAdd} style={{ width: "100%", background: added ? "#0c6" : S, color: "#000", border: "none", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", padding: "12px", fontFamily: "inherit", transition: "background .3s" }}>
           {added ? "✓ Added" : `Add to Bag · $${product.price}`}
         </button>

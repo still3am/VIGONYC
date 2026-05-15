@@ -11,7 +11,7 @@ const SD = "var(--vt-sub)";
 const cols = {
   Shop: [["New Arrivals", "/new"], ["Tops", "/shop?cat=Tops"], ["Bottoms", "/shop?cat=Bottoms"], ["Outerwear", "/shop?cat=Outerwear"], ["Accessories", "/shop?cat=Accessories"], ["Wishlist", "/wishlist"], ["Drop Calendar", "/drops"]],
   Info: [["About", "/about"], ["Lookbook", "/lookbook"], ["FAQ", "/faq"]],
-  Support: [["Contact", "/contact"], ["Track Order", "/track-order"], ["Returns", "/returns"], ["Size Guide", "/shop"], ["Terms of Service", "/terms"], ["Privacy Policy", "/privacy"]]
+  Support: [["Contact", "/contact"], ["Track Order", "/track-order"], ["Returns", "/returns"], ["Terms of Service", "/terms"], ["Privacy Policy", "/privacy"]]
 };
 
 export default function VigoFooter({ logo }) {
@@ -63,8 +63,18 @@ export default function VigoFooter({ logo }) {
             <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 20, fontWeight: 700 }}>{heading}</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {links.map(([label, to]) => (
-                <Link key={label} to={to} style={{ fontSize: 11, color: SD, textDecoration: "none" }}>{label}</Link>
+                <Link key={label} to={to} style={{ fontSize: 11, color: SD, textDecoration: "none" }}
+                  onMouseEnter={e => e.currentTarget.style.color = S}
+                  onMouseLeave={e => e.currentTarget.style.color = SD}
+                >{label}</Link>
               ))}
+              {heading === "Support" && (
+                <a href="#" onClick={e => { e.preventDefault(); window.dispatchEvent(new CustomEvent("vigo:open-size-guide")); }}
+                  style={{ fontSize: 11, color: SD, textDecoration: "none", cursor: "pointer" }}
+                  onMouseEnter={e => e.currentTarget.style.color = S}
+                  onMouseLeave={e => e.currentTarget.style.color = SD}
+                >Size Guide</a>
+              )}
             </div>
           </div>
         ))}

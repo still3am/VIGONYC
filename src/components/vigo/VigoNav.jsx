@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useTheme } from "next-themes";
 
 const S = "#C0C0C0";
 const SD = "var(--vt-sub)";
@@ -9,21 +10,21 @@ const G3 = "var(--vt-border)";
 const links = [
 { label: "Shop", to: "/shop" },
 { label: "Drops", to: "/drops" },
-{ label: "The Exchange", to: "/referral" },
+{ label: "The Vault", to: "/referral" },
 { label: "New", to: "/new" },
 { label: "Lookbook", to: "/lookbook" },
 { label: "About", to: "/about" }];
 
 export default function VigoNav({ cartCount, onCartOpen, logo }) {
   const [searchOpen, setSearchOpen] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [query, setQuery] = useState("");
   const [logoTaps, setLogoTaps] = useState(0);
   const { settings } = useSiteSettings();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
-  const isRoot = location.pathname === "/" || location.pathname === "/shop" || location.pathname === "/drops" || location.pathname === "/wishlist" || location.pathname === "/account" || location.pathname === "/lookbook" || location.pathname === "/about";
+  const isRoot = location.pathname === "/" || location.pathname === "/shop" || location.pathname === "/drops" || location.pathname === "/wishlist" || location.pathname === "/account" || location.pathname === "/lookbook" || location.pathname === "/about" || location.pathname === "/referral";
   const isCheckout = location.pathname === "/checkout";
 
   useEffect(() => {
@@ -32,7 +33,11 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  useEffect(() => {setMobileOpen(false);}, [location.pathname]);
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") { setSearchOpen(false); setQuery(""); } };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -62,7 +67,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
             <div className="vigo-ticker-track">
               {[...Array(2)].map((_, ri) =>
             <span key={ri} style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
-                  {(settings.ticker_text || "").split("✦").map((t) => t.trim()).filter(Boolean).map((t, i) =>
+                  {(settings.ticker_text || "Free Shipping over $150 ✦ New Drop Coming Soon ✦ NYC Streetwear ✦ Limited Runs Only ✦").split("✦").map((t) => t.trim()).filter(Boolean).map((t, i) =>
               <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 24, padding: "0 12px" }}>
                       <span style={{ fontSize: 9, letterSpacing: 3, color: SD, textTransform: "uppercase", whiteSpace: "nowrap" }}>{t}</span>
                       <span style={{ color: S, fontSize: 8 }}>✦</span>
@@ -123,23 +128,16 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
             )}
             </div>
 
-            {/* Mobile hamburger — visible only on mobile */}
-            <button
-              onClick={() => setMobileOpen(o => !o)}
-              className="vigo-mobile-menu-btn"
-              style={{ ...iconBtn, display: "none" }}
-              aria-label="Menu"
-            >
-              {mobileOpen
-                ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-              }
-            </button>
-
             {/* Icons */}
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             <button onClick={() => setSearchOpen(true)} className="vigo-icon-desktop" style={iconBtn} title="Search">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>
+              </button>
+              <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="vigo-icon-desktop" style={iconBtn} title="Toggle theme">
+                {theme === 'dark'
+                  ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                  : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                }
               </button>
               <Link to="/wishlist" className="vigo-icon-desktop" style={{ ...iconBtn, textDecoration: "none" }}>
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" /></svg>
@@ -151,30 +149,16 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
                 {cartCount > 0 && <span style={{ position: "absolute", top: -3, right: -3, background: S, color: "#000", fontSize: 8, fontWeight: 900, borderRadius: "50%", width: 15, height: 15, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
               </button>
-              
-
-            
             </div>
           </div>
         }
 
-        {/* Mobile menu */}
-         <div style={{ background: "var(--vt-bg)", borderTop: `.5px solid ${G3}`, padding: mobileOpen ? "20px 24px" : "0 24px", maxHeight: mobileOpen ? "400px" : "0", overflow: "hidden", transition: "max-height 0.3s ease, padding 0.2s ease", display: "flex", flexDirection: "column", gap: mobileOpen ? 18 : 0 }}>
-             {links.map((l) =>
-          <NavLink key={l.to} to={l.to} onClick={() => setMobileOpen(false)} style={({ isActive }) => ({ textDecoration: "none", fontSize: 10, letterSpacing: 4, textTransform: "uppercase", color: isActive ? "var(--vt-text)" : SD })}>{l.label}</NavLink>
-          )}
-           <NavLink to="/wishlist" onClick={() => setMobileOpen(false)} style={({ isActive }) => ({ textDecoration: "none", fontSize: 10, letterSpacing: 4, textTransform: "uppercase", color: isActive ? "var(--vt-text)" : SD })}>Wishlist</NavLink>
-           <button onClick={() => {setMobileOpen(false);onCartOpen();}} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 10, letterSpacing: 4, textTransform: "uppercase", color: SD, textAlign: "left", padding: 0, display: "flex", alignItems: "center", gap: 8 }}>
-             Cart {cartCount > 0 && <span style={{ background: S, color: "#000", fontSize: 8, fontWeight: 900, borderRadius: "50%", width: 15, height: 15, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
-           </button>
-           </div>
-      </nav>
+        </nav>
 
-      <style>{`
-        @media (min-width: 900px) { .vigo-mobile-menu-btn { display: none !important; } }
-        @media (max-width: 899px) { .vigo-desktop-nav { display: none !important; } .vigo-icon-desktop { display: none !important; } .vigo-mobile-menu-btn { display: flex !important; } }
-        @media (max-width: 899px) { .vigo-nav-logo { position: absolute; left: 50%; transform: translateX(-50%); } .vigo-nav-logo-img { width: 60px !important; height: 60px !important; } }
-      `}</style>
+        <style>{`
+          @media (max-width: 899px) { .vigo-desktop-nav { display: none !important; } .vigo-icon-desktop { display: none !important; } }
+          @media (max-width: 899px) { .vigo-nav-logo { position: absolute; left: 50%; transform: translateX(-50%); } .vigo-nav-logo-img { width: 60px !important; height: 60px !important; } }
+        `}</style>
     </>);
 }
 

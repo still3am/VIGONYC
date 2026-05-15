@@ -216,26 +216,32 @@ export default function VigoShop() {
         </div>
 
         <div style={{ flex: 1 }}>
-          {filtered.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "60px 20px" }}>
-              <div style={{ fontSize: 32, marginBottom: 12, opacity: .3 }}>∅</div>
-              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>No products found</div>
-              <p style={{ fontSize: 11, color: SD, marginBottom: 24 }}>Try adjusting your filters.</p>
-              <button onClick={() => { setActiveCat("All"); setSelectedSizes([]); setSelectedColors([]); setPriceRange(300); setActiveCollection("All Collections"); }} style={{ background: S, color: "#000", border: "none", padding: "12px 28px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Clear Filters</button>
-            </div>
-          ) : loading ? (
-            <div className="vigo-shop-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
+          {loading ? (
+            <div className="vigo-shop-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
               {Array(6).fill(0).map((_, i) => (
-                <div key={i} style={{ background: "var(--vt-card)", border: ".5px solid var(--vt-border)", aspectRatio: "3/4", animation: "vigo-pulse 1.5s infinite" }} />
+                <div key={i} style={{ background: "var(--vt-card)", border: ".5px solid var(--vt-border)", aspectRatio: "3/4", animation: "vigo-skeleton 1.4s ease-in-out infinite" }} />
               ))}
             </div>
+          ) : allProducts.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "60px 20px" }}>
+              <div style={{ fontSize: 32, marginBottom: 12, opacity: .3 }}>∅</div>
+              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>No products yet</div>
+              <p style={{ fontSize: 11, color: SD }}>Check back soon — new drops land every Friday.</p>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "60px 20px" }}>
+              <div style={{ fontSize: 32, marginBottom: 12, opacity: .3 }}>∅</div>
+              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>No products match</div>
+              <p style={{ fontSize: 11, color: SD, marginBottom: 24 }}>Try adjusting your filters.</p>
+              <button onClick={() => { setActiveCat("All"); setSelectedSizes([]); setSelectedColors([]); setPriceRange(300); setActiveCollection("All Collections"); setInStockOnly(false); }} style={{ background: S, color: "#000", border: "none", padding: "12px 28px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Clear Filters</button>
+            </div>
           ) : (
-            <div className="vigo-shop-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
+            <div className="vigo-shop-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
               {filtered.map(p => (
                 <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
                   wishlisted={wishlist.includes(p.id)}
                   onWishlist={() => toggleWishlist(p.id, p)}
-                  onAdd={() => addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, size: "M", color: "Black", productImage: p.images?.[0] || productImg, price: p.price })}
+                  onAdd={() => navigate(`/product/${p.id}`)}
                   onClick={() => navigate(`/product/${p.id}`)} />
               ))}
             </div>

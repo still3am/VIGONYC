@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { X, Trash2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -15,6 +17,7 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
   const [error, setError] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const { settings } = useSiteSettings();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!open) return;
@@ -37,8 +40,16 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
     fetchCart();
   }, [open]);
 
+  // Scroll lock
   useEffect(() => {
-    if (items.length > 0 && suggestions.length === 0) {
+    if (open) { document.body.style.overflow = "hidden"; }
+    else { document.body.style.overflow = ""; }
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
+  useEffect(() => {
+    if (items.length === 0) { setSuggestions([]); return; }
+    if (suggestions.length === 0) {
       base44.entities.Product.filter({ featured: true }, "-created_date", 4)
         .then(data => {
           const filtered = (data || []).filter(p => !items.find(i => i.productId === p.id)).slice(0, 2);
@@ -55,13 +66,23 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
     const item = items.find(i => i.id === id);
     if (!item) return;
     const newQty = Math.max(1, item.qty + delta);
-    await base44.entities.CartItem.update(id, { qty: newQty });
-    setItems(items.map(i => i.id === id ? { ...i, qty: newQty } : i));
+    setItems(prev => prev.map(i => i.id === id ? { ...i, qty: newQty } : i));
+    try {
+      await base44.entities.CartItem.update(id, { qty: newQty });
+    } catch {
+      setItems(prev => prev.map(i => i.id === id ? { ...i, qty: item.qty } : i));
+      toast.error("Couldn't update quantity");
+    }
   };
 
-  const removeFromCart = async (id) => {
+  const removeFromCart = async (id, item) => {
     setItems(prev => prev.filter(i => i.id !== id));
     await base44.entities.CartItem.delete(id).catch(() => {});
+    if (item && item.price * item.qty >= 80) {
+      toast(`Removed ${item.productName}`, {
+        action: { label: "Undo", onClick: () => { base44.entities.CartItem.create({ productId: item.productId, productName: item.productName, price: item.price, qty: item.qty, size: item.size, color: item.color, productImage: item.productImage }).then(created => setItems(prev => [...prev, created])).catch(() => {}); } }
+      });
+    }
   };
 
   const handleCheckout = () => {
@@ -99,7 +120,8 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
             <div style={{ textAlign: "center", padding: "60px 20px", color: SD }}>
               <div style={{ fontSize: 40, marginBottom: 16, opacity: 0.4 }}>—</div>
               <div style={{ fontSize: 11, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4, fontWeight: 600 }}>Bag Empty</div>
-              <div style={{ fontSize: 9, color: SD, lineHeight: 1.6 }}>Add items to get started</div>
+              <div style={{ fontSize: 9, color: SD, lineHeight: 1.6, marginBottom: 20 }}>Add items to get started</div>
+              <button onClick={() => { onClose(); navigate("/shop"); }} style={{ background: S, color: "#000", border: "none", padding: "12px 24px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Browse Shop</button>
             </div>
           )}
           {!loading && items.length > 0 && items.map(item => (
@@ -114,7 +136,7 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
                     <div style={{ fontSize: 10, fontWeight: 700, color: "var(--vt-text)", marginBottom: 2 }}>{item.productName}</div>
                     <div style={{ fontSize: 8, color: SD, letterSpacing: 0.5 }}>{item.size && `Size: ${item.size}`}{item.size && item.color && " · "}{item.color && `Color: ${item.color}`}</div>
                   </div>
-                  <button onClick={() => removeFromCart(item.id)} style={{ background: "none", border: "none", color: SD, cursor: "pointer", padding: 4, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "color .2s" }}>
+                  <button onClick={() => removeFromCart(item.id, item)} style={{ background: "none", border: "none", color: SD, cursor: "pointer", padding: 4, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "color .2s" }}>
                     <Trash2 size={14} />
                   </button>
                 </div>
@@ -141,7 +163,7 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
                     <div style={{ fontSize: 10, fontWeight: 700, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--vt-text)" }}>{p.name}</div>
                     <div style={{ fontSize: 11, color: S, fontWeight: 900 }}>${p.price}</div>
                   </div>
-                  <button onClick={() => { onClose(); window.location.href = `/product/${p.id}`; }} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "5px 10px", fontSize: 8, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>View</button>
+                  <button onClick={() => { onClose(); navigate(`/product/${p.id}`); }} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "5px 10px", fontSize: 8, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", flexShrink: 0 }}>View</button>
                 </div>
               ))}
             </div>
@@ -150,7 +172,16 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
 
         {/* Footer */}
         <div style={{ padding: "clamp(16px,3vw,24px) clamp(16px,4vw,24px)", borderTop: `.5px solid ${G3}`, display: "flex", flexDirection: "column", gap: 12, flexShrink: 0, background: G2 }}>
-          {subtotal >= freeShippingThreshold && (
+          {subtotal < freeShippingThreshold ? (
+            <div style={{ marginBottom: 0 }}>
+              <div style={{ fontSize: 9, color: SD, marginBottom: 5 }}>
+                Add <strong style={{ color: "var(--vt-text)" }}>${(freeShippingThreshold - subtotal).toFixed(2)}</strong> more for free shipping
+              </div>
+              <div style={{ height: 2, background: G3, borderRadius: 1 }}>
+                <div style={{ height: "100%", width: `${Math.min(100, (subtotal / freeShippingThreshold) * 100)}%`, background: S, borderRadius: 1, transition: "width 0.4s" }} />
+              </div>
+            </div>
+          ) : (
             <div style={{ fontSize: 8, letterSpacing: 1, color: "#0c6", textAlign: "center", background: "rgba(0,204,102,.08)", padding: "10px 12px", border: ".5px solid rgba(0,204,102,.25)", fontWeight: 700, textTransform: "uppercase" }}>
               ✓ Free shipping unlocked
             </div>
@@ -164,7 +195,7 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
             {shipping === 0 && <div style={{ fontSize: 8, color: "#0c6", textAlign: "right", marginBottom: 10, fontWeight: 700 }}>FREE SHIPPING</div>}
           </div>
           <button onClick={handleCheckout} disabled={items.length === 0} style={{ background: items.length === 0 ? "#555" : S, color: items.length === 0 ? "#999" : "#000", border: "none", padding: "clamp(12px,2vw,16px)", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: items.length === 0 ? "not-allowed" : "pointer", width: "100%", fontFamily: "inherit" }}>
-            Checkout
+            Checkout · ${(subtotal + shipping).toFixed(2)}
           </button>
           <button onClick={onClose} style={{ background: "none", border: ".5px solid " + G3, color: SD, padding: "clamp(12px, 2vw, 16px)", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", width: "100%", fontFamily: "inherit" }}>
             Continue Shopping

@@ -83,8 +83,13 @@ export default function VigoTrackOrder() {
           </form>
           {notFound && (
             <div style={{ marginTop: 20, background: G1, border: `.5px solid ${G3}`, borderTop: "2px solid #e03", padding: "24px 28px", textAlign: "center" }}>
+              <div style={{ fontSize: 24, marginBottom: 12, opacity: .3 }}>∅</div>
               <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Order Not Found</div>
-              <div style={{ fontSize: 11, color: SD }}>We couldn't find an order with that number. Please double-check and try again.</div>
+              <p style={{ fontSize: 11, color: SD, lineHeight: 1.8, marginBottom: 16 }}>
+                Check the confirmation email you received when placing your order.<br/>
+                Order numbers start with "VIGO-" followed by alphanumeric characters.
+              </p>
+              <a href="/contact" style={{ fontSize: 10, color: S, letterSpacing: 2, textTransform: "uppercase", textDecoration: "none" }}>Still can't find it? Contact Us →</a>
             </div>
           )}
         </>
@@ -111,7 +116,8 @@ export default function VigoTrackOrder() {
             {order.trackingNumber && (
               <div style={{ marginBottom: 8 }}>
                 <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 4 }}>Tracking Number</div>
-                <div style={{ fontSize: 12, color: "var(--vt-text)" }}>{order.trackingNumber}</div>
+                <a href={`https://tools.usps.com/go/TrackConfirmAction?tLabels=${order.trackingNumber}`} target="_blank" rel="noopener noreferrer"
+                  style={{ fontSize: 12, color: S, fontWeight: 700, textDecoration: "none" }}>{order.trackingNumber} →</a>
               </div>
             )}
             {order.shippingAddress && (

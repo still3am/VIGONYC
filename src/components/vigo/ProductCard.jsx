@@ -14,6 +14,7 @@ const TAG_LABELS = { new: "New", drop: "Drop", hot: "Hot", ltd: "Ltd" };
 export default function ProductCard({ product, img, onClick, onAdd, onWishlist, wishlisted }) {
   const [hovered, setHovered] = useState(false);
   const [added, setAdded] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const handleAdd = (e) => {
     e.stopPropagation();
@@ -42,15 +43,17 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,rgba(255,255,255,.03) 0%,transparent 50%)", opacity: hovered ? 1 : 0, transition: "opacity .3s", pointerEvents: "none", zIndex: 1 }} />
 
       <div style={{ position: "relative", paddingBottom: "115%", background: "var(--vt-card)", overflow: "hidden" }}>
+        {!imgLoaded && <div style={{ position: "absolute", inset: 0, background: "var(--vt-card)", animation: "vigo-skeleton 1.4s ease-in-out infinite" }} />}
         <img
            src={img}
            alt={product.name}
            loading="lazy"
+           onLoad={() => setImgLoaded(true)}
            style={{
             position: "absolute", inset: 0, width: "100%", height: "100%",
             objectFit: "cover", opacity: product.inStock === false ? 0.5 : (product.opacity ?? 1),
-            transition: "transform .5s",
-            transform: hovered ? "scale(1.07)" : "scale(1)"
+            transition: "transform .5s, opacity .3s",
+            transform: hovered ? "scale(1.07)" : "scale(1)",
           }}
         />
 
@@ -94,7 +97,7 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
         <div style={{ fontSize: 13, fontWeight: 700, color: "var(--vt-text)", lineHeight: 1.3 }}>{product.name}</div>
         <div style={{ fontSize: 8, letterSpacing: 2, color: "var(--vt-sub)", textTransform: "uppercase", marginTop: 4 }}>{product.cat}</div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
-          <span style={{ fontSize: 16, fontWeight: 900, color: S }}>${product.price}</span>
+          <span style={{ fontSize: 16, fontWeight: 900, color: S }}>{product.price != null ? `$${product.price}` : "—"}</span>
           {product.sizes && product.sizes.length > 0 && (
             <span style={{ fontSize: 8, color: "var(--vt-sub)", letterSpacing: 1 }}>
               {product.sizes.slice(0, 3).join(" · ")}{product.sizes.length > 3 ? " +" : ""}

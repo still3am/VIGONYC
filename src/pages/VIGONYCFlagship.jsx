@@ -141,7 +141,16 @@ export default function VIGONYCFlagship() {
     refreshCartCount();
   };
 
-  const ctx = { addToCart, wishlist, toggleWishlist, setSizeGuideOpen, logo: LOGO, productImg: PRODUCT_IMG };
+  // Size guide open from footer
+  useEffect(() => {
+    const handler = () => setSizeGuideOpen(true);
+    window.addEventListener("vigo:open-size-guide", handler);
+    return () => window.removeEventListener("vigo:open-size-guide", handler);
+  }, []);
+
+  const prefersReducedMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const ctx = { addToCart, wishlist, toggleWishlist, setSizeGuideOpen, logo: LOGO, productImg: PRODUCT_IMG, refreshCartCount };
 
   return (
     <div style={{ background: "var(--vt-bg)", minHeight: "100vh", fontFamily: "'Helvetica Neue',Arial,sans-serif", color: "var(--vt-text)", overflowX: "hidden" }}>
@@ -151,10 +160,10 @@ export default function VIGONYCFlagship() {
        <AnimatePresence mode="wait">
          <motion.div
            key={location.pathname}
-           initial={{ opacity: 0, y: 8 }}
+           initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 8 }}
            animate={{ opacity: 1, y: 0 }}
-           exit={{ opacity: 0, y: -8 }}
-           transition={{ duration: 0.18, ease: "easeInOut" }}
+           exit={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -8 }}
+           transition={{ duration: prefersReducedMotion ? 0 : 0.18, ease: "easeInOut" }}
          >
            <Outlet context={ctx} />
          </motion.div>
@@ -168,6 +177,7 @@ export default function VIGONYCFlagship() {
         * { -webkit-tap-highlight-color: transparent; }
         button, a, nav, [role="button"] { -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
         p, .vigo-selectable { user-select: text; -webkit-user-select: text; }
+        *:focus-visible { outline: 1.5px solid #C0C0C0; outline-offset: 2px; }
         @supports (padding: env(safe-area-inset-bottom)) {
           .vigo-bottom-nav { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
           .vigo-nav-top { padding-top: env(safe-area-inset-top); }

@@ -104,11 +104,15 @@ export default function VigoHome() {
 
   const heroProduct = products[0] || null;
 
+  useEffect(() => {
+    base44.auth.me().then(u => { if (u?.email) setEmail(u.email); }).catch(() => {});
+  }, []);
+
   const handleSubscribe = async () => {
-    if (!email.trim() || !/\S+@\S+\.\S+/.test(email.trim())) {alert("Please enter a valid email address.");return;}
-    const user = await base44.auth.me().catch(() => null);
-    if (user) {
-      await base44.auth.updateMe({ newsletterEmail: email.trim(), notificationsNewsletter: true }).catch(() => {});
+    if (!email.trim() || !/\S+@\S+\.\S+/.test(email.trim())) return;
+    const existing = await base44.entities.NewsletterSubscriber.filter({ email: email.trim().toLowerCase() }, "-created_date", 1).catch(() => []);
+    if (!existing?.length) {
+      await base44.entities.NewsletterSubscriber.create({ email: email.trim().toLowerCase(), source: "home", active: true }).catch(() => {});
     }
     setSubscribed(true);
     setEmail("");
@@ -124,7 +128,7 @@ export default function VigoHome() {
         {settings.banner_dot !== "off" && <div style={{ width: 6, height: 6, borderRadius: "50%", background: settings.banner_dot === "red" ? "#e03" : "#0c6", animation: "vigo-pulse 1.5s infinite" }} />}
         <span style={{ fontSize: 9, letterSpacing: 4, color: SD, textTransform: "uppercase" }}>{nextDrop ? `${nextDrop.name} — ${nextDrop.series}` : "Drop 02 — Mirror Series"}</span>
         </div>
-        {nextDrop && <MiniCountdown target={nextDrop.date?.includes("T") ? nextDrop.date : nextDrop.date + (nextDrop.time ? ` ${nextDrop.time}` : "")} />}
+        {nextDrop?.date && <MiniCountdown target={nextDrop.date} />}
         <span style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase" }}>Get Notified →</span>
       </div>}
 
@@ -240,7 +244,7 @@ export default function VigoHome() {
           style={{ background: G1, border: `.5px solid ${G3}`, padding: "40px 24px 32px", cursor: "pointer", transition: "border-color .2s", textAlign: "center", position: "relative", overflow: "hidden" }}
           onMouseEnter={(e) => {e.currentTarget.style.borderColor = S;}}
           onMouseLeave={(e) => {e.currentTarget.style.borderColor = "var(--vt-border)";}}>
-                <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 10 }}>{cat.productCount > 0 ? `${cat.productCount} pieces` : cat.count}</div>
+                <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 10 }}>{cat.productCount > 0 ? `${cat.productCount} pieces` : "Coming soon"}</div>
                 <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: -1 }}>{cat.name}</div>
                 <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginTop: 16 }}>Browse →</div>
               <div style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: 40, height: 2, background: `linear-gradient(90deg, transparent, ${S}, transparent)` }} />
@@ -263,7 +267,7 @@ export default function VigoHome() {
             return (
               <div key={i} style={{ background: G1, border: `.5px solid ${G3}`, padding: "28px", position: "relative" }}>
                 <div style={{ position: "absolute", top: -1, left: 0, right: 0, height: 1, background: `linear-gradient(90deg, transparent, ${S}, transparent)` }} />
-                <div style={{ color: S, fontSize: 14, marginBottom: 14 }}>{"★".repeat(Math.round(rating))}</div>
+                <div style={{ color: S, fontSize: 14, marginBottom: 14 }}>{"★".repeat(Math.min(5, Math.max(1, Math.round(rating || 5))))}</div>
                 <p style={{ fontSize: 13, lineHeight: 1.8, color: SD, marginBottom: 20 }}>"{text}"</p>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
                   <div>
@@ -354,6 +358,7 @@ export default function VigoHome() {
         }
         @media(max-width:480px){.vigo-4col{grid-template-columns:1fr !important;}}
         @keyframes vigo-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
+        @keyframes vigo-skeleton{0%,100%{opacity:.6}50%{opacity:.25}}
       `}</style>
     </div>);
 }

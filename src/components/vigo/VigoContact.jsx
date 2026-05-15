@@ -90,6 +90,7 @@ export default function VigoContact() {
     setSending(false);
     setSubmitted(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
+
   };
 
   return (
@@ -136,7 +137,15 @@ export default function VigoContact() {
             <Field label="Email Address" type="email" value={email} onChange={setEmail} required error={errors.email} />
             <div>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Topic *</div>
-              <TopicPicker value={topic} onChange={v => { setTopic(v); setErrors(e => ({...e, topic: null})); }} />
+              {typeof window !== "undefined" && window.innerWidth >= 900 ? (
+                <select value={topic} onChange={e => { setTopic(e.target.value); setErrors(er => ({...er, topic: null})); }}
+                  style={{ width: "100%", background: G1, border: `.5px solid ${errors.topic ? "#e03" : G3}`, color: topic ? "var(--vt-text)" : SD, padding: "13px 16px", fontSize: 12, outline: "none", fontFamily: "inherit", cursor: "pointer", boxSizing: "border-box" }}>
+                  <option value="">Select a topic</option>
+                  {TOPICS.map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+              ) : (
+                <TopicPicker value={topic} onChange={v => { setTopic(v); setErrors(e => ({...e, topic: null})); }} />
+              )}
               {errors.topic && <div style={{ fontSize: 10, color: "#e03", marginTop: 4 }}>{errors.topic}</div>}
             </div>
             <div>
