@@ -40,13 +40,18 @@ export default function VigoComingSoon() {
     }
     setSubmitting(true);
     try {
-      await base44.entities.NewsletterSubscriber.create({
-        email: email.trim().toLowerCase(),
-        source: "coming_soon",
-        active: true,
-      });
+      const existing = await base44.entities.NewsletterSubscriber.filter({ email: email.trim().toLowerCase() }, "-created_date", 1).catch(() => []);
+      if (existing?.length > 0) {
+        toast.success("You're already on the list ✓");
+      } else {
+        await base44.entities.NewsletterSubscriber.create({
+          email: email.trim().toLowerCase(),
+          source: "coming_soon",
+          active: true,
+        });
+        toast.success("You're on the list.");
+      }
       setSubmitted(true);
-      toast.success("You're on the list.");
     } catch {
       toast.error("Something went wrong. Try again.");
     } finally {

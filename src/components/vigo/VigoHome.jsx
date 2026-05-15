@@ -124,7 +124,7 @@ export default function VigoHome() {
         {settings.banner_dot !== "off" && <div style={{ width: 6, height: 6, borderRadius: "50%", background: settings.banner_dot === "red" ? "#e03" : "#0c6", animation: "vigo-pulse 1.5s infinite" }} />}
         <span style={{ fontSize: 9, letterSpacing: 4, color: SD, textTransform: "uppercase" }}>{nextDrop ? `${nextDrop.name} — ${nextDrop.series}` : "Drop 02 — Mirror Series"}</span>
         </div>
-        {nextDrop && <MiniCountdown target={new Date(nextDrop.date + (nextDrop.time ? ` ${nextDrop.time}` : ""))} />}
+        {nextDrop && <MiniCountdown target={nextDrop.date?.includes("T") ? nextDrop.date : nextDrop.date + (nextDrop.time ? ` ${nextDrop.time}` : "")} />}
         <span style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase" }}>Get Notified →</span>
       </div>}
 
@@ -136,13 +136,13 @@ export default function VigoHome() {
 
           
           <h1 style={{ fontSize: "clamp(56px,7vw,104px)", fontWeight: 900, letterSpacing: -4, lineHeight: .86, marginBottom: 28 }} className="text-center">
-            {settings.hero_headline_1}<br />
+            {settings.hero_headline_1 || "BUILT"}<br />
             <span style={{ position: "relative", display: "inline-block" }}>
-              <em style={{ color: "transparent", WebkitTextStroke: `1px ${S}`, fontStyle: "italic" }} className="text-black">{settings.hero_headline_2}</em>
+              <em style={{ color: "transparent", WebkitTextStroke: `1px ${S}`, fontStyle: "italic" }} className="text-black">{settings.hero_headline_2 || "DIFFERENT"}</em>
             </span>
           </h1>
           <p style={{ fontSize: 13, color: SD, lineHeight: 1.9, maxWidth: 360, marginBottom: 36, margin: "0 auto 36px" }} className="text-center">
-            {settings.hero_sub}
+            {settings.hero_sub || "NYC streetwear for those who move different."}
           </p>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
             <button onClick={() => navigate("/shop")} style={btnP}>Shop the Drop</button>
@@ -151,7 +151,7 @@ export default function VigoHome() {
 
           {/* KPIs */}
           <div className="vigo-kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 0, marginTop: 56, borderTop: `.5px solid ${G3}` }}>
-            {[[settings.kpi_pieces, "Pieces Dropped"], [settings.kpi_community, "NYC Community"], [settings.kpi_street_ready || "100%", "Street Ready"], [settings.kpi_rating, "Avg. Rating"]].map(([n, l], i, arr) =>
+            {[[settings.kpi_pieces || "200+", "Pieces Dropped"], [settings.kpi_community || "5K+", "NYC Community"], [settings.kpi_street_ready || "100%", "Street Ready"], [settings.kpi_rating || "4.9★", "Avg. Rating"]].map(([n, l], i, arr) =>
             <div key={l} style={{ padding: "20px 0 0", paddingRight: i < arr.length - 1 ? 16 : 0, borderRight: i < arr.length - 1 ? `.5px solid ${G3}` : "none", paddingLeft: i > 0 ? 16 : 0, textAlign: "center" }}>
                 <div style={{ fontSize: 22, fontWeight: 900, color: "var(--vt-text)", letterSpacing: -1 }}>{n}</div>
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 4 }}>{l}</div>
@@ -284,15 +284,15 @@ export default function VigoHome() {
           <div style={{ padding: "52px 48px", borderRight: `.5px solid ${G3}` }}>
             <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ The Brand</div>
             <div style={{ fontSize: 36, fontWeight: 900, letterSpacing: -1, lineHeight: .95, marginBottom: 20 }}>
-              {settings.about_headline}
+              {settings.about_headline || "Born in the Bronx. Built for the Borough."}
             </div>
             <p style={{ fontSize: 12, color: SD, lineHeight: 1.9, marginBottom: 28 }}>
-              {settings.about_story}
+              {settings.about_story || "VIGONYC is a limited-run streetwear brand rooted in New York City culture. Every piece is designed with intention, produced in limited quantities, and built to last."}
             </p>
             <button onClick={() => navigate("/about")} style={btnO}>Our Story →</button>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderRight: "none" }}>
-            {[[settings.kpi_pieces, "Pieces Dropped"], [settings.kpi_community, "Community"], [settings.kpi_rating, "Avg Rating"], [settings.kpi_street_ready || "100%", "Street Ready"]].map(([n, l], i) =>
+            {[[settings.kpi_pieces || "200+", "Pieces Dropped"], [settings.kpi_community || "5K+", "Community"], [settings.kpi_rating || "4.9★", "Avg Rating"], [settings.kpi_street_ready || "100%", "Street Ready"]].map(([n, l], i) =>
             <div key={l} style={{ padding: "36px 28px", borderRight: i % 2 === 0 ? `.5px solid ${G3}` : "none", borderBottom: i < 2 ? `.5px solid ${G3}` : "none", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                 <div style={{ fontSize: 32, fontWeight: 900, color: S, letterSpacing: -1 }}>{n}</div>
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 8 }}>{l}</div>

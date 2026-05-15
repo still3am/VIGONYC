@@ -122,7 +122,8 @@ export default function VigoShop() {
     if (selectedSizes.length) p = p.filter(x => x.sizes && x.sizes.some(s => selectedSizes.includes(s)));
     if (selectedColors.length) p = p.filter(x => x.colors && x.colors.some(c => selectedColors.includes(c)));
     if (activeCollection !== "All Collections") p = p.filter(x => x.collection === activeCollection);
-    if (sort === "featured" || sort === "reviews") p = p.filter(x => x.featured).concat(p.filter(x => !x.featured));
+    if (sort === "featured") p = p.filter(x => x.featured).concat(p.filter(x => !x.featured));
+    if (sort === "reviews") p = [...p].sort((a, b) => (b.avgRating || b.rating || 0) - (a.avgRating || a.rating || 0));
     p = p.filter(x => typeof x.price === "number" && x.price <= priceRange);
     if (sort === "price-asc") p.sort((a,b) => a.price - b.price);
     if (sort === "price-desc") p.sort((a,b) => b.price - a.price);
@@ -148,6 +149,7 @@ export default function VigoShop() {
     selectedColors.length,
     activeCollection !== "All Collections" ? 1 : 0,
     priceRange < 300 ? 1 : 0,
+    inStockOnly ? 1 : 0,
   ].reduce((a,b) => a + b, 0);
 
   return (

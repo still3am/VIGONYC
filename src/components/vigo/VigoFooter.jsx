@@ -1,4 +1,7 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { base44 } from "@/api/base44Client";
+import { toast } from "sonner";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -12,6 +15,36 @@ const cols = {
 };
 
 export default function VigoFooter({ logo }) {
+  const [email, setEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+  const [subscribing, setSubscribing] = useState(false);
+
+  useEffect(() => {
+    base44.auth.me().then(u => { if (u?.email) setEmail(u.email); }).catch(() => {});
+  }, []);
+
+  const handleSubscribe = async () => {
+    if (!email.trim() || !/\S+@\S+\.\S+/.test(email.trim())) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+    setSubscribing(true);
+    try {
+      const existing = await base44.entities.NewsletterSubscriber.filter({ email: email.trim().toLowerCase() }, "-created_date", 1).catch(() => []);
+      if (existing?.length > 0) {
+        toast.success("You're already on the list ✓");
+        setSubscribed(true);
+      } else {
+        await base44.entities.NewsletterSubscriber.create({ email: email.trim().toLowerCase(), source: "footer", active: true });
+        setSubscribed(true);
+        toast.success("You're in! Watch for drop alerts.");
+      }
+    } catch {
+      toast.error("Something went wrong. Try again.");
+    }
+    setSubscribing(false);
+  };
+
   return (
     <footer style={{ background: G1, borderTop: `.5px solid ${G3}`, marginTop: 0 }}>
       <div style={{ height: 2, background: `linear-gradient(90deg,transparent,#888,#E8E8E8,${S},#E8E8E8,#888,transparent)` }} />
@@ -39,10 +72,26 @@ export default function VigoFooter({ logo }) {
       {/* Newsletter */}
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "20px 32px", borderTop: `.5px solid ${G3}`, display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", justifyContent: "space-between" }}>
         <div style={{ fontSize: 11, color: SD }}>Stay in the loop — get first access to every drop.</div>
-        <div style={{ display: "flex", gap: 0 }}>
-          <input placeholder="your@email.com" style={{ background: "var(--vt-card)", border: `.5px solid ${G3}`, borderRight: "none", color: "var(--vt-text)", padding: "10px 16px", fontSize: 11, outline: "none", fontFamily: "inherit", width: 220 }} />
-          <button style={{ background: S, color: "#000", border: "none", padding: "10px 16px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Join →</button>
-        </div>
+        {subscribed ? (
+          <div style={{ fontSize: 11, color: "#0c6", letterSpacing: 1 }}>✓ You're in</div>
+        ) : (
+          <div style={{ display: "flex", gap: 0 }}>
+            <input
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && handleSubscribe()}
+              placeholder="your@email.com"
+              style={{ background: "var(--vt-card)", border: `.5px solid ${G3}`, borderRight: "none", color: "var(--vt-text)", padding: "10px 16px", fontSize: 11, outline: "none", fontFamily: "inherit", width: 220 }}
+            />
+            <button
+              onClick={handleSubscribe}
+              disabled={subscribing}
+              style={{ background: S, color: "#000", border: "none", padding: "10px 16px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: subscribing ? "not-allowed" : "pointer", fontFamily: "inherit", whiteSpace: "nowrap", opacity: subscribing ? 0.7 : 1 }}
+            >
+              {subscribing ? "..." : "Join →"}
+            </button>
+          </div>
+        )}
       </div>
       {/* Social + copyright bar */}
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "20px 32px", borderTop: `.5px solid ${G3}`, display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>

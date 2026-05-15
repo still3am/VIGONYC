@@ -123,9 +123,22 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
             )}
             </div>
 
+            {/* Mobile hamburger — visible only on mobile */}
+            <button
+              onClick={() => setMobileOpen(o => !o)}
+              className="vigo-mobile-menu-btn"
+              style={{ ...iconBtn, display: "none" }}
+              aria-label="Menu"
+            >
+              {mobileOpen
+                ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+              }
+            </button>
+
             {/* Icons */}
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-              <button onClick={() => setSearchOpen(true)} className="vigo-icon-desktop" style={iconBtn} title="Search">
+            <button onClick={() => setSearchOpen(true)} className="vigo-icon-desktop" style={iconBtn} title="Search">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={SD} strokeWidth="1.5"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>
               </button>
               <Link to="/wishlist" className="vigo-icon-desktop" style={{ ...iconBtn, textDecoration: "none" }}>
@@ -159,7 +172,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
 
       <style>{`
         @media (min-width: 900px) { .vigo-mobile-menu-btn { display: none !important; } }
-        @media (max-width: 899px) { .vigo-desktop-nav { display: none !important; } .vigo-icon-desktop { display: none !important; } }
+        @media (max-width: 899px) { .vigo-desktop-nav { display: none !important; } .vigo-icon-desktop { display: none !important; } .vigo-mobile-menu-btn { display: flex !important; } }
         @media (max-width: 899px) { .vigo-nav-logo { position: absolute; left: 50%; transform: translateX(-50%); } .vigo-nav-logo-img { width: 60px !important; height: 60px !important; } }
       `}</style>
     </>);

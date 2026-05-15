@@ -38,15 +38,16 @@ export default function VigoProduct() {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
 
+  const mediaBound = (product?.images?.length || 0) + (product?.videos?.length || 0) || 1;
   useEffect(() => {
     const handleKey = (e) => {
       if (e.key === "ArrowLeft") setActiveThumb(t => Math.max(0, t - 1));
-      if (e.key === "ArrowRight") setActiveThumb(t => t + 1);
+      if (e.key === "ArrowRight") setActiveThumb(t => Math.min(t + 1, mediaBound - 1));
       if (e.key === "Escape") setZoomed(false);
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [zoomed]);
+  }, [zoomed, mediaBound]);
 
   useEffect(() => {
     setLoading(true);
@@ -250,7 +251,7 @@ export default function VigoProduct() {
 
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24, paddingBottom: 24, borderBottom: `.5px solid ${G3}` }}>
                 <span style={{ fontSize: 12, color: S }}>{avgRating ? "★".repeat(Math.round(parseFloat(avgRating))) : "☆☆☆☆☆"}</span>
-                <span style={{ fontSize: 9, color: SD }}>{avgRating ? `${avgRating} (${reviews.length} review${reviews.length !== 1 ? "s" : ""})` : "No reviews yet"}</span>
+                <span style={{ fontSize: 9, color: SD }}>{avgRating ? `${avgRating} (${approvedReviews.length} review${approvedReviews.length !== 1 ? "s" : ""})` : "No reviews yet"}</span>
               </div>
 
               <div style={{ display: "flex", alignItems: "flex-start", gap: 24, marginBottom: 24 }}>
@@ -312,7 +313,7 @@ export default function VigoProduct() {
                       <input value={notifyEmail} onChange={e => setNotifyEmail(e.target.value)} placeholder="your@email.com" style={{ flex: 1, background: "var(--vt-card)", border: `.5px solid ${G3}`, borderRight: "none", color: "var(--vt-text)", padding: "10px 14px", fontSize: 11, outline: "none", fontFamily: "inherit" }} />
                       <button onClick={async () => {
                         if (!notifyEmail.trim() || !/\S+@\S+\.\S+/.test(notifyEmail)) return;
-                        await base44.entities.ContactEntry.create({ email: notifyEmail, name: notifyEmail, subject: "Back-in-stock alert", message: product.name, status: "New" }).catch(() => {});
+                        await base44.entities.NewsletterSubscriber.create({ email: notifyEmail.trim().toLowerCase(), source: "back_in_stock", active: true }).catch(() => {});
                         setNotifySubmitted(true);
                       }} style={{ background: S, color: "#000", border: "none", padding: "10px 16px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Notify Me</button>
                     </div>
@@ -346,7 +347,7 @@ export default function VigoProduct() {
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, paddingTop: 16, borderTop: `.5px solid ${G3}` }}>
-                {[{ icon: Package, title: "Free Shipping", sub: "over $150" }, { icon: RotateCcw, title: "Easy Returns", sub: "30 days" }, { icon: Zap, title: "NYC Made", sub: "Limited run" }].map(({ icon: Icon, title, sub }) => (
+                {[{ icon: Package, title: "Free Shipping", sub: "over $150" }, { icon: RotateCcw, title: "Easy Returns", sub: "14 days" }, { icon: Zap, title: "NYC Made", sub: "Limited run" }].map(({ icon: Icon, title, sub }) => (
                   <div key={title} style={{ textAlign: "center" }}>
                     <Icon size={18} style={{ marginBottom: 8, color: S, margin: "0 auto" }} />
                     <div style={{ fontSize: 8, fontWeight: 700, color: "var(--vt-text)", letterSpacing: 1 }}>{title}</div>
@@ -414,7 +415,7 @@ export default function VigoProduct() {
                 <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
                   wishlisted={wishlist.includes(p.id)}
                   onWishlist={() => toggleWishlist(p.id, p)}
-                  onAdd={() => addToCart({ id: p.id, productId: p.id, name: p.name, productName: p.name, meta: "Size: M · Color: Black", price: p.price, productImage: p.images?.[0] || productImg })}
+                  onAdd={() => navigate(`/product/${p.id}`)}
                   onClick={() => navigate(`/product/${p.id}`)} />
               ))}
             </div>

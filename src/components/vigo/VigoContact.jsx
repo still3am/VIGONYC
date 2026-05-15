@@ -68,12 +68,17 @@ export default function VigoContact() {
     }).catch(() => {});
   }, []);
 
+  const [errors, setErrors] = useState({});
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!firstName.trim() || !lastName.trim()) return alert("Please enter your full name.");
-    if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) return alert("Please enter a valid email address.");
-    if (!topic) return alert("Please select a topic.");
-    if (!message.trim() || message.trim().length < 10) return alert("Please enter a message (at least 10 characters).");
+    const newErrors = {};
+    if (!firstName.trim() || !lastName.trim()) newErrors.name = "Please enter your full name.";
+    if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) newErrors.email = "Please enter a valid email address.";
+    if (!topic) newErrors.topic = "Please select a topic.";
+    if (!message.trim() || message.trim().length < 10) newErrors.message = "Please enter a message (at least 10 characters).";
+    if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
+    setErrors({});
     setSending(true);
     await base44.entities.ContactEntry.create({
       firstName: sanitize(firstName),
@@ -84,6 +89,7 @@ export default function VigoContact() {
     }).catch(() => {});
     setSending(false);
     setSubmitted(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -124,17 +130,19 @@ export default function VigoContact() {
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             <div className="vigo-2col-sm" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-              <Field label="First Name" value={firstName} onChange={setFirstName} required />
+              <Field label="First Name" value={firstName} onChange={setFirstName} required error={errors.name} />
               <Field label="Last Name" value={lastName} onChange={setLastName} required />
             </div>
-            <Field label="Email Address" type="email" value={email} onChange={setEmail} required />
+            <Field label="Email Address" type="email" value={email} onChange={setEmail} required error={errors.email} />
             <div>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Topic *</div>
-              <TopicPicker value={topic} onChange={setTopic} />
+              <TopicPicker value={topic} onChange={v => { setTopic(v); setErrors(e => ({...e, topic: null})); }} />
+              {errors.topic && <div style={{ fontSize: 10, color: "#e03", marginTop: 4 }}>{errors.topic}</div>}
             </div>
             <div>
               <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Message *</div>
-              <textarea required rows={5} value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Tell us what's going on..." style={{ width: "100%", background: G1, border: `.5px solid ${G3}`, color: "var(--vt-text)", padding: "12px 16px", fontSize: 12, outline: "none", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }} />
+              <textarea required rows={5} value={message} onChange={(e) => { setMessage(e.target.value); setErrors(er => ({...er, message: null})); }} placeholder="Tell us what's going on..." style={{ width: "100%", background: G1, border: `.5px solid ${errors.message ? "#e03" : G3}`, color: "var(--vt-text)", padding: "12px 16px", fontSize: 12, outline: "none", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }} />
+              {errors.message && <div style={{ fontSize: 10, color: "#e03", marginTop: 4 }}>{errors.message}</div>}
             </div>
             <button type="submit" disabled={sending} style={{ background: S, color: "#000", border: "none", padding: "16px", fontSize: 10, letterSpacing: 3, textTransform: "uppercase", fontWeight: 900, cursor: sending ? "not-allowed" : "pointer", fontFamily: "inherit", opacity: sending ? 0.7 : 1 }}>
               {sending ? "Sending..." : "Send Message"}

@@ -61,8 +61,13 @@ export default function VIGONYCFlagship() {
   // Listen for optimistic cart updates from addToCart to avoid full refetches
   useEffect(() => {
     const handler = (e) => setCartCount(c => c + (e.detail?.delta || 1));
+    const clearHandler = () => setCartCount(0);
     window.addEventListener("vigo:cart-update", handler);
-    return () => window.removeEventListener("vigo:cart-update", handler);
+    window.addEventListener("vigo:cart-cleared", clearHandler);
+    return () => {
+      window.removeEventListener("vigo:cart-update", handler);
+      window.removeEventListener("vigo:cart-cleared", clearHandler);
+    };
   }, []);
 
   useEffect(() => { refreshCartCount(); refreshWishlist(); }, []);
@@ -157,7 +162,7 @@ export default function VIGONYCFlagship() {
       <VigoFooter logo={LOGO} />
       <VigoBottomNav cartCount={cartCount} onCartOpen={() => setCartOpen(true)} />
       {showBackToTop && (
-        <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} style={{ position: "fixed", bottom: "calc(80px + env(safe-area-inset-bottom,0px))", right: 20, zIndex: 250, width: 44, height: 44, background: "var(--vt-card)", border: ".5px solid var(--vt-border)", color: "var(--vt-text)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, boxShadow: "0 4px 20px rgba(0,0,0,.3)" }} title="Back to top">↑</button>
+        <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} style={{ position: "fixed", bottom: "calc(80px + env(safe-area-inset-bottom,0px))", right: 20, zIndex: 390, width: 44, height: 44, background: "var(--vt-card)", border: ".5px solid var(--vt-border)", color: "var(--vt-text)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, boxShadow: "0 4px 20px rgba(0,0,0,.3)" }} title="Back to top">↑</button>
       )}
       <style>{`
         * { -webkit-tap-highlight-color: transparent; }

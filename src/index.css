@@ -12,7 +12,7 @@
     --vt-border: #d5d5d5;
     --vt-sub: #888888;
     --vt-text: #0a0a0a;
-    --vt-nav-scrolled: rgba(245, 245, 245, 0.97);
+    --vt-nav-scrolled: rgba(248, 248, 248, 0.92);
     --radius: 0.5rem;
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -31,7 +31,7 @@
     --vt-border: #1a1a1a;
     --vt-sub: #777777;
     --vt-text: #ffffff;
-    --vt-nav-scrolled: rgba(0, 0, 0, 0.97);
+    --vt-nav-scrolled: rgba(8, 8, 8, 0.92);
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
