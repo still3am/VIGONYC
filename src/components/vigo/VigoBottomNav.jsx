@@ -238,28 +238,28 @@ export default function VigoBottomNav({ cartCount = 0, onCartOpen }) {
           )}
 
           {/* Cart button */}
-          <button
-            onClick={() => {setCartPressing(true);setTimeout(() => setCartPressing(false), 200);onCartOpen?.();}}
-            style={{
-              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-              gap: 4, width: 58, height: 52, borderRadius: 24,
-              background: "transparent", border: "0.5px solid transparent",
-              cursor: "pointer", WebkitTapHighlightColor: "transparent",
-              transform: cartPressing ? "scale(0.88)" : "scale(1)",
-              transition: "transform 0.18s cubic-bezier(0.34,1.56,0.64,1)",
-              fontSize: 8, letterSpacing: 0.5, textTransform: "uppercase",
-              color: "rgba(190,190,190,0.6)", fontFamily: "inherit", fontWeight: 400,
-              position: "relative"
-            }} className="hidden">
-            
-            <div style={{ position: "relative" }}>
-              {CartIcon(false)}
-              {cartCount > 0 &&
-              <span style={{ position: "absolute", top: -4, right: -4, background: "#C0C0C0", color: "#000", fontSize: 7, fontWeight: 900, borderRadius: "50%", width: 14, height: 14, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}>{cartCount > 9 ? "9+" : cartCount}</span>
-              }
-            </div>
-            <span>Bag</span>
-          </button>
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          
 
           {/* + / × More button */}
           <button
