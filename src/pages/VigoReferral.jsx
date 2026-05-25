@@ -394,7 +394,7 @@ export default function VigoReferral() {
                     {isActive &&
                   <div style={{ position: "absolute", top: 14, right: 14, fontSize: 7, letterSpacing: 2, color: tier.color, border: `0.5px solid ${tier.color}`, padding: "3px 8px", textTransform: "uppercase", background: `${tier.color}10` }}>● Active</div>
                   }
-                    <div style={{ fontSize: 28, marginBottom: 10, color: tier.color }}>{tier.icon}</div>
+                    <div style={{ fontSize: 28, marginBottom: 10, color: tier.color }} className="hidden">{tier.icon}</div>
                     <div style={{ fontSize: "clamp(17px,2.5vw,22px)", fontWeight: 900, color: tier.color, letterSpacing: -0.5, marginBottom: 4 }}>{tier.name}</div>
                     <div style={{ fontSize: 9, color: SD, marginBottom: 6, letterSpacing: 1 }}>
                       {tier.min.toLocaleString()}+ pts{tier.max ? ` · up to ${tier.max.toLocaleString()}` : " · Max tier"}
