@@ -77,10 +77,12 @@ const MORE_ITEMS = [
   { label: "Search", to: "/search", icon: SearchIcon },
 ];
 
-export default function VigoBottomNav({ cartCount = 0, onCartOpen }) {
+export default function VigoBottomNav({ cartCount = 0, onCartOpen, cartOpen = false }) {
   const [moreOpen, setMoreOpen] = useState(false);
   const [pressing, setPressing] = useState(false);
   const [cartPressing, setCartPressing] = useState(false);
+
+  if (cartOpen) return null;
 
   const toggleMore = () => {
     setPressing(true);
