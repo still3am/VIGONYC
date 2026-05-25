@@ -148,10 +148,10 @@ export default function VigoReferral() {
       <div style={{ position: "relative", overflow: "hidden", borderBottom: `0.5px solid ${G3}` }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(192,192,192,0.025) 1px, transparent 1px)", backgroundSize: "30px 30px", pointerEvents: "none" }} />
         <div style={{ maxWidth: 1100, margin: "0 auto", padding: "clamp(36px,6vw,72px) clamp(20px,4vw,40px) 0", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(192,192,192,0.05)", border: "0.5px solid rgba(192,192,192,0.15)", padding: "6px 16px", marginBottom: 18 }} className="hidden">
-            <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#0c6", animation: "vigo-pulse 1.5s infinite" }} />
-            <span style={{ fontSize: 8, letterSpacing: 4, color: S, textTransform: "uppercase" }}>Inner Circle Active</span>
-          </div>
+          
+
+
+          
           <h1 style={{ fontSize: "clamp(44px,8vw,88px)", fontWeight: 900, letterSpacing: -4, lineHeight: 0.86, marginBottom: 16 }}>
             THE<br />
             <span style={{ background: "linear-gradient(135deg,#555,#B0B0B0,#E8E8E8,#C0C0C0,#888)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>VAULT</span>
