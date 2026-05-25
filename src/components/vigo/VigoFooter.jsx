@@ -80,7 +80,7 @@ export default function VigoFooter({ logo }) {
         ))}
       </div>
       {/* Newsletter */}
-      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "20px 32px", borderTop: `.5px solid ${G3}`, display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", justifyContent: "space-between" }}>
+      <div className="vigo-footer-newsletter" style={{ maxWidth: 1400, margin: "0 auto", padding: "20px 32px", borderTop: `.5px solid ${G3}`, display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", justifyContent: "space-between" }}>
         <div style={{ fontSize: 11, color: SD }}>Stay in the loop — get first access to every drop.</div>
         {subscribed ? (
           <div style={{ fontSize: 11, color: "#0c6", letterSpacing: 1 }}>✓ You're in</div>
@@ -137,7 +137,8 @@ export default function VigoFooter({ logo }) {
       <style>{`
         @media(max-width:900px){.vigo-footer-grid{grid-template-columns:1fr 1fr !important;}}
         @media(max-width:480px){.vigo-footer-grid{grid-template-columns:1fr !important;}}
-
+        @media(max-width:767px){.vigo-footer-grid{display:none !important;}}
+        @media(max-width:767px){.vigo-footer-newsletter{display:none !important;}}
       `}</style>
     </footer>);
 }
