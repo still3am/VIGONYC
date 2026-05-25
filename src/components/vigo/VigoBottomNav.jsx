@@ -238,6 +238,58 @@ export default function VigoBottomNav({ cartCount = 0, onCartOpen }) {
           ))}
 
           {/* + / × More button */}
+          <button
+            onClick={toggleMore}
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: 24,
+              background: moreOpen
+                ? "rgba(255,255,255,0.18)"
+                : "rgba(255,255,255,0.1)",
+              border: "0.5px solid rgba(255,255,255,0.22)",
+              boxShadow: moreOpen
+                ? "inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 12px rgba(0,0,0,0.3)"
+                : "inset 0 1px 0 rgba(255,255,255,0.18), 0 2px 8px rgba(0,0,0,0.2)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              WebkitTapHighlightColor: "transparent",
+              transform: pressing ? "scale(0.88)" : "scale(1)",
+              transition: "transform 0.18s cubic-bezier(0.34,1.56,0.64,1), background 0.2s, box-shadow 0.2s",
+              flexShrink: 0,
+            }}
+            aria-label={moreOpen ? "Close" : "More"}
+          >
+            {/* Animated + to × */}
+            <div style={{
+              position: "relative",
+              width: 18,
+              height: 18,
+            }}>
+              {/* Horizontal bar */}
+              <div style={{
+                position: "absolute",
+                top: "50%", left: 0, right: 0,
+                height: 1.5,
+                background: "rgba(255,255,255,0.85)",
+                borderRadius: 2,
+                transform: `translateY(-50%) rotate(${moreOpen ? 45 : 0}deg)`,
+                transition: "transform 0.28s cubic-bezier(0.34,1.56,0.64,1)",
+              }} />
+              {/* Vertical bar */}
+              <div style={{
+                position: "absolute",
+                left: "50%", top: 0, bottom: 0,
+                width: 1.5,
+                background: "rgba(255,255,255,0.85)",
+                borderRadius: 2,
+                transform: `translateX(-50%) rotate(${moreOpen ? 45 : 0}deg)`,
+                transition: "transform 0.28s cubic-bezier(0.34,1.56,0.64,1)",
+              }} />
+            </div>
+          </button>
         </div>
       </nav>
 
