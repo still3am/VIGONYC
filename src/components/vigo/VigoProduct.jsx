@@ -243,7 +243,7 @@ export default function VigoProduct() {
                   <>
                           <video src={media.url} muted playsInline preload="metadata" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                           <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,.4)" }}>
-                            <span style={{ fontSize: 16, color: "#fff" }} className="hidden">▶</span>
+                            
                           </div>
                         </> :
 
