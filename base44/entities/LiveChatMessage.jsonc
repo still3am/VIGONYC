@@ -1,0 +1,37 @@
+{
+  "name": "LiveChatMessage",
+  "type": "object",
+  "properties": {
+    "streamId": {
+      "type": "string",
+      "description": "LiveStreamEvent ID"
+    },
+    "username": {
+      "type": "string",
+      "description": "Display name"
+    },
+    "message": {
+      "type": "string",
+      "description": "Chat message text"
+    },
+    "isHost": {
+      "type": "boolean",
+      "description": "Is the host",
+      "default": false
+    },
+    "isVerified": {
+      "type": "boolean",
+      "description": "Verified badge",
+      "default": false
+    },
+    "avatarUrl": {
+      "type": "string",
+      "description": "Avatar image URL"
+    }
+  },
+  "required": [
+    "streamId",
+    "username",
+    "message"
+  ]
+}

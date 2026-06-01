@@ -1,0 +1,51 @@
+{
+  "name": "LiveStreamEvent",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Stream title e.g. THE BACK DOOR"
+    },
+    "description": {
+      "type": "string",
+      "description": "Stream description"
+    },
+    "isLive": {
+      "type": "boolean",
+      "description": "Whether the stream is currently live",
+      "default": false
+    },
+    "viewerCount": {
+      "type": "number",
+      "description": "Current viewer count",
+      "default": 0
+    },
+    "pinnedMessage": {
+      "type": "string",
+      "description": "Pinned message headline"
+    },
+    "pinnedMessageSub": {
+      "type": "string",
+      "description": "Pinned message subtext"
+    },
+    "streamUrl": {
+      "type": "string",
+      "description": "HLS/iframe stream URL (e.g. YouTube Live, Mux embed)"
+    },
+    "coverImage": {
+      "type": "string",
+      "description": "Background cover image URL shown when offline"
+    },
+    "associatedDropId": {
+      "type": "string",
+      "description": "Linked Drop ID"
+    },
+    "endedAt": {
+      "type": "string",
+      "description": "ISO date when stream ended"
+    }
+  },
+  "required": [
+    "title"
+  ]
+}
