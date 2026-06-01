@@ -1,0 +1,58 @@
+{
+  "name": "LiveStreamEvent",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Stream title e.g. DROP 03 REVEAL"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "live",
+        "ended"
+      ],
+      "default": "scheduled",
+      "description": "Stream status"
+    },
+    "streamUrl": {
+      "type": "string",
+      "description": "HLS/RTMP stream URL or iframe embed URL"
+    },
+    "viewerCount": {
+      "type": "number",
+      "default": 0,
+      "description": "Current viewer count"
+    },
+    "pinnedMessage": {
+      "type": "string",
+      "description": "Pinned announcement shown over video"
+    },
+    "pinnedSubtext": {
+      "type": "string",
+      "description": "Pinned message subtext"
+    },
+    "likeCount": {
+      "type": "number",
+      "default": 0,
+      "description": "Total likes on this stream"
+    },
+    "dropId": {
+      "type": "string",
+      "description": "Associated drop ID if any"
+    },
+    "scheduledAt": {
+      "type": "string",
+      "description": "ISO date/time for scheduled streams"
+    },
+    "coverImage": {
+      "type": "string",
+      "description": "Cover/thumbnail image URL"
+    }
+  },
+  "required": [
+    "title",
+    "status"
+  ]
+}

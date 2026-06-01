@@ -30,6 +30,7 @@ import VigoTerms from './components/vigo/VigoTerms';
 import VigoPrivacy from './components/vigo/VigoPrivacy';
 import VigoReturns from './components/vigo/VigoReturns';
 import VigoReferral from './pages/VigoReferral';
+import VigoLive from './pages/VigoLive';
 import VigoComingSoon from './components/vigo/VigoComingSoon';
 
 const AuthenticatedApp = () => {
@@ -95,6 +96,7 @@ const AuthenticatedApp = () => {
         <Route path="privacy" element={<ErrorBoundary><VigoPrivacy /></ErrorBoundary>} />
         <Route path="returns" element={<ErrorBoundary><VigoReturns /></ErrorBoundary>} />
         <Route path="referral" element={<ErrorBoundary><VigoReferral /></ErrorBoundary>} />
+        <Route path="live" element={<ErrorBoundary><VigoLive /></ErrorBoundary>} />
       </Route>
       <Route path="/admin" element={<VigoAdmin />} />
       <Route path="*" element={<PageNotFound />} />

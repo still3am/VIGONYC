@@ -68,7 +68,14 @@ const CartIcon = (active) => (
   </svg>
 );
 
+const LiveStreamIcon = (active) => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "rgba(255,255,255,0.95)" : "rgba(200,200,200,0.7)"} strokeWidth="1.5">
+    <circle cx="12" cy="12" r="3"/><path d="M5.64 5.64a9 9 0 0 0 0 12.72M18.36 5.64a9 9 0 0 1 0 12.72M8.46 8.46a5 5 0 0 0 0 7.07M15.54 8.46a5 5 0 0 1 0 7.07"/>
+  </svg>
+);
+
 const MORE_ITEMS = [
+  { label: "Live", to: "/live", icon: LiveStreamIcon },
   { label: "The Vault", to: "/referral", icon: VaultIcon },
   { label: "Lookbook", to: "/lookbook", icon: LookbookIcon },
   { label: "Wishlist", to: "/wishlist", icon: WishlistIcon },

@@ -13,7 +13,9 @@ const links = [
 { label: "The Vault", to: "/referral" },
 { label: "New", to: "/new" },
 { label: "Lookbook", to: "/lookbook" },
-{ label: "About", to: "/about" }];
+{ label: "About", to: "/about" },
+{ label: "Live", to: "/live" }
+];
 
 export default function VigoNav({ cartCount, onCartOpen, logo }) {
   const [searchOpen, setSearchOpen] = useState(false);
