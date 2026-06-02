@@ -417,9 +417,19 @@ export default function VigoAccount() {
               <div>
                 <div style={{ fontSize: 12, fontWeight: 700, color: "var(--vt-text)", marginBottom: 4 }}>Profile Photo</div>
                 <div style={{ fontSize: 10, color: SD, marginBottom: 10 }}>Tap your photo to change it</div>
-                <button onClick={() => photoInputRef.current?.click()} disabled={uploadingPhoto} style={{ ...btnGhost, fontSize: 8, padding: "8px 14px" }}>
-                  {uploadingPhoto ? "Uploading..." : "Upload Photo"}
-                </button>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  <button onClick={() => photoInputRef.current?.click()} disabled={uploadingPhoto} style={{ ...btnGhost, fontSize: 8, padding: "8px 14px" }}>
+                    {uploadingPhoto ? "Uploading..." : "Upload Photo"}
+                  </button>
+                  {profile.profileImage && (
+                    <button onClick={async () => {
+                      await base44.auth.updateMe({ profileImage: "" });
+                      setProfile(p => ({ ...p, profileImage: "" }));
+                      queryClient.invalidateQueries({ queryKey: ['user'] });
+                      toast.success("Photo removed");
+                    }} style={{ ...btnGhost, fontSize: 8, padding: "8px 14px", color: "#e03", borderColor: "#e03" }}>Remove</button>
+                  )}
+                </div>
               </div>
             </div>
 
