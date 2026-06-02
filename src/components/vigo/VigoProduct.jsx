@@ -198,63 +198,63 @@ export default function VigoProduct() {
             {/* Images */}
             <div className="product-media-wrap" style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
               {/* Vertical thumbnails — desktop only */}
-              {allMedia.length > 1 && (
-                <div className="product-thumbs-v" style={{ display: "flex", flexDirection: "column", gap: 6, width: 72, flexShrink: 0 }}>
-                  {allMedia.map((media, i) => (
-                    <button key={i} onClick={() => setActiveThumb(i)} style={{ width: 72, height: 88, background: G2, border: `1.5px solid ${activeThumb === i ? S : G3}`, cursor: "pointer", overflow: "hidden", transition: "all .2s", padding: 0, opacity: activeThumb === i ? 1 : 0.6 }}>
-                      {media.type === "video"
-                        ? <video src={media.url} muted playsInline preload="metadata" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                        : <img src={media.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      }
+              {allMedia.length > 1 &&
+              <div className="product-thumbs-v" style={{ display: "flex", flexDirection: "column", gap: 6, width: 72, flexShrink: 0 }}>
+                  {allMedia.map((media, i) =>
+                <button key={i} onClick={() => setActiveThumb(i)} style={{ width: 72, height: 88, background: G2, border: `1.5px solid ${activeThumb === i ? S : G3}`, cursor: "pointer", overflow: "hidden", transition: "all .2s", padding: 0, opacity: activeThumb === i ? 1 : 0.6 }}>
+                      {media.type === "video" ?
+                  <video src={media.url} muted playsInline preload="metadata" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> :
+                  <img src={media.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  }
                     </button>
-                  ))}
+                )}
                 </div>
-              )}
+              }
               {/* Main image + mobile thumbs */}
               <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
                 <div
                   style={{ background: G2, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, aspectRatio: "3/4", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}
-                  onTouchStart={(e) => { e.currentTarget._touchX = e.touches[0].clientX; }}
+                  onTouchStart={(e) => {e.currentTarget._touchX = e.touches[0].clientX;}}
                   onTouchEnd={(e) => {
                     const dx = e.changedTouches[0].clientX - e.currentTarget._touchX;
                     if (Math.abs(dx) < 40) return;
-                    if (dx < 0) setActiveThumb((t) => Math.min(t + 1, allMedia.length - 1));
-                    else setActiveThumb((t) => Math.max(t - 1, 0));
+                    if (dx < 0) setActiveThumb((t) => Math.min(t + 1, allMedia.length - 1));else
+                    setActiveThumb((t) => Math.max(t - 1, 0));
                   }}>
-                  {zoomed && (
-                    <div onClick={() => setZoomed(false)} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,.92)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "zoom-out" }}>
+                  {zoomed &&
+                  <div onClick={() => setZoomed(false)} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,.92)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "zoom-out" }}>
                       <img src={allMedia[activeThumb]?.url || productImg} alt={product.name} style={{ maxWidth: "90vw", maxHeight: "90vh", objectFit: "contain" }} />
                       <button onClick={() => setZoomed(false)} style={{ position: "absolute", top: 20, right: 20, background: "none", border: "none", color: "#fff", fontSize: 24, cursor: "pointer" }}>✕</button>
                     </div>
-                  )}
-                  {allMedia[activeThumb]?.type === "video" ? (
-                    <video key={allMedia[activeThumb].url} src={allMedia[activeThumb].url} controls autoPlay muted playsInline loop
-                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", background: "#000" }} />
-                  ) : (
-                    <img src={allMedia[activeThumb]?.url || productImg} alt={product.name} onClick={() => setZoomed(true)}
-                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", cursor: "zoom-in" }} />
-                  )}
-                  {allMedia.length > 1 && (
-                    <div style={{ position: "absolute", bottom: 12, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 6, zIndex: 2 }}>
-                      {allMedia.map((_, i) => (
-                        <div key={i} onClick={() => setActiveThumb(i)} style={{ width: i === activeThumb ? 18 : 6, height: 6, borderRadius: 3, background: i === activeThumb ? S : "rgba(192,192,192,.4)", transition: "all .2s", cursor: "pointer" }} />
-                      ))}
+                  }
+                  {allMedia[activeThumb]?.type === "video" ?
+                  <video key={allMedia[activeThumb].url} src={allMedia[activeThumb].url} controls autoPlay muted playsInline loop
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", background: "#000" }} /> :
+
+                  <img src={allMedia[activeThumb]?.url || productImg} alt={product.name} onClick={() => setZoomed(true)}
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", cursor: "zoom-in" }} />
+                  }
+                  {allMedia.length > 1 &&
+                  <div style={{ position: "absolute", bottom: 12, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 6, zIndex: 2 }}>
+                      {allMedia.map((_, i) =>
+                    <div key={i} onClick={() => setActiveThumb(i)} style={{ width: i === activeThumb ? 18 : 6, height: 6, borderRadius: 3, background: i === activeThumb ? S : "rgba(192,192,192,.4)", transition: "all .2s", cursor: "pointer" }} />
+                    )}
                     </div>
-                  )}
+                  }
                 </div>
                 {/* Horizontal thumbs — mobile only */}
-                {allMedia.length > 1 && (
-                  <div className="product-thumbs-h" style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 4 }}>
-                    {allMedia.map((media, i) => (
-                      <button key={i} onClick={() => setActiveThumb(i)} style={{ flexShrink: 0, width: 56, height: 68, background: G2, border: `1.5px solid ${activeThumb === i ? S : G3}`, cursor: "pointer", overflow: "hidden", transition: "all .2s", padding: 0, opacity: activeThumb === i ? 1 : 0.6 }}>
-                        {media.type === "video"
-                          ? <video src={media.url} muted playsInline preload="metadata" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                          : <img src={media.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                        }
+                {allMedia.length > 1 &&
+                <div className="product-thumbs-h" style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 4 }}>
+                    {allMedia.map((media, i) =>
+                  <button key={i} onClick={() => setActiveThumb(i)} style={{ flexShrink: 0, width: 56, height: 68, background: G2, border: `1.5px solid ${activeThumb === i ? S : G3}`, cursor: "pointer", overflow: "hidden", transition: "all .2s", padding: 0, opacity: activeThumb === i ? 1 : 0.6 }}>
+                        {media.type === "video" ?
+                    <video src={media.url} muted playsInline preload="metadata" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> :
+                    <img src={media.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    }
                       </button>
-                    ))}
+                  )}
                   </div>
-                )}
+                }
               </div>
             </div>
 
@@ -263,7 +263,7 @@ export default function VigoProduct() {
               <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 16 }}>{product.collection || "SS25"} — {product.cat}</div>
               <div style={{ marginBottom: 24 }}>
                 <h1 style={{ fontSize: "clamp(32px,5vw,48px)", fontWeight: 900, letterSpacing: -1, lineHeight: 1.1, marginBottom: 8 }}>{product.name}</h1>
-                <div style={{ fontSize: 10, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>{product.cat}</div>
+                <div style={{ fontSize: 10, letterSpacing: 2, color: SD, textTransform: "uppercase" }} className="hidden">{product.cat}</div>
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24, paddingBottom: 24, borderBottom: `.5px solid ${G3}` }}>
@@ -357,7 +357,7 @@ export default function VigoProduct() {
                 {/* Share row */}
               <div style={{ display: "flex", gap: 6, paddingTop: 16, paddingBottom: 16, borderTop: `.5px solid ${G3}`, flexWrap: "wrap", alignItems: "center" }}>
                 <span style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginRight: 2 }}>Share:</span>
-                <button onClick={() => { navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 2000); }} style={shareBtn}>
+                <button onClick={() => {navigator.clipboard.writeText(window.location.href);setCopied(true);setTimeout(() => setCopied(false), 2000);}} style={shareBtn}>
                   {copied ? "✓ Copied" : "Copy Link"}
                 </button>
                 <a href={`https://twitter.com/intent/tweet?text=Check out ${encodeURIComponent(product.name)} on @VIGONYC&url=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" style={{ ...shareBtn, textDecoration: "none" }}>X / Twitter</a>
