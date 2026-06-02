@@ -150,13 +150,14 @@ export default function VIGONYCFlagship() {
 
   const prefersReducedMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  const isLivePage = location.pathname === "/live";
   const ctx = { addToCart, wishlist, toggleWishlist, setSizeGuideOpen, logo: LOGO, productImg: PRODUCT_IMG, refreshCartCount };
 
   return (
     <div style={{ background: "var(--vt-bg)", minHeight: "100vh", fontFamily: "'Helvetica Neue',Arial,sans-serif", color: "var(--vt-text)", overflowX: "hidden" }}>
       <SizeGuideModal open={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} />
       <VigoCartDrawer open={cartOpen} onClose={handleCartClose} onCheckout={() => { navigate("/checkout"); handleCartClose(); }} />
-      <VigoNav cartCount={cartCount} onCartOpen={() => setCartOpen(true)} logo={LOGO} />
+      {!isLivePage && <VigoNav cartCount={cartCount} onCartOpen={() => setCartOpen(true)} logo={LOGO} />}
        <AnimatePresence mode="wait">
          <motion.div
            key={location.pathname}
@@ -168,8 +169,8 @@ export default function VIGONYCFlagship() {
            <Outlet context={ctx} />
          </motion.div>
        </AnimatePresence>
-      <VigoFooter logo={LOGO} />
-      <VigoBottomNav cartCount={cartCount} onCartOpen={() => setCartOpen(true)} cartOpen={cartOpen} />
+      {!isLivePage && <VigoFooter logo={LOGO} />}
+      {!isLivePage && <VigoBottomNav cartCount={cartCount} onCartOpen={() => setCartOpen(true)} cartOpen={cartOpen} />}
       {showBackToTop && (
         <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} style={{ position: "fixed", bottom: "calc(80px + env(safe-area-inset-bottom,0px))", right: 20, zIndex: 390, width: 44, height: 44, background: "var(--vt-card)", border: ".5px solid var(--vt-border)", color: "var(--vt-text)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, boxShadow: "0 4px 20px rgba(0,0,0,.3)" }} title="Back to top">↑</button>
       )}
