@@ -364,20 +364,22 @@ export default function VigoProduct() {
                   <a href={`https://twitter.com/intent/tweet?text=Check out ${encodeURIComponent(product.name)} by @VIGONYC&url=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" style={{ ...shareBtn, textDecoration: "none" }}>X / Twitter</a>
                   <button onClick={() => {
                     if (navigator.share) {
-                      navigator.share({ title: product.name, text: `Check this out on VIGONYC`, url: window.location.href });
+                      navigator.share({ title: product.name, text: `Check out ${product.name} on VIGONYC`, url: window.location.href });
                     } else {
                       navigator.clipboard.writeText(window.location.href);
-                      toast.success("Link copied — paste it in your Instagram story!");
+                      window.open("https://www.instagram.com/create/story/", "_blank");
+                      toast.success("Link copied — paste it in your Instagram post!");
                     }
-                  }} style={shareBtn}>Instagram</button>
+                  }} style={shareBtn}>Post to Instagram</button>
                   <button onClick={() => {
                     if (navigator.share) {
                       navigator.share({ title: product.name, text: `${product.name} via VIGONYC`, url: window.location.href });
                     } else {
                       navigator.clipboard.writeText(window.location.href);
-                      toast.success("Link copied — paste it on TikTok!");
+                      window.open("https://www.tiktok.com/upload", "_blank");
+                      toast.success("Link copied — paste it in your TikTok caption!");
                     }
-                  }} style={shareBtn}>TikTok</button>
+                  }} style={shareBtn}>Post to TikTok</button>
                 </div>
                 </div>
 
