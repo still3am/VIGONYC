@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { sanitizeObject } from "@/lib/sanitize";
 import { useNavigate, useOutletContext, useParams, Link } from "react-router-dom";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
-import { Package, RotateCcw, Zap } from "lucide-react";
+import { Package, RotateCcw, Sparkles } from "lucide-react";
 import ProductCard from "./ProductCard";
 import SectionDivider from "./SectionDivider";
 import { toast } from "sonner";
@@ -192,13 +192,13 @@ export default function VigoProduct() {
         )}
         <span style={{ fontSize: 9, color: "var(--vt-text)", letterSpacing: 1, textTransform: "uppercase", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "calc(100vw - 200px)" }}>{product.name}</span>
       </div>
-      <div style={{ padding: "clamp(20px,4vw,32px)" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-          <div className="product-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "clamp(24px,5vw,48px)", marginBottom: "clamp(40px,6vw,60px)" }}>
+      <div style={{ padding: "clamp(0px,2vw,32px) clamp(0px,2vw,32px) 0" }} className="product-outer">
+        <div style={{ maxWidth: 1260, margin: "0 auto" }}>
+          <div className="product-grid" style={{ display: "grid", gridTemplateColumns: "55% 1fr", gap: "clamp(24px,4vw,56px)", marginBottom: "clamp(40px,6vw,60px)", alignItems: "start" }}>
             {/* Images */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "clamp(12px,2vw,16px)" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "clamp(8px,1.5vw,12px)", position: "relative" }}>
               <div
-                style={{ background: G2, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, aspectRatio: "3/4", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}
+                style={{ background: G2, border: `.5px solid ${G3}`, borderTop: `3px solid ${S}`, aspectRatio: "3/4", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}
                 onTouchStart={(e) => {e.currentTarget._touchX = e.touches[0].clientX;}}
                 onTouchEnd={(e) => {
                   const dx = e.changedTouches[0].clientX - e.currentTarget._touchX;
@@ -236,15 +236,13 @@ export default function VigoProduct() {
                 }
               </div>
               {allMedia.length > 1 &&
-              <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
+              <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 4, padding: "0 clamp(0px,2vw,0px)" }}>
                   {allMedia.map((media, i) =>
-                <button key={i} onClick={() => setActiveThumb(i)} style={{ flexShrink: 0, width: 60, height: 60, background: G2, border: `.5px solid ${activeThumb === i ? S : G3}`, cursor: "pointer", overflow: "hidden", transition: "all .2s", padding: 0, position: "relative" }}>
+                <button key={i} onClick={() => setActiveThumb(i)} style={{ flexShrink: 0, width: 72, height: 72, background: G2, border: i === activeThumb ? `2px solid ${S}` : `.5px solid ${G3}`, cursor: "pointer", overflow: "hidden", transition: "all .2s", padding: 0, position: "relative", borderRadius: 2 }}>
                       {media.type === "video" ?
                   <>
                           <video src={media.url} muted playsInline preload="metadata" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,.4)" }}>
-                            
-                          </div>
+                          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,.5)", fontSize: 20 }}>▶</div>
                         </> :
 
                   <img src={media.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -256,11 +254,11 @@ export default function VigoProduct() {
             </div>
 
             {/* Details */}
-            <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ display: "flex", flexDirection: "column", padding: "clamp(0px,1vw,0px) 0", position: "sticky", top: 70 }} className="product-detail-sticky">
               <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 16 }}>{product.collection || "SS25"} — {product.cat}</div>
-              <div style={{ marginBottom: 24 }}>
-                <h1 style={{ fontSize: "clamp(32px,5vw,48px)", fontWeight: 900, letterSpacing: -1, lineHeight: 1.1, marginBottom: 8 }}>{product.name}</h1>
-                <div style={{ fontSize: 10, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>{product.cat}</div>
+              <div style={{ marginBottom: 16 }}>
+                <h1 style={{ fontSize: "clamp(26px,4vw,44px)", fontWeight: 900, letterSpacing: -1, lineHeight: 1.05, marginBottom: 6 }}>{product.name}</h1>
+                {product.tag && <span style={{ display: "inline-block", fontSize: 7, letterSpacing: 3, textTransform: "uppercase", background: S, color: "#000", padding: "3px 10px", fontWeight: 900, marginTop: 6 }}>{product.tag === "ltd" ? "Limited Run" : product.tag === "new" ? "New Arrival" : product.tag === "drop" ? "Drop Exclusive" : product.tag === "hot" ? "Trending" : product.tag === "sale" ? "On Sale" : product.tag}</span>}
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24, paddingBottom: 24, borderBottom: `.5px solid ${G3}` }}>
@@ -305,16 +303,21 @@ export default function VigoProduct() {
               </div>
 
               {/* Size */}
-              <div style={{ marginBottom: 28 }}>
+              <div style={{ marginBottom: 24 }}>
                 {soldOut && <div style={{ fontSize: 9, letterSpacing: 2, color: "#e03", textTransform: "uppercase", marginBottom: 10, fontWeight: 700 }}>SOLD OUT</div>}
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                   <label style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Size {!selectedSize && !soldOut && <span style={{ color: "#e03" }}>*</span>}</label>
-                  <button onClick={() => setSizeGuideOpen(true)} style={{ background: "none", border: "none", fontSize: 8, letterSpacing: 2, color: S, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>Size Guide →</button>
+                  <button onClick={() => setSizeGuideOpen(true)} style={{ background: "none", border: `.5px solid ${S}`, borderRadius: 2, fontSize: 8, letterSpacing: 2, color: S, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", padding: "4px 10px" }}>📐 Size Guide</button>
                 </div>
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
                   {sizes.map((s) =>
-                  <button key={s} onClick={() => !soldOut && setSelectedSize(s)} style={{ width: 48, height: 40, border: `.5px solid ${selectedSize === s && !soldOut ? S : G3}`, background: selectedSize === s && !soldOut ? S : "transparent", color: selectedSize === s && !soldOut ? "#000" : SD, fontSize: 10, fontWeight: 700, cursor: soldOut ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "all .15s", opacity: soldOut ? 0.4 : 1 }}>{s}</button>
+                  <button key={s} onClick={() => !soldOut && setSelectedSize(s)}
+                    style={{ minWidth: 52, height: 44, border: `.5px solid ${selectedSize === s && !soldOut ? S : G3}`, background: selectedSize === s && !soldOut ? S : "transparent", color: selectedSize === s && !soldOut ? "#000" : "var(--vt-text)", fontSize: 11, fontWeight: 700, cursor: soldOut ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "all .15s", opacity: soldOut ? 0.4 : 1, padding: "0 8px" }}>{s}</button>
                   )}
+                </div>
+                {!soldOut && !selectedSize && attempted && <div style={{ fontSize: 9, color: "#e03", letterSpacing: 1 }}>↑ Please select a size</div>}
+                <div style={{ fontSize: 9, color: SD, display: "flex", gap: 16, marginTop: 4 }}>
+                  <span>XS–S: Slim</span><span>M: True-to-size</span><span>L–XXL: Oversized</span>
                 </div>
               </div>
 
@@ -352,18 +355,36 @@ export default function VigoProduct() {
               }
 
                 {/* Share row */}
-              <div style={{ display: "flex", gap: 8, paddingTop: 16, paddingBottom: 16, borderTop: `.5px solid ${G3}`, flexWrap: "wrap", alignItems: "center" }}>
-                <span style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Share:</span>
-                <button onClick={() => {navigator.clipboard.writeText(window.location.href);setCopied(true);setTimeout(() => setCopied(false), 2000);}} style={shareBtn}>
-                  {copied ? "✓ Copied" : "Copy Link"}
-                </button>
-                <a href={`https://twitter.com/intent/tweet?text=Check out ${encodeURIComponent(product.name)} on @VIGONYC&url=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" style={{ ...shareBtn, textDecoration: "none" }}>X / Twitter</a>
-              </div>
+                <div style={{ paddingTop: 16, paddingBottom: 16, borderTop: `.5px solid ${G3}` }}>
+                <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 10 }}>Share</div>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  <button onClick={() => {navigator.clipboard.writeText(window.location.href);setCopied(true);setTimeout(() => setCopied(false), 2000);}} style={shareBtn}>
+                    {copied ? "✓ Copied" : "🔗 Copy Link"}
+                  </button>
+                  <a href={`https://twitter.com/intent/tweet?text=Check out ${encodeURIComponent(product.name)} by @VIGONYC&url=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" style={{ ...shareBtn, textDecoration: "none" }}>✕ Twitter</a>
+                  <button onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({ title: product.name, text: `Check this out on VIGONYC`, url: window.location.href });
+                    } else {
+                      navigator.clipboard.writeText(window.location.href);
+                      toast.success("Link copied — paste it in your Instagram story!");
+                    }
+                  }} style={shareBtn}>📸 Instagram</button>
+                  <button onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({ title: product.name, text: `${product.name} via VIGONYC`, url: window.location.href });
+                    } else {
+                      navigator.clipboard.writeText(window.location.href);
+                      toast.success("Link copied — paste it on TikTok!");
+                    }
+                  }} style={shareBtn}>🎵 TikTok</button>
+                </div>
+                </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, paddingTop: 16, borderTop: `.5px solid ${G3}` }}>
-                {[{ icon: Package, title: "Free Shipping", sub: "over $150" }, { icon: RotateCcw, title: "Easy Returns", sub: "14 days" }, { icon: Zap, title: "NYC Made", sub: "Limited run" }].map(({ icon: Icon, title, sub }) =>
-                <div key={title} style={{ textAlign: "center" }}>
-                    <Icon size={18} style={{ marginBottom: 8, color: S, margin: "0 auto" }} />
+                {[{ icon: Package, title: "Free Shipping", sub: "over $150" }, { icon: RotateCcw, title: "Easy Returns", sub: "14 days" }, { icon: Sparkles, title: "Limited Run", sub: "drops only" }].map(({ icon: Icon, title, sub }) =>
+                <div key={title} style={{ textAlign: "center", padding: "12px 4px", background: G2, border: `.5px solid ${G3}` }}>
+                    <Icon size={18} style={{ marginBottom: 6, color: S, margin: "0 auto 6px" }} />
                     <div style={{ fontSize: 8, fontWeight: 700, color: "var(--vt-text)", letterSpacing: 1 }}>{title}</div>
                     <div style={{ fontSize: 7, color: SD, marginTop: 2 }}>{sub}</div>
                   </div>
@@ -464,8 +485,14 @@ export default function VigoProduct() {
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes vigo-pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.8)} }
-        @media (max-width: 900px) {
+        @media (max-width: 1024px) {
+          .product-grid { grid-template-columns: 50% 1fr !important; }
+          .product-detail-sticky { position: static !important; }
+        }
+        @media (max-width: 768px) {
           .product-grid { grid-template-columns: 1fr !important; }
+          .product-outer { padding: 0 !important; }
+          .product-detail-sticky { padding: 0 clamp(16px,4vw,24px) !important; }
           .related-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .mobile-cta { display: flex !important; flex-direction: column; }
           .vigo-product-back { display: block !important; }
