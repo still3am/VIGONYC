@@ -29,5 +29,14 @@
       ],
       "description": "User's preferred theme"
     }
-  }
+  },
+  "required": [
+    "phone",
+    "birthday",
+    "notificationsDrops",
+    "notificationsOrders",
+    "notificationsPromotions",
+    "notificationsNewsletter",
+    "preferredTheme"
+  ]
 }

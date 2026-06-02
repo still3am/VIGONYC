@@ -15,6 +15,7 @@ import AdminReviews from "@/components/admin/AdminReviews";
 import AdminNewsletter from "@/components/admin/AdminNewsletter";
 import AdminContacts from "@/components/admin/AdminContacts";
 import AdminPayments from "@/components/admin/AdminPayments";
+import AdminLive from "@/components/admin/AdminLive";
 
 
 const S = "#C0C0C0";
@@ -36,7 +37,8 @@ const NAV = [
 { id: "reviews", label: "Reviews", icon: "★", badgeKey: "pendingReviews", LIcon: Star },
 { id: "newsletter", label: "Newsletter", icon: "✉", LIcon: Mail },
 { id: "contacts", label: "Contacts", icon: "◎", badgeKey: "newContacts", LIcon: MessageSquare },
-{ id: "about", label: "Content", icon: "✦", LIcon: FileText }];
+{ id: "about", label: "Content", icon: "✦", LIcon: FileText },
+{ id: "live", label: "Live", icon: "⦿", LIcon: BookOpen }];
 
 // Primary tabs shown in mobile bottom nav (5 max)
 const MOBILE_PRIMARY = ["dashboard", "orders", "shop", "drops", "about"];
@@ -57,7 +59,8 @@ const SECTION_MAP = {
   reviews: AdminReviews,
   newsletter: AdminNewsletter,
   contacts: AdminContacts,
-  about: AdminAbout
+  about: AdminAbout,
+  live: AdminLive
 };
 
 export default function VigoAdmin() {
