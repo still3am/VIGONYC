@@ -65,14 +65,17 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
           <div style={{ height: 2, background: "linear-gradient(90deg,transparent,#888,#E8E8E8,#C0C0C0,#E8E8E8,#888,transparent)" }} />
 
           {/* Ticker */}
-          <div style={{ background: "var(--vt-bg)", borderBottom: `.5px solid ${G3}`, overflow: "hidden", height: 30, display: "flex", alignItems: "center" }}>
+          <div style={{ background: "var(--vt-card)", borderBottom: `.5px solid ${G3}`, overflow: "hidden", height: 34, display: "flex", alignItems: "center", position: "relative" }}>
+            {/* Edge fade masks */}
+            <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 60, background: "linear-gradient(90deg, var(--vt-card), transparent)", zIndex: 1, pointerEvents: "none" }} />
+            <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 60, background: "linear-gradient(-90deg, var(--vt-card), transparent)", zIndex: 1, pointerEvents: "none" }} />
             <div className="vigo-ticker-track">
               {[...Array(2)].map((_, ri) =>
             <span key={ri} style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
                   {(settings.ticker_text || "Free Shipping over $150 ✦ New Drop Coming Soon ✦ NYC Streetwear ✦ Limited Runs Only ✦").split("✦").map((t) => t.trim()).filter(Boolean).map((t, i) =>
-              <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 24, padding: "0 12px" }}>
-                      <span style={{ fontSize: 9, letterSpacing: 3, color: SD, textTransform: "uppercase", whiteSpace: "nowrap" }}>{t}</span>
-                      <span style={{ color: S, fontSize: 8 }}>✦</span>
+              <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 28, padding: "0 14px" }}>
+                      <span style={{ fontSize: 8, letterSpacing: 4, color: SD, textTransform: "uppercase", whiteSpace: "nowrap", fontWeight: 500 }}>{t}</span>
+                      <span style={{ color: S, fontSize: 7, opacity: 0.7 }}>✦</span>
                     </span>
               )}
                 </span>
