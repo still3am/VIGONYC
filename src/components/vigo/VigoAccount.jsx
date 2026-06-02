@@ -165,36 +165,38 @@ export default function VigoAccount() {
 
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['user'],
-    queryFn: async () => {
-      const userData = await base44.auth.me().catch(() => null);
-      return userData || null;
-    }
+    queryFn: () => base44.auth.me().catch(() => null)
   });
 
   const outletCtx = useOutletContext();
   const addToCart = outletCtx?.addToCart;
 
   const { data: orders = [], isLoading: ordersLoading } = useQuery({
-    queryKey: ['orders'],
+    queryKey: ['orders', user?.email],
     queryFn: async () => {
-      try {
-        const byEmail = user?.email ? await base44.entities.Order.filter({ userEmail: user.email }, '-created_date', 100).catch(() => []) : [];
-        const byCreator = user?.email ? await base44.entities.Order.filter({ created_by: user.email }, '-created_date', 100).catch(() => []) : [];
-        const combined = [...byEmail, ...byCreator.filter(o => !byEmail.find(e => e.id === o.id))];
-        return combined.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
-      }
-      catch {return [];}
+      if (!user?.email) return [];
+      const byEmail = await base44.entities.Order.filter({ userEmail: user.email }, '-created_date', 100).catch(() => []);
+      const byMe = await base44.entities.Order.list('-created_date', 100).catch(() => []);
+      const combined = [...byEmail];
+      byMe.forEach(o => { if (!combined.find(e => e.id === o.id)) combined.push(o); });
+      return combined.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
     },
     enabled: !!user?.email
   });
 
+  const { data: wishlistCount = 0 } = useQuery({
+    queryKey: ['wishlist-count'],
+    queryFn: async () => {
+      const items = await base44.entities.WishlistItem.list('-created_date', 200).catch(() => []);
+      return items.length;
+    },
+    enabled: !!user
+  });
+
   const { data: addresses = [], isLoading: addressesLoading, refetch: refetchAddresses } = useQuery({
     queryKey: ['addresses'],
-    queryFn: async () => {
-      try {return await base44.entities.Address.filter({ created_by: user?.email }, '-created_date', 100);}
-      catch {return [];}
-    },
-    enabled: !!user?.email
+    queryFn: () => base44.entities.Address.list('-created_date', 100).catch(() => []),
+    enabled: !!user
   });
 
   const [profile, setProfile] = useState({});
@@ -291,7 +293,15 @@ export default function VigoAccount() {
     }
   };
 
-  if (!userLoading && !user) {
+  if (userLoading) {
+    return (
+      <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ fontSize: 9, letterSpacing: 3, color: SD, textTransform: "uppercase" }}>Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
     return (
       <div style={{ padding: "80px 32px", maxWidth: 640, margin: "0 auto", textAlign: "center" }}>
         <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 16 }}>✦ Account</div>
@@ -337,7 +347,7 @@ export default function VigoAccount() {
                 </div>
                 <div style={{ background: G2, border: `.5px solid ${G3}`, padding: "6px 16px" }}>
                   <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Wishlist</div>
-                  <div style={{ fontSize: 13, fontWeight: 900, color: S }}>{user?.wishlistCount ?? "—"}</div>
+                  <div style={{ fontSize: 13, fontWeight: 900, color: S }}>{wishlistCount}</div>
                 </div>
               </div>
             </div>
@@ -422,9 +432,10 @@ export default function VigoAccount() {
                           {order.trackingNumber && <div style={{ fontSize: 9, color: SD, marginTop: 4 }}>Tracking: <span style={{ color: S }}>{order.trackingNumber}</span></div>}
                         </div>
                         <div className="vigo-order-amount" style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
-                          <div style={{ fontSize: 20, fontWeight: 900, color: S }}>${order.total}</div>
-                          <button onClick={() => navigate(`/track-order?order=${order.orderId}`)} style={btnGhost}>Track →</button>
-                          <button onClick={() => {
+                          <div style={{ fontSize: 20, fontWeight: 900, color: S }}>${Number(order.total || 0).toFixed(2)}</div>
+                          <button onClick={(e) => { e.stopPropagation(); navigate(`/track-order?order=${order.orderId}`); }} style={btnGhost}>Track →</button>
+                          <button onClick={(e) => {
+                            e.stopPropagation();
                             try {
                               const items = JSON.parse(order.itemsJson || "[]");
                               if (items[0]?.productId) navigate(`/product/${items[0].productId}`);
@@ -445,9 +456,9 @@ export default function VigoAccount() {
                           if (itemsArr.length > 0) {
                             return itemsArr.map((item, idx) => (
                               <div key={idx} style={{ fontSize: 11, color: "var(--vt-text)", marginBottom: 6 }}>
-                                · {item.name}{item.size ? ` (${item.size})` : ""} x{item.qty}
+                                · {item.productName || item.name || "Item"}{item.size ? ` (${item.size})` : ""} × {item.qty || 1}
                                 {order.status === "Delivered" && item.productId && (
-                                  <a href={`/product/${item.productId}#reviews`} style={{ marginLeft: 8, fontSize: 8, color: S, letterSpacing: 1, textTransform: "uppercase", textDecoration: "none" }}>Leave a Review →</a>
+                                  <a href={`/product/${item.productId}#reviews`} style={{ marginLeft: 8, fontSize: 8, color: S, letterSpacing: 1, textTransform: "uppercase", textDecoration: "none" }}>Review →</a>
                                 )}
                               </div>
                             ));
@@ -561,14 +572,9 @@ export default function VigoAccount() {
 
             <div>
               <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 16 }}>Change Password</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <Field label="Current Password" type="password" placeholder="••••••••" value={passwords.current} onChange={(v) => setPasswords((p) => ({ ...p, current: v }))} />
-                <Field label="New Password" type="password" placeholder="Min 8 characters" value={passwords.newPass} onChange={(v) => setPasswords((p) => ({ ...p, newPass: v }))} />
-                <Field label="Confirm New Password" type="password" placeholder="••••••••" value={passwords.confirm} onChange={(v) => setPasswords((p) => ({ ...p, confirm: v }))} />
-                <div style={{ display: "flex", alignItems: "center", gap: 16, paddingTop: 4 }}>
-                  <button onClick={savePassword} style={{ ...btnPrimary }}>Update Password</button>
-                  {pwSaved && <div style={{ fontSize: 10, color: '#0c6' }}>✓ Password updated</div>}
-                </div>
+              <div style={{ background: G1, border: `.5px solid ${G3}`, padding: "18px 20px", borderRadius: 2 }}>
+                <div style={{ fontSize: 11, color: SD, lineHeight: 1.7 }}>Password changes are managed through your account email. To reset your password, sign out and use the <b style={{ color: "var(--vt-text)" }}>"Forgot Password"</b> option on the login page.</div>
+                <button onClick={() => { base44.auth.logout(); navigate("/"); }} style={{ ...btnGhost, marginTop: 14, fontSize: 8 }}>Sign Out to Reset Password</button>
               </div>
             </div>
 
