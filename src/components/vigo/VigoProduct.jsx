@@ -307,7 +307,7 @@ export default function VigoProduct() {
                 {soldOut && <div style={{ fontSize: 9, letterSpacing: 2, color: "#e03", textTransform: "uppercase", marginBottom: 10, fontWeight: 700 }}>SOLD OUT</div>}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                   <label style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Size {!selectedSize && !soldOut && <span style={{ color: "#e03" }}>*</span>}</label>
-                  <button onClick={() => setSizeGuideOpen(true)} style={{ background: "none", border: `.5px solid ${S}`, borderRadius: 2, fontSize: 8, letterSpacing: 2, color: S, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", padding: "4px 10px" }}>📐 Size Guide</button>
+                  <button onClick={() => setSizeGuideOpen(true)} style={{ background: "none", border: `.5px solid ${S}`, borderRadius: 2, fontSize: 8, letterSpacing: 2, color: S, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", padding: "4px 10px" }}>Size Guide</button>
                 </div>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
                   {sizes.map((s) =>
@@ -359,9 +359,9 @@ export default function VigoProduct() {
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 10 }}>Share</div>
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                   <button onClick={() => {navigator.clipboard.writeText(window.location.href);setCopied(true);setTimeout(() => setCopied(false), 2000);}} style={shareBtn}>
-                    {copied ? "✓ Copied" : "🔗 Copy Link"}
+                    {copied ? "✓ Copied" : "Copy Link"}
                   </button>
-                  <a href={`https://twitter.com/intent/tweet?text=Check out ${encodeURIComponent(product.name)} by @VIGONYC&url=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" style={{ ...shareBtn, textDecoration: "none" }}>✕ Twitter</a>
+                  <a href={`https://twitter.com/intent/tweet?text=Check out ${encodeURIComponent(product.name)} by @VIGONYC&url=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" style={{ ...shareBtn, textDecoration: "none" }}>X / Twitter</a>
                   <button onClick={() => {
                     if (navigator.share) {
                       navigator.share({ title: product.name, text: `Check this out on VIGONYC`, url: window.location.href });
@@ -369,7 +369,7 @@ export default function VigoProduct() {
                       navigator.clipboard.writeText(window.location.href);
                       toast.success("Link copied — paste it in your Instagram story!");
                     }
-                  }} style={shareBtn}>📸 Instagram</button>
+                  }} style={shareBtn}>Instagram</button>
                   <button onClick={() => {
                     if (navigator.share) {
                       navigator.share({ title: product.name, text: `${product.name} via VIGONYC`, url: window.location.href });
@@ -377,7 +377,7 @@ export default function VigoProduct() {
                       navigator.clipboard.writeText(window.location.href);
                       toast.success("Link copied — paste it on TikTok!");
                     }
-                  }} style={shareBtn}>🎵 TikTok</button>
+                  }} style={shareBtn}>TikTok</button>
                 </div>
                 </div>
 
