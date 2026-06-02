@@ -358,9 +358,9 @@ export default function VigoProduct() {
               <div style={{ display: "flex", gap: 6, paddingTop: 16, paddingBottom: 16, borderTop: `.5px solid ${G3}`, flexWrap: "wrap", alignItems: "center" }}>
                 <span style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginRight: 2 }}>Share:</span>
                 <button onClick={() => { navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 2000); }} style={shareBtn}>
-                  {copied ? "✓ Copied" : "🔗 Link"}
+                  {copied ? "✓ Copied" : "Copy Link"}
                 </button>
-                <a href={`https://twitter.com/intent/tweet?text=Check out ${encodeURIComponent(product.name)} on @VIGONYC&url=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" style={{ ...shareBtn, textDecoration: "none" }}>𝕏 Twitter</a>
+                <a href={`https://twitter.com/intent/tweet?text=Check out ${encodeURIComponent(product.name)} on @VIGONYC&url=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" style={{ ...shareBtn, textDecoration: "none" }}>X / Twitter</a>
                 <button onClick={() => {
                   if (navigator.share) {
                     navigator.share({ title: product.name, text: `Check out ${product.name} on VÍGO`, url: window.location.href });
@@ -368,7 +368,7 @@ export default function VigoProduct() {
                     navigator.clipboard.writeText(window.location.href);
                     toast.success("Link copied — paste it in Instagram!");
                   }
-                }} style={shareBtn}>📸 Instagram</button>
+                }} style={shareBtn}>Instagram</button>
                 <button onClick={() => {
                   if (navigator.share) {
                     navigator.share({ title: product.name, text: `Check out ${product.name} on VÍGO`, url: window.location.href });
@@ -376,7 +376,7 @@ export default function VigoProduct() {
                     navigator.clipboard.writeText(window.location.href);
                     toast.success("Link copied — paste it in TikTok!");
                   }
-                }} style={shareBtn}>♪ TikTok</button>
+                }} style={shareBtn}>TikTok</button>
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, paddingTop: 16, borderTop: `.5px solid ${G3}` }}>
