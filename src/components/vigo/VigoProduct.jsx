@@ -263,7 +263,7 @@ export default function VigoProduct() {
               <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 16 }}>{product.collection || "SS25"} — {product.cat}</div>
               <div style={{ marginBottom: 24 }}>
                 <h1 style={{ fontSize: "clamp(32px,5vw,48px)", fontWeight: 900, letterSpacing: -1, lineHeight: 1.1, marginBottom: 8 }}>{product.name}</h1>
-                <div style={{ fontSize: 10, letterSpacing: 2, color: SD, textTransform: "uppercase" }} className="hidden">{product.cat}</div>
+                
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24, paddingBottom: 24, borderBottom: `.5px solid ${G3}` }}>
