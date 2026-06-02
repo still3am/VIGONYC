@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useOutletContext, Link } from "react-router-dom";
 import { toast } from "sonner";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -157,6 +157,8 @@ export default function VigoAccount() {
   const [passwords, setPasswords] = useState({ current: "", newPass: "", confirm: "" });
   const [addressModal, setAddressModal] = useState(null);
   const [profileSaved, setProfileSaved] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const photoInputRef = useRef(null);
   const [notifSaved, setNotifSaved] = useState(false);
   const [pwSaved, setPwSaved] = useState(false);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
@@ -204,12 +206,16 @@ export default function VigoAccount() {
 
   useEffect(() => {
     if (user) {
+      // Use saved displayName if present, fall back to full_name
+      const savedFirst = user.profileFirstName || user.full_name?.split(' ')[0] || '';
+      const savedLast = user.profileLastName || user.full_name?.split(' ').slice(1).join(' ') || '';
       setProfile({
-        firstName: user.full_name?.split(' ')[0] || '',
-        lastName: user.full_name?.split(' ').slice(1).join(' ') || '',
+        firstName: savedFirst,
+        lastName: savedLast,
         email: user.email || '',
         phone: user.phone || '',
-        birthday: user.birthday || ''
+        birthday: user.birthday || '',
+        profileImage: user.profileImage || ''
       });
       setNotifications({
         drops: user.notificationsDrops !== false,
@@ -220,10 +226,26 @@ export default function VigoAccount() {
     }
   }, [user]);
 
+  const uploadProfilePhoto = async (file) => {
+    if (!file) return;
+    setUploadingPhoto(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      await base44.auth.updateMe({ profileImage: file_url });
+      setProfile(p => ({ ...p, profileImage: file_url }));
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+      toast.success("Profile photo updated!");
+    } catch {
+      toast.error("Failed to upload photo.");
+    }
+    setUploadingPhoto(false);
+  };
+
   const saveProfile = async () => {
     try {
       await base44.auth.updateMe({
-        full_name: `${profile.firstName} ${profile.lastName}`.trim(),
+        profileFirstName: profile.firstName,
+        profileLastName: profile.lastName,
         phone: profile.phone,
         birthday: profile.birthday
       });
@@ -334,11 +356,17 @@ export default function VigoAccount() {
               <div style={{ width: 28, height: 0.5, background: S, opacity: 0.5 }} />
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-              <div style={{ position: "relative", flexShrink: 0 }}>
-                <div style={{ width: "clamp(64px,10vw,88px)", height: "clamp(64px,10vw,88px)", borderRadius: "50%", background: G2, border: `2px solid ${S}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "clamp(22px,4vw,32px)", fontWeight: 900, color: S }}>{profile.firstName?.charAt(0) || 'U'}</div>
-                
+              <div style={{ position: "relative", flexShrink: 0, cursor: "pointer" }} onClick={() => photoInputRef.current?.click()}>
+                {profile.profileImage
+                  ? <img src={profile.profileImage} alt="Profile" style={{ width: "clamp(64px,10vw,88px)", height: "clamp(64px,10vw,88px)", borderRadius: "50%", objectFit: "cover", border: `2px solid ${S}` }} />
+                  : <div style={{ width: "clamp(64px,10vw,88px)", height: "clamp(64px,10vw,88px)", borderRadius: "50%", background: G2, border: `2px solid ${S}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "clamp(22px,4vw,32px)", fontWeight: 900, color: S }}>{(profile.firstName || user?.email || 'U').charAt(0).toUpperCase()}</div>
+                }
+                <div style={{ position: "absolute", bottom: 0, right: 0, width: 24, height: 24, borderRadius: "50%", background: S, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, border: `2px solid var(--vt-bg)` }}>
+                  {uploadingPhoto ? "…" : "✎"}
+                </div>
+                <input ref={photoInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={e => uploadProfilePhoto(e.target.files[0])} />
               </div>
-              <h1 style={{ fontSize: "clamp(24px,4vw,40px)", fontWeight: 900, letterSpacing: -1.5, lineHeight: 1, marginBottom: 6 }}>{profile.firstName} {profile.lastName}</h1>
+              <h1 style={{ fontSize: "clamp(24px,4vw,40px)", fontWeight: 900, letterSpacing: -1.5, lineHeight: 1, marginBottom: 6 }}>{profile.firstName || user?.full_name || "My Account"} {profile.firstName ? profile.lastName : ""}</h1>
               <div style={{ fontSize: 11, color: SD, marginBottom: 10 }}>{profile.email}</div>
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
                 <div style={{ background: G2, border: `.5px solid ${G3}`, padding: "6px 16px" }}>
@@ -376,10 +404,29 @@ export default function VigoAccount() {
         {/* ── PROFILE ── */}
         {tab === "profile" &&
         <div style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%", maxWidth: 600 }}>
+            {/* Photo upload row */}
+            <div style={{ display: "flex", alignItems: "center", gap: 20, padding: "20px", background: G2, border: `.5px solid ${G3}`, marginBottom: 4 }}>
+              <div style={{ position: "relative", cursor: "pointer", flexShrink: 0 }} onClick={() => photoInputRef.current?.click()}>
+                {profile.profileImage
+                  ? <img src={profile.profileImage} alt="" style={{ width: 72, height: 72, borderRadius: "50%", objectFit: "cover", border: `2px solid ${S}` }} />
+                  : <div style={{ width: 72, height: 72, borderRadius: "50%", background: G1, border: `2px solid ${S}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 900, color: S }}>{(profile.firstName || user?.email || 'U').charAt(0).toUpperCase()}</div>
+                }
+                <div style={{ position: "absolute", bottom: 0, right: 0, width: 22, height: 22, borderRadius: "50%", background: S, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, border: `2px solid var(--vt-card)` }}>{uploadingPhoto ? "…" : "✎"}</div>
+                <input ref={photoInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={e => uploadProfilePhoto(e.target.files[0])} />
+              </div>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "var(--vt-text)", marginBottom: 4 }}>Profile Photo</div>
+                <div style={{ fontSize: 10, color: SD, marginBottom: 10 }}>Tap your photo to change it</div>
+                <button onClick={() => photoInputRef.current?.click()} disabled={uploadingPhoto} style={{ ...btnGhost, fontSize: 8, padding: "8px 14px" }}>
+                  {uploadingPhoto ? "Uploading..." : "Upload Photo"}
+                </button>
+              </div>
+            </div>
+
             <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 4 }}>Personal Info</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="vigo-2col">
-              <Field label="First Name" value={profile.firstName} onChange={(v) => setProfile((p) => ({ ...p, firstName: v }))} />
-              <Field label="Last Name" value={profile.lastName} onChange={(v) => setProfile((p) => ({ ...p, lastName: v }))} />
+              <Field label="First Name" value={profile.firstName} onChange={(v) => setProfile((p) => ({ ...p, firstName: v }))} placeholder="First name" />
+              <Field label="Last Name" value={profile.lastName} onChange={(v) => setProfile((p) => ({ ...p, lastName: v }))} placeholder="Last name" />
             </div>
             <Field label="Email Address" type="email" value={profile.email} disabled />
             <Field label="Phone" type="tel" value={profile.phone} onChange={(v) => setProfile((p) => ({ ...p, phone: v }))} placeholder="+1 (555) 000-0000" />
