@@ -356,14 +356,24 @@ export default function VigoAccount() {
               <div style={{ width: 28, height: 0.5, background: S, opacity: 0.5 }} />
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-              <div style={{ position: "relative", flexShrink: 0, cursor: "pointer" }} onClick={() => photoInputRef.current?.click()}>
-                {profile.profileImage
-                  ? <img src={profile.profileImage} alt="Profile" style={{ width: "clamp(64px,10vw,88px)", height: "clamp(64px,10vw,88px)", borderRadius: "50%", objectFit: "cover", border: `2px solid ${S}` }} />
-                  : <div style={{ width: "clamp(64px,10vw,88px)", height: "clamp(64px,10vw,88px)", borderRadius: "50%", background: G2, border: `2px solid ${S}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "clamp(22px,4vw,32px)", fontWeight: 900, color: S }}>{(profile.firstName || user?.email || 'U').charAt(0).toUpperCase()}</div>
-                }
-                <div style={{ position: "absolute", bottom: 0, right: 0, width: 24, height: 24, borderRadius: "50%", background: S, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, border: `2px solid var(--vt-bg)` }}>
-                  {uploadingPhoto ? "…" : "✎"}
+              <div style={{ position: "relative", flexShrink: 0 }}>
+                <div style={{ cursor: "pointer" }} onClick={() => photoInputRef.current?.click()}>
+                  {profile.profileImage
+                    ? <img src={profile.profileImage} alt="Profile" style={{ width: "clamp(64px,10vw,88px)", height: "clamp(64px,10vw,88px)", borderRadius: "50%", objectFit: "cover", border: `2px solid ${S}` }} />
+                    : <div style={{ width: "clamp(64px,10vw,88px)", height: "clamp(64px,10vw,88px)", borderRadius: "50%", background: G2, border: `2px solid ${S}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "clamp(22px,4vw,32px)", fontWeight: 900, color: S }}>{(profile.firstName || user?.email || 'U').charAt(0).toUpperCase()}</div>
+                  }
+                  <div style={{ position: "absolute", bottom: 0, right: 0, width: 24, height: 24, borderRadius: "50%", background: S, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, border: `2px solid var(--vt-bg)` }}>
+                    {uploadingPhoto ? "…" : "✎"}
+                  </div>
                 </div>
+                {profile.profileImage && (
+                  <button onClick={async () => {
+                    await base44.auth.updateMe({ profileImage: "" });
+                    setProfile(p => ({ ...p, profileImage: "" }));
+                    queryClient.invalidateQueries({ queryKey: ['user'] });
+                    toast.success("Photo removed");
+                  }} style={{ position: "absolute", top: -4, right: -4, width: 20, height: 20, borderRadius: "50%", background: "#e03", border: "2px solid var(--vt-bg)", color: "#fff", fontSize: 10, fontWeight: 900, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }} title="Remove photo">×</button>
+                )}
                 <input ref={photoInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={e => uploadProfilePhoto(e.target.files[0])} />
               </div>
               <h1 style={{ fontSize: "clamp(24px,4vw,40px)", fontWeight: 900, letterSpacing: -1.5, lineHeight: 1, marginBottom: 6 }}>{profile.firstName || user?.full_name || "My Account"} {profile.firstName ? profile.lastName : ""}</h1>
@@ -404,34 +414,6 @@ export default function VigoAccount() {
         {/* ── PROFILE ── */}
         {tab === "profile" &&
         <div style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%", maxWidth: 600 }}>
-            {/* Photo upload row */}
-            <div style={{ display: "flex", alignItems: "center", gap: 20, padding: "20px", background: G2, border: `.5px solid ${G3}`, marginBottom: 4 }}>
-              <div style={{ position: "relative", cursor: "pointer", flexShrink: 0 }} onClick={() => photoInputRef.current?.click()}>
-                {profile.profileImage
-                  ? <img src={profile.profileImage} alt="" style={{ width: 72, height: 72, borderRadius: "50%", objectFit: "cover", border: `2px solid ${S}` }} />
-                  : <div style={{ width: 72, height: 72, borderRadius: "50%", background: G1, border: `2px solid ${S}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 900, color: S }}>{(profile.firstName || user?.email || 'U').charAt(0).toUpperCase()}</div>
-                }
-                <div style={{ position: "absolute", bottom: 0, right: 0, width: 22, height: 22, borderRadius: "50%", background: S, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, border: `2px solid var(--vt-card)` }}>{uploadingPhoto ? "…" : "✎"}</div>
-                <input ref={photoInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={e => uploadProfilePhoto(e.target.files[0])} />
-              </div>
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "var(--vt-text)", marginBottom: 4 }}>Profile Photo</div>
-                <div style={{ fontSize: 10, color: SD, marginBottom: 10 }}>Tap your photo to change it</div>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  <button onClick={() => photoInputRef.current?.click()} disabled={uploadingPhoto} style={{ ...btnGhost, fontSize: 8, padding: "8px 14px" }}>
-                    {uploadingPhoto ? "Uploading..." : "Upload Photo"}
-                  </button>
-                  {profile.profileImage && (
-                    <button onClick={async () => {
-                      await base44.auth.updateMe({ profileImage: "" });
-                      setProfile(p => ({ ...p, profileImage: "" }));
-                      queryClient.invalidateQueries({ queryKey: ['user'] });
-                      toast.success("Photo removed");
-                    }} style={{ ...btnGhost, fontSize: 8, padding: "8px 14px", color: "#e03", borderColor: "#e03" }}>Remove</button>
-                  )}
-                </div>
-              </div>
-            </div>
 
             <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 4 }}>Personal Info</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="vigo-2col">
