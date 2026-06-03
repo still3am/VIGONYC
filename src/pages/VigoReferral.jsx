@@ -301,12 +301,12 @@ export default function VigoReferral() {
             {/* Name + back arrow row */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", marginBottom: 28 }}>
               <div style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}
-                onClick={() => setActiveTab("overview")}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+              onClick={() => setActiveTab("overview")}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2"><path d="M19 12H5M12 5l-7 7 7 7" /></svg>
               </div>
               <div style={{ fontSize: "clamp(13px,2vw,16px)", fontWeight: 700, color: "#fff", letterSpacing: -0.3 }}>{user?.full_name || "VIGO Member"}</div>
-              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><circle cx="12" cy="13" r="3"/><path d="M7 9h1M16 9h1"/></svg>
+              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }} className="hidden">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5"><rect x="3" y="5" width="18" height="16" rx="2" /><circle cx="12" cy="13" r="3" /><path d="M7 9h1M16 9h1" /></svg>
               </div>
             </div>
 
@@ -315,23 +315,23 @@ export default function VigoReferral() {
               <span style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", fontFamily: "monospace", letterSpacing: 1 }}>
                 {loyalty?.referralCode ? loyalty.referralCode : "------"}
               </span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={copied ? "#0c6" : "rgba(255,255,255,0.5)"} strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={copied ? "#0c6" : "rgba(255,255,255,0.5)"} strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
             </button>
 
             {/* QR Code */}
             {loyalty?.referralCode ?
-              <div style={{ position: "relative", display: "inline-block", marginBottom: 28 }}>
+            <div style={{ position: "relative", display: "inline-block", marginBottom: 28 }}>
                 <div style={{ background: "#fff", borderRadius: 20, padding: 14, display: "inline-block", boxShadow: "0 8px 40px rgba(0,0,0,0.6)" }}>
                   <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(referralLink)}&bgcolor=ffffff&color=0a0a0a&qzone=1&format=png`}
-                    alt="Referral QR"
-                    style={{ width: 200, height: 200, display: "block", borderRadius: 6 }} />
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(referralLink)}&bgcolor=ffffff&color=0a0a0a&qzone=1&format=png`}
+                  alt="Referral QR"
+                  style={{ width: 200, height: 200, display: "block", borderRadius: 6 }} />
                 </div>
                 <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 52, height: 52, background: "#fff", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #e0e0e0", boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
                   <img src="https://media.base44.com/images/public/69d978a3dcb07c4d96ef01e2/d1ce08d38_IMG_8246-removebg-preview.png" alt="VIGONYC" style={{ width: 44, height: 44, objectFit: "contain" }} />
                 </div>
               </div> :
-              <div style={{ width: 228, height: 228, background: "#111", borderRadius: 20, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 28, fontSize: 10, color: "#666", letterSpacing: 2 }}>
+            <div style={{ width: 228, height: 228, background: "#111", borderRadius: 20, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 28, fontSize: 10, color: "#666", letterSpacing: 2 }}>
                 LOADING QR...
               </div>
             }
@@ -358,7 +358,7 @@ export default function VigoReferral() {
             <button onClick={async () => {
               if (navigator.share) {
                 await navigator.share({ title: "VIGONYC Referral", text: `Use my code ${loyalty?.referralCode} for 20% off your first VIGONYC order!`, url: referralLink });
-              } else { copyReferral(); }
+              } else {copyReferral();}
             }} style={{ width: "100%", background: "#fff", color: "#000", border: "none", borderRadius: 50, padding: "16px 0", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", letterSpacing: 0.5, transition: "opacity 0.2s" }}>
               Share
             </button>
