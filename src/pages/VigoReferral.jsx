@@ -169,7 +169,7 @@ export default function VigoReferral() {
               </div>
               <div style={{ width: 1, background: G3 }} />
               <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: "clamp(20px,3vw,28px)", fontWeight: 900, color: currentTier.color, letterSpacing: -1 }}>{currentTier.icon} {currentTier.name}</div>
+                <div style={{ fontSize: "clamp(20px,3vw,28px)", fontWeight: 900, color: currentTier.color, letterSpacing: -1 }}>{currentTier.name}</div>
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Tier</div>
               </div>
               <div style={{ width: 1, background: G3 }} />
