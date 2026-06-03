@@ -93,7 +93,7 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
         </button>
       </div>
 
-      <div style={{ padding: "14px 14px 0", flex: 1 }}>
+      <div className="vigo-card-info" style={{ padding: "14px 14px 0", flex: 1 }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: "var(--vt-text)", lineHeight: 1.3 }}>{product.name}</div>
         <div style={{ fontSize: 8, letterSpacing: 2, color: "var(--vt-sub)", textTransform: "uppercase", marginTop: 4 }}>{product.cat}</div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
@@ -106,7 +106,7 @@ export default function ProductCard({ product, img, onClick, onAdd, onWishlist, 
         </div>
       </div>
 
-      <div style={{ padding: "12px 14px 14px" }}>
+      <div className="vigo-card-action" style={{ padding: "12px 14px 14px" }}>
         <button
           onClick={product.inStock === false ? undefined : handleAdd}
           disabled={product.inStock === false}

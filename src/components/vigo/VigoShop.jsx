@@ -154,7 +154,7 @@ export default function VigoShop() {
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
-    <div style={{ padding: "32px 20px", maxWidth: 1400, margin: "0 auto" }}>
+    <div className="vigo-shop-wrap" style={{ padding: "32px 20px", maxWidth: 1400, margin: "0 auto" }}>
       {drawerOpen && (
         <div style={{ position: "fixed", inset: 0, zIndex: 300, display: "flex" }}>
           <div onClick={() => setDrawerOpen(false)} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.7)" }} />
@@ -176,7 +176,7 @@ export default function VigoShop() {
       <h1 style={{ fontSize: "clamp(32px,5vw,52px)", fontWeight: 900, letterSpacing: -2, marginBottom: searchQuery ? 8 : 20 }}>{searchQuery ? `Results for "${searchQuery}"` : "Shop All"}</h1>
       {searchQuery && <button onClick={() => setSearchQuery("")} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "6px 14px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", marginBottom: 16 }}>✕ Clear Search</button>}
 
-        <div className="vigo-cat-tabs" style={{ display: "none", overflowX: "auto", gap: 6, paddingBottom: 4, marginBottom: 16 }}>
+        <div className="vigo-cat-tabs" style={{ display: "none", overflowX: "auto", gap: 6, paddingBottom: 6, marginBottom: 12 }}>
           {CATEGORIES.map(c => (
             <button key={c} onClick={() => setActiveCat(c)} style={{ flexShrink: 0, padding: "8px 16px", background: activeCat === c ? S : "none", color: activeCat === c ? "#000" : SD, border: `.5px solid ${activeCat === c ? S : G3}`, fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: activeCat === c ? 900 : 400, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>{c}</button>
           ))}
@@ -251,14 +251,21 @@ export default function VigoShop() {
 
       <style>{`
         @media(max-width:900px){
+          .vigo-shop-wrap { padding: 20px 12px !important; }
           .vigo-shop-sidebar { display: none !important; }
           .vigo-filter-btn { display: flex !important; }
           .vigo-cat-tabs { display: flex !important; }
-          .vigo-shop-grid { grid-template-columns: repeat(2,1fr) !important; }
+          .vigo-shop-grid { grid-template-columns: repeat(2,1fr) !important; gap: 10px !important; }
         }
         @media(max-width:480px){
-          .vigo-shop-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+          .vigo-shop-wrap { padding: 16px 10px !important; }
+          .vigo-shop-grid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+          .vigo-card-info { padding: 8px 10px 0 !important; }
+          .vigo-card-info div:first-child { font-size: 11px !important; }
+          .vigo-card-action { padding: 8px 10px 10px !important; }
+          .vigo-card-action button { padding: 9px !important; font-size: 8px !important; }
         }
+        @keyframes vigo-skeleton{0%,100%{opacity:.6}50%{opacity:.25}}
       `}</style>
     </div>
     </PullToRefresh>
