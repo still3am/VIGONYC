@@ -305,9 +305,12 @@ export default function VigoReferral() {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
               </div>
               <div style={{ fontSize: "clamp(13px,2vw,16px)", fontWeight: 700, color: "#fff", letterSpacing: -0.3 }}>{user?.full_name || "VIGO Member"}</div>
-              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><circle cx="12" cy="13" r="3"/><path d="M7 9h1M16 9h1"/></svg>
-              </div>
+              <button onClick={() => setActiveTab("overview")} style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(255,255,255,0.08)", border: "none", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, cursor: "pointer" }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5">
+                  <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+                  <rect x="7" y="7" width="10" height="10" rx="1"/>
+                </svg>
+              </button>
             </div>
 
             {/* Referral code pill */}
