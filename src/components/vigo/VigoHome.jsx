@@ -121,9 +121,9 @@ export default function VigoHome() {
   return (
     <div>
       {/* ── DROP ALERT BANNER ── */}
-      {settings.banner_visible !== "false" && <div onClick={() => navigate("/drops")} style={{ background: `linear-gradient(90deg, var(--vt-bg), var(--vt-card), var(--vt-bg))`, borderBottom: `.5px solid ${G3}`, padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "center", gap: 16, cursor: "pointer", flexWrap: "wrap" }}
+      {settings.banner_visible !== "false" && <div onClick={() => navigate("/drops")} style={{ background: `linear-gradient(90deg, var(--vt-bg), var(--vt-card), var(--vt-bg))`, borderBottom: `.5px solid ${G3}`, padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", gap: 12, cursor: "pointer", flexWrap: "wrap" }}
       onMouseEnter={(e) => e.currentTarget.style.borderColor = S}
-      onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--vt-border)"} className="my-3 py-3">
+      onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--vt-border)"}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         {settings.banner_dot !== "off" && <div style={{ width: 6, height: 6, borderRadius: "50%", background: settings.banner_dot === "red" ? "#e03" : "#0c6", animation: "vigo-pulse 1.5s infinite" }} />}
         <span style={{ fontSize: 9, letterSpacing: 4, color: SD, textTransform: "uppercase" }}>{nextDrop ? `${nextDrop.name} — ${nextDrop.series}` : "Drop 02 — Mirror Series"}</span>
@@ -186,7 +186,7 @@ export default function VigoHome() {
       </div>
 
       {/* ── FEATURED DROPS ── */}
-      <div style={{ padding: "52px 32px" }}>
+      <div className="vigo-section-pad" style={{ padding: "52px 32px" }}>
         <SectionHeader title="Featured Drops" sub="SS25 Season" cta="View All →" onCta={() => navigate("/shop")} />
         <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
           {productsLoading ?
@@ -214,7 +214,7 @@ export default function VigoHome() {
       <SectionDivider label={nextDrop?.series ? `${nextDrop.series} Spotlight` : "SS25 Spotlight"} />
 
       {/* ── DROP BANNER ── */}
-      <div className="vigo-2col" style={{ margin: "0 32px", background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, display: "grid", gridTemplateColumns: "1fr 1fr", overflow: "hidden" }}>
+      <div className="vigo-2col vigo-drop-banner" style={{ margin: "0 32px", background: G1, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, display: "grid", gridTemplateColumns: "1fr 1fr", overflow: "hidden" }}>
         <div style={{ padding: "52px 48px", borderRight: `.5px solid ${G3}`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
           <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ Limited Edition ✦</div>
           <div style={{ fontSize: 44, fontWeight: 900, letterSpacing: -2, lineHeight: .92, marginBottom: 14, textAlign: "center" }}>
@@ -236,7 +236,7 @@ export default function VigoHome() {
       </div>
 
       {/* ── SHOP BY CATEGORY ── */}
-      <div style={{ padding: "52px 32px" }}>
+      <div className="vigo-section-pad" style={{ padding: "52px 32px" }}>
         <SectionHeader title="Shop by Category" sub="" />
         <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 2 }}>
           {categoryData.map((cat) =>
@@ -256,7 +256,7 @@ export default function VigoHome() {
       <SectionDivider label="Community Reviews" />
 
       {/* ── REVIEWS ── */}
-      <div style={{ padding: "32px 32px 52px" }}>
+      <div className="vigo-section-pad" style={{ padding: "32px 32px 52px" }}>
         <div className="vigo-3col" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
           {(homeReviews.length > 0 ? homeReviews : REVIEWS).map((r, i) => {
             const isDB = homeReviews.length > 0;
@@ -283,7 +283,7 @@ export default function VigoHome() {
       </div>
 
       {/* ── BRAND STORY TEASER ── */}
-      <div style={{ margin: "0 32px", borderTop: `2px solid ${S}`, background: G1, border: `.5px solid ${G3}` }} className="vigo-2col-story">
+      <div style={{ margin: "0 16px", borderTop: `2px solid ${S}`, background: G1, border: `.5px solid ${G3}` }} className="vigo-2col-story">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }} className="vigo-2col">
           <div style={{ padding: "52px 48px", borderRight: `.5px solid ${G3}` }}>
             <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ The Brand</div>
@@ -308,7 +308,7 @@ export default function VigoHome() {
 
       {/* ── RECENTLY VIEWED ── */}
       {recentProducts.length > 0 &&
-      <div style={{ padding: "52px 32px 0" }}>
+      <div className="vigo-section-pad" style={{ padding: "52px 32px 0" }}>
           <SectionHeader title="Recently Viewed" sub="" cta="Shop All →" onCta={() => navigate("/shop")} />
           <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
             {recentProducts.map((p) =>
@@ -329,7 +329,7 @@ export default function VigoHome() {
       }
 
       {/* ── NEWSLETTER ── */}
-      <div style={{ margin: "32px 32px 64px", background: `linear-gradient(135deg, var(--vt-bg), var(--vt-card))`, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "52px 48px", textAlign: "center", position: "relative", overflow: "hidden" }}>
+      <div style={{ margin: "32px 16px 64px", background: `linear-gradient(135deg, var(--vt-bg), var(--vt-card))`, border: `.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "40px 24px", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: -60, right: -60, width: 200, height: 200, borderRadius: "50%", border: `.5px solid rgba(192,192,192,.06)` }} />
         <div style={{ position: "absolute", bottom: -40, left: -40, width: 140, height: 140, borderRadius: "50%", border: `.5px solid rgba(192,192,192,.04)` }} />
         <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14, position: "relative" }}>✦ Join The Drop List ✦</div>
@@ -347,7 +347,7 @@ export default function VigoHome() {
       <style>{`
         @media(max-width:900px){
           .vigo-hero-grid{grid-template-columns:1fr !important;}
-          .vigo-hero-grid>div:first-child{padding:40px 24px 32px !important; align-items:center !important;}
+          .vigo-hero-grid>div:first-child{padding:36px 20px 28px !important; align-items:center !important;}
           .vigo-hero-grid>div:last-child{min-height:260px;}
           .vigo-kpi-grid{grid-template-columns:repeat(2,1fr) !important;}
           .vigo-4col{grid-template-columns:repeat(2,1fr) !important;}
@@ -355,8 +355,15 @@ export default function VigoHome() {
           .vigo-2col{grid-template-columns:1fr !important;}
           .vigo-2col>div:first-child{border-right: none !important;}
           .vigo-hero-badge{align-self:center !important;}
+          .vigo-section-pad{padding: 32px 16px !important;}
+          .vigo-drop-banner{margin: 0 16px !important;}
+          .vigo-drop-banner>div:first-child{padding: 36px 24px !important;}
+          .vigo-2col-story{margin: 0 !important; border-left: none !important; border-right: none !important;}
         }
-        @media(max-width:480px){.vigo-4col{grid-template-columns:1fr !important;}}
+        @media(max-width:480px){
+          .vigo-4col{grid-template-columns:1fr !important;}
+          .vigo-section-pad{padding: 24px 12px !important;}
+        }
         @keyframes vigo-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
         @keyframes vigo-skeleton{0%,100%{opacity:.6}50%{opacity:.25}}
       `}</style>
