@@ -56,10 +56,10 @@ export default function VigoCheckout() {
           ]);
           setCartItems(items || []);
           setSavedAddresses(addresses || []);
-          // Load loyalty
-          base44.functions.invoke("loyaltyPoints", { action: "get" }).then(res => {
-            setLoyalty(res.data.loyalty);
-          }).catch(() => {});
+          // Load loyalty directly from entity
+          base44.entities.UserLoyalty.filter({ userEmail: user.email }, "-created_date", 1)
+            .then(rows => { if (rows?.[0]) setLoyalty(rows[0]); })
+            .catch(() => {});
         }
       } catch (e) {
         console.error("Failed to load cart:", e);
@@ -75,13 +75,11 @@ export default function VigoCheckout() {
   const freeShippingThreshold = parseInt(settings.free_shipping_threshold || "150");
   const subtotal = cartItems.reduce((s, i) => s + (i.price * i.qty), 0);
   const shippingCost = shippingMethod === "overnight" ? 28 : shippingMethod === "express" ? 12 : (subtotal >= freeShippingThreshold ? 0 : 8);
-  const [stripeTax, setStripeTax] = useState(null);
-  const [taxLoading, setTaxLoading] = useState(false);
-  // Use Stripe Tax if available, otherwise fallback to NYC tax
-  const tax = stripeTax !== null ? stripeTax : parseFloat((subtotal * 0.0887).toFixed(2));
+  // Simple tax estimate — no backend needed
+  const tax = parseFloat((subtotal * 0.0887).toFixed(2));
   const discount = promoApplied ? Math.round(subtotal * promoDiscount / 100) : 0;
   // Points: 100 pts = $1
-  const maxRedeemable = loyalty ? Math.min(loyalty.points, Math.floor((subtotal + shippingCost + tax - discount) * 100 / 100) * 100) : 0;
+  const maxRedeemable = loyalty ? Math.min(loyalty.points, Math.floor((subtotal + shippingCost + tax - discount) * 100)) : 0;
   const pointsDiscount = usePoints ? parseFloat((Math.min(pointsToRedeem, maxRedeemable) / 100).toFixed(2)) : 0;
   const total = parseFloat(Math.max(0, subtotal + shippingCost + tax - discount - pointsDiscount).toFixed(2));
 
@@ -140,47 +138,6 @@ export default function VigoCheckout() {
     return Object.keys(errors).length === 0;
   };
 
-  // Calculate tax using Stripe Tax when address changes
-  const calculateStripeTax = async () => {
-    if (!contact.zip || !contact.state || cartItems.length === 0) return;
-    
-    setTaxLoading(true);
-    try {
-      const res = await base44.functions.invoke("calculateTax", {
-        lineItems: cartItems.map(item => ({
-          name: item.productName,
-          quantity: item.qty,
-          unitAmount: item.price,
-        })),
-        shippingAddress: {
-          address: contact.address,
-          city: contact.city,
-          state: contact.state,
-          zip: contact.zip,
-          country: "US",
-        },
-        shippingCost,
-      });
-      
-      if (res.data.success && res.data.taxAmount > 0) {
-        setStripeTax(res.data.taxAmount);
-      }
-      // If taxAmount is 0 or Stripe Tax not enabled, keep using fallback
-    } catch (e) {
-      console.error("Tax calculation error:", e);
-      // Keep using fallback tax
-    } finally {
-      setTaxLoading(false);
-    }
-  };
-
-  // Recalculate tax when shipping step is complete
-  useEffect(() => {
-    if (step === 3 && contact.zip && cartItems.length > 0) {
-      calculateStripeTax();
-    }
-  }, [step, contact.zip, contact.state, shippingCost]);
-
   const handlePlaceOrder = async (txnId, cardLast4, cardBrand) => {
     // Only proceed if txnId exists (payment succeeded)
     if (!txnId) {
@@ -224,11 +181,6 @@ export default function VigoCheckout() {
         cardBrand: cardBrand || ""
       });
 
-      // Capture payment
-      if (txnId && txnId.startsWith("VPY-")) {
-        await base44.functions.invoke("capturePayment", { txnId }).catch(() => {});
-      }
-
       // Update stock + soldCount
       for (const item of cartItems) {
         const prod = await base44.entities.Product.get(item.productId).catch(() => null);
@@ -251,13 +203,26 @@ export default function VigoCheckout() {
 
       await Promise.all(cartItems.map(i => base44.entities.CartItem.delete(i.id)));
 
-      // Redeem points if used
-      if (loyaltyPointsUsed > 0) {
-        base44.functions.invoke("loyaltyPoints", { action: "redeemPoints", data: { points: loyaltyPointsUsed } }).catch(() => {});
+      // Update loyalty points directly via entity
+      if (currentUser && loyalty) {
+        const newPoints = Math.max(0, loyalty.points - loyaltyPointsUsed) + loyaltyPts;
+        const newTotal = (loyalty.totalEarned || 0) + loyaltyPts;
+        const tier = newTotal >= 5000 ? "Obsidian" : newTotal >= 2000 ? "Chrome" : "Silver";
+        base44.entities.UserLoyalty.update(loyalty.id, {
+          points: newPoints,
+          totalEarned: newTotal,
+          tier,
+        }).catch(() => {});
+      } else if (currentUser && !loyalty) {
+        // Create loyalty record if it doesn't exist
+        base44.entities.UserLoyalty.create({
+          userEmail: currentUser.email,
+          points: loyaltyPts,
+          totalEarned: loyaltyPts,
+          tier: "Silver",
+          referralCode: Math.random().toString(36).slice(2, 8).toUpperCase(),
+        }).catch(() => {});
       }
-
-      // Award purchase points
-      base44.functions.invoke("loyaltyPoints", { action: "addPoints", data: { points: loyaltyPts, reason: `Order ${genId}` } }).catch(() => {});
 
       window.dispatchEvent(new CustomEvent("vigo:cart-update", { detail: { delta: -cartItems.reduce((s, i) => s + i.qty, 0) } }));
       setPlacedOrderData({ orderId: genId, total, loyaltyPts, cardLast4, cardBrand, payMethod });
@@ -417,7 +382,7 @@ export default function VigoCheckout() {
           {step === 3 && (
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               {/* Points redemption */}
-              {loyalty && loyalty.points >= 1000 && (
+              {loyalty && loyalty.points >= 100 && (
                 <div style={{ background: "rgba(192,192,192,0.05)", border: "0.5px solid rgba(192,192,192,0.2)", padding: "16px 20px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: usePoints ? 12 : 0 }}>
                     <div>
@@ -430,7 +395,7 @@ export default function VigoCheckout() {
                   </div>
                   {usePoints && (
                     <div>
-                      <input type="range" min={0} max={maxRedeemable} step={100} value={pointsToRedeem} onChange={e => setPointsToRedeem(Number(e.target.value))} style={{ width: "100%", accentColor: S, marginBottom: 8 }} />
+                      <input type="range" min={0} max={Math.max(maxRedeemable, 100)} step={100} value={pointsToRedeem} onChange={e => setPointsToRedeem(Math.min(Number(e.target.value), maxRedeemable))} style={{ width: "100%", accentColor: S, marginBottom: 8 }} />
                       <div style={{ fontSize: 10, color: S, fontWeight: 700 }}>Using {pointsToRedeem.toLocaleString()} pts = -${(pointsToRedeem / 100).toFixed(2)} off</div>
                     </div>
                   )}
@@ -525,7 +490,7 @@ export default function VigoCheckout() {
               {[
                 ["Subtotal", `$${subtotal.toFixed(2)}`],
                 ["Shipping", shippingCost === 0 ? "Free" : `$${shippingCost}`],
-                [taxLoading ? "Calculating tax..." : (stripeTax !== null ? "Tax (Stripe)" : "Est. Tax"), taxLoading ? "..." : `$${tax.toFixed(2)}`],
+                ["Est. Tax (8.87%)", `$${tax.toFixed(2)}`],
                 promoApplied ? [`Promo (${promoCode.toUpperCase()})`, `-$${discount}`] : null,
                 usePoints && pointsToRedeem > 0 ? [`Points (${pointsToRedeem.toLocaleString()} pts)`, `-$${pointsDiscount.toFixed(2)}`] : null
               ].filter(Boolean).map(([l, v]) => (
