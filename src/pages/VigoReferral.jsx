@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { toast } from "sonner";
+import jsQR from "jsqr";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -55,6 +56,13 @@ export default function VigoReferral() {
   const [activeTab, setActiveTab] = useState("overview");
   const [user, setUser] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [scanResult, setScanResult] = useState(null);
+  const [scanError, setScanError] = useState("");
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const streamRef = useRef(null);
+  const rafRef = useRef(null);
 
   useEffect(() => {
     document.title = "THE VAULT — VIGONYC";
@@ -110,6 +118,66 @@ export default function VigoReferral() {
     setTimeout(() => setCopied(false), 2500);
     toast.success("Referral link copied!");
   };
+
+  const stopScanner = useCallback(() => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
+    }
+    setScannerOpen(false);
+  }, []);
+
+  const startScanner = useCallback(async () => {
+    setScanResult(null);
+    setScanError("");
+    setScannerOpen(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      streamRef.current = stream;
+      // Wait for videoRef to be available after render
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.play();
+          const tick = () => {
+            if (!videoRef.current || videoRef.current.readyState !== videoRef.current.HAVE_ENOUGH_DATA) {
+              rafRef.current = requestAnimationFrame(tick);
+              return;
+            }
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+            canvas.width = videoRef.current.videoWidth;
+            canvas.height = videoRef.current.videoHeight;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+            if (code) {
+              setScanResult(code.data);
+              stopScanner();
+              // Navigate to scanned URL if it's a VIGONYC referral link
+              if (code.data.includes(window.location.origin)) {
+                toast.success("QR code scanned!");
+                window.location.href = code.data;
+              } else {
+                toast.info("Scanned: " + code.data);
+              }
+            } else {
+              rafRef.current = requestAnimationFrame(tick);
+            }
+          };
+          rafRef.current = requestAnimationFrame(tick);
+        }
+      }, 100);
+    } catch (err) {
+      setScanError("Camera access denied. Please allow camera permissions.");
+      setScannerOpen(false);
+    }
+  }, [stopScanner]);
+
+  // Cleanup on unmount
+  useEffect(() => () => stopScanner(), [stopScanner]);
 
   const totalEarned = loyalty?.totalEarned || 0;
   const currentTier = TIERS.find((t) => t.max === null || totalEarned < t.max) || TIERS[TIERS.length - 1];
@@ -305,7 +373,7 @@ export default function VigoReferral() {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
               </div>
               <div style={{ fontSize: "clamp(13px,2vw,16px)", fontWeight: 700, color: "#fff", letterSpacing: -0.3 }}>{user?.full_name || "VIGO Member"}</div>
-              <button onClick={() => setActiveTab("overview")} style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(255,255,255,0.08)", border: "none", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, cursor: "pointer" }}>
+              <button onClick={startScanner} style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(255,255,255,0.08)", border: "none", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, cursor: "pointer" }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5">
                   <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
                   <rect x="7" y="7" width="10" height="10" rx="1"/>
@@ -424,8 +492,53 @@ export default function VigoReferral() {
         }
       </div>
 
+      {/* QR Scanner Modal */}
+      {scannerOpen && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9000, background: "#000", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+          <div style={{ position: "absolute", top: 20, left: 0, right: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", zIndex: 1 }}>
+            <button onClick={stopScanner} style={{ width: 44, height: 44, borderRadius: "50%", background: "rgba(255,255,255,0.12)", border: "none", color: "#fff", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            </button>
+            <span style={{ color: "#fff", fontSize: 14, fontWeight: 700, letterSpacing: -0.3 }}>Scan QR Code</span>
+            <div style={{ width: 44 }} />
+          </div>
+
+          <video ref={videoRef} style={{ width: "100%", height: "100%", objectFit: "cover" }} playsInline muted />
+          <canvas ref={canvasRef} style={{ display: "none" }} />
+
+          {/* Viewfinder overlay */}
+          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
+            <div style={{ position: "relative", width: 240, height: 240 }}>
+              {/* Corner brackets */}
+              {[["0,0","top-0 left-0","borderTop,borderLeft"],["0,auto","top-0 right-0","borderTop,borderRight"],["auto,0","bottom-0 left-0","borderBottom,borderLeft"],["auto,auto","bottom-0 right-0","borderBottom,borderRight"]].map((_,i) => {
+                const corners = [
+                  { top: 0, left: 0, borderTop: "3px solid #fff", borderLeft: "3px solid #fff" },
+                  { top: 0, right: 0, borderTop: "3px solid #fff", borderRight: "3px solid #fff" },
+                  { bottom: 0, left: 0, borderBottom: "3px solid #fff", borderLeft: "3px solid #fff" },
+                  { bottom: 0, right: 0, borderBottom: "3px solid #fff", borderRight: "3px solid #fff" },
+                ];
+                return <div key={i} style={{ position: "absolute", width: 28, height: 28, borderRadius: 2, ...corners[i] }} />;
+              })}
+              {/* Scan line animation */}
+              <div style={{ position: "absolute", left: 4, right: 4, height: 2, background: "linear-gradient(90deg,transparent,#C0C0C0,transparent)", animation: "vigo-scan-line 1.8s ease-in-out infinite", top: "50%" }} />
+            </div>
+          </div>
+
+          <div style={{ position: "absolute", bottom: 60, color: "rgba(255,255,255,0.6)", fontSize: 12, letterSpacing: 0.5, textAlign: "center" }}>
+            Point your camera at a VIGONYC QR code
+          </div>
+
+          {scanError && (
+            <div style={{ position: "absolute", bottom: 100, background: "rgba(220,30,30,0.9)", color: "#fff", padding: "12px 24px", borderRadius: 12, fontSize: 13, textAlign: "center", maxWidth: 300 }}>
+              {scanError}
+            </div>
+          )}
+        </div>
+      )}
+
       <style>{`
         @keyframes vigo-pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.8)} }
+        @keyframes vigo-scan-line { 0%{top:8px;opacity:0} 10%{opacity:1} 50%{top:calc(100% - 8px)} 90%{opacity:1} 100%{top:8px;opacity:0} }
         @media (max-width: 900px) {
           .vault-lower-grid { grid-template-columns: 1fr !important; }
           .vault-refer-grid { grid-template-columns: 1fr !important; justify-items: center; }
