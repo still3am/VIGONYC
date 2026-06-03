@@ -294,87 +294,76 @@ export default function VigoReferral() {
 
         {/* REFER TAB */}
         {activeTab === "refer" &&
-        <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
-            <div>
-              <div style={{ fontSize: 8, letterSpacing: 5, color: S, textTransform: "uppercase", marginBottom: 10 }}>✦ Advocate</div>
-              <h2 style={{ fontSize: "clamp(26px,4vw,40px)", fontWeight: 900, letterSpacing: -2, marginBottom: 8 }}>Refer & Earn</h2>
-              <p style={{ fontSize: 12, color: SD, lineHeight: 1.9, maxWidth: 480 }}>
-                Share your link. Your friends get 20% off their first order. You earn 500 points instantly.
-              </p>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0, paddingTop: 8 }}>
+          {/* Main QR card — full-screen dark modal style */}
+          <div style={{ background: "#0a0a0a", borderRadius: 28, padding: "clamp(28px,5vw,44px) clamp(24px,4vw,40px)", display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 420, gap: 0 }}>
+
+            {/* Name + back arrow row */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", marginBottom: 28 }}>
+              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}
+                onClick={() => setActiveTab("overview")}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+              </div>
+              <div style={{ fontSize: "clamp(13px,2vw,16px)", fontWeight: 700, color: "#fff", letterSpacing: -0.3 }}>{user?.full_name || "VIGO Member"}</div>
+              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><circle cx="12" cy="13" r="3"/><path d="M7 9h1M16 9h1"/></svg>
+              </div>
             </div>
 
-            <div className="vault-refer-grid" style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: 32, alignItems: "start" }}>
-              {/* QR Card */}
-              <div style={{ background: "#0a0a0a", border: "0.5px solid rgba(192,192,192,0.15)", borderTop: `2px solid ${S}`, padding: "32px 28px", display: "flex", flexDirection: "column", alignItems: "center", width: "clamp(260px,36vw,320px)" }}>
-                <div style={{ alignSelf: "flex-start", marginBottom: 20, width: "100%" }}>
-                  <div style={{ fontSize: "clamp(15px,2.5vw,20px)", fontWeight: 900, color: "#fff", letterSpacing: -0.5, lineHeight: 1.2 }}>{user?.full_name || "VIGO Member"}</div>
-                  <div style={{ fontSize: 9, color: S, marginTop: 5, letterSpacing: 3, fontFamily: "monospace" }}>
-                    {loyalty?.referralCode ? `#${loyalty.referralCode}` : "Loading..."}
-                  </div>
-                </div>
+            {/* Referral code pill */}
+            <button onClick={copyReferral} style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.08)", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 20, padding: "8px 18px", marginBottom: 24, cursor: "pointer", fontFamily: "inherit" }}>
+              <span style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", fontFamily: "monospace", letterSpacing: 1 }}>
+                {loyalty?.referralCode ? loyalty.referralCode : "------"}
+              </span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={copied ? "#0c6" : "rgba(255,255,255,0.5)"} strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
 
-                {loyalty?.referralCode ?
-              <div style={{ position: "relative", display: "inline-block", marginBottom: 24 }}>
-                    <div style={{ background: "#fff", borderRadius: 14, padding: 10, display: "inline-block" }}>
-                      <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(referralLink)}&bgcolor=ffffff&color=0a0a0a&qzone=1&format=png`}
+            {/* QR Code */}
+            {loyalty?.referralCode ?
+              <div style={{ position: "relative", display: "inline-block", marginBottom: 28 }}>
+                <div style={{ background: "#fff", borderRadius: 20, padding: 14, display: "inline-block", boxShadow: "0 8px 40px rgba(0,0,0,0.6)" }}>
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(referralLink)}&bgcolor=ffffff&color=0a0a0a&qzone=1&format=png`}
                     alt="Referral QR"
-                    style={{ width: 190, height: 190, display: "block", borderRadius: 4 }} />
-                  
-                    </div>
-                    <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 50, height: 50, background: "#fff", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #e0e0e0" }}>
-                      <img src="https://media.base44.com/images/public/69d978a3dcb07c4d96ef01e2/d1ce08d38_IMG_8246-removebg-preview.png" alt="VIGONYC" style={{ width: 42, height: 42, objectFit: "contain" }} />
-                    </div>
-                  </div> :
-
-              <div style={{ width: 210, height: 210, background: "#111", border: "0.5px solid #333", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 24, fontSize: 10, color: "#666", letterSpacing: 2 }}>
-                    LOADING QR...
-                  </div>
-              }
-
-                <div style={{ display: "flex", gap: 8, width: "100%" }}>
-                  <button onClick={copyReferral} style={{ flex: 1, background: copied ? "#0c6" : S, color: "#000", border: "none", padding: "13px 0", fontSize: 8, letterSpacing: 3, fontWeight: 900, cursor: "pointer", fontFamily: "inherit", textTransform: "uppercase", transition: "background 0.25s" }}>
-                    {copied ? "✓ Copied!" : "Copy Link"}
-                  </button>
-                  <button onClick={async () => {
-                  if (navigator.share) {
-                    await navigator.share({ title: "VIGONYC Referral", text: `Use my code ${loyalty?.referralCode} for 20% off your first VIGONYC order!`, url: referralLink });
-                  } else {copyReferral();}
-                }} style={{ flex: 1, background: "transparent", color: S, border: `0.5px solid ${S}`, padding: "13px 0", fontSize: 8, letterSpacing: 3, fontWeight: 900, cursor: "pointer", fontFamily: "inherit", textTransform: "uppercase" }}>
-                    ↑ Share
-                  </button>
+                    style={{ width: 200, height: 200, display: "block", borderRadius: 6 }} />
                 </div>
+                <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 52, height: 52, background: "#fff", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid #e0e0e0", boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
+                  <img src="https://media.base44.com/images/public/69d978a3dcb07c4d96ef01e2/d1ce08d38_IMG_8246-removebg-preview.png" alt="VIGONYC" style={{ width: 44, height: 44, objectFit: "contain" }} />
+                </div>
+              </div> :
+              <div style={{ width: 228, height: 228, background: "#111", borderRadius: 20, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 28, fontSize: 10, color: "#666", letterSpacing: 2 }}>
+                LOADING QR...
               </div>
+            }
 
-              {/* Steps + stats */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {[
-              { step: "01", title: "Share Your Link or QR", desc: "Send your unique referral link or let them scan your QR code.", color: S },
-              { step: "02", title: "They Get 20% Off", desc: "Your friend's first VIGONYC order is automatically discounted 20%.", color: "#fa0" },
-              { step: "03", title: "You Earn 500 Points", desc: "Once they complete their first purchase, 500 points are credited to your vault instantly.", color: "#0c6" }].
-              map((s) =>
-              <div key={s.step} style={{ background: G2, border: `0.5px solid ${G3}`, borderLeft: `3px solid ${s.color}`, padding: "20px 22px", display: "flex", gap: 18, alignItems: "flex-start" }}>
-                    <div style={{ fontSize: 26, fontWeight: 900, color: s.color, letterSpacing: -2, flexShrink: 0, lineHeight: 1, opacity: 0.3 }}>{s.step}</div>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 5 }}>{s.title}</div>
-                      <div style={{ fontSize: 11, color: SD, lineHeight: 1.7 }}>{s.desc}</div>
-                    </div>
-                  </div>
-              )}
-
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                  <div style={{ padding: "20px 22px", background: "rgba(0,204,102,0.04)", border: "0.5px solid rgba(0,204,102,0.15)", borderTop: "2px solid #0c6" }}>
-                    <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Friends Referred</div>
-                    <div style={{ fontSize: 36, fontWeight: 900, color: "#0c6", letterSpacing: -2, lineHeight: 1 }}>{loyalty?.totalReferrals || 0}</div>
-                  </div>
-                  <div style={{ padding: "20px 22px", background: "rgba(0,204,102,0.04)", border: "0.5px solid rgba(0,204,102,0.15)", borderTop: "2px solid #0c6" }}>
-                    <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 8 }}>Points Earned</div>
-                    <div style={{ fontSize: 36, fontWeight: 900, color: "#0c6", letterSpacing: -2, lineHeight: 1 }}>{((loyalty?.totalReferrals || 0) * 500).toLocaleString()}</div>
-                  </div>
-                </div>
+            {/* Stats row */}
+            <div style={{ display: "flex", gap: 28, marginBottom: 28 }}>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 22, fontWeight: 900, color: "#fff", letterSpacing: -1 }}>{loyalty?.totalReferrals || 0}</div>
+                <div style={{ fontSize: 8, color: "rgba(255,255,255,0.4)", letterSpacing: 2, textTransform: "uppercase", marginTop: 2 }}>Referred</div>
+              </div>
+              <div style={{ width: 1, background: "rgba(255,255,255,0.08)" }} />
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 22, fontWeight: 900, color: "#0c6", letterSpacing: -1 }}>{((loyalty?.totalReferrals || 0) * 500).toLocaleString()}</div>
+                <div style={{ fontSize: 8, color: "rgba(255,255,255,0.4)", letterSpacing: 2, textTransform: "uppercase", marginTop: 2 }}>Points</div>
+              </div>
+              <div style={{ width: 1, background: "rgba(255,255,255,0.08)" }} />
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 22, fontWeight: 900, color: S, letterSpacing: -1 }}>500</div>
+                <div style={{ fontSize: 8, color: "rgba(255,255,255,0.4)", letterSpacing: 2, textTransform: "uppercase", marginTop: 2 }}>Per Refer</div>
               </div>
             </div>
+
+            {/* Share button */}
+            <button onClick={async () => {
+              if (navigator.share) {
+                await navigator.share({ title: "VIGONYC Referral", text: `Use my code ${loyalty?.referralCode} for 20% off your first VIGONYC order!`, url: referralLink });
+              } else { copyReferral(); }
+            }} style={{ width: "100%", background: "#fff", color: "#000", border: "none", borderRadius: 50, padding: "16px 0", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", letterSpacing: 0.5, transition: "opacity 0.2s" }}>
+              Share
+            </button>
           </div>
+        </div>
         }
 
         {/* TIERS TAB */}
