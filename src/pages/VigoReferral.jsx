@@ -249,18 +249,20 @@ export default function VigoReferral() {
           }
 
           {/* Tabs */}
-          <div style={{ display: "flex", gap: 0, background: G2, border: `0.5px solid ${G3}`, padding: 4, marginBottom: -1 }}>
+          <div style={{ display: "flex", gap: 4, marginBottom: -1, position: "relative" }}>
             {TABS.map((tab) =>
             <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
-              background: activeTab === tab.id ? S : "transparent",
-              color: activeTab === tab.id ? "#000" : SD,
+              background: "transparent",
+              color: activeTab === tab.id ? "var(--vt-text)" : SD,
               border: "none",
-              padding: "10px 24px",
-              fontSize: 8, letterSpacing: 2, textTransform: "uppercase",
-              fontWeight: activeTab === tab.id ? 900 : 400,
+              borderBottom: activeTab === tab.id ? `2px solid ${S}` : "2px solid transparent",
+              padding: "12px 20px",
+              fontSize: 9, letterSpacing: 2, textTransform: "uppercase",
+              fontWeight: activeTab === tab.id ? 700 : 400,
               cursor: "pointer", fontFamily: "inherit",
-              transition: "all 0.18s",
-              whiteSpace: "nowrap"
+              transition: "all 0.2s",
+              whiteSpace: "nowrap",
+              outline: "none",
             }}>
                 {tab.label}
               </button>
