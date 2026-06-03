@@ -4,84 +4,35 @@ import { NavLink, useNavigate } from "react-router-dom";
 const S = "#C0C0C0";
 const SD = "rgba(200,200,200,0.55)";
 
-const HomeIcon = (active) => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? "rgba(220,220,220,0.9)" : "none"} stroke={active ? "rgba(255,255,255,0.95)" : "rgba(200,200,200,0.6)"} strokeWidth="1.5">
-    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-  </svg>
-);
-const ShopIcon = (active) => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? "rgba(255,255,255,0.95)" : "rgba(200,200,200,0.6)"} strokeWidth="1.5">
-    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-  </svg>
-);
-const DropsIcon = (active) => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? "rgba(255,255,255,0.95)" : "rgba(200,200,200,0.6)"} strokeWidth="1.5">
-    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-  </svg>
-);
-const AccountIcon = (active) => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? "rgba(255,255,255,0.95)" : "rgba(200,200,200,0.6)"} strokeWidth="1.5">
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-  </svg>
-);
-const VaultIcon = (active) => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "rgba(255,255,255,0.95)" : "rgba(200,200,200,0.7)"} strokeWidth="1.5">
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-  </svg>
-);
-const LookbookIcon = (active) => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "rgba(255,255,255,0.95)" : "rgba(200,200,200,0.7)"} strokeWidth="1.5">
-    <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
-  </svg>
-);
-const WishlistIcon = (active) => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill={active ? "rgba(220,220,220,0.9)" : "none"} stroke={active ? "rgba(255,255,255,0.95)" : "rgba(200,200,200,0.7)"} strokeWidth="1.5">
-    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-  </svg>
-);
-const AboutIcon = (active) => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "rgba(255,255,255,0.95)" : "rgba(200,200,200,0.7)"} strokeWidth="1.5">
-    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-  </svg>
-);
-const ContactIcon = (active) => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "rgba(255,255,255,0.95)" : "rgba(200,200,200,0.7)"} strokeWidth="1.5">
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-  </svg>
-);
+const iconStroke = (active) => active ? "rgba(255,255,255,0.95)" : "rgba(200,200,200,0.6)";
+const iconStrokeSm = (active) => active ? "rgba(255,255,255,0.95)" : "rgba(200,200,200,0.7)";
 
 const PRIMARY = [
-  { label: "Home", to: "/", icon: HomeIcon },
-  { label: "Shop", to: "/shop", icon: ShopIcon },
-  { label: "Drops", to: "/drops", icon: DropsIcon },
-  { label: "Account", to: "/account", icon: AccountIcon },
+  { label: "Home", to: "/",
+    renderIcon: (active) => <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? "rgba(220,220,220,0.9)" : "none"} stroke={iconStroke(active)} strokeWidth="1.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
+  { label: "Shop", to: "/shop",
+    renderIcon: (active) => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={iconStroke(active)} strokeWidth="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> },
+  { label: "Drops", to: "/drops",
+    renderIcon: (active) => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={iconStroke(active)} strokeWidth="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> },
+  { label: "Account", to: "/account",
+    renderIcon: (active) => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={iconStroke(active)} strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> },
 ];
 
-const SearchIcon = (active) => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "rgba(255,255,255,0.95)" : "rgba(200,200,200,0.7)"} strokeWidth="1.5">
-    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-  </svg>
-);
-const CartIcon = (active) => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "rgba(255,255,255,0.95)" : "rgba(200,200,200,0.7)"} strokeWidth="1.5">
-    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
-  </svg>
-);
-
-const LiveStreamIcon = (active) => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={active ? "rgba(255,255,255,0.95)" : "rgba(200,200,200,0.7)"} strokeWidth="1.5">
-    <circle cx="12" cy="12" r="3"/><path d="M5.64 5.64a9 9 0 0 0 0 12.72M18.36 5.64a9 9 0 0 1 0 12.72M8.46 8.46a5 5 0 0 0 0 7.07M15.54 8.46a5 5 0 0 1 0 7.07"/>
-  </svg>
-);
-
 const MORE_ITEMS = [
-  { label: "Live", to: "/live", icon: LiveStreamIcon },
-  { label: "The Vault", to: "/referral", icon: VaultIcon },
-  { label: "Lookbook", to: "/lookbook", icon: LookbookIcon },
-  { label: "Wishlist", to: "/wishlist", icon: WishlistIcon },
-  { label: "About", to: "/about", icon: AboutIcon },
-  { label: "Contact", to: "/contact", icon: ContactIcon },
-  { label: "Search", to: "/search", icon: SearchIcon },
+  { label: "Live", to: "/live",
+    renderIcon: (active) => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconStrokeSm(active)} strokeWidth="1.5"><circle cx="12" cy="12" r="3"/><path d="M5.64 5.64a9 9 0 0 0 0 12.72M18.36 5.64a9 9 0 0 1 0 12.72M8.46 8.46a5 5 0 0 0 0 7.07M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> },
+  { label: "The Vault", to: "/referral",
+    renderIcon: (active) => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconStrokeSm(active)} strokeWidth="1.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> },
+  { label: "Lookbook", to: "/lookbook",
+    renderIcon: (active) => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconStrokeSm(active)} strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg> },
+  { label: "Wishlist", to: "/wishlist",
+    renderIcon: (active) => <svg width="20" height="20" viewBox="0 0 24 24" fill={active ? "rgba(220,220,220,0.9)" : "none"} stroke={iconStrokeSm(active)} strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> },
+  { label: "About", to: "/about",
+    renderIcon: (active) => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconStrokeSm(active)} strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> },
+  { label: "Contact", to: "/contact",
+    renderIcon: (active) => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconStrokeSm(active)} strokeWidth="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> },
+  { label: "Search", to: "/search",
+    renderIcon: (active) => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconStrokeSm(active)} strokeWidth="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> },
 ];
 
 export default function VigoBottomNav({ cartCount = 0, onCartOpen, cartOpen = false }) {
@@ -164,7 +115,7 @@ export default function VigoBottomNav({ cartCount = 0, onCartOpen, cartOpen = fa
             >
               {({ isActive }) => (
                 <>
-                  {item.icon(isActive)}
+                  {item.renderIcon(isActive)}
                   <span>{item.label}</span>
                 </>
               )}
@@ -238,7 +189,7 @@ export default function VigoBottomNav({ cartCount = 0, onCartOpen, cartOpen = fa
                     transform: isActive ? "scale(1.12)" : "scale(1)",
                     transition: "transform 0.25s cubic-bezier(0.34,1.56,0.64,1)",
                   }}>
-                    {item.icon(isActive)}
+                    {item.renderIcon(isActive)}
                   </div>
                   <span>{item.label}</span>
                 </>
