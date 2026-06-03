@@ -80,7 +80,7 @@ export default function VIGONYCFlagship() {
     base44.auth.me().then(user => {
       if (!user) return;
       base44.functions.invoke("loyaltyPoints", { action: "scanQR", data: { qrCodeId: ref } })
-        .then(res => { if (res.data && !res.data.error) { import("sonner").then(({ toast }) => toast.success("Referral code applied! +500 points")); } })
+        .then(res => { if (res.data && !res.data.error) { import("sonner").then(({ toast }) => toast.success("Referral code applied! +50 points")); } })
         .catch(() => {});
     }).catch(() => {});
   }, []);

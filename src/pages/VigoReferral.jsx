@@ -308,7 +308,7 @@ export default function VigoReferral() {
                     <div style={{ fontSize: 8, letterSpacing: 3, color: SD, textTransform: "uppercase", marginBottom: 4 }}>How to Earn</div>
                     {[
                 { icon: "$", label: "$1 = 1 Point", sub: "Auto-credited on every purchase", color: S },
-                { icon: "↑", label: "500 pts / Referral", sub: "Friend completes their first order", color: "#0c6" },
+                { icon: "↑", label: "50 pts / Referral", sub: "Friend completes their first order", color: "#0c6" },
                 { icon: "★", label: "200 pts / Review", sub: "Leave a verified product review", color: "#fa0" }].
                 map((item) =>
                 <div key={item.label} style={{ background: G2, border: `0.5px solid ${G3}`, borderLeft: `3px solid ${item.color}`, padding: "16px 20px", display: "flex", alignItems: "center", gap: 14 }}>
@@ -415,12 +415,12 @@ export default function VigoReferral() {
               </div>
               <div style={{ width: 1, background: "rgba(255,255,255,0.08)" }} />
               <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 22, fontWeight: 900, color: "#0c6", letterSpacing: -1 }}>{((loyalty?.totalReferrals || 0) * 500).toLocaleString()}</div>
+                <div style={{ fontSize: 22, fontWeight: 900, color: "#0c6", letterSpacing: -1 }}>{((loyalty?.totalReferrals || 0) * 50).toLocaleString()}</div>
                 <div style={{ fontSize: 8, color: "rgba(255,255,255,0.4)", letterSpacing: 2, textTransform: "uppercase", marginTop: 2 }}>Points</div>
               </div>
               <div style={{ width: 1, background: "rgba(255,255,255,0.08)" }} />
               <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 22, fontWeight: 900, color: S, letterSpacing: -1 }}>500</div>
+                <div style={{ fontSize: 22, fontWeight: 900, color: S, letterSpacing: -1 }}>50</div>
                 <div style={{ fontSize: 8, color: "rgba(255,255,255,0.4)", letterSpacing: 2, textTransform: "uppercase", marginTop: 2 }}>Per Refer</div>
               </div>
             </div>
