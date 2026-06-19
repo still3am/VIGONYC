@@ -172,7 +172,7 @@ export default function VigoShop() {
         }
 
       <div style={{ marginBottom: 24 }}>
-      <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }} className="hidden">✦ SS25 Season</div>
+      
       <h1 style={{ fontSize: "clamp(32px,5vw,52px)", fontWeight: 900, letterSpacing: -2, marginBottom: searchQuery ? 8 : 20 }}>{searchQuery ? `Results for "${searchQuery}"` : "Shop All"}</h1>
       {searchQuery && <button onClick={() => setSearchQuery("")} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "6px 14px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", marginBottom: 16 }}>✕ Clear Search</button>}
 
