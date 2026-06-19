@@ -9,7 +9,7 @@ const G1 = "var(--vt-bg)";
 const G3 = "var(--vt-border)";
 const SD = "var(--vt-sub)";
 
-const SIZES = ["XS","S","M","L","XL","XXL","One Size"];
+const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "One Size"];
 
 function FilterSection({ title, children }) {
   const [open, setOpen] = useState(true);
@@ -20,8 +20,8 @@ function FilterSection({ title, children }) {
         <span style={{ color: SD, fontSize: 14 }}>{open ? "−" : "+"}</span>
       </button>
       {open && children}
-    </div>
-  );
+    </div>);
+
 }
 
 function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories, collections, allColors, inStockOnly, setInStockOnly }) {
@@ -44,39 +44,39 @@ function FilterPanel({ activeCat, setActiveCat, selectedSizes, setSelectedSizes,
         </button>
       </div>
       <FilterSection title="Category">
-        {categories.map(c => (
-          <button key={c} onClick={() => setActiveCat(c)} style={{ display: "block", background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "6px 0", fontSize: 11, color: activeCat === c ? "var(--vt-text)" : SD, fontWeight: activeCat === c ? 700 : 400, fontFamily: "inherit", width: "100%" }}>{c}</button>
-        ))}
+        {categories.map((c) =>
+        <button key={c} onClick={() => setActiveCat(c)} style={{ display: "block", background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "6px 0", fontSize: 11, color: activeCat === c ? "var(--vt-text)" : SD, fontWeight: activeCat === c ? 700 : 400, fontFamily: "inherit", width: "100%" }}>{c}</button>
+        )}
       </FilterSection>
       <FilterSection title="Collection">
-        {collections.map(c => (
-          <button key={c} onClick={() => setActiveCollection(c)} style={{ display: "block", background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "6px 0", fontSize: 11, color: activeCollection === c ? "var(--vt-text)" : SD, fontWeight: activeCollection === c ? 700 : 400, fontFamily: "inherit", width: "100%" }}>{c}</button>
-        ))}
+        {collections.map((c) =>
+        <button key={c} onClick={() => setActiveCollection(c)} style={{ display: "block", background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: "6px 0", fontSize: 11, color: activeCollection === c ? "var(--vt-text)" : SD, fontWeight: activeCollection === c ? 700 : 400, fontFamily: "inherit", width: "100%" }}>{c}</button>
+        )}
       </FilterSection>
       <FilterSection title="Size">
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-          {SIZES.map(s => (
-            <button key={s} onClick={() => toggleArr(selectedSizes, setSelectedSizes, s)} style={{ padding: "6px 10px", border: `.5px solid ${selectedSizes.includes(s) ? S : G3}`, background: selectedSizes.includes(s) ? S : "none", color: selectedSizes.includes(s) ? "#000" : SD, fontSize: 9, cursor: "pointer", fontFamily: "inherit" }}>{s}</button>
-          ))}
+          {SIZES.map((s) =>
+          <button key={s} onClick={() => toggleArr(selectedSizes, setSelectedSizes, s)} style={{ padding: "6px 10px", border: `.5px solid ${selectedSizes.includes(s) ? S : G3}`, background: selectedSizes.includes(s) ? S : "none", color: selectedSizes.includes(s) ? "#000" : SD, fontSize: 9, cursor: "pointer", fontFamily: "inherit" }}>{s}</button>
+          )}
         </div>
       </FilterSection>
-      {allColors.length > 0 && (
-        <FilterSection title="Color">
+      {allColors.length > 0 &&
+      <FilterSection title="Color">
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {allColors.map(c => (
-              <button key={c} onClick={() => toggleArr(selectedColors, setSelectedColors, c)} title={c} style={{ width: 26, height: 26, background: getSwatchColor(c), border: selectedColors.includes(c) ? `2px solid ${S}` : `.5px solid ${G3}`, cursor: "pointer", borderRadius: "50%", position: "relative" }} />
-            ))}
+            {allColors.map((c) =>
+          <button key={c} onClick={() => toggleArr(selectedColors, setSelectedColors, c)} title={c} style={{ width: 26, height: 26, background: getSwatchColor(c), border: selectedColors.includes(c) ? `2px solid ${S}` : `.5px solid ${G3}`, cursor: "pointer", borderRadius: "50%", position: "relative" }} />
+          )}
           </div>
         </FilterSection>
-      )}
+      }
       <FilterSection title={`Price: Up to $${priceRange}`}>
-        <input type="range" min={20} max={300} value={priceRange} onChange={e => setPriceRange(Number(e.target.value))} style={{ width: "100%", accentColor: S }} />
+        <input type="range" min={20} max={300} value={priceRange} onChange={(e) => setPriceRange(Number(e.target.value))} style={{ width: "100%", accentColor: S }} />
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, color: SD, marginTop: 6 }}>
           <span>$20</span><span>$300</span>
         </div>
       </FilterSection>
-    </div>
-  );
+    </div>);
+
 }
 
 export default function VigoShop() {
@@ -103,59 +103,59 @@ export default function VigoShop() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.entities.Product.list("-created_date", 200).then(data => setAllProducts(data || [])).catch(() => {}).finally(() => setLoading(false));
+    base44.entities.Product.list("-created_date", 200).then((data) => setAllProducts(data || [])).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
-  const CATEGORIES = useMemo(() => ["All", ...new Set(allProducts.map(p => p.cat).filter(Boolean))], [allProducts]);
-  const COLLECTIONS = useMemo(() => ["All Collections", ...new Set(allProducts.map(p => p.collection).filter(Boolean))], [allProducts]);
-  const ALL_COLORS = useMemo(() => [...new Set(allProducts.flatMap(p => p.colors || []).filter(Boolean))], [allProducts]);
+  const CATEGORIES = useMemo(() => ["All", ...new Set(allProducts.map((p) => p.cat).filter(Boolean))], [allProducts]);
+  const COLLECTIONS = useMemo(() => ["All Collections", ...new Set(allProducts.map((p) => p.collection).filter(Boolean))], [allProducts]);
+  const ALL_COLORS = useMemo(() => [...new Set(allProducts.flatMap((p) => p.colors || []).filter(Boolean))], [allProducts]);
 
-  const toggleArr = (arr, setArr, val) => setArr(prev => prev.includes(val) ? prev.filter(x => x !== val) : [...prev, val]);
+  const toggleArr = (arr, setArr, val) => setArr((prev) => prev.includes(val) ? prev.filter((x) => x !== val) : [...prev, val]);
 
   const filtered = useMemo(() => {
     let p = [...allProducts];
     if (searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase();
-      p = p.filter(x => (x.name||"").toLowerCase().includes(q) || (x.description||"").toLowerCase().includes(q) || (x.cat||"").toLowerCase().includes(q));
+      p = p.filter((x) => (x.name || "").toLowerCase().includes(q) || (x.description || "").toLowerCase().includes(q) || (x.cat || "").toLowerCase().includes(q));
     }
-    if (activeCat !== "All") p = p.filter(x => x.cat === activeCat);
-    if (selectedSizes.length) p = p.filter(x => x.sizes && x.sizes.some(s => selectedSizes.includes(s)));
-    if (selectedColors.length) p = p.filter(x => x.colors && x.colors.some(c => selectedColors.includes(c)));
-    if (activeCollection !== "All Collections") p = p.filter(x => x.collection === activeCollection);
-    if (sort === "featured") p = p.filter(x => x.featured).concat(p.filter(x => !x.featured));
+    if (activeCat !== "All") p = p.filter((x) => x.cat === activeCat);
+    if (selectedSizes.length) p = p.filter((x) => x.sizes && x.sizes.some((s) => selectedSizes.includes(s)));
+    if (selectedColors.length) p = p.filter((x) => x.colors && x.colors.some((c) => selectedColors.includes(c)));
+    if (activeCollection !== "All Collections") p = p.filter((x) => x.collection === activeCollection);
+    if (sort === "featured") p = p.filter((x) => x.featured).concat(p.filter((x) => !x.featured));
     if (sort === "reviews") p = [...p].sort((a, b) => (b.avgRating || b.rating || 0) - (a.avgRating || a.rating || 0));
-    p = p.filter(x => typeof x.price === "number" && x.price <= priceRange);
-    if (sort === "price-asc") p.sort((a,b) => a.price - b.price);
-    if (sort === "price-desc") p.sort((a,b) => b.price - a.price);
-    if (sort === "new") p = p.filter(x => x.tag === "new").concat(p.filter(x => x.tag !== "new"));
-    if (inStockOnly) p = p.filter(x => x.inStock !== false);
+    p = p.filter((x) => typeof x.price === "number" && x.price <= priceRange);
+    if (sort === "price-asc") p.sort((a, b) => a.price - b.price);
+    if (sort === "price-desc") p.sort((a, b) => b.price - a.price);
+    if (sort === "new") p = p.filter((x) => x.tag === "new").concat(p.filter((x) => x.tag !== "new"));
+    if (inStockOnly) p = p.filter((x) => x.inStock !== false);
     return p;
   }, [activeCat, searchQuery, selectedSizes, selectedColors, priceRange, activeCollection, sort, allProducts, inStockOnly]);
 
-  const handleRefresh = useCallback(() => new Promise(res => {
-    base44.entities.Product.list("-created_date", 200).then(data => { setAllProducts(data || []); res(); }).catch(() => res());
+  const handleRefresh = useCallback(() => new Promise((res) => {
+    base44.entities.Product.list("-created_date", 200).then((data) => {setAllProducts(data || []);res();}).catch(() => res());
   }), []);
 
   const filterProps = { activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories: CATEGORIES, collections: COLLECTIONS, allColors: ALL_COLORS, inStockOnly, setInStockOnly };
 
   useEffect(() => {
     document.title = "Shop All — VIGONYC";
-    return () => { document.title = "VIGONYC — NYC Streetwear"; };
+    return () => {document.title = "VIGONYC — NYC Streetwear";};
   }, []);
 
   const activeFiltersCount = [
-    activeCat !== "All" ? 1 : 0,
-    selectedSizes.length,
-    selectedColors.length,
-    activeCollection !== "All Collections" ? 1 : 0,
-    priceRange < 300 ? 1 : 0,
-    inStockOnly ? 1 : 0,
-  ].reduce((a,b) => a + b, 0);
+  activeCat !== "All" ? 1 : 0,
+  selectedSizes.length,
+  selectedColors.length,
+  activeCollection !== "All Collections" ? 1 : 0,
+  priceRange < 300 ? 1 : 0,
+  inStockOnly ? 1 : 0].
+  reduce((a, b) => a + b, 0);
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
     <div className="vigo-shop-wrap" style={{ padding: "32px 20px", maxWidth: 1400, margin: "0 auto" }}>
-      {drawerOpen && (
+      {drawerOpen &&
         <div style={{ position: "fixed", inset: 0, zIndex: 300, display: "flex" }}>
           <div onClick={() => setDrawerOpen(false)} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.7)" }} />
           <div style={{ position: "relative", width: 300, maxWidth: "85vw", background: "var(--vt-bg)", borderRight: `.5px solid ${G3}`, padding: "24px 20px", overflowY: "auto", zIndex: 1 }}>
@@ -169,34 +169,34 @@ export default function VigoShop() {
             </button>
           </div>
         </div>
-      )}
+        }
 
       <div style={{ marginBottom: 24 }}>
-      <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }}>✦ SS25 Season</div>
+      <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 8 }} className="hidden">✦ SS25 Season</div>
       <h1 style={{ fontSize: "clamp(32px,5vw,52px)", fontWeight: 900, letterSpacing: -2, marginBottom: searchQuery ? 8 : 20 }}>{searchQuery ? `Results for "${searchQuery}"` : "Shop All"}</h1>
       {searchQuery && <button onClick={() => setSearchQuery("")} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "6px 14px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", marginBottom: 16 }}>✕ Clear Search</button>}
 
         <div className="vigo-cat-tabs" style={{ display: "none", overflowX: "auto", gap: 6, paddingBottom: 6, marginBottom: 12 }}>
-          {CATEGORIES.map(c => (
+          {CATEGORIES.map((c) =>
             <button key={c} onClick={() => setActiveCat(c)} style={{ flexShrink: 0, padding: "8px 16px", background: activeCat === c ? S : "none", color: activeCat === c ? "#000" : SD, border: `.5px solid ${activeCat === c ? S : G3}`, fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: activeCat === c ? 900 : 400, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>{c}</button>
-          ))}
-          <button onClick={() => { setSort("new"); setActiveCat("All"); }} style={{ flexShrink: 0, padding: "8px 16px", background: sort === "new" && activeCat === "All" ? S : "none", color: sort === "new" && activeCat === "All" ? "#000" : SD, border: `.5px solid ${sort === "new" && activeCat === "All" ? S : G3}`, fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: sort === "new" && activeCat === "All" ? 900 : 400, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 6 }}>
+            )}
+          <button onClick={() => {setSort("new");setActiveCat("All");}} style={{ flexShrink: 0, padding: "8px 16px", background: sort === "new" && activeCat === "All" ? S : "none", color: sort === "new" && activeCat === "All" ? "#000" : SD, border: `.5px solid ${sort === "new" && activeCat === "All" ? S : G3}`, fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: sort === "new" && activeCat === "All" ? 900 : 400, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#0c6", display: "inline-block" }} />New Arrivals
           </button>
         </div>
 
-        {activeFiltersCount > 0 && (
+        {activeFiltersCount > 0 &&
           <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 0", marginBottom: 8 }}>
             <span style={{ fontSize: 9, color: SD }}>{activeFiltersCount} filter{activeFiltersCount > 1 ? "s" : ""} active</span>
-            <button onClick={() => { setActiveCat("All"); setSelectedSizes([]); setSelectedColors([]); setPriceRange(300); setActiveCollection("All Collections"); setInStockOnly(false); setSearchQuery(""); }} style={{ background: "none", border: `.5px solid var(--vt-border)`, color: S, padding: "4px 12px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>
+            <button onClick={() => {setActiveCat("All");setSelectedSizes([]);setSelectedColors([]);setPriceRange(300);setActiveCollection("All Collections");setInStockOnly(false);setSearchQuery("");}} style={{ background: "none", border: `.5px solid var(--vt-border)`, color: S, padding: "4px 12px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit" }}>
               ✕ Clear All
             </button>
           </div>
-        )}
+          }
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
           <span style={{ fontSize: 10, color: SD }}>{filtered.length} products</span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <select value={sort} onChange={e => setSort(e.target.value)} style={{ background: G1, border: `.5px solid ${G3}`, color: SD, padding: "8px 14px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", outline: "none", fontFamily: "inherit" }}>
+            <select value={sort} onChange={(e) => setSort(e.target.value)} style={{ background: G1, border: `.5px solid ${G3}`, color: SD, padding: "8px 14px", fontSize: 9, letterSpacing: 1, textTransform: "uppercase", cursor: "pointer", outline: "none", fontFamily: "inherit" }}>
               <option value="featured">Featured</option>
               <option value="price-asc">Price ↑</option>
               <option value="price-desc">Price ↓</option>
@@ -216,36 +216,36 @@ export default function VigoShop() {
         </div>
 
         <div style={{ flex: 1 }}>
-          {loading ? (
+          {loading ?
             <div className="vigo-shop-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
-              {Array(6).fill(0).map((_, i) => (
-                <div key={i} style={{ background: "var(--vt-card)", border: ".5px solid var(--vt-border)", aspectRatio: "3/4", animation: "vigo-skeleton 1.4s ease-in-out infinite" }} />
-              ))}
-            </div>
-          ) : allProducts.length === 0 ? (
+              {Array(6).fill(0).map((_, i) =>
+              <div key={i} style={{ background: "var(--vt-card)", border: ".5px solid var(--vt-border)", aspectRatio: "3/4", animation: "vigo-skeleton 1.4s ease-in-out infinite" }} />
+              )}
+            </div> :
+            allProducts.length === 0 ?
             <div style={{ textAlign: "center", padding: "60px 20px" }}>
               <div style={{ fontSize: 32, marginBottom: 12, opacity: .3 }}>∅</div>
               <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>No products yet</div>
               <p style={{ fontSize: 11, color: SD }}>Check back soon — new drops land every Friday.</p>
-            </div>
-          ) : filtered.length === 0 ? (
+            </div> :
+            filtered.length === 0 ?
             <div style={{ textAlign: "center", padding: "60px 20px" }}>
               <div style={{ fontSize: 32, marginBottom: 12, opacity: .3 }}>∅</div>
               <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>No products match</div>
               <p style={{ fontSize: 11, color: SD, marginBottom: 24 }}>Try adjusting your filters.</p>
-              <button onClick={() => { setActiveCat("All"); setSelectedSizes([]); setSelectedColors([]); setPriceRange(300); setActiveCollection("All Collections"); setInStockOnly(false); }} style={{ background: S, color: "#000", border: "none", padding: "12px 28px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Clear Filters</button>
-            </div>
-          ) : (
+              <button onClick={() => {setActiveCat("All");setSelectedSizes([]);setSelectedColors([]);setPriceRange(300);setActiveCollection("All Collections");setInStockOnly(false);}} style={{ background: S, color: "#000", border: "none", padding: "12px 28px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Clear Filters</button>
+            </div> :
+
             <div className="vigo-shop-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
-              {filtered.map(p => (
-                <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
-                  wishlisted={wishlist.includes(p.id)}
-                  onWishlist={() => toggleWishlist(p.id, p)}
-                  onAdd={() => navigate(`/product/${p.id}`)}
-                  onClick={() => navigate(`/product/${p.id}`)} />
-              ))}
+              {filtered.map((p) =>
+              <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
+              wishlisted={wishlist.includes(p.id)}
+              onWishlist={() => toggleWishlist(p.id, p)}
+              onAdd={() => navigate(`/product/${p.id}`)}
+              onClick={() => navigate(`/product/${p.id}`)} />
+              )}
             </div>
-          )}
+            }
         </div>
       </div>
 
@@ -268,6 +268,6 @@ export default function VigoShop() {
         @keyframes vigo-skeleton{0%,100%{opacity:.6}50%{opacity:.25}}
       `}</style>
     </div>
-    </PullToRefresh>
-  );
+    </PullToRefresh>);
+
 }
