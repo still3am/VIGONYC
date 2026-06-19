@@ -105,7 +105,7 @@ export default function VigoHome() {
   const heroProduct = products[0] || null;
 
   useEffect(() => {
-    base44.auth.me().then(u => { if (u?.email) setEmail(u.email); }).catch(() => {});
+    base44.auth.me().then((u) => {if (u?.email) setEmail(u.email);}).catch(() => {});
   }, []);
 
   const handleSubscribe = async () => {
@@ -156,8 +156,8 @@ export default function VigoHome() {
           {/* KPIs */}
           <div className="vigo-kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 0, marginTop: 56, borderTop: `.5px solid ${G3}` }}>
             {[[settings.kpi_pieces || "200+", "Pieces Dropped"], [settings.kpi_community || "5K+", "NYC Community"], [settings.kpi_street_ready || "100%", "Street Ready"], [settings.kpi_rating || "4.9★", "Avg. Rating"]].map(([n, l], i, arr) =>
-            <div key={l} style={{ padding: "20px 0 0", paddingRight: i < arr.length - 1 ? 16 : 0, borderRight: i < arr.length - 1 ? `.5px solid ${G3}` : "none", paddingLeft: i > 0 ? 16 : 0, textAlign: "center" }}>
-                <div style={{ fontSize: 22, fontWeight: 900, color: "var(--vt-text)", letterSpacing: -1 }}>{n}</div>
+            <div key={l} style={{ padding: "20px 0 0", paddingRight: i < arr.length - 1 ? 16 : 0, borderRight: i < arr.length - 1 ? `.5px solid ${G3}` : "none", paddingLeft: i > 0 ? 16 : 0, textAlign: "center" }} className="hidden">
+                <div style={{ fontSize: 22, fontWeight: 900, color: "var(--vt-text)", letterSpacing: -1 }} className="hidden">{n}</div>
                 <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 4 }}>{l}</div>
               </div>
             )}
