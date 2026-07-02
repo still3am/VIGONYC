@@ -47,14 +47,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
   };
 
   const handleLogoClick = () => {
-    const newTaps = logoTaps + 1;
-    setLogoTaps(newTaps);
-    if (newTaps === 7) {
-      navigate("/admin");
-      setLogoTaps(0);
-    } else {
-      setTimeout(() => setLogoTaps(0), 1500);
-    }
+    navigate("/");
   };
 
   return (

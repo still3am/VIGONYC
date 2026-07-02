@@ -10,7 +10,6 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ErrorBoundary from './components/ErrorBoundary';
 // Add page imports here
-import VigoAdmin from './pages/VigoAdmin';
 import VIGONYCFlagship from './pages/VIGONYCFlagship';
 import VigoHome from './components/vigo/VigoHome';
 import VigoShop from './components/vigo/VigoShop';
@@ -98,7 +97,6 @@ const AuthenticatedApp = () => {
         <Route path="referral" element={<ErrorBoundary><VigoReferral /></ErrorBoundary>} />
         <Route path="live" element={<ErrorBoundary><VigoLive /></ErrorBoundary>} />
       </Route>
-      <Route path="/admin" element={<VigoAdmin />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
     </ErrorBoundary>
