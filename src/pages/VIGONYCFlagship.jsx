@@ -41,7 +41,7 @@ export default function VIGONYCFlagship() {
     try {
       const user = await base44.auth.me();
       if (user) {
-        const items = await base44.entities.WishlistItem.filter({ created_by: user.email }, '-created_date', 200);
+        const items = await base44.entities.WishlistItem.list('-created_date', 200);
         setWishlistItems(items || []);
         setWishlist((items || []).map(i => i.productId));
       }
@@ -52,7 +52,7 @@ export default function VIGONYCFlagship() {
     try {
       const user = await base44.auth.me();
       if (user) {
-        const items = await base44.entities.CartItem.filter({ created_by: user.email }, '-created_date', 100);
+        const items = await base44.entities.CartItem.list('-created_date', 100);
         setCartCount(items.reduce((s, i) => s + (i.qty || 1), 0));
       }
     } catch (err) {}

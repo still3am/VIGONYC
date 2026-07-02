@@ -90,7 +90,7 @@ export default function VigoShop() {
   useEffect(() => {
     setActiveCat(searchParams.get("cat") || "All");
     setSearchQuery(searchParams.get("q") || "");
-  }, [searchParams.get("cat"), searchParams.get("q")]);
+  }, [searchParams]);
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);

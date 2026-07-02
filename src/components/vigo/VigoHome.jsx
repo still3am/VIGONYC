@@ -155,11 +155,11 @@ export default function VigoHome() {
 
           {/* KPIs */}
           <div className="vigo-kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 0, marginTop: 56, borderTop: `.5px solid ${G3}` }}>
-            {[[settings.kpi_pieces || "200+", "Pieces Dropped"], [settings.kpi_community || "5K+", "NYC Community"], [settings.kpi_street_ready || "100%", "Street Ready"], [settings.kpi_rating || "4.9★", "Avg. Rating"]].map(([n, l], i, arr) => null
-
-
-
-
+            {[[settings.kpi_pieces || "200+", "Pieces Dropped"], [settings.kpi_community || "5K+", "NYC Community"], [settings.kpi_street_ready || "100%", "Street Ready"], [settings.kpi_rating || "4.9★", "Avg. Rating"]].map(([n, l], i, arr) =>
+              <div key={l} style={{ padding: "20px 0", textAlign: "center", borderRight: i < arr.length - 1 ? `.5px solid ${G3}` : "none" }}>
+                <div style={{ fontSize: "clamp(18px,2.5vw,26px)", fontWeight: 900, color: S, letterSpacing: -1 }}>{n}</div>
+                <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 4 }}>{l}</div>
+              </div>
             )}
           </div>
         </div>
@@ -193,7 +193,7 @@ export default function VigoHome() {
           Array(4).fill(0).map((_, i) =>
           <div key={i} style={{ background: "var(--vt-card)", border: ".5px solid var(--vt-border)", aspectRatio: "3/4", animation: "vigo-pulse 1.5s infinite" }} />
           ) :
-          products.length === 0 && <div style={{ gridColumn: "1/-1", padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>No featured products yet — add some in the admin panel.</div>}
+          products.length === 0 && <div style={{ gridColumn: "1/-1", padding: 40, textAlign: "center", color: SD, fontSize: 12 }}>No featured products yet — check back soon for new drops.</div>}
           {!productsLoading &&
           products.map((p) =>
           <ProductCard key={p.id} product={p} img={p.images?.[0] || productImg}
@@ -283,7 +283,7 @@ export default function VigoHome() {
       </div>
 
       {/* ── BRAND STORY TEASER ── */}
-      <div style={{ margin: "0 16px", borderTop: `2px solid ${S}`, background: G1, border: `.5px solid ${G3}` }} className="vigo-2col-story">
+      <div style={{ margin: "0 16px", borderTop: `2px solid ${S}`, background: G1, border: `.5px solid ${G3}`, borderTopWidth: "2px" }} className="vigo-2col-story">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }} className="vigo-2col">
           <div style={{ padding: "52px 48px", borderRight: `.5px solid ${G3}` }}>
             <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ The Brand</div>

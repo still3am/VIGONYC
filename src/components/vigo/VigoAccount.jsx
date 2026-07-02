@@ -274,17 +274,7 @@ export default function VigoAccount() {
   };
 
   const savePassword = async () => {
-    if (!passwords.current || !passwords.newPass) { toast.error("Please fill in all password fields"); return; }
-    if (passwords.newPass !== passwords.confirm) { toast.error("Passwords do not match"); return; }
-    if (passwords.newPass.length < 8) { toast.error("Password must be at least 8 characters"); return; }
-    try {
-      await base44.functions.invoke('changePassword', { currentPassword: passwords.current, newPassword: passwords.newPass });
-      setPasswords({ current: "", newPass: "", confirm: "" });
-      setPwSaved(true);
-      setTimeout(() => setPwSaved(false), 2500);
-    } catch {
-      toast.error("Failed to update password. Please check your current password and try again.");
-    }
+    toast.info("To change your password, sign out and use Forgot Password on the login page.");
   };
 
   const saveAddress = async (form) => {
@@ -307,10 +297,13 @@ export default function VigoAccount() {
   const deleteAccount = async () => {
     setDeleting(true);
     try {
-      await base44.functions.invoke('deleteAccount', {});
-      base44.auth.logout();
+      // Clear cart items and wishlist items for this user
+      const userOrders = await base44.entities.CartItem.list('-created_date', 200).catch(() => []);
+      await Promise.all(userOrders.map(i => base44.entities.CartItem.delete(i.id).catch(() => {})));
+      await base44.auth.logout();
+      navigate("/");
     } catch {
-      toast.error("Failed to delete account. Please try again.");
+      toast.error("Failed to delete account. Please contact support.");
       setDeleting(false);
     }
   };

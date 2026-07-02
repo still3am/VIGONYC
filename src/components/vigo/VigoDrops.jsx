@@ -354,7 +354,8 @@ export default function VigoDrops() {
           .vigo-hero-drop { grid-template-columns: 1fr !important; }
           .vigo-4col { grid-template-columns: repeat(2,1fr) !important; }
           .vigo-corner { display: none !important; }
-          .vigo-hero-drop-inner { display: none !important; }
+          .vigo-hero-drop-inner { padding: 20px !important; }
+          .vigo-hero-drop { grid-template-columns: 1fr !important; }
         }
         @media(max-width:480px){
           .vigo-4col { grid-template-columns: 1fr 1fr !important; }

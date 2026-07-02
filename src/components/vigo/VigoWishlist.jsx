@@ -29,7 +29,7 @@ export default function VigoWishlist() {
   useEffect(() => {
     base44.auth.me().then(async user => {
       if (!user) return;
-      const items = await base44.entities.WishlistItem.filter({ created_by: user.email }, "-created_date", 200).catch(() => []);
+      const items = await base44.entities.WishlistItem.list("-created_date", 200).catch(() => []);
       // For items missing productImage or price, fetch from Product entity to backfill
       const enriched = await Promise.all(items.map(async item => {
         if (item.productImage && item.price) return item;

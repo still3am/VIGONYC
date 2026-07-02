@@ -51,8 +51,8 @@ export default function VigoCheckout() {
           const nameParts = (user.full_name || "").split(" ");
           setContact(prev => ({ ...prev, firstName: nameParts[0] || "", lastName: nameParts.slice(1).join(" ") || "", email: user.email || "", phone: user.phone || "" }));
           const [items, addresses] = await Promise.all([
-            base44.entities.CartItem.filter({ created_by: user.email }, "-created_date", 100),
-            base44.entities.Address.filter({ created_by: user.email }, "-created_date", 20).catch(() => []),
+            base44.entities.CartItem.list("-created_date", 100),
+            base44.entities.Address.list("-created_date", 20).catch(() => []),
           ]);
           setCartItems(items || []);
           setSavedAddresses(addresses || []);
@@ -207,7 +207,7 @@ export default function VigoCheckout() {
       if (currentUser && loyalty) {
         const newPoints = Math.max(0, loyalty.points - loyaltyPointsUsed) + loyaltyPts;
         const newTotal = (loyalty.totalEarned || 0) + loyaltyPts;
-        const tier = newTotal >= 5000 ? "Obsidian" : newTotal >= 2000 ? "Chrome" : "Silver";
+        const tier = newTotal >= 10000 ? "Obsidian" : newTotal >= 3000 ? "Chrome" : "Silver";
         base44.entities.UserLoyalty.update(loyalty.id, {
           points: newPoints,
           totalEarned: newTotal,
@@ -224,7 +224,7 @@ export default function VigoCheckout() {
         }).catch(() => {});
       }
 
-      window.dispatchEvent(new CustomEvent("vigo:cart-update", { detail: { delta: -cartItems.reduce((s, i) => s + i.qty, 0) } }));
+      window.dispatchEvent(new CustomEvent("vigo:cart-cleared"));
       setPlacedOrderData({ orderId: genId, total, loyaltyPts, cardLast4, cardBrand, payMethod });
       setOrderPlaced(true);
     } catch (e) {

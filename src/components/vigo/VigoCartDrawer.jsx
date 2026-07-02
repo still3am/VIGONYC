@@ -26,7 +26,7 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
         setLoading(true);
         const user = await base44.auth.me();
         if (user) {
-          const cartItems = await base44.entities.CartItem.filter({ created_by: user.email }, '-created_date', 100);
+          const cartItems = await base44.entities.CartItem.list('-created_date', 100);
           setItems(cartItems);
         }
       } catch (err) {
@@ -141,7 +141,7 @@ export default function VigoCartDrawer({ open, onClose, onCheckout }) {
                   </button>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ fontSize: 12, fontWeight: 900, color: S }}>${item.price * item.qty}</div>
+                  <div style={{ fontSize: 12, fontWeight: 900, color: S }}>${(item.price * item.qty).toFixed(2)}</div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, border: `.5px solid ${G3}` }}>
                     <button onClick={() => updateQty(item.id, -1)} style={{ background: "none", border: "none", color: SD, cursor: "pointer", width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit", fontSize: 14 }}>−</button>
                     <div style={{ fontSize: 10, color: "var(--vt-text)", width: 24, textAlign: "center", borderLeft: `.5px solid ${G3}`, borderRight: `.5px solid ${G3}` }}>{item.qty}</div>

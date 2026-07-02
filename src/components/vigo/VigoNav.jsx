@@ -21,7 +21,6 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [query, setQuery] = useState("");
-  const [logoTaps, setLogoTaps] = useState(0);
   const { settings } = useSiteSettings();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
