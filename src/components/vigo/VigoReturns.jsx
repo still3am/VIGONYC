@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import { toast } from "sonner";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
@@ -16,9 +15,7 @@ export default function VigoReturns() {
   const { settings } = useSiteSettings();
 
   useEffect(() => {
-    document.title = "Returns — VIGONYC";
     base44.auth.me().then(user => { if (user) setEmail(user.email || ""); }).catch(() => {});
-    return () => { document.title = "VIGONYC — NYC Streetwear"; };
   }, []);
   const [reason, setReason] = useState("");
   const [message, setMessage] = useState("");
@@ -29,14 +26,9 @@ export default function VigoReturns() {
     e.preventDefault();
     if (!orderId || !reason) return alert("Order number and reason are required.");
     setSubmitting(true);
-    try {
-      await base44.entities.ReturnRequest.create({ orderId: orderId.trim(), userEmail: email.trim(), reason, message, status: "Pending" });
-      setSubmitted(true);
-    } catch (err) {
-      toast.error("Failed to submit return request. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
+    await base44.entities.ReturnRequest.create({ orderId: orderId.trim(), userEmail: email.trim(), reason, message, status: "Pending" });
+    setSubmitting(false);
+    setSubmitted(true);
   };
 
   return (

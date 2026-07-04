@@ -53,7 +53,7 @@ export default function VigoAbout() {
 
       {/* Stats */}
       <div style={{ background: G1, borderTop: `.5px solid ${G3}`, borderBottom: `.5px solid ${G3}` }}>
-        <div className="vigo-3col" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)" }}>
+        <div className="vigo-4col" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)" }}>
           {[[settings.kpi_founded || "2024","Founded"],[settings.kpi_pieces,"Pieces Dropped"],[settings.kpi_community,"Community"]].map(([n,l],i,arr) => (
             <div key={l} style={{ textAlign: "center", padding: "40px 16px", borderRight: i < arr.length-1 ? `.5px solid ${G3}` : "none" }}>
               <div style={{ fontSize: 40, fontWeight: 900, color: S }}>{n}</div>
@@ -68,7 +68,7 @@ export default function VigoAbout() {
         <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 16 }}>✦ The Crew</div>
         <div style={{ fontSize: 32, fontWeight: 900, letterSpacing: -1, marginBottom: 36 }}>Founded in the Five Boroughs</div>
         <div className="vigo-3col" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
-          {[settings.crew_line_1 || "Manhattan — Design & Creative", settings.crew_line_2 || "Brooklyn — Photography & Lookbook", settings.crew_line_3 || "Queens — Operations & Drops"].filter(Boolean).map(line => { const idx = line.indexOf(" — "); const b = idx >= 0 ? line.slice(0, idx) : line; const r = idx >= 0 ? line.slice(idx + 4) : ""; return { b, r }; }).map(({b,r}) => (
+          {[settings.crew_line_1 || "Manhattan — Design & Creative", settings.crew_line_2 || "Brooklyn — Photography & Lookbook", settings.crew_line_3 || "Queens — Operations & Drops"].filter(Boolean).map(line => { const [b, r] = line.split(" — "); return { b, r }; }).map(({b,r}) => (
             <div key={b} style={{ background: G1, border: `.5px solid ${G3}`, padding: "32px" }}>
               <div style={{ fontSize: 9, letterSpacing: 3, color: S, textTransform: "uppercase", marginBottom: 8 }}>{b}</div>
               <div style={{ fontSize: 14, fontWeight: 700 }}>{r}</div>

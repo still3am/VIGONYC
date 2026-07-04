@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const S = "#C0C0C0";
@@ -8,7 +7,6 @@ const SD = "var(--vt-sub)";
 
 export default function VigoPrivacy() {
   const { settings } = useSiteSettings();
-  useEffect(() => { document.title = "Privacy Policy — VIGONYC"; return () => { document.title = "VIGONYC — NYC Streetwear"; }; }, []);
 
   const SECTIONS = [
     { title: "What Data We Collect", body: "We collect your name, email address, shipping address, and order history when you make a purchase or create an account. We may also collect device and browsing information for analytics purposes." },
