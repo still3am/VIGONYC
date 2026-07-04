@@ -1,7 +1,6 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate, useSearchParams, useOutletContext } from "react-router-dom";
-import PullToRefresh from "./PullToRefresh";
 import ProductCard from "./ProductCard";
 
 const S = "#C0C0C0";
@@ -132,10 +131,6 @@ export default function VigoShop() {
     return p;
   }, [activeCat, searchQuery, selectedSizes, selectedColors, priceRange, activeCollection, sort, allProducts, inStockOnly]);
 
-  const handleRefresh = useCallback(() => new Promise((res) => {
-    base44.entities.Product.list("-created_date", 200).then((data) => {setAllProducts(data || []);res();}).catch(() => res());
-  }), []);
-
   const filterProps = { activeCat, setActiveCat, selectedSizes, setSelectedSizes, selectedColors, setSelectedColors, priceRange, setPriceRange, activeCollection, setActiveCollection, toggleArr, categories: CATEGORIES, collections: COLLECTIONS, allColors: ALL_COLORS, inStockOnly, setInStockOnly };
 
   useEffect(() => {
@@ -153,7 +148,7 @@ export default function VigoShop() {
   reduce((a, b) => a + b, 0);
 
   return (
-    <PullToRefresh onRefresh={handleRefresh}>
+    <>
     <div className="vigo-shop-wrap" style={{ padding: "32px 20px", maxWidth: 1400, margin: "0 auto" }}>
       {drawerOpen &&
         <div style={{ position: "fixed", inset: 0, zIndex: 300, display: "flex" }}>
@@ -268,6 +263,6 @@ export default function VigoShop() {
         @keyframes vigo-skeleton{0%,100%{opacity:.6}50%{opacity:.25}}
       `}</style>
     </div>
-    </PullToRefresh>);
+    </>);
 
 }

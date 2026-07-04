@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import PullToRefresh from "./PullToRefresh";
 import ProductCard from "./ProductCard";
 import { base44 } from "@/api/base44Client";
 
@@ -133,20 +132,8 @@ export default function VigoDrops() {
     }
     setNotified(p => ({ ...p, [id]: true }));
   };
-  const handleRefresh = useCallback(() => {
-    return new Promise(res => {
-      base44.entities.Drop.list("-date", 100)
-        .catch(() => [])
-        .then(data => {
-          const mapped = data.map(d => ({ ...d, date: d.date ? new Date(d.date + "T00:00:00") : null }));
-          setAllDrops(mapped);
-          setTimeout(res, 400);
-        });
-    });
-  }, []);
-
   return (
-    <PullToRefresh onRefresh={handleRefresh}>
+    <>
     <div>
       {nextDrop && (
         <div style={{ position: "relative", overflow: "hidden", borderBottom: `.5px solid ${G3}`, background: "linear-gradient(135deg,var(--vt-bg) 0%,var(--vt-card) 60%,var(--vt-bg) 100%)" }}>
@@ -370,7 +357,7 @@ export default function VigoDrops() {
         }
       `}</style>
     </div>
-    </PullToRefresh>
+    </>
   );
 }
 

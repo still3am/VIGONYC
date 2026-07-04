@@ -170,8 +170,6 @@ export default function VIGONYCFlagship() {
     return () => window.removeEventListener("vigo:open-size-guide", handler);
   }, []);
 
-  const prefersReducedMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
   const isLivePage = location.pathname === "/live";
   const isCheckoutPage = location.pathname === "/checkout";
   const ctx = { addToCart, wishlist, toggleWishlist, setSizeGuideOpen, logo: LOGO, productImg: PRODUCT_IMG, refreshCartCount };
@@ -181,9 +179,9 @@ export default function VIGONYCFlagship() {
       <SizeGuideModal open={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} />
       <VigoCartDrawer open={cartOpen} onClose={handleCartClose} onCheckout={() => { navigate("/checkout"); handleCartClose(); }} />
       {!isLivePage && <VigoNav cartCount={cartCount} onCartOpen={() => setCartOpen(true)} logo={LOGO} />}
-       <div key={location.pathname} style={{ animation: prefersReducedMotion ? "none" : "vigo-page-in 0.2s ease-out" }}>
-         <Outlet context={ctx} />
-       </div>
+      <main>
+        <Outlet context={ctx} />
+      </main>
       {!isLivePage && !isCheckoutPage && <VigoFooter logo={LOGO} />}
       {!isLivePage && !isCheckoutPage && <VigoBottomNav cartCount={cartCount} onCartOpen={() => setCartOpen(true)} cartOpen={cartOpen} />}
       {showBackToTop && (
@@ -198,7 +196,6 @@ export default function VIGONYCFlagship() {
           .vigo-bottom-nav { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
           .vigo-nav-top { padding-top: env(safe-area-inset-top); }
         }
-        @keyframes vigo-page-in { from { opacity: 0; } to { opacity: 1; } }
       `}</style>
     </div>
   );
