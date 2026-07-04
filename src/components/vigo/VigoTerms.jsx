@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
 const G3 = "var(--vt-border)";
@@ -15,6 +17,7 @@ const SECTIONS = [
 ];
 
 export default function VigoTerms() {
+  useEffect(() => { document.title = "Terms of Service — VIGONYC"; return () => { document.title = "VIGONYC — NYC Streetwear"; }; }, []);
   return (
     <div style={{ padding: "64px 32px", maxWidth: 800, margin: "0 auto" }}>
       <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ Legal</div>
