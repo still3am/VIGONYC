@@ -40,7 +40,8 @@ export default function VigoTrackOrder() {
   useEffect(() => {
     const preOrder = searchParams.get("order");
     if (preOrder) { setOrderNum(preOrder); doTrack(preOrder, ""); }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const handleTrack = (e) => { e.preventDefault(); doTrack(orderNum, email); };
 

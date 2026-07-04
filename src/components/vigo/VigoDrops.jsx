@@ -118,10 +118,18 @@ export default function VigoDrops() {
 
   const dropOnDay = day => day ? ALL_DROPS.find(dr => isSameDay(dr.date, day)) : null;
   const handleNotify = async (id) => {
-    if (!email.trim()) return;
+    if (!email.trim() || !/\S+@\S+\.\S+/.test(email.trim())) return;
     const user = await base44.auth.me().catch(() => null);
     if (user) {
       await base44.auth.updateMe({ newsletterEmail: email.trim(), notificationsDrops: true }).catch(() => {});
+    }
+    // Save email to drop's notifyEmails list
+    const drop = allDrops.find(d => d.id === id);
+    if (drop) {
+      const existing = drop.notifyEmails || [];
+      if (!existing.includes(email.trim().toLowerCase())) {
+        await base44.entities.Drop.update(id, { notifyEmails: [...existing, email.trim().toLowerCase()] }).catch(() => {});
+      }
     }
     setNotified(p => ({ ...p, [id]: true }));
   };

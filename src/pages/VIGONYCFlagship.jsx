@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import VigoNav from "../components/vigo/VigoNav";
 import VigoCartDrawer from "../components/vigo/VigoCartDrawer";
@@ -79,9 +78,32 @@ export default function VIGONYCFlagship() {
     if (!ref) return;
     base44.auth.me().then(user => {
       if (!user) return;
-      base44.functions.invoke("loyaltyPoints", { action: "scanQR", data: { qrCodeId: ref } })
-        .then(res => { if (res.data && !res.data.error) { import("sonner").then(({ toast }) => toast.success("Referral code applied! +50 points")); } })
-        .catch(() => {});
+      // Check if this referral code belongs to another user
+      base44.entities.UserLoyalty.filter({ referralCode: ref }, "-created_date", 1)
+        .then(async (records) => {
+          const referrer = records?.[0];
+          if (!referrer || referrer.userEmail === user.email) return;
+          // Check if current user already has a referredBy set
+          const myLoyalty = await base44.entities.UserLoyalty.filter({ userEmail: user.email }, "-created_date", 1).catch(() => []);
+          const myRecord = myLoyalty?.[0];
+          if (myRecord && myRecord.referredBy) return; // Already referred
+          // Set referredBy on current user's loyalty record
+          if (myRecord) {
+            await base44.entities.UserLoyalty.update(myRecord.id, { referredBy: ref }).catch(() => {});
+          }
+          // Award 50 points to referrer
+          const newPoints = (referrer.points || 0) + 50;
+          const newTotal = (referrer.totalEarned || 0) + 50;
+          const newReferrals = (referrer.totalReferrals || 0) + 1;
+          const tier = newTotal >= 10000 ? "Obsidian" : newTotal >= 3000 ? "Chrome" : "Silver";
+          await base44.entities.UserLoyalty.update(referrer.id, {
+            points: newPoints,
+            totalEarned: newTotal,
+            totalReferrals: newReferrals,
+            tier,
+          }).catch(() => {});
+          import("sonner").then(({ toast }) => toast.success("Referral code applied! Referrer earned 50 points"));
+        }).catch(() => {});
     }).catch(() => {});
   }, []);
 
@@ -91,7 +113,7 @@ export default function VIGONYCFlagship() {
       if (user) {
         const productId = item.productId || item.id;
         const itemQty = item.qty || 1;
-        const existing = await base44.entities.CartItem.filter({ created_by: user.email, productId }, '-created_date', 10);
+        const existing = await base44.entities.CartItem.filter({ productId }, '-created_date', 10);
         const match = existing.find(i => i.size === item.size && i.color === item.color);
         if (match) {
           await base44.entities.CartItem.update(match.id, { qty: match.qty + itemQty });
@@ -151,6 +173,7 @@ export default function VIGONYCFlagship() {
   const prefersReducedMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const isLivePage = location.pathname === "/live";
+  const isCheckoutPage = location.pathname === "/checkout";
   const ctx = { addToCart, wishlist, toggleWishlist, setSizeGuideOpen, logo: LOGO, productImg: PRODUCT_IMG, refreshCartCount };
 
   return (
@@ -158,19 +181,11 @@ export default function VIGONYCFlagship() {
       <SizeGuideModal open={sizeGuideOpen} onClose={() => setSizeGuideOpen(false)} />
       <VigoCartDrawer open={cartOpen} onClose={handleCartClose} onCheckout={() => { navigate("/checkout"); handleCartClose(); }} />
       {!isLivePage && <VigoNav cartCount={cartCount} onCartOpen={() => setCartOpen(true)} logo={LOGO} />}
-       <AnimatePresence mode="wait">
-         <motion.div
-           key={location.pathname}
-           initial={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 8 }}
-           animate={{ opacity: 1, y: 0 }}
-           exit={{ opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : -8 }}
-           transition={{ duration: prefersReducedMotion ? 0 : 0.18, ease: "easeInOut" }}
-         >
-           <Outlet context={ctx} />
-         </motion.div>
-       </AnimatePresence>
-      {!isLivePage && <VigoFooter logo={LOGO} />}
-      {!isLivePage && <VigoBottomNav cartCount={cartCount} onCartOpen={() => setCartOpen(true)} cartOpen={cartOpen} />}
+       <div key={location.pathname} style={{ animation: prefersReducedMotion ? "none" : "vigo-page-in 0.2s ease-out" }}>
+         <Outlet context={ctx} />
+       </div>
+      {!isLivePage && !isCheckoutPage && <VigoFooter logo={LOGO} />}
+      {!isLivePage && !isCheckoutPage && <VigoBottomNav cartCount={cartCount} onCartOpen={() => setCartOpen(true)} cartOpen={cartOpen} />}
       {showBackToTop && (
         <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} style={{ position: "fixed", bottom: "calc(80px + env(safe-area-inset-bottom,0px))", right: 20, zIndex: 390, width: 44, height: 44, background: "var(--vt-card)", border: ".5px solid var(--vt-border)", color: "var(--vt-text)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, boxShadow: "0 4px 20px rgba(0,0,0,.3)" }} title="Back to top">↑</button>
       )}
@@ -183,6 +198,7 @@ export default function VIGONYCFlagship() {
           .vigo-bottom-nav { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
           .vigo-nav-top { padding-top: env(safe-area-inset-top); }
         }
+        @keyframes vigo-page-in { from { opacity: 0; } to { opacity: 1; } }
       `}</style>
     </div>
   );

@@ -79,7 +79,7 @@ export default function VigoProduct() {
       base44.auth.me().then((u) => {
         if (u) {
           setReviewForm((f) => ({ ...f, reviewerName: u.full_name || "" }));
-          base44.entities.Review.filter({ productId: id, created_by: u.email }, "-created_date", 1).then((existing) => {if (existing?.length > 0) setHasReviewed(true);}).catch(() => {});
+          base44.entities.Review.filter({ productId: id }, "-created_date", 50).then((existing) => {if (existing?.some(r => r.created_by_id === u.id)) setHasReviewed(true);}).catch(() => {});
         }
       }).catch(() => {});
     }).catch(() => {
