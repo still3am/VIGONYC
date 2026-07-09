@@ -380,6 +380,12 @@ export default function VigoAccount() {
                   <div style={{ fontSize: 7, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Wishlist</div>
                   <div style={{ fontSize: 13, fontWeight: 900, color: S }}>{wishlistCount}</div>
                 </div>
+                {user?.role === "admin" && (
+                  <button onClick={() => navigate("/admin/editor")} style={{ background: S, color: "#000", border: "none", padding: "6px 16px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit", display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                    <span>Edit Site</span>
+                    <span style={{ fontSize: 13, fontWeight: 900 }}>✦</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>

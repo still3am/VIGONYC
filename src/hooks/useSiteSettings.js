@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, createContext, useContext } from "react";
 import { base44 } from "@/api/base44Client";
 
-const DEFAULTS = {
+export const DEFAULTS = {
   hero_headline_1: "STREETS",
   hero_headline_2: "OF NYC",
   hero_sub: "Born in New York City. Built from concrete and culture.",
@@ -30,16 +30,21 @@ const DEFAULTS = {
   crew_line_3: "Queens — Operations & Drops",
 };
 
+export const SettingsOverrideContext = createContext(null);
+
 export function useSiteSettings() {
+  const override = useContext(SettingsOverrideContext);
   const [settings, setSettings] = useState(DEFAULTS);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
+    if (override) { setLoading(false); return; }
     base44.entities.SiteSettings.list().catch(() => []).then(rows => {
       const merged = { ...DEFAULTS };
       (rows || []).forEach(r => { if (r.key) merged[r.key] = r.value; });
       setSettings(merged);
       setLoading(false);
     });
-  }, []);
-  return { settings, loading };
+  }, [override]);
+  const finalSettings = override ? { ...DEFAULTS, ...override } : settings;
+  return { settings: finalSettings, loading: override ? false : loading };
 }
