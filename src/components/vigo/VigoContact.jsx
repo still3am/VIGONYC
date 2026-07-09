@@ -114,10 +114,8 @@ export default function VigoContact() {
           </div>
           <div style={{ background: G1, border: `.5px solid ${G3}`, padding: "24px 28px" }}>
             <div style={{ fontSize: 9, letterSpacing: 3, color: SD, textTransform: "uppercase", marginBottom: 12 }}>Hours</div>
-            <div style={{ fontSize: 12, color: SD, lineHeight: 1.9 }}>
-              Mon – Fri: 10am – 7pm EST<br />
-              Sat: 11am – 5pm EST<br />
-              Sun: Closed
+            <div style={{ fontSize: 12, color: SD, lineHeight: 1.9, whiteSpace: "pre-line" }}>
+              {settings.store_hours || "Mon – Fri: 10am – 7pm EST\nSat: 11am – 5pm EST\nSun: Closed"}
             </div>
           </div>
         </div>

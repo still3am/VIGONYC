@@ -21,6 +21,7 @@ export const DEFAULTS = {
   contact_email: "hello@vigonyc.com",
   contact_instagram: "@VIGONYC",
   contact_response_time: "Within 24 hours",
+  store_hours: "Mon – Fri: 10am – 7pm EST\nSat: 11am – 5pm EST\nSun: Closed",
   free_shipping_threshold: "150",
   hero_product_name: "Chrome V Tee — SS25",
   hero_product_units: "100 Units",

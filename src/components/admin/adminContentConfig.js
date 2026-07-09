@@ -57,6 +57,7 @@ export const SECTIONS = {
         { key: "contact_email", label: "Email Address", type: "text" },
         { key: "contact_instagram", label: "Instagram Handle", type: "text" },
         { key: "contact_response_time", label: "Response Time", type: "text" },
+        { key: "store_hours", label: "Store Hours (one per line)", type: "textarea", rows: 4 },
       ]},
     ],
   },
@@ -65,6 +66,9 @@ export const SECTIONS = {
     groups: [
       { title: "Shipping", note: "The free-shipping threshold controls the progress bar in the cart drawer.", fields: [
         { key: "free_shipping_threshold", label: "Free Shipping Over ($)", type: "number" },
+      ]},
+      { title: "Site Mode", note: "Turning Coming Soon ON hides the storefront from everyone except admins — use for pre-launch or maintenance.", fields: [
+        { key: "coming_soon_active", label: "Coming Soon Mode", type: "toggle" },
       ]},
     ],
   },

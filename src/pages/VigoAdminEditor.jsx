@@ -52,6 +52,12 @@ export default function VigoAdminEditor() {
 
   const dirty = useMemo(() => Object.keys(draft).some(k => String(draft[k] ?? "") !== String(saved[k] ?? "")), [draft, saved]);
 
+  useEffect(() => {
+    const handler = (e) => { if (dirty) { e.preventDefault(); e.returnValue = ""; } };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [dirty]);
+
   const handleSave = async () => {
     setSaving(true);
     const changed = Object.keys(draft).filter(k => String(draft[k] ?? "") !== String(saved[k] ?? ""));
@@ -91,7 +97,7 @@ export default function VigoAdminEditor() {
     <div style={{ height: "100vh", overflow: "hidden", background: G1, color: "var(--vt-text)", display: "flex", flexDirection: "column" }}>
       <header style={{ background: G1, borderBottom: `.5px solid ${G3}`, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", gap: 10, flexWrap: "wrap", flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-          <button onClick={() => navigate("/account")} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "8px 12px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>← Back</button>
+          <button onClick={() => { if (dirty && !window.confirm("You have unsaved changes. Leave without saving?")) return; navigate("/account"); }} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "8px 12px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>← Back</button>
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 13, fontWeight: 900, letterSpacing: 1 }}>Content Editor</div>
             <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>{pageLabel} · live preview</div>
