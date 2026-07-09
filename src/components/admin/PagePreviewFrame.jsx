@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { MemoryRouter, Routes, Route, Outlet } from "react-router-dom";
+import { Routes, Route, Outlet } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { SettingsOverrideContext } from "@/hooks/useSiteSettings";
 import VigoNav from "@/components/vigo/VigoNav";
@@ -39,16 +39,14 @@ function PreviewTree({ page, settings, ctx }) {
   return (
     <SettingsOverrideContext.Provider value={settings}>
       <div style={{ pointerEvents: "none", userSelect: "none" }}>
-        <MemoryRouter initialEntries={["/"]}>
-          <Routes>
-            <Route element={<PreviewLayout ctx={ctx} />}>
-              <Route path="*" element={<>
-                <VigoNav cartCount={0} onCartOpen={() => {}} logo={LOGO} />
-                <PageComp />
-              </>} />
-            </Route>
-          </Routes>
-        </MemoryRouter>
+        <Routes>
+          <Route element={<PreviewLayout ctx={ctx} />}>
+            <Route path="*" element={<>
+              <VigoNav cartCount={0} onCartOpen={() => {}} logo={LOGO} />
+              <PageComp />
+            </>} />
+          </Route>
+        </Routes>
       </div>
     </SettingsOverrideContext.Provider>
   );
