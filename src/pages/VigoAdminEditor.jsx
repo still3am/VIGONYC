@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { ChevronLeft, Monitor, Smartphone, RotateCcw, Save, ExternalLink, Home as HomeIcon, Info, Mail, Globe } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { DEFAULTS } from "@/hooks/useSiteSettings";
 import { toast } from "sonner";
@@ -9,8 +10,18 @@ import { SECTIONS, PAGE_FOR_SECTION, SECTION_OF_KEY } from "@/components/admin/a
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
+const G2 = "var(--vt-card)";
 const G3 = "var(--vt-border)";
 const SD = "var(--vt-sub)";
+
+const NAV = [
+  { id: "home", label: "Home", icon: HomeIcon },
+  { id: "about", label: "About", icon: Info },
+  { id: "contact", label: "Contact", icon: Mail },
+  { id: "global", label: "Global", icon: Globe },
+];
+
+const deviceBtn = { border: "none", padding: "7px 9px", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center" };
 
 export default function VigoAdminEditor() {
   const navigate = useNavigate();
@@ -22,7 +33,7 @@ export default function VigoAdminEditor() {
   const [recordMap, setRecordMap] = useState({});
   const [saving, setSaving] = useState(false);
   const [activePage, setActivePage] = useState("home");
-  const [activeGroup, setActiveGroup] = useState(0);
+  const [device, setDevice] = useState("desktop");
   const [mobileView, setMobileView] = useState("edit");
 
   useEffect(() => {
@@ -41,8 +52,6 @@ export default function VigoAdminEditor() {
     });
   }, []);
 
-  useEffect(() => { setActiveGroup(0); }, [activePage]);
-
   useEffect(() => {
     const t = setTimeout(() => setPreviewDraft(draft), 220);
     return () => clearTimeout(t);
@@ -51,6 +60,7 @@ export default function VigoAdminEditor() {
   const setField = (key, val) => setDraft(p => ({ ...p, [key]: val }));
 
   const dirty = useMemo(() => Object.keys(draft).some(k => String(draft[k] ?? "") !== String(saved[k] ?? "")), [draft, saved]);
+  const dirtyCount = useMemo(() => Object.keys(draft).filter(k => String(draft[k] ?? "") !== String(saved[k] ?? "")).length, [draft, saved]);
 
   useEffect(() => {
     const handler = (e) => { if (dirty) { e.preventDefault(); e.returnValue = ""; } };
@@ -83,6 +93,7 @@ export default function VigoAdminEditor() {
   };
 
   const handleReset = () => { setDraft(saved); setPreviewDraft(saved); toast("Reverted to saved"); };
+  const handleBack = () => { if (dirty && !window.confirm("You have unsaved changes. Leave without saving?")) return; navigate("/account"); };
 
   if (!isAdmin || !loaded) {
     return <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: G1 }}>
@@ -91,44 +102,80 @@ export default function VigoAdminEditor() {
   }
 
   const previewPage = PAGE_FOR_SECTION[activePage];
-  const pageLabel = SECTIONS[activePage].label;
+  const def = SECTIONS[activePage];
 
   return (
-    <div style={{ height: "100vh", overflow: "hidden", background: G1, color: "var(--vt-text)", display: "flex", flexDirection: "column" }}>
-      <header style={{ background: G1, borderBottom: `.5px solid ${G3}`, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", gap: 10, flexWrap: "wrap", flexShrink: 0 }}>
+    <div className="ae-shell" style={{ height: "100vh", overflow: "hidden", background: G1, color: "var(--vt-text)", display: "flex", flexDirection: "column" }}>
+      <header style={{ background: G1, borderBottom: `.5px solid ${G3}`, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", gap: 10, flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-          <button onClick={() => { if (dirty && !window.confirm("You have unsaved changes. Leave without saving?")) return; navigate("/account"); }} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "8px 12px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>← Back</button>
-          <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 900, letterSpacing: 1 }}>Content Editor</div>
-            <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>{pageLabel} · live preview</div>
+          <button onClick={handleBack} style={{ background: "none", border: "none", color: SD, cursor: "pointer", padding: 6, display: "flex", alignItems: "center" }} title="Back"><ChevronLeft size={18} /></button>
+          <div style={{ minWidth: 0, lineHeight: 1.1 }}>
+            <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Content</div>
+            <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: .3 }}>{def.label}</div>
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {dirty && <span style={{ fontSize: 8, letterSpacing: 1, color: S, textTransform: "uppercase" }}>● Unsaved</span>}
-          <button onClick={handleReset} disabled={!dirty} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "9px 14px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", cursor: dirty ? "pointer" : "not-allowed", fontFamily: "inherit", opacity: dirty ? 1 : 0.4 }}>Reset</button>
-          <button onClick={handleSave} disabled={!dirty || saving} style={{ background: dirty ? S : G3, color: dirty ? "#000" : SD, border: "none", padding: "9px 18px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: dirty ? "pointer" : "not-allowed", fontFamily: "inherit", opacity: saving ? 0.7 : 1 }}>{saving ? "Saving…" : "Save"}</button>
+          <div className="ae-device" style={{ display: "flex", alignItems: "center", gap: 2, background: G2, border: `.5px solid ${G3}`, padding: 3 }}>
+            <button onClick={() => setDevice("desktop")} style={{ ...deviceBtn, background: device === "desktop" ? S : "none", color: device === "desktop" ? "#000" : SD }} title="Desktop preview"><Monitor size={15} /></button>
+            <button onClick={() => setDevice("mobile")} style={{ ...deviceBtn, background: device === "mobile" ? S : "none", color: device === "mobile" ? "#000" : SD }} title="Mobile preview"><Smartphone size={15} /></button>
+          </div>
+          {dirty && <span style={{ fontSize: 8, letterSpacing: 1, color: S, textTransform: "uppercase", display: "flex", alignItems: "center", gap: 5 }}><span style={{ width: 6, height: 6, borderRadius: "50%", background: S }} />{dirtyCount} unsaved</span>}
+          <button onClick={handleReset} disabled={!dirty} style={{ background: "none", border: `.5px solid ${G3}`, color: SD, padding: "8px 12px", fontSize: 9, letterSpacing: 1.5, textTransform: "uppercase", cursor: dirty ? "pointer" : "not-allowed", fontFamily: "inherit", opacity: dirty ? 1 : 0.4, display: "flex", alignItems: "center", gap: 6 }}><RotateCcw size={13} /> Reset</button>
+          <button onClick={handleSave} disabled={!dirty || saving} style={{ background: dirty ? S : G3, color: dirty ? "#000" : SD, border: "none", padding: "9px 16px", fontSize: 9, letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 800, cursor: dirty ? "pointer" : "not-allowed", fontFamily: "inherit", opacity: saving ? 0.7 : 1, display: "flex", alignItems: "center", gap: 6 }}><Save size={13} /> {saving ? "Saving…" : "Save"}</button>
         </div>
       </header>
 
-      <div className="ae-toggle" style={{ display: "none", padding: "8px 14px", borderBottom: `.5px solid ${G3}`, gap: 8, flexShrink: 0 }}>
+      <div className="ae-body" style={{ flex: 1, display: "grid", gridTemplateColumns: "240px 460px 1fr", gridTemplateRows: "1fr", minHeight: 0 }}>
+        <aside className="ae-sidebar" style={{ borderRight: `.5px solid ${G3}`, overflowY: "auto", minHeight: 0, background: G1, display: "flex", flexDirection: "column" }}>
+          <div style={{ padding: "18px 16px 12px", borderBottom: `.5px solid ${G3}` }}>
+            <div style={{ fontSize: 11, fontWeight: 900, letterSpacing: 2 }}>VIGONYC</div>
+            <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 2 }}>Content Editor</div>
+          </div>
+          <nav style={{ padding: "10px 8px", display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
+            {NAV.map(n => {
+              const Icon = n.icon;
+              const active = activePage === n.id;
+              return (
+                <button key={n.id} onClick={() => setActivePage(n.id)} style={{ display: "flex", alignItems: "center", gap: 11, padding: "11px 12px", background: active ? G2 : "none", border: "none", borderLeft: active ? `2px solid ${S}` : "2px solid transparent", color: active ? "var(--vt-text)" : SD, fontSize: 12, fontWeight: active ? 700 : 500, cursor: "pointer", fontFamily: "inherit", textAlign: "left", transition: "background .15s" }}>
+                  <Icon size={16} style={{ flexShrink: 0, opacity: active ? 1 : 0.7 }} />
+                  {n.label}
+                </button>
+              );
+            })}
+          </nav>
+          <div style={{ padding: "12px 14px", borderTop: `.5px solid ${G3}` }}>
+            <a href="/" target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 10, color: SD, textDecoration: "none", textTransform: "uppercase", letterSpacing: 1.5 }}>
+              <ExternalLink size={13} /> View live site
+            </a>
+          </div>
+        </aside>
+
+        <div className={"ae-editor " + (mobileView === "preview" ? "ae-hide-mobile" : "")} style={{ borderRight: `.5px solid ${G3}`, overflowY: "auto", minHeight: 0 }}>
+          <div style={{ padding: "20px 18px 6px" }}>
+            <div style={{ fontSize: 20, fontWeight: 900, letterSpacing: -0.5 }}>{def.label}</div>
+            <div style={{ fontSize: 11, color: SD, marginTop: 4, lineHeight: 1.6 }}>{def.desc}</div>
+          </div>
+          <EditorPanel draft={draft} saved={saved} setField={setField} activePage={activePage} />
+        </div>
+
+        <div className={"ae-preview " + (mobileView === "edit" ? "ae-hide-mobile" : "")} style={{ minHeight: 0, overflow: "hidden", background: G2 }}>
+          <PagePreviewFrame page={previewPage} settings={previewDraft} device={device} />
+        </div>
+      </div>
+
+      <div className="ae-toggle" style={{ display: "none", padding: "8px 12px", borderTop: `.5px solid ${G3}`, gap: 8, flexShrink: 0 }}>
         <button onClick={() => setMobileView("edit")} style={{ flex: 1, padding: "11px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: mobileView === "edit" ? 900 : 400, background: mobileView === "edit" ? S : "transparent", color: mobileView === "edit" ? "#000" : SD, border: `.5px solid ${mobileView === "edit" ? S : G3}`, cursor: "pointer", fontFamily: "inherit" }}>Edit</button>
         <button onClick={() => setMobileView("preview")} style={{ flex: 1, padding: "11px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: mobileView === "preview" ? 900 : 400, background: mobileView === "preview" ? S : "transparent", color: mobileView === "preview" ? "#000" : SD, border: `.5px solid ${mobileView === "preview" ? S : G3}`, cursor: "pointer", fontFamily: "inherit" }}>Preview</button>
       </div>
 
-      <div className="ae-grid" style={{ flex: 1, display: "grid", gridTemplateColumns: "420px 1fr", minHeight: 0 }}>
-        <div className={mobileView === "preview" ? "ae-hide-md" : ""} style={{ borderRight: `.5px solid ${G3}`, overflowY: "auto", minHeight: 0 }}>
-          <EditorPanel draft={draft} setField={setField} activePage={activePage} setActivePage={setActivePage} activeGroup={activeGroup} setActiveGroup={setActiveGroup} />
-        </div>
-        <div className={mobileView === "edit" ? "ae-hide-md" : ""} style={{ overflowY: "auto", minHeight: 0, background: "var(--vt-bg)" }}>
-          <PagePreviewFrame page={previewPage} settings={previewDraft} />
-        </div>
-      </div>
-
       <style>{`
         @media(max-width:1023px){
-          .ae-grid{grid-template-columns:1fr !important;}
+          .ae-body{display:flex !important; flex-direction:column !important;}
+          .ae-sidebar{display:none !important;}
+          .ae-device{display:none !important;}
           .ae-toggle{display:flex !important;}
-          .ae-hide-md{display:none !important;}
+          .ae-hide-mobile{display:none !important;}
+          .ae-editor,.ae-preview{flex:1; min-height:0; border-right:none !important;}
         }
       `}</style>
     </div>

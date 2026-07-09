@@ -1,6 +1,7 @@
 export const SECTIONS = {
   home: {
     label: "Home",
+    desc: "The storefront landing page — hero, banner, stats, brand teaser and ticker.",
     groups: [
       { title: "Top Banner", fields: [
         { key: "banner_visible", label: "Show Banner", type: "toggle" },
@@ -32,6 +33,7 @@ export const SECTIONS = {
   },
   about: {
     label: "About",
+    desc: "The brand story page — headline, mission, stats and the crew behind VIGONYC.",
     groups: [
       { title: "Story", fields: [
         { key: "about_headline", label: "Headline (also on Home)", type: "text" },
@@ -52,6 +54,7 @@ export const SECTIONS = {
   },
   contact: {
     label: "Contact",
+    desc: "How customers reach you — email, socials, response time and store hours.",
     groups: [
       { title: "Contact Info", fields: [
         { key: "contact_email", label: "Email Address", type: "text" },
@@ -63,6 +66,7 @@ export const SECTIONS = {
   },
   global: {
     label: "Global",
+    desc: "Store-wide settings — shipping threshold and the site launch mode.",
     groups: [
       { title: "Shipping", note: "The free-shipping threshold controls the progress bar in the cart drawer.", fields: [
         { key: "free_shipping_threshold", label: "Free Shipping Over ($)", type: "number" },

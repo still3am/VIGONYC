@@ -1,42 +1,57 @@
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { TextField, TextAreaField, NumberField, SelectField, ToggleField } from "@/components/admin/EditorFields";
 import { SECTIONS } from "@/components/admin/adminContentConfig";
 
 const S = "#C0C0C0";
 const G1 = "var(--vt-bg)";
+const G2 = "var(--vt-card)";
 const G3 = "var(--vt-border)";
 const SD = "var(--vt-sub)";
 
-function renderField(f, draft, setField) {
-  const props = { key: f.key, label: f.label, value: draft[f.key], onChange: v => setField(f.key, v) };
-  if (f.type === "textarea") return <TextAreaField {...props} />;
-  if (f.type === "number") return <NumberField {...props} />;
-  if (f.type === "select") return <SelectField {...props} options={f.options} />;
-  if (f.type === "toggle") return <ToggleField {...props} />;
-  return <TextField {...props} />;
+function renderField(f, draft, saved, setField) {
+  const props = { label: f.label, value: draft[f.key], onChange: v => setField(f.key, v) };
+  let comp;
+  if (f.type === "textarea") comp = <TextAreaField {...props} rows={f.rows} />;
+  else if (f.type === "number") comp = <NumberField {...props} />;
+  else if (f.type === "select") comp = <SelectField {...props} options={f.options} />;
+  else if (f.type === "toggle") comp = <ToggleField {...props} />;
+  else comp = <TextField {...props} />;
+  const isDirty = String(draft[f.key] ?? "") !== String(saved[f.key] ?? "");
+  return (
+    <div key={f.key} style={{ borderLeft: `2px solid ${isDirty ? S : "transparent"}`, paddingLeft: 12, transition: "border-color .15s" }}>
+      {comp}
+    </div>
+  );
 }
 
-export default function EditorPanel({ draft, setField, activePage, setActivePage, activeGroup, setActiveGroup }) {
-  const pages = Object.entries(SECTIONS);
-  const def = SECTIONS[activePage];
-  const group = def.groups[activeGroup] || def.groups[0];
+function SectionCard({ group, draft, saved, setField }) {
+  const [open, setOpen] = useState(true);
+  const dirtyCount = group.fields.filter(f => String(draft[f.key] ?? "") !== String(saved[f.key] ?? "")).length;
   return (
-    <div>
-      <div style={{ position: "sticky", top: 0, zIndex: 5, background: G1 }}>
-        <div style={{ display: "flex", gap: 6, overflowX: "auto", padding: "12px 14px 10px" }}>
-          {pages.map(([id, p]) => (
-            <button key={id} onClick={() => setActivePage(id)} style={{ padding: "8px 14px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: activePage === id ? 900 : 400, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", background: activePage === id ? S : "transparent", color: activePage === id ? "#000" : SD, border: `.5px solid ${activePage === id ? S : G3}` }}>{p.label}</button>
-          ))}
+    <div style={{ background: G1, border: `.5px solid ${G3}`, marginBottom: 12 }}>
+      <button onClick={() => setOpen(!open)} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "13px 14px", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", color: "var(--vt-text)" }}>
+        <span style={{ display: "flex", alignItems: "center", gap: 9, fontSize: 11, fontWeight: 700, letterSpacing: .3, textAlign: "left" }}>
+          {group.title}
+          {dirtyCount > 0 && <span style={{ fontSize: 8, color: S, background: G2, border: `.5px solid ${G3}`, padding: "1px 6px", borderRadius: 8, fontWeight: 700 }}>{dirtyCount}</span>}
+        </span>
+        <ChevronDown size={15} style={{ color: SD, transform: open ? "none" : "rotate(-90deg)", transition: "transform .2s", flexShrink: 0 }} />
+      </button>
+      {open && (
+        <div style={{ padding: "4px 14px 16px", display: "flex", flexDirection: "column", gap: 14, borderTop: `.5px solid ${G3}` }}>
+          {group.note && <div style={{ fontSize: 10, color: SD, background: G2, border: `.5px solid ${G3}`, padding: "10px 12px", lineHeight: 1.6, marginTop: 10 }}>{group.note}</div>}
+          {group.fields.map(f => renderField(f, draft, saved, setField))}
         </div>
-        <div style={{ display: "flex", gap: 6, overflowX: "auto", padding: "0 14px 10px", borderBottom: `.5px solid ${G3}` }}>
-          {def.groups.map((g, i) => (
-            <button key={g.title} onClick={() => setActiveGroup(i)} style={{ padding: "8px 12px", fontSize: 8, letterSpacing: 1, textTransform: "uppercase", fontWeight: activeGroup === i ? 700 : 400, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", background: "none", color: activeGroup === i ? "var(--vt-text)" : SD, border: "none", borderBottom: activeGroup === i ? `1.5px solid ${S}` : "1.5px solid transparent" }}>{g.title}</button>
-          ))}
-        </div>
-      </div>
-      <div style={{ padding: "18px 14px 40px", display: "flex", flexDirection: "column", gap: 16 }}>
-        {group.note && <div style={{ fontSize: 10, color: SD, background: "var(--vt-card)", border: `.5px solid ${G3}`, padding: "10px 12px", lineHeight: 1.6 }}>{group.note}</div>}
-        {group.fields.map(f => renderField(f, draft, setField))}
-      </div>
+      )}
+    </div>
+  );
+}
+
+export default function EditorPanel({ draft, saved, setField, activePage }) {
+  const def = SECTIONS[activePage];
+  return (
+    <div style={{ padding: "8px 14px 32px" }}>
+      {def.groups.map(g => <SectionCard key={g.title} group={g} draft={draft} saved={saved} setField={setField} />)}
     </div>
   );
 }
