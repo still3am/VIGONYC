@@ -169,19 +169,19 @@ export default function VigoAdminEditor() {
       </div>
 
       <div className="ae-bottomnav" style={{ flexShrink: 0 }}>
-        <div style={{ display: "flex", justifyContent: "center", padding: "10px 12px calc(10px + env(safe-area-inset-bottom,0px))", background: "rgba(18,18,20,0.82)", backdropFilter: "blur(30px) saturate(1.7)", WebkitBackdropFilter: "blur(30px) saturate(1.7)", borderTop: "0.5px solid rgba(255,255,255,0.1)" }} className="hidden">
-          <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 8px", background: "rgba(30,30,32,0.6)", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 30, boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12), 0 4px 24px rgba(0,0,0,0.4)" }}>
-            {[{ id: "edit", label: "Edit", Icon: Pencil, on: () => setMobileView("edit"), active: mobileView === "edit" }, { id: "preview", label: "Preview", Icon: Eye, on: () => setMobileView("preview"), active: mobileView === "preview" }].map((it) => {
-              const I = it.Icon;
-              return (
-                <button key={it.id} onClick={it.on} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, width: 76, height: 48, borderRadius: 24, background: it.active ? "rgba(255,255,255,0.14)" : "transparent", border: `0.5px solid ${it.active ? "rgba(255,255,255,0.2)" : "transparent"}`, boxShadow: it.active ? "inset 0 1px 0 rgba(255,255,255,0.2)" : "none", color: it.active ? "#fff" : "rgba(200,200,200,0.65)", fontSize: 8, letterSpacing: 0.5, textTransform: "uppercase", fontWeight: it.active ? 700 : 400, cursor: "pointer", fontFamily: "inherit", transition: "all .25s cubic-bezier(0.34,1.56,0.64,1)" }}>
-                  <I size={18} style={{ transform: it.active ? "scale(1.12)" : "scale(1)", transition: "transform .25s" }} />
-                  <span>{it.label}</span>
-                </button>);
+        
 
-            })}
-          </div>
-        </div>
+
+
+
+
+
+
+
+
+
+
+        
       </div>
 
       <style>{`
