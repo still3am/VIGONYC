@@ -15,11 +15,11 @@ const G3 = "var(--vt-border)";
 const SD = "var(--vt-sub)";
 
 const NAV = [
-  { id: "home", label: "Home", icon: HomeIcon },
-  { id: "about", label: "About", icon: Info },
-  { id: "contact", label: "Contact", icon: Mail },
-  { id: "global", label: "Global", icon: Globe },
-];
+{ id: "home", label: "Home", icon: HomeIcon },
+{ id: "about", label: "About", icon: Info },
+{ id: "contact", label: "Contact", icon: Mail },
+{ id: "global", label: "Global", icon: Globe }];
+
 
 const deviceBtn = { border: "none", padding: "7px 9px", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center" };
 
@@ -37,18 +37,18 @@ export default function VigoAdminEditor() {
   const [mobileView, setMobileView] = useState("edit");
 
   useEffect(() => {
-    base44.auth.me().then(u => {
-      if (u && u.role === "admin") setIsAdmin(true);
-      else navigate("/account");
+    base44.auth.me().then((u) => {
+      if (u && u.role === "admin") setIsAdmin(true);else
+      navigate("/account");
     }).catch(() => navigate("/account"));
   }, [navigate]);
 
   useEffect(() => {
-    base44.entities.SiteSettings.list().catch(() => []).then(rows => {
+    base44.entities.SiteSettings.list().catch(() => []).then((rows) => {
       const map = { ...DEFAULTS };
       const ids = {};
-      (rows || []).forEach(r => { if (r.key) { map[r.key] = r.value; ids[r.key] = r.id; } });
-      setDraft(map); setSaved(map); setPreviewDraft(map); setRecordMap(ids); setLoaded(true);
+      (rows || []).forEach((r) => {if (r.key) {map[r.key] = r.value;ids[r.key] = r.id;}});
+      setDraft(map);setSaved(map);setPreviewDraft(map);setRecordMap(ids);setLoaded(true);
     });
   }, []);
 
@@ -57,26 +57,26 @@ export default function VigoAdminEditor() {
     return () => clearTimeout(t);
   }, [draft]);
 
-  const setField = (key, val) => setDraft(p => ({ ...p, [key]: val }));
+  const setField = (key, val) => setDraft((p) => ({ ...p, [key]: val }));
 
-  const hiddenSections = useMemo(() => { try { return JSON.parse(draft.editor_hidden_sections || "[]"); } catch { return []; } }, [draft.editor_hidden_sections]);
-  const hiddenFields = useMemo(() => { try { return JSON.parse(draft.editor_hidden_fields || "[]"); } catch { return []; } }, [draft.editor_hidden_fields]);
-  const toggleSectionHidden = (id, hide) => setField("editor_hidden_sections", JSON.stringify(hide ? [...new Set([...hiddenSections, id])] : hiddenSections.filter(x => x !== id)));
-  const toggleFieldHidden = (key, hide) => setField("editor_hidden_fields", JSON.stringify(hide ? [...new Set([...hiddenFields, key])] : hiddenFields.filter(x => x !== key)));
+  const hiddenSections = useMemo(() => {try {return JSON.parse(draft.editor_hidden_sections || "[]");} catch {return [];}}, [draft.editor_hidden_sections]);
+  const hiddenFields = useMemo(() => {try {return JSON.parse(draft.editor_hidden_fields || "[]");} catch {return [];}}, [draft.editor_hidden_fields]);
+  const toggleSectionHidden = (id, hide) => setField("editor_hidden_sections", JSON.stringify(hide ? [...new Set([...hiddenSections, id])] : hiddenSections.filter((x) => x !== id)));
+  const toggleFieldHidden = (key, hide) => setField("editor_hidden_fields", JSON.stringify(hide ? [...new Set([...hiddenFields, key])] : hiddenFields.filter((x) => x !== key)));
 
-  const dirty = useMemo(() => Object.keys(draft).some(k => String(draft[k] ?? "") !== String(saved[k] ?? "")), [draft, saved]);
-  const dirtyCount = useMemo(() => Object.keys(draft).filter(k => String(draft[k] ?? "") !== String(saved[k] ?? "")).length, [draft, saved]);
+  const dirty = useMemo(() => Object.keys(draft).some((k) => String(draft[k] ?? "") !== String(saved[k] ?? "")), [draft, saved]);
+  const dirtyCount = useMemo(() => Object.keys(draft).filter((k) => String(draft[k] ?? "") !== String(saved[k] ?? "")).length, [draft, saved]);
 
   useEffect(() => {
-    const handler = (e) => { if (dirty) { e.preventDefault(); e.returnValue = ""; } };
+    const handler = (e) => {if (dirty) {e.preventDefault();e.returnValue = "";}};
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
   }, [dirty]);
 
   const handleSave = async () => {
     setSaving(true);
-    const changed = Object.keys(draft).filter(k => String(draft[k] ?? "") !== String(saved[k] ?? ""));
-    let ok = 0, fail = 0;
+    const changed = Object.keys(draft).filter((k) => String(draft[k] ?? "") !== String(saved[k] ?? ""));
+    let ok = 0,fail = 0;
     for (const key of changed) {
       const value = String(draft[key] ?? "");
       const section = SECTION_OF_KEY[key] || "global";
@@ -85,20 +85,20 @@ export default function VigoAdminEditor() {
           await base44.entities.SiteSettings.update(recordMap[key], { key, value, section });
         } else {
           const created = await base44.entities.SiteSettings.create({ key, value, section });
-          if (created?.id) setRecordMap(p => ({ ...p, [key]: created.id }));
+          if (created?.id) setRecordMap((p) => ({ ...p, [key]: created.id }));
         }
         ok++;
-      } catch { fail++; }
+      } catch {fail++;}
     }
     setSaved({ ...draft });
     setSaving(false);
-    if (fail === 0) toast.success(`Saved ${ok} change${ok === 1 ? "" : "s"}`);
-    else if (ok > 0) toast.error(`${ok} saved, ${fail} failed`);
-    else toast.error("Save failed");
+    if (fail === 0) toast.success(`Saved ${ok} change${ok === 1 ? "" : "s"}`);else
+    if (ok > 0) toast.error(`${ok} saved, ${fail} failed`);else
+    toast.error("Save failed");
   };
 
-  const handleReset = () => { setDraft(saved); setPreviewDraft(saved); toast("Reverted to saved"); };
-  const handleBack = () => { if (dirty && !window.confirm("You have unsaved changes. Leave without saving?")) return; navigate("/account"); };
+  const handleReset = () => {setDraft(saved);setPreviewDraft(saved);toast("Reverted to saved");};
+  const handleBack = () => {if (dirty && !window.confirm("You have unsaved changes. Leave without saving?")) return;navigate("/account");};
 
   if (!isAdmin || !loaded) {
     return <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: G1 }}>
@@ -137,15 +137,15 @@ export default function VigoAdminEditor() {
             <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 2 }}>Content Editor</div>
           </div>
           <nav style={{ padding: "10px 8px", display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
-            {NAV.map(n => {
+            {NAV.map((n) => {
               const Icon = n.icon;
               const active = activePage === n.id;
               return (
                 <button key={n.id} onClick={() => setActivePage(n.id)} style={{ display: "flex", alignItems: "center", gap: 11, padding: "11px 12px", background: active ? G2 : "none", border: "none", borderLeft: active ? `2px solid ${S}` : "2px solid transparent", color: active ? "var(--vt-text)" : SD, fontSize: 12, fontWeight: active ? 700 : 500, cursor: "pointer", fontFamily: "inherit", textAlign: "left", transition: "background .15s" }}>
                   <Icon size={16} style={{ flexShrink: 0, opacity: active ? 1 : 0.7 }} />
                   {n.label}
-                </button>
-              );
+                </button>);
+
             })}
           </nav>
           <div style={{ padding: "12px 14px", borderTop: `.5px solid ${G3}` }}>
@@ -169,16 +169,16 @@ export default function VigoAdminEditor() {
       </div>
 
       <div className="ae-bottomnav" style={{ flexShrink: 0 }}>
-        <div style={{ display: "flex", justifyContent: "center", padding: "10px 12px calc(10px + env(safe-area-inset-bottom,0px))", background: "rgba(18,18,20,0.82)", backdropFilter: "blur(30px) saturate(1.7)", WebkitBackdropFilter: "blur(30px) saturate(1.7)", borderTop: "0.5px solid rgba(255,255,255,0.1)" }}>
+        <div style={{ display: "flex", justifyContent: "center", padding: "10px 12px calc(10px + env(safe-area-inset-bottom,0px))", background: "rgba(18,18,20,0.82)", backdropFilter: "blur(30px) saturate(1.7)", WebkitBackdropFilter: "blur(30px) saturate(1.7)", borderTop: "0.5px solid rgba(255,255,255,0.1)" }} className="hidden">
           <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 8px", background: "rgba(30,30,32,0.6)", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 30, boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12), 0 4px 24px rgba(0,0,0,0.4)" }}>
-            {[{ id: "edit", label: "Edit", Icon: Pencil, on: () => setMobileView("edit"), active: mobileView === "edit" }, { id: "preview", label: "Preview", Icon: Eye, on: () => setMobileView("preview"), active: mobileView === "preview" }].map(it => {
+            {[{ id: "edit", label: "Edit", Icon: Pencil, on: () => setMobileView("edit"), active: mobileView === "edit" }, { id: "preview", label: "Preview", Icon: Eye, on: () => setMobileView("preview"), active: mobileView === "preview" }].map((it) => {
               const I = it.Icon;
               return (
                 <button key={it.id} onClick={it.on} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, width: 76, height: 48, borderRadius: 24, background: it.active ? "rgba(255,255,255,0.14)" : "transparent", border: `0.5px solid ${it.active ? "rgba(255,255,255,0.2)" : "transparent"}`, boxShadow: it.active ? "inset 0 1px 0 rgba(255,255,255,0.2)" : "none", color: it.active ? "#fff" : "rgba(200,200,200,0.65)", fontSize: 8, letterSpacing: 0.5, textTransform: "uppercase", fontWeight: it.active ? 700 : 400, cursor: "pointer", fontFamily: "inherit", transition: "all .25s cubic-bezier(0.34,1.56,0.64,1)" }}>
                   <I size={18} style={{ transform: it.active ? "scale(1.12)" : "scale(1)", transition: "transform .25s" }} />
                   <span>{it.label}</span>
-                </button>
-              );
+                </button>);
+
             })}
           </div>
         </div>
@@ -195,6 +195,6 @@ export default function VigoAdminEditor() {
           .ae-editor,.ae-preview{flex:1; min-height:0; border-right:none !important;}
         }
       `}</style>
-    </div>
-  );
+    </div>);
+
 }
