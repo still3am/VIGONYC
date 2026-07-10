@@ -22,6 +22,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
   const [scrolled, setScrolled] = useState(false);
   const [query, setQuery] = useState("");
   const { settings } = useSiteSettings();
+  const hiddenSec = (() => { try { return JSON.parse(settings.editor_hidden_sections || "[]"); } catch { return []; } })();
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,7 +58,7 @@ export default function VigoNav({ cartCount, onCartOpen, logo }) {
           <div style={{ height: 2, background: "linear-gradient(90deg,transparent,#888,#E8E8E8,#C0C0C0,#E8E8E8,#888,transparent)" }} />
 
           {/* Ticker */}
-          <div style={{ background: "var(--vt-card)", borderBottom: `.5px solid ${G3}`, overflow: "hidden", height: 34, display: "flex", alignItems: "center", position: "relative" }}>
+          <div style={{ background: "var(--vt-card)", borderBottom: `.5px solid ${G3}`, overflow: "hidden", height: 34, display: hiddenSec.includes("ticker") ? "none" : "flex", alignItems: "center", position: "relative" }}>
             {/* Edge fade masks */}
             <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 60, background: "linear-gradient(90deg, var(--vt-card), transparent)", zIndex: 1, pointerEvents: "none" }} />
             <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 60, background: "linear-gradient(-90deg, var(--vt-card), transparent)", zIndex: 1, pointerEvents: "none" }} />

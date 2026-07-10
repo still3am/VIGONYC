@@ -59,6 +59,20 @@ export default function VigoHome() {
   const { productImg, wishlist, toggleWishlist, addToCart } = useOutletContext();
   const navigate = useNavigate();
   const { settings } = useSiteSettings();
+  const hiddenSec = (() => { try { return JSON.parse(settings.editor_hidden_sections || "[]"); } catch { return []; } })();
+  const hiddenField = (() => { try { return JSON.parse(settings.editor_hidden_fields || "[]"); } catch { return []; } })();
+  const heroKpis = [
+    { key: "kpi_pieces", value: settings.kpi_pieces || "200+", label: "Pieces Dropped" },
+    { key: "kpi_community", value: settings.kpi_community || "5K+", label: "NYC Community" },
+    { key: "kpi_street_ready", value: settings.kpi_street_ready || "100%", label: "Street Ready" },
+    { key: "kpi_rating", value: settings.kpi_rating || "4.9★", label: "Avg. Rating" },
+  ].filter(k => !hiddenField.includes(k.key));
+  const storyKpis = [
+    { key: "kpi_pieces", value: settings.kpi_pieces || "200+", label: "Pieces Dropped" },
+    { key: "kpi_community", value: settings.kpi_community || "5K+", label: "Community" },
+    { key: "kpi_rating", value: settings.kpi_rating || "4.9★", label: "Avg Rating" },
+    { key: "kpi_street_ready", value: settings.kpi_street_ready || "100%", label: "Street Ready" },
+  ].filter(k => !hiddenField.includes(k.key));
   const [heroLoaded, setHeroLoaded] = useState(false);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
@@ -121,7 +135,7 @@ export default function VigoHome() {
   return (
     <div>
       {/* ── DROP ALERT BANNER ── */}
-      {settings.banner_visible !== "false" && <div onClick={() => navigate("/drops")} style={{ background: `linear-gradient(90deg, var(--vt-bg), var(--vt-card), var(--vt-bg))`, borderBottom: `.5px solid ${G3}`, padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", gap: 12, cursor: "pointer", flexWrap: "wrap" }}
+      {settings.banner_visible !== "false" && !hiddenSec.includes("top_banner") && <div onClick={() => navigate("/drops")} style={{ background: `linear-gradient(90deg, var(--vt-bg), var(--vt-card), var(--vt-bg))`, borderBottom: `.5px solid ${G3}`, padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "center", gap: 12, cursor: "pointer", flexWrap: "wrap" }}
       onMouseEnter={(e) => e.currentTarget.style.borderColor = S}
       onMouseLeave={(e) => e.currentTarget.style.borderColor = "var(--vt-border)"}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -154,14 +168,16 @@ export default function VigoHome() {
           </div>
 
           {/* KPIs */}
-          <div className="vigo-kpi-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 0, marginTop: 56, borderTop: `.5px solid ${G3}` }}>
-            {[[settings.kpi_pieces || "200+", "Pieces Dropped"], [settings.kpi_community || "5K+", "NYC Community"], [settings.kpi_street_ready || "100%", "Street Ready"], [settings.kpi_rating || "4.9★", "Avg. Rating"]].map(([n, l], i, arr) =>
-              <div key={l} style={{ padding: "20px 0", textAlign: "center", borderRight: i < arr.length - 1 ? `.5px solid ${G3}` : "none" }}>
-                <div style={{ fontSize: "clamp(18px,2.5vw,26px)", fontWeight: 900, color: S, letterSpacing: -1 }}>{n}</div>
-                <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 4 }}>{l}</div>
+          {!hiddenSec.includes("stats") && heroKpis.length > 0 && (
+          <div className="vigo-kpi-grid" style={{ display: "grid", gridTemplateColumns: `repeat(${heroKpis.length},1fr)`, gap: 0, marginTop: 56, borderTop: `.5px solid ${G3}` }}>
+            {heroKpis.map((k, i, arr) =>
+              <div key={k.key} style={{ padding: "20px 0", textAlign: "center", borderRight: i < arr.length - 1 ? `.5px solid ${G3}` : "none" }}>
+                <div style={{ fontSize: "clamp(18px,2.5vw,26px)", fontWeight: 900, color: S, letterSpacing: -1 }}>{k.value}</div>
+                <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 4 }}>{k.label}</div>
               </div>
             )}
           </div>
+          )}
         </div>
 
         {/* Hero image panel */}
@@ -172,6 +188,7 @@ export default function VigoHome() {
           <div style={{ position: "absolute", bottom: 72, right: 24, width: 32, height: 32, borderBottom: `2px solid ${S}`, borderRight: `2px solid ${S}`, zIndex: 2 }} />
           <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at center, rgba(192,192,192,.06) 0%, transparent 65%)`, pointerEvents: "none" }} />
           <img src={heroProduct?.images?.[0] || productImg} alt={`${heroProduct?.name || "VIGONYC"} — SS25 Collection`} style={{ width: "100%", height: "100%", objectFit: "contain", filter: "drop-shadow(0 0 80px rgba(192,192,192,.2))", zIndex: 1 }} />
+          {!hiddenSec.includes("hero_product") && (
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "rgba(0,0,0,.85)", borderTop: `.5px solid rgba(255,255,255,.1)`, padding: "14px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 2 }}>
             <div>
               <div style={{ fontSize: 11, color: "#fff" }}>{heroProduct?.name || settings.hero_product_name || "Chrome V Tee — SS25"}</div>
@@ -182,6 +199,7 @@ export default function VigoHome() {
               <button onClick={() => navigate(heroProduct ? `/product/${heroProduct.id}` : "/shop")} style={{ background: S, color: "#000", border: "none", padding: "8px 16px", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", fontWeight: 900, cursor: "pointer", fontFamily: "inherit" }}>Shop Now</button>
             </div>
           </div>
+          )}
         </div>
       </div>
 
@@ -283,9 +301,10 @@ export default function VigoHome() {
       </div>
 
       {/* ── BRAND STORY TEASER ── */}
+      {!hiddenSec.includes("brand_story") && (
       <div style={{ margin: "0 16px", borderTop: `2px solid ${S}`, background: G1, border: `.5px solid ${G3}`, borderTopWidth: "2px" }} className="vigo-2col-story">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }} className="vigo-2col">
-          <div style={{ padding: "52px 48px", borderRight: `.5px solid ${G3}` }}>
+        <div style={{ display: "grid", gridTemplateColumns: storyKpis.length ? "1fr 1fr" : "1fr" }} className="vigo-2col">
+          <div style={{ padding: "52px 48px", borderRight: storyKpis.length ? `.5px solid ${G3}` : "none" }}>
             <div style={{ fontSize: 9, letterSpacing: 4, color: S, textTransform: "uppercase", marginBottom: 14 }}>✦ The Brand</div>
             <div style={{ fontSize: 36, fontWeight: 900, letterSpacing: -1, lineHeight: .95, marginBottom: 20 }}>
               {settings.about_headline || "Born in the Bronx. Built for the Borough."}
@@ -295,16 +314,19 @@ export default function VigoHome() {
             </p>
             <button onClick={() => navigate("/about")} style={btnO}>Our Story →</button>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderRight: "none" }}>
-            {[[settings.kpi_pieces || "200+", "Pieces Dropped"], [settings.kpi_community || "5K+", "Community"], [settings.kpi_rating || "4.9★", "Avg Rating"], [settings.kpi_street_ready || "100%", "Street Ready"]].map(([n, l], i) =>
-            <div key={l} style={{ padding: "36px 28px", borderRight: i % 2 === 0 ? `.5px solid ${G3}` : "none", borderBottom: i < 2 ? `.5px solid ${G3}` : "none", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <div style={{ fontSize: 32, fontWeight: 900, color: S, letterSpacing: -1 }}>{n}</div>
-                <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 8 }}>{l}</div>
+          {storyKpis.length > 0 && (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 1, background: G3 }}>
+            {storyKpis.map((k, i) =>
+            <div key={k.key} style={{ padding: "36px 28px", background: G1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <div style={{ fontSize: 32, fontWeight: 900, color: S, letterSpacing: -1 }}>{k.value}</div>
+                <div style={{ fontSize: 8, letterSpacing: 2, color: SD, textTransform: "uppercase", marginTop: 8 }}>{k.label}</div>
               </div>
             )}
           </div>
+          )}
         </div>
       </div>
+      )}
 
       {/* ── RECENTLY VIEWED ── */}
       {recentProducts.length > 0 &&

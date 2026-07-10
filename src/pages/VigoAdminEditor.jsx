@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, Monitor, Smartphone, RotateCcw, Save, ExternalLink, Home as HomeIcon, Info, Mail, Globe } from "lucide-react";
+import { ChevronLeft, Monitor, Smartphone, RotateCcw, Save, ExternalLink, Home as HomeIcon, Info, Mail, Globe, Pencil, Eye } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { DEFAULTS } from "@/hooks/useSiteSettings";
 import { toast } from "sonner";
@@ -58,6 +58,11 @@ export default function VigoAdminEditor() {
   }, [draft]);
 
   const setField = (key, val) => setDraft(p => ({ ...p, [key]: val }));
+
+  const hiddenSections = useMemo(() => { try { return JSON.parse(draft.editor_hidden_sections || "[]"); } catch { return []; } }, [draft.editor_hidden_sections]);
+  const hiddenFields = useMemo(() => { try { return JSON.parse(draft.editor_hidden_fields || "[]"); } catch { return []; } }, [draft.editor_hidden_fields]);
+  const toggleSectionHidden = (id, hide) => setField("editor_hidden_sections", JSON.stringify(hide ? [...new Set([...hiddenSections, id])] : hiddenSections.filter(x => x !== id)));
+  const toggleFieldHidden = (key, hide) => setField("editor_hidden_fields", JSON.stringify(hide ? [...new Set([...hiddenFields, key])] : hiddenFields.filter(x => x !== key)));
 
   const dirty = useMemo(() => Object.keys(draft).some(k => String(draft[k] ?? "") !== String(saved[k] ?? "")), [draft, saved]);
   const dirtyCount = useMemo(() => Object.keys(draft).filter(k => String(draft[k] ?? "") !== String(saved[k] ?? "")).length, [draft, saved]);
@@ -155,7 +160,7 @@ export default function VigoAdminEditor() {
             <div style={{ fontSize: 20, fontWeight: 900, letterSpacing: -0.5 }}>{def.label}</div>
             <div style={{ fontSize: 11, color: SD, marginTop: 4, lineHeight: 1.6 }}>{def.desc}</div>
           </div>
-          <EditorPanel draft={draft} saved={saved} setField={setField} activePage={activePage} />
+          <EditorPanel draft={draft} saved={saved} setField={setField} activePage={activePage} hiddenSections={hiddenSections} hiddenFields={hiddenFields} onToggleSection={toggleSectionHidden} onToggleField={toggleFieldHidden} />
         </div>
 
         <div className={"ae-preview " + (mobileView === "edit" ? "ae-hide-mobile" : "")} style={{ minHeight: 0, overflow: "hidden", background: G2 }}>
@@ -163,17 +168,29 @@ export default function VigoAdminEditor() {
         </div>
       </div>
 
-      <div className="ae-toggle" style={{ display: "none", padding: "8px 12px", borderTop: `.5px solid ${G3}`, gap: 8, flexShrink: 0 }}>
-        <button onClick={() => setMobileView("edit")} style={{ flex: 1, padding: "11px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: mobileView === "edit" ? 900 : 400, background: mobileView === "edit" ? S : "transparent", color: mobileView === "edit" ? "#000" : SD, border: `.5px solid ${mobileView === "edit" ? S : G3}`, cursor: "pointer", fontFamily: "inherit" }}>Edit</button>
-        <button onClick={() => setMobileView("preview")} style={{ flex: 1, padding: "11px", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", fontWeight: mobileView === "preview" ? 900 : 400, background: mobileView === "preview" ? S : "transparent", color: mobileView === "preview" ? "#000" : SD, border: `.5px solid ${mobileView === "preview" ? S : G3}`, cursor: "pointer", fontFamily: "inherit" }}>Preview</button>
+      <div className="ae-bottomnav" style={{ flexShrink: 0 }}>
+        <div style={{ display: "flex", justifyContent: "center", padding: "10px 12px calc(10px + env(safe-area-inset-bottom,0px))", background: "rgba(18,18,20,0.82)", backdropFilter: "blur(30px) saturate(1.7)", WebkitBackdropFilter: "blur(30px) saturate(1.7)", borderTop: "0.5px solid rgba(255,255,255,0.1)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 8px", background: "rgba(30,30,32,0.6)", border: "0.5px solid rgba(255,255,255,0.12)", borderRadius: 30, boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12), 0 4px 24px rgba(0,0,0,0.4)" }}>
+            {[{ id: "edit", label: "Edit", Icon: Pencil, on: () => setMobileView("edit"), active: mobileView === "edit" }, { id: "preview", label: "Preview", Icon: Eye, on: () => setMobileView("preview"), active: mobileView === "preview" }].map(it => {
+              const I = it.Icon;
+              return (
+                <button key={it.id} onClick={it.on} style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, width: 76, height: 48, borderRadius: 24, background: it.active ? "rgba(255,255,255,0.14)" : "transparent", border: `0.5px solid ${it.active ? "rgba(255,255,255,0.2)" : "transparent"}`, boxShadow: it.active ? "inset 0 1px 0 rgba(255,255,255,0.2)" : "none", color: it.active ? "#fff" : "rgba(200,200,200,0.65)", fontSize: 8, letterSpacing: 0.5, textTransform: "uppercase", fontWeight: it.active ? 700 : 400, cursor: "pointer", fontFamily: "inherit", transition: "all .25s cubic-bezier(0.34,1.56,0.64,1)" }}>
+                  <I size={18} style={{ transform: it.active ? "scale(1.12)" : "scale(1)", transition: "transform .25s" }} />
+                  <span>{it.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       <style>{`
+        .ae-bottomnav{display:none;}
         @media(max-width:1023px){
           .ae-body{display:flex !important; flex-direction:column !important;}
           .ae-sidebar{display:none !important;}
           .ae-device{display:none !important;}
-          .ae-toggle{display:flex !important;}
+          .ae-bottomnav{display:block !important;}
           .ae-hide-mobile{display:none !important;}
           .ae-editor,.ae-preview{flex:1; min-height:0; border-right:none !important;}
         }

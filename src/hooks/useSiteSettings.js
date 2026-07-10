@@ -29,6 +29,8 @@ export const DEFAULTS = {
   crew_line_1: "Manhattan — Design & Creative",
   crew_line_2: "Brooklyn — Photography & Lookbook",
   crew_line_3: "Queens — Operations & Drops",
+  editor_hidden_sections: "[]",
+  editor_hidden_fields: "[]",
 };
 
 export const SettingsOverrideContext = createContext(null);
