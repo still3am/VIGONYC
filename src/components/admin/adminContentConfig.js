@@ -35,19 +35,32 @@ export const SECTIONS = {
   },
   about: {
     label: "About",
-    desc: "The brand story page — headline, mission, stats and the crew behind VIGONYC.",
+    desc: "The brand story page — story, values, stats and the crew behind VIGONYC.",
     groups: [
       { id: "about_story", title: "Story", deletable: false, fields: [
+        { key: "about_eyebrow", label: "Hero Eyebrow", type: "text" },
         { key: "about_headline", label: "Headline (also on Home)", type: "text" },
         { key: "about_story", label: "Story (also on Home)", type: "textarea" },
         { key: "about_mission", label: "Mission Statement", type: "textarea" },
       ]},
-      { id: "about_stats", title: "Stats", deletable: false, fields: [
-        { key: "kpi_founded", label: "Founded Year", type: "text" },
-        { key: "kpi_pieces", label: "Pieces Dropped", type: "text" },
-        { key: "kpi_community", label: "Community Size", type: "text" },
+      { id: "about_values", title: "Values", deletable: true, fields: [
+        { key: "values_eyebrow", label: "Section Eyebrow", type: "text" },
+        { key: "values_title", label: "Section Heading", type: "text" },
+        { key: "values_title_1", label: "Value 1 Title", type: "text" },
+        { key: "values_desc_1", label: "Value 1 Description", type: "textarea" },
+        { key: "values_title_2", label: "Value 2 Title", type: "text" },
+        { key: "values_desc_2", label: "Value 2 Description", type: "textarea" },
+        { key: "values_title_3", label: "Value 3 Title", type: "text" },
+        { key: "values_desc_3", label: "Value 3 Description", type: "textarea" },
       ]},
-      { id: "about_crew", title: "The Crew", deletable: false, fields: [
+      { id: "about_stats", title: "Stats", deletable: true, fields: [
+        { key: "kpi_founded", label: "Founded Year", type: "text", deletable: true },
+        { key: "kpi_pieces", label: "Pieces Dropped", type: "text", deletable: true },
+        { key: "kpi_community", label: "Community Size", type: "text", deletable: true },
+      ]},
+      { id: "about_crew", title: "The Crew", deletable: true, fields: [
+        { key: "about_crew_eyebrow", label: "Section Eyebrow", type: "text" },
+        { key: "about_crew_title", label: "Section Heading", type: "text" },
         { key: "crew_line_1", label: "Line 1 (Borough — Role)", type: "text" },
         { key: "crew_line_2", label: "Line 2 (Borough — Role)", type: "text" },
         { key: "crew_line_3", label: "Line 3 (Borough — Role)", type: "text" },
