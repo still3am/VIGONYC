@@ -355,7 +355,7 @@ export default function VigoLive() {
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 4v6h6" /><path d="M23 20v-6h-6" /><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15" /></svg>
                 Flip
               </button>
-              <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#f00", boxShadow: "0 0 8px #f00", animation: "liveDot 1.2s infinite" }} className="hidden" />
+              
             </>
         }
           {cameraError && <span style={{ fontSize: 10, color: "#ff6b6b" }}>{cameraError}</span>}
