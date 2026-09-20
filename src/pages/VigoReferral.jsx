@@ -63,6 +63,12 @@ export default function VigoReferral() {
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
   const rafRef = useRef(null);
+  const [sendCode, setSendCode] = useState("");
+  const [sendAmount, setSendAmount] = useState("");
+  const [sendMsg, setSendMsg] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState("");
+  const [sendSuccess, setSendSuccess] = useState(null);
 
   useEffect(() => {
     document.title = "THE VAULT — VIGONYC";
@@ -117,6 +123,41 @@ export default function VigoReferral() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
     toast.success("Referral link copied!");
+  };
+
+  const handleSendPoints = async () => {
+    setSendError("");
+    setSendSuccess(null);
+    const code = sendCode.trim().toUpperCase();
+    const amt = parseInt(sendAmount, 10);
+    if (!code) { setSendError("Enter the recipient's referral code."); return; }
+    if (!amt || amt < 1) { setSendError("Enter a valid amount (min 1 point)."); return; }
+    if (!loyalty) { setSendError("Loading your vault — try again."); return; }
+    if (code === loyalty.referralCode) { setSendError("You can't send points to yourself."); return; }
+    if ((loyalty.points || 0) < amt) { setSendError(`You only have ${loyalty.points || 0} points.`); return; }
+    setSending(true);
+    try {
+      const recipients = await base44.entities.UserLoyalty.filter({ referralCode: code }, "-created_date", 1).catch(() => []);
+      const recipient = recipients?.[0];
+      if (!recipient) { setSendError("No member found with that referral code."); setSending(false); return; }
+      const fresh = await base44.entities.UserLoyalty.get(loyalty.id).catch(() => loyalty);
+      if ((fresh.points || 0) < amt) {
+        setLoyalty(fresh);
+        setSendError(`You only have ${fresh.points || 0} points.`);
+        setSending(false);
+        return;
+      }
+      const updatedSender = await base44.entities.UserLoyalty.update(fresh.id, { points: (fresh.points || 0) - amt });
+      await base44.entities.UserLoyalty.update(recipient.id, { points: (recipient.points || 0) + amt });
+      setLoyalty(updatedSender);
+      setSendSuccess({ code, amount: amt });
+      setSendCode(""); setSendAmount(""); setSendMsg("");
+      toast.success(`${amt} points sent!`);
+    } catch (e) {
+      setSendError("Transfer failed. Please try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   const stopScanner = useCallback(() => {
@@ -189,6 +230,7 @@ export default function VigoReferral() {
   const TABS = [
   { id: "overview", label: "Overview" },
   { id: "refer", label: "Refer & Earn" },
+  { id: "send", label: "Send Points" },
   { id: "tiers", label: "Tiers" }];
 
 
@@ -439,6 +481,48 @@ export default function VigoReferral() {
         </div>
         }
 
+        {/* SEND POINTS TAB */}
+        {activeTab === "send" &&
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 8, maxWidth: 480, margin: "0 auto" }}>
+          <div style={{ width: "100%", background: G2, border: `0.5px solid ${G3}`, borderTop: `2px solid ${S}`, padding: "28px 26px" }}>
+            <div style={{ fontSize: 8, letterSpacing: 3, color: SD, textTransform: "uppercase", marginBottom: 6 }}>✦ Peer Transfer</div>
+            <h2 style={{ fontSize: 24, fontWeight: 900, letterSpacing: -1, marginBottom: 8 }}>Send Points</h2>
+            <p style={{ fontSize: 12, color: SD, lineHeight: 1.8, marginBottom: 22 }}>Send your points to another VIGO member instantly using their referral code.</p>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", background: G1, border: `0.5px solid ${G3}`, marginBottom: 18 }}>
+              <span style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase" }}>Your Balance</span>
+              <span style={{ fontSize: 18, fontWeight: 900, color: S }}>{(loyalty?.points || 0).toLocaleString()} pts</span>
+            </div>
+            {sendSuccess ? (
+              <div style={{ textAlign: "center", padding: "20px 0" }}>
+                <div style={{ fontSize: 36, color: "#0c6", marginBottom: 12 }}>✓</div>
+                <div style={{ fontSize: 16, fontWeight: 900, marginBottom: 6 }}>{sendSuccess.amount} Points Sent</div>
+                <div style={{ fontSize: 11, color: SD }}>Sent to code <span style={{ fontFamily: "monospace", color: S }}>{sendSuccess.code}</span></div>
+                <button onClick={() => setSendSuccess(null)} style={{ ...chromeBtn, marginTop: 20 }}>Send More</button>
+              </div>
+            ) : (
+              <>
+                <div style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 7 }}>Recipient Referral Code</div>
+                  <input value={sendCode} onChange={e => setSendCode(e.target.value.toUpperCase())} placeholder="e.g. K7M3XYZ9" style={inputStyle} />
+                </div>
+                <div style={{ marginBottom: 14 }}>
+                  <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 7 }}>Amount (points)</div>
+                  <input type="number" min="1" value={sendAmount} onChange={e => setSendAmount(e.target.value)} placeholder="100" style={inputStyle} />
+                </div>
+                <div style={{ marginBottom: 18 }}>
+                  <div style={{ fontSize: 9, letterSpacing: 2, color: SD, textTransform: "uppercase", marginBottom: 7 }}>Message (optional)</div>
+                  <input value={sendMsg} onChange={e => setSendMsg(e.target.value)} placeholder="Gifted points" style={inputStyle} />
+                </div>
+                {sendError && <div style={{ fontSize: 11, color: "#e03", marginBottom: 14 }}>{sendError}</div>}
+                <button onClick={handleSendPoints} disabled={sending} style={{ ...chromeBtn, width: "100%", opacity: sending ? 0.6 : 1, cursor: sending ? "not-allowed" : "pointer" }}>
+                  {sending ? "Sending..." : `Send ${sendAmount ? sendAmount + " pts" : "Points"}`}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+        }
+
         {/* TIERS TAB */}
         {activeTab === "tiers" &&
         <div>
@@ -557,3 +641,5 @@ const chromeBtn = {
   letterSpacing: 3, textTransform: "uppercase", fontWeight: 900,
   cursor: "pointer", fontFamily: "inherit"
 };
+
+const inputStyle = { width: "100%", background: G1, border: `0.5px solid ${G3}`, color: "var(--vt-text)", padding: "12px 16px", fontSize: 13, outline: "none", fontFamily: "inherit", boxSizing: "border-box" };

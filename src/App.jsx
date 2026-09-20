@@ -32,6 +32,7 @@ import VigoReferral from './pages/VigoReferral';
 import VigoLive from './pages/VigoLive';
 import VigoComingSoon from './components/vigo/VigoComingSoon';
 import VigoAdminEditor from './pages/VigoAdminEditor';
+import VigoAdmin from './pages/VigoAdmin';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin, user } = useAuth();
@@ -98,6 +99,7 @@ const AuthenticatedApp = () => {
         <Route path="referral" element={<ErrorBoundary><VigoReferral /></ErrorBoundary>} />
         <Route path="live" element={<ErrorBoundary><VigoLive /></ErrorBoundary>} />
       </Route>
+      <Route path="/admin" element={<ErrorBoundary><VigoAdmin /></ErrorBoundary>} />
       <Route path="/admin/editor" element={<ErrorBoundary><VigoAdminEditor /></ErrorBoundary>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
